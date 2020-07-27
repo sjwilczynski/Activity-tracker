@@ -14,7 +14,8 @@ data = []
 while date < end_date:
     activity = np.random.choice(activities_list, 1, p=probabilities)[0]
     entry = {}
-    entry[date.strftime("%Y-%m-%d")] = activity
+    entry["date"] = date.strftime("%Y-%m-%d")
+    entry["activity"] = activity
     data.append(entry)
     date = date + datetime.timedelta(days=1)
 

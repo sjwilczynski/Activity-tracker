@@ -1,9 +1,19 @@
-import React from 'react';
+import React from "react";
+import data from "./mock-data.json";
 
 function App() {
   return (
     <div>
-      Frontend for activity tracker
+      <ul>
+        {data.map((x) => {
+          const { date, activity } = x;
+          return (
+            <li key={date}>
+              {date}: {activity}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
