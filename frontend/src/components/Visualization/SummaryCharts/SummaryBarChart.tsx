@@ -1,17 +1,17 @@
 import * as React from "react";
 import { ActivitySummaryMap } from "../../../data/types";
 import { Bar } from "react-chartjs-2";
-import { getActiveAndInactiveCount } from "../utils";
+import { sortKeysByActive, getTotalCount } from "../utils";
 import { ChartJsData } from "../types";
 
 type Props = {
-  data: ActivitySummaryMap;
+  summaryMap: ActivitySummaryMap;
 };
 
 export function SummaryBarChart(props: Props) {
   return (
     <Bar
-      data={getDataForSummaryBarChart(props.data)}
+      data={getDataForSummaryBarChart(props.summaryMap)}
       options={{
         maintainAspectRatio: false,
         responsive: true,
@@ -49,30 +49,33 @@ export function SummaryBarChart(props: Props) {
   );
 }
 
-const getDataForSummaryBarChart = (data: ActivitySummaryMap): ChartJsData => {
-  const sortedKeys = Object.keys(data).sort((key1, key2) => {
-    return +data[key2].active - +data[key1].active;
-  });
+const getDataForSummaryBarChart = (
+  summaryMap: ActivitySummaryMap
+): ChartJsData => {
+  const sortedKeys = sortKeysByActive(summaryMap);
   return {
     labels: ["Summary"],
     datasets: [
-      ...getThresholdLines(data, sortedKeys),
-      ...sortedKeys.map((key) => {
-        return {
-          data: [data[key].count],
-          label: key,
-          backgroundColor: [data[key].active ? "#2ecc40" : "#ff4136"],
-          borderWidth: 2,
-          yAxisID: "y-axis-1",
-        };
-      }),
+      ...getThresholdLines(summaryMap),
+      ...getStackedBars(summaryMap, sortedKeys),
     ],
   };
 };
 
-const getThresholdLines = (data: ActivitySummaryMap, keys: string[]) => {
-  const { activeCount, inactiveCount } = getActiveAndInactiveCount(data, keys);
-  const total = activeCount + inactiveCount;
+const getStackedBars = (summaryMap: ActivitySummaryMap, keys: string[]) => {
+  return keys.map((key) => {
+    return {
+      data: [summaryMap[key].count],
+      label: key,
+      backgroundColor: [summaryMap[key].active ? "#2ecc40" : "#ff4136"],
+      borderWidth: 2,
+      yAxisID: "y-axis-1",
+    };
+  });
+};
+
+const getThresholdLines = (summaryMap: ActivitySummaryMap) => {
+  const total = getTotalCount(Object.values(summaryMap));
   return [1, 2, 3, 4, 5, 6, 7].map((fraction) => {
     return {
       data: [parseFloat(((fraction * total) / 7).toFixed(2))],

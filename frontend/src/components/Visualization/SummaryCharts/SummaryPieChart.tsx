@@ -2,15 +2,18 @@ import * as React from "react";
 import { Pie } from "react-chartjs-2";
 import { ChartJsData } from "../types";
 import { ActivitySummaryMap } from "../../../data/types";
-import { getActiveAndInactiveCount, getDataForChartJs } from "../utils";
+import {
+  getTotalActiveAndInactiveCount,
+  getDataInChartJsFormat,
+} from "../utils";
 
 type Props = {
-  data: ActivitySummaryMap;
+  summaryMap: ActivitySummaryMap;
 };
 
 export function SummaryPieChart(props: Props) {
-  const { data } = props;
-  const chartJsData = getDataForChartJs(data);
+  const { summaryMap } = props;
+  const chartJsData = getDataInChartJsFormat(summaryMap);
   return (
     <div style={{ width: 1000, height: 500 }}>
       <Pie
@@ -18,7 +21,7 @@ export function SummaryPieChart(props: Props) {
           ...chartJsData,
           datasets: [
             ...chartJsData.datasets,
-            getAdditionalSummaryDataset(data),
+            getAdditionalSummaryDataset(summaryMap),
           ],
         }}
         options={{
@@ -50,17 +53,13 @@ const tooltipCallback = {
   },
 };
 
-const getAdditionalSummaryDataset = (data: ActivitySummaryMap) => {
-  const sortedKeys = Object.keys(data).sort((key1, key2) => {
-    return +data[key1].active - +data[key2].active;
-  });
-  const { activeCount, inactiveCount } = getActiveAndInactiveCount(
-    data,
-    sortedKeys
+const getAdditionalSummaryDataset = (summaryMap: ActivitySummaryMap) => {
+  const { activeCount, inactiveCount } = getTotalActiveAndInactiveCount(
+    summaryMap
   );
   return {
-    backgroundColor: ["#ff4136", "#2ecc40"],
-    data: [inactiveCount, activeCount],
+    backgroundColor: ["#2ecc40", "#ff4136"],
+    data: [activeCount, inactiveCount],
     weight: 0.35,
   };
 };

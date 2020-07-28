@@ -4,24 +4,24 @@ import { SummaryTable } from "./components/Table/SummaryTable";
 import { BarChart } from "./components/Visualization/Charts/BarChart";
 import { SummaryPieChart } from "./components/Visualization/SummaryCharts/SummaryPieChart";
 import { SummaryBarChart } from "./components/Visualization/SummaryCharts/SummaryBarChart";
-import { transformData } from "./data/transform";
+import { transformDataToSummaryMap } from "./data/transform";
 
 function App() {
-  const data = transformData(mockData);
+  const summaryMap = transformDataToSummaryMap(mockData);
 
   return (
     <>
       <div style={{ width: 1000, height: 500 }}>
-        <BarChart data={data} />
+        <BarChart summaryMap={summaryMap} />
       </div>
       <div style={{ width: 1000, height: 500 }}>
-        <SummaryPieChart data={data} />
+        <SummaryPieChart summaryMap={summaryMap} />
       </div>
       <div style={{ width: 1000, height: 500 }}>
-        <SummaryBarChart data={data} />
+        <SummaryBarChart summaryMap={summaryMap} />
       </div>
       <div style={{ width: 1000 }}>
-        <SummaryTable data={mockData} />
+        <SummaryTable records={mockData} />
       </div>
     </>
   );
