@@ -3,8 +3,12 @@ import datetime
 import numpy as np
 import json
 
-activities_list = ["nothing", "sick", "basketball",
-                   "gym", "running", "badminton", "squash"]
+activities_list = [{"name": "nothing", "active": False}, {"name": "sick", "active": False},
+                   {"name": "basketball", "active": True}, {
+                       "name": "gym", "active": True},
+                   {"name": "running", "active": True}, {
+                       "name": "badminton", "active": True},
+                   {"name": "squash", "active": True}]
 probabilities = [0.3, 0.05, 0.15, 0.1, 0.2, 0.13, 0.07]
 
 date = datetime.datetime(2019, 1, 1)
