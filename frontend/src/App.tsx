@@ -1,6 +1,7 @@
 import React from "react";
 import mockData from "./mock-data.json";
 import { Bar, Pie } from "react-chartjs-2";
+import { ChartOptions } from "chart.js";
 
 type Activity = {
   name: string;
@@ -24,9 +25,16 @@ type ActivitySummaryMap = {
 type ChartJsData = {
   labels: string[];
   datasets: {
-    label: string;
-    backgroundColor: string[];
+    label?: string;
+    backgroundColor?: string[];
     data: number[];
+    weight?: number;
+    stack?: string;
+    barPercentage?: number;
+    type?: string;
+    fill?: boolean;
+    borderColor?: string;
+    yAxisID?: string;
   }[];
 };
 
@@ -53,7 +61,8 @@ function App() {
         <Bar
           data={dataForChartJs}
           options={{
-            ...getChartOptions(dataForChartJs),
+            maintainAspectRatio: false,
+            responsive: true,
             scales: {
               xAxes: [
                 {
@@ -77,54 +86,173 @@ function App() {
         />
       </div>
       <div style={{ width: 1000, height: 500 }}>
-        <Pie data={dataForChartJs} options={getChartOptions(dataForChartJs)} />
+        <Pie
+          data={{
+            ...dataForChartJs,
+            datasets: [
+              ...dataForChartJs.datasets,
+              getAdditionalSummaryDataset(barChartData),
+            ],
+          }}
+          options={{ ...getChartOptions(), tooltips: tooltipCallback }}
+        />
+      </div>
+      <div style={{ width: 1000, height: 500 }}>
+        <Bar
+          data={getDataForSummaryBarChart(barChartData)}
+          options={{
+            ...getChartOptions(),
+            legend: {
+              labels: {
+                filter: (item, chart) => !item.text?.includes("threshold"),
+              },
+            },
+            scales: {
+              xAxes: [
+                {
+                  stacked: true,
+                  gridLines: {
+                    display: false,
+                  },
+                },
+              ],
+              yAxes: [
+                {
+                  stacked: true,
+                  gridLines: {
+                    display: false,
+                  },
+                  id: "y-axis-1",
+                },
+                {
+                  stacked: false,
+                  display: false,
+                  id: "y-axis-2",
+                },
+              ],
+            },
+          }}
+        />
       </div>
     </>
   );
 }
 
-const getChartOptions = (data: ChartJsData) => {
-  const totalCount = Object.values(data.datasets[0].data).reduce(
-    (counts, count) => counts + count,
-    0
-  );
+const getChartOptions = (): ChartOptions => {
   return {
     maintainAspectRatio: false,
     responsive: true,
-    tooltips: {
-      callbacks: {
-        label: (tooltipItem: Chart.ChartTooltipItem) => {
-          const chartData = data.datasets[0].data;
-          const count = chartData[tooltipItem?.index || 0];
-          const percentage = (count / totalCount) * 100;
-          return `Count: ${count}, percentage: ${percentage.toFixed(2)}%`;
-        },
-      },
-    },
   };
 };
 
-const getDataForChartJs = (data: ActivitySummaryMap): ChartJsData => {
+const tooltipCallback = {
+  callbacks: {
+    label: (tooltipItem: Chart.ChartTooltipItem, data: ChartJsData) => {
+      const datasetIndex = tooltipItem?.datasetIndex || 0;
+      const chartData = data.datasets[datasetIndex].data;
+      const totalCount = Object.values(data.datasets[datasetIndex].data).reduce(
+        (counts, singleCount) => counts + singleCount,
+        0
+      );
+      const count = chartData[tooltipItem?.index || 0];
+      const percentage = (count / totalCount) * 100;
+      // Hack alert: if it's additional summary dataset don't add a label
+      const label =
+        datasetIndex === 0 ? data.labels[tooltipItem?.index || 0] + ":" : "";
+      return ` ${label} Count: ${count}, percentage: ${percentage.toFixed(2)}%`;
+    },
+  },
+};
+
+const getAdditionalSummaryDataset = (data: ActivitySummaryMap) => {
+  const sortedKeys = Object.keys(data).sort((key1, key2) => {
+    return +data[key1].active - +data[key2].active;
+  });
+  const { activeCount, inactiveCount } = getActiveAndInactiveCount(
+    data,
+    sortedKeys
+  );
   return {
-    labels: Object.keys(data),
+    backgroundColor: ["#ff4136", "#2ecc40"],
+    data: [inactiveCount, activeCount],
+    weight: 0.35,
+  };
+};
+
+const getDataForSummaryBarChart = (data: ActivitySummaryMap): ChartJsData => {
+  const sortedKeys = Object.keys(data).sort((key1, key2) => {
+    return +data[key2].active - +data[key1].active;
+  });
+  return {
+    labels: ["Summary"],
+    datasets: [
+      ...getThresholdLines(data, sortedKeys),
+      ...sortedKeys.map((key) => {
+        return {
+          data: [data[key].count],
+          label: key,
+          backgroundColor: [data[key].active ? "#2ecc40" : "#ff4136"],
+          borderWidth: 2,
+          yAxisID: "y-axis-1",
+        };
+      }),
+    ],
+  };
+};
+
+const getThresholdLines = (data: ActivitySummaryMap, keys: string[]) => {
+  const { activeCount, inactiveCount } = getActiveAndInactiveCount(data, keys);
+  const total = activeCount + inactiveCount;
+  return [1, 2, 3, 4, 5, 6, 7].map((fraction) => {
+    return {
+      data: [parseFloat(((fraction * total) / 7).toFixed(2))],
+      type: "line",
+      label: `${fraction} days per week threshold`,
+      fill: false,
+      borderColor: "#000000",
+      yAxisID: "y-axis-2",
+    };
+  });
+};
+
+const getDataForChartJs = (data: ActivitySummaryMap): ChartJsData => {
+  const sortedKeys = Object.keys(data).sort((key1, key2) => {
+    return +data[key1].active - +data[key2].active;
+  });
+  const activityCounts = getActivityCounts(data, sortedKeys);
+  const colors = getBackgroundColors(data, sortedKeys);
+  return {
+    labels: sortedKeys,
     datasets: [
       {
-        label: "",
-        backgroundColor: getBackgroundColors(data),
-        data: getActivityCounts(data),
+        backgroundColor: colors,
+        data: activityCounts,
       },
     ],
   };
 };
 
-const getActivityCounts = (data: ActivitySummaryMap) => {
-  return Object.values(data).map((activitySummary) => activitySummary.count);
+const getActiveAndInactiveCount = (
+  data: ActivitySummaryMap,
+  keys: string[]
+) => {
+  const activeCount = getActivityCounts(
+    data,
+    keys.filter((key) => data[key].active)
+  ).reduce((counts, count) => counts + count, 0);
+  const inactiveCount = getActivityCounts(
+    data,
+    keys.filter((key) => !data[key].active)
+  ).reduce((counts, count) => counts + count, 0);
+  return { activeCount, inactiveCount };
 };
 
-const getBackgroundColors = (data: ActivitySummaryMap) => {
-  return Object.values(data).map((activitySummary) =>
-    activitySummary.active ? "#2ecc40" : "#ff4136"
-  );
+const getActivityCounts = (data: ActivitySummaryMap, keys: string[]) => {
+  return keys.map((key) => data[key].count);
+};
+
+const getBackgroundColors = (data: ActivitySummaryMap, keys: string[]) => {
+  return keys.map((key) => (data[key].active ? "#2ecc40" : "#ff4136"));
 };
 
 const getDataForBarChart = (data: ActivityRecord[]) => {
