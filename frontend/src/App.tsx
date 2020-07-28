@@ -2,13 +2,14 @@ import React from "react";
 import mockData from "./mock-data.json";
 import { Bar, Pie } from "react-chartjs-2";
 import { ChartOptions } from "chart.js";
+import { SummaryTable } from "./components/Table/SummaryTable";
 
-type Activity = {
+export type Activity = {
   name: string;
   active: boolean;
 };
 
-type ActivityRecord = {
+export type ActivityRecord = {
   date: string;
   activity: Activity;
 };
@@ -44,19 +45,6 @@ function App() {
 
   return (
     <>
-      <div>
-        <ul>
-          {Object.entries(barChartData).map(
-            ([activityName, activitySummary]) => {
-              return (
-                <li key={activityName}>
-                  {activityName}: {activitySummary.count}
-                </li>
-              );
-            }
-          )}
-        </ul>
-      </div>
       <div style={{ width: 1000, height: 500 }}>
         <Bar
           data={dataForChartJs}
@@ -133,6 +121,9 @@ function App() {
             },
           }}
         />
+      </div>
+      <div style={{ width: 1000 }}>
+        <SummaryTable data={mockData} />
       </div>
     </>
   );
