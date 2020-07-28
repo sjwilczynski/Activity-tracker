@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Table } from "react-bootstrap";
-import { ActivityRecord } from "../../App";
+import { ActivityRecord } from "../../data/types";
 
 type Props = {
-  data: ActivityRecord[];
+  records: ActivityRecord[];
 };
 
 export function SummaryTable(props: Props) {
-  const { data } = props;
-  if (!data) {
+  const { records } = props;
+  if (!records) {
     return <></>;
   }
   return (
@@ -18,7 +18,7 @@ export function SummaryTable(props: Props) {
         <th>Activity name</th>
       </thead>
       <tbody>
-        {data.map((record) => (
+        {records.map((record) => (
           <tr>
             <td>{record.date}</td>
             <td>{record.activity.name}</td>
