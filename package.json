@@ -1,0 +1,16 @@
+{
+  "name": "activity-tracker",
+  "version": "1.0.0",
+  "description": "Activity tracker",
+  "main": "server.js",
+  "repository": "https://github.com/sjwilczynski/Activity-tracker.git",
+  "license": "MIT",
+  "scripts": {
+    "start-server": "nodemon server.js",
+    "start-client": "cd client && yarn start",
+    "start-all": "concurrently -k \"yarn start-server\" \" yarn start-client\""
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

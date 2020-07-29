@@ -1,13 +1,30 @@
 import React from "react";
-import mockData from "./data/mock-data.json";
 import { SummaryTable } from "./components/Table/SummaryTable";
 import { BarChart } from "./components/Visualization/Charts/BarChart";
 import { SummaryPieChart } from "./components/Visualization/SummaryCharts/SummaryPieChart";
 import { SummaryBarChart } from "./components/Visualization/SummaryCharts/SummaryBarChart";
 import { transformDataToSummaryMap } from "./data/transform";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { ActivityRecord } from "./data/types";
 
 function App() {
-  const summaryMap = transformDataToSummaryMap(mockData);
+  const { isLoading, error, data } = useQuery<ActivityRecord[], "chartData">(
+    "chartData",
+    async () => {
+      const getResult = await axios.get<ActivityRecord[]>("/api/getData");
+      return getResult.data;
+    }
+  );
+
+  if (isLoading) {
+    return <>{"Loading..."}</>;
+  }
+
+  if (error) {
+    return <>{"An error has occurred: " + error.message}</>;
+  }
+  const summaryMap = transformDataToSummaryMap(data || []);
 
   return (
     <>
@@ -21,7 +38,7 @@ function App() {
         <SummaryBarChart summaryMap={summaryMap} />
       </div>
       <div style={{ width: 900 }}>
-        <SummaryTable records={mockData} />
+        <SummaryTable records={data || []} />
       </div>
     </>
   );
