@@ -1,5 +1,5 @@
 {
-  "name": "activity-tracker-frontend",
+  "name": "activity-tracker-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
