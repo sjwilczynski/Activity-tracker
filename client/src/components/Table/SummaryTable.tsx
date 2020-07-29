@@ -14,12 +14,14 @@ export function SummaryTable(props: Props) {
   return (
     <Table responsive striped bordered hover>
       <thead>
-        <th>Date</th>
-        <th>Activity name</th>
+        <tr>
+          <th>Date</th>
+          <th>Activity name</th>
+        </tr>
       </thead>
       <tbody>
         {records.map((record) => (
-          <tr>
+          <tr key={record.date}>
             <td>{record.date}</td>
             <td>{record.activity.name}</td>
           </tr>
