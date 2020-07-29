@@ -12,7 +12,7 @@ function App() {
   const { isLoading, error, data } = useQuery<ActivityRecord[], "chartData">(
     "chartData",
     async () => {
-      const getResult = await axios.get<ActivityRecord[]>("/api/getData");
+      const getResult = await axios.get<ActivityRecord[]>("/api/getActivities");
       return getResult.data;
     }
   );
