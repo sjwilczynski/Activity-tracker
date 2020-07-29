@@ -11,16 +11,16 @@ function App() {
 
   return (
     <>
-      <div style={{ width: 1000, height: 500 }}>
+      <div style={{ width: 900, height: 500 }}>
         <BarChart summaryMap={summaryMap} />
       </div>
-      <div style={{ width: 1000, height: 500 }}>
+      <div style={{ width: 900, height: 500 }}>
         <SummaryPieChart summaryMap={summaryMap} />
       </div>
-      <div style={{ width: 1000, height: 500 }}>
+      <div style={{ width: 900, height: 500 }}>
         <SummaryBarChart summaryMap={summaryMap} />
       </div>
-      <div style={{ width: 1000 }}>
+      <div style={{ width: 900 }}>
         <SummaryTable records={mockData} />
       </div>
     </>
