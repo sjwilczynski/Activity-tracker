@@ -5,7 +5,7 @@ const moment = require("moment");
 function addActivityRouter(db) {
   const router = express.Router();
   router.post("/", function (req, res) {
-    const activity = req.body.activity;
+    const activity = req.body;
     if (isActivityValid(activity)) {
       dbUtils
         .addActivity(db, activity)

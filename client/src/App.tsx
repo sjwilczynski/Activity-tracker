@@ -7,13 +7,14 @@ import { transformDataToSummaryMap } from "./data/transform";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { ActivityRecord } from "./data/types";
+import { AddActivityForm } from "./components/Forms/AddActivityForm";
 
 function App() {
   const { isLoading, error, data } = useQuery<ActivityRecord[], "chartData">(
     "chartData",
     async () => {
       const getResult = await axios.get<ActivityRecord[]>("/api/getActivities");
-      return getResult.data;
+      return Object.values(getResult.data);
     }
   );
 
@@ -28,6 +29,7 @@ function App() {
 
   return (
     <>
+      <AddActivityForm />
       <div style={{ width: 900, height: 500 }}>
         <BarChart summaryMap={summaryMap} />
       </div>
