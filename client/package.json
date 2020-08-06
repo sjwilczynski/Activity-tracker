@@ -15,7 +15,7 @@
     "@types/react-query": "1.1.2",
     "@types/yup": "0.29.3",
     "axios": "0.19.2",
-    "bootstrap": "4.5.0",
+    "bootstrap": "4.5.2",
     "chart.js": "2.9.3",
     "formik": "2.1.5",
     "react": "16.13.1",
