@@ -9033,12 +9033,10 @@ react-popper@^1.3.4:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-query@2.5.6:
-  version "2.5.6"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.5.6.tgz#fce28e9be4d8ab6000c257f69ef74ed49cdf0636"
-  integrity sha512-mN3y2EqRVmM2PAdqqt2wBzMZI0eO1+UMcEWXyOTnKZuoqpLSTdw87C+LdvhMrmmwlOvnV8sZZynuht/tVJv0cA==
-  dependencies:
-    ts-toolbelt "^6.9.4"
+react-query@2.15.1:
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.15.1.tgz#0aa456c3488ec58193c74d6c62aee0ca8516c1d1"
+  integrity sha512-QsdxAxT/dj2RckrJQJQtlhol9Qp7Zuq9EitdWs9I8Y5bcueuAc/RgL+uwA/CXQ1Q9ikskyipr2dX1SgW1xwXNA==
 
 react-scripts@3.4.1:
   version "3.4.1"
@@ -10529,7 +10527,7 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-ts-toolbelt@*, ts-toolbelt@^6.9.4:
+ts-toolbelt@*:
   version "6.13.39"
   resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.13.39.tgz#80541ce39b595a42be5ddd04e3e6df65597774f8"
   integrity sha512-VD/rJ6+NGFA7AK2KWmGzLifrqA060M9o7+R2BxJtLBlwmfEaGdqGeyUPRDKhMZPMgpT/JMQ6+X+/ppaZNzuhvw==
