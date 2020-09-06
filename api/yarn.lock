@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@azure/functions@^1.0.2-beta2":
+"@azure/functions@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-1.2.2.tgz#8fcb6aa3a879d3be0dc3d68919f969b054bbe3f3"
   integrity sha512-p/dDHq1sG/iAib+eDY4NxskWHoHW1WFzD85s0SfWxc2wVjJbxB0xz/zBF4s7ymjVgTu+0ceipeBk+tmpnt98oA==
@@ -477,7 +477,7 @@ find-up@^4.1.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
-firebase@^7.19.1:
+firebase@7.19.1:
   version "7.19.1"
   resolved "https://registry.yarnpkg.com/firebase/-/firebase-7.19.1.tgz#e77c778117c92206c4806c15a0513f33b625ad05"
   integrity sha512-kZUbxN4amrKZc2pkmAMqQtWNkb608rCZLL61NC0X/UXI1euWhIFXdCGQNBlEdOlUwDLBGwNpyTBhQtL4UYHEZw==
@@ -654,7 +654,7 @@ mime@^2.2.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.6.tgz#e5b407c90db442f2beb5b162373d07b69affa4d1"
   integrity sha512-RZKhC3EmpBchfTGBVb8fb+RL2cWyw/32lshnsETttkBAyAUXSGHxbEJWWRXc751DrIxG1q04b8QwMbAwkRPpUA==
 
-moment@^2.27.0:
+moment@2.27.0:
   version "2.27.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
@@ -786,7 +786,7 @@ tslib@^1.11.1:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
 
-typescript@^3.3.3:
+typescript@3.9.7:
   version "3.9.7"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
   integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
