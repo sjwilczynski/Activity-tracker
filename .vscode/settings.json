@@ -1,5 +1,5 @@
 {
-    "azureFunctions.deploySubpath": "apiv2",
+    "azureFunctions.deploySubpath": "api",
     "azureFunctions.postDeployTask": "yarn",
     "azureFunctions.projectLanguage": "TypeScript",
     "azureFunctions.projectRuntime": "~3",

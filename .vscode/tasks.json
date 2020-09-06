@@ -8,7 +8,7 @@
       "isBackground": true,
       "dependsOn": "yarn build",
       "options": {
-        "cwd": "${workspaceFolder}/apiv2"
+        "cwd": "${workspaceFolder}/api"
       }
     },
     {
@@ -18,7 +18,7 @@
       "dependsOn": "yarn",
       "problemMatcher": "$tsc",
       "options": {
-        "cwd": "${workspaceFolder}/apiv2"
+        "cwd": "${workspaceFolder}/api"
       }
     },
     {
@@ -26,7 +26,7 @@
       "label": "yarn",
       "command": "yarn",
       "options": {
-        "cwd": "${workspaceFolder}/apiv2"
+        "cwd": "${workspaceFolder}/api"
       }
     }
   ]
