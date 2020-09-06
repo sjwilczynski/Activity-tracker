@@ -10,10 +10,10 @@ import { ActivityRecord } from "./data/types";
 import { AddActivityForm } from "./components/Forms/AddActivityForm";
 
 function App() {
-  const { isLoading, error, data } = useQuery<ActivityRecord[], "chartData">(
+  const { isLoading, error, data } = useQuery<ActivityRecord[], Error>(
     "chartData",
     async () => {
-      const getResult = await axios.get<ActivityRecord[]>("/api/getActivities");
+      const getResult = await axios.get<ActivityRecord[]>("/api/activities");
       return Object.values(getResult.data);
     }
   );
