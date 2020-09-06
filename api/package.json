@@ -10,11 +10,11 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "firebase": "^7.19.1",
-    "moment": "^2.27.0"
+    "firebase": "7.19.1",
+    "moment": "2.27.0"
   },
   "devDependencies": {
-    "@azure/functions": "^1.0.2-beta2",
-    "typescript": "^3.3.3"
+    "@azure/functions": "1.2.2",
+    "typescript": "3.9.7"
   }
 }
