@@ -7,6 +7,7 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const activity = req.body;
+  // TODO: make a proper type check here
   if (isActivityValid(activity)) {
     try {
       await addActivity(activity);
