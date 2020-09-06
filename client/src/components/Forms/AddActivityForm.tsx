@@ -66,6 +66,6 @@ const addActivity = async (values: FormValues) => {
       active: values.active,
     },
   };
-  const response = await axios.post("/api/addActivity", activityRecord);
+  const response = await axios.post("/api/activities", activityRecord);
   return response;
 };
