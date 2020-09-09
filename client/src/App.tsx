@@ -8,6 +8,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { ActivityRecord } from "./data/types";
 import { AddActivityForm } from "./components/Forms/AddActivityForm";
+import { AuthProvider } from "./components/Auth/AuthProvider";
 
 function App() {
   const { isLoading, error, data } = useQuery<ActivityRecord[], Error>(
@@ -46,4 +47,12 @@ function App() {
   );
 }
 
-export default App;
+function AppWithAuth() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}
+
+export default AppWithAuth;
