@@ -1979,10 +1979,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.4.tgz#a145cc0bb14ef9c4777361b7bbafa5cf8e3acb5a"
   integrity sha512-Wk7nG1JSaMfMpoMJDKUsWYugliB2Vy55pdjLpmLixeyMi7HizW2I/9QoxsPCkXl3dO+ZOVqPumKaDUv5zJu2uQ==
 
-"@types/node@12.12.56":
-  version "12.12.56"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.56.tgz#83591a89723d8ec3eaf722137e1784a7351edb6c"
-  integrity sha512-8OdIupOIZtmObR13fvGyTvpcuzKmMugkATeVcfNwCjGtHxhjEKmOvLqXwR8U9VOtNnZ4EXaSfNiLVsPinaCXkQ==
+"@types/node@12.12.58":
+  version "12.12.58"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.58.tgz#46dae9b2b9ee5992818c8f7cee01ff4ce03ab44c"
+  integrity sha512-Be46CNIHWAagEfINOjmriSxuv7IVcqbGe+sDSg2SYCEz/0CRBy7LRASGfRbD8KZkqoePU73Wsx3UvOSFcq/9hA==
 
 "@types/node@^12.12.47":
   version "12.12.56"
@@ -2107,10 +2107,10 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yup@0.29.6":
-  version "0.29.6"
-  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.29.6.tgz#0920303c0298ac53945e9feb0b4dcad79cc755b2"
-  integrity sha512-YPDo5L5uHyxQ4UkyJST+33stD8Z6IT9fvmKyaPAGxkZ6q19foEi6sQGkmqBvzSyRPdstFEeJiS2rKuTn8rfO5g==
+"@types/yup@0.29.7":
+  version "0.29.7"
+  resolved "https://registry.yarnpkg.com/@types/yup/-/yup-0.29.7.tgz#80c5e427a3b152e583ac2859767ccf59db0d3a16"
+  integrity sha512-x3Zeh8/qLZ6fG4S1EztI1S1mLj6N1pSUV1PAj/9finZba48d3Maxtyz4WYNUY0NE76u1KSukfNLkjcRlb+O00g==
 
 "@typescript-eslint/eslint-plugin@^2.10.0":
   version "2.34.0"
@@ -9581,10 +9581,10 @@ react-popper@^1.3.4:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-query@2.15.4:
-  version "2.15.4"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.15.4.tgz#0447510fc30aebba5a4b99879ec4b7155d9b3f20"
-  integrity sha512-gEF2Ebe1MtiyLKEaVEIlRMl6rwvP/RVwP+Xf68vhXDfD91IeZkkW7plRjoaHa0/NeUPM1AgTHb1Z7NtqaYDXjA==
+react-query@2.16.0:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.16.0.tgz#21771d020fdaeedd60e55c7df27b7339f93db4ce"
+  integrity sha512-P70M+BzpHXG4quyAHQOkL0DDMvXFCWoRJpw+6L+gfufIisNodYfuo0K0m9/Bw3Xmg5IvJLFdDSKdFjA/y/omeQ==
 
 react-scripts@3.4.3:
   version "3.4.3"
