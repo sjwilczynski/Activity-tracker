@@ -9,13 +9,25 @@ import axios from "axios";
 import { ActivityRecord } from "./data/types";
 import { AddActivityForm } from "./components/Forms/AddActivityForm";
 import { AuthProvider } from "./components/Auth/AuthProvider";
+import { useAuthContext } from "./components/Auth/AuthContext";
 
 function App() {
+  const authContext = useAuthContext();
+  const { getIdToken } = authContext;
   const { isLoading, error, data } = useQuery<ActivityRecord[], Error>(
     "chartData",
     async () => {
-      const getResult = await axios.get<ActivityRecord[]>("/api/activities");
-      return Object.values(getResult.data);
+      if (!getIdToken) {
+        throw new Error("No function to fetch the token");
+      } else {
+        const idToken = await getIdToken();
+        const config = { headers: { Authorization: idToken } };
+        const getResult = await axios.get<ActivityRecord[]>(
+          "/api/activities",
+          config
+        );
+        return Object.values(getResult.data);
+      }
     }
   );
 

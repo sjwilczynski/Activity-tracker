@@ -2,9 +2,10 @@ import * as React from "react";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 import { DatePickerField } from "./DatePickerField";
-import { ActivityRecord } from "../../data/types";
+import { ActivityRecord, GetIdToken } from "../../data/types";
 import axios from "axios";
 import { useMutation } from "react-query";
+import { useAuthContext } from "../Auth/AuthContext";
 
 type FormValues = {
   date: Date;
@@ -19,6 +20,7 @@ export function AddActivityForm() {
     active: yup.bool().required(),
   });
 
+  const { getIdToken } = useAuthContext();
   const [mutate] = useMutation(addActivity);
 
   return (
@@ -32,9 +34,9 @@ export function AddActivityForm() {
         }}
         onSubmit={async (values) => {
           try {
-            await mutate(values);
+            await mutate({ ...values, getIdToken });
           } catch (error) {
-            console.log("Unexpected error on adding activity")
+            console.log("Unexpected error on adding activity");
           }
         }}
       >
@@ -58,7 +60,7 @@ export function AddActivityForm() {
   );
 }
 
-const addActivity = async (values: FormValues) => {
+const addActivity = async (values: Variables) => {
   const activityRecord: ActivityRecord = {
     date: values.date.toLocaleDateString("en-CA"),
     activity: {
@@ -66,6 +68,15 @@ const addActivity = async (values: FormValues) => {
       active: values.active,
     },
   };
-  const response = await axios.post("/api/activities", activityRecord);
-  return response;
+  if (!values.getIdToken) {
+    throw new Error("No function to fetch the token");
+  } else {
+    const idToken = await values.getIdToken();
+    const response = await axios.post("/api/activities", activityRecord, {
+      headers: { Authorization: idToken },
+    });
+    return response;
+  }
 };
+
+type Variables = FormValues & { getIdToken: GetIdToken };

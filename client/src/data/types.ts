@@ -16,3 +16,5 @@ export type ActivitySummary = {
 export type ActivitySummaryMap = {
   [key: string]: ActivitySummary;
 };
+
+export type GetIdToken = (() => Promise<string>) | undefined;
