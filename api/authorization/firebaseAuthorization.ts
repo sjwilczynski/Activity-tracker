@@ -6,6 +6,6 @@ export const firebaseGetUserId = async (tokenHeader: string) => {
     const decodedToken = await admin.auth().verifyIdToken(token);
     return decodedToken.uid;
   } catch (err) {
-    throw new Error("Unable to identify the user.");
+    throw new Error("Unable to identify the user." + tokenHeader + "  " + tokenHeader.split(" ")[1]);
   }
 };
