@@ -6,7 +6,7 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  const idToken = req.headers["authorization"];
+  const idToken = req.headers["x-auth-token"];
   let userId: string;
   try {
     userId = await getUserId(idToken);
