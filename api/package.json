@@ -11,7 +11,7 @@
     "download-config": "curl -o firebase/firebaseConfig.json"
   },
   "dependencies": {
-    "firebase-admin": "^9.1.1",
+    "firebase-admin": "9.1.1",
     "moment": "2.27.0"
   },
   "devDependencies": {
