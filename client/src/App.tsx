@@ -21,7 +21,7 @@ function App() {
         throw new Error("No function to fetch the token");
       } else {
         const idToken = await getIdToken();
-        const config = { headers: { Authorization: idToken } };
+        const config = { headers: { Authorization: `Bearer ${idToken}` } };
         const getResult = await axios.get<ActivityRecord[]>(
           "/api/activities",
           config

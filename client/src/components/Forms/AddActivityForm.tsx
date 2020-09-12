@@ -73,7 +73,7 @@ const addActivity = async (values: Variables) => {
   } else {
     const idToken = await values.getIdToken();
     const response = await axios.post("/api/activities", activityRecord, {
-      headers: { Authorization: idToken },
+      headers: { Authorization: `Bearer ${idToken}` },
     });
     return response;
   }
