@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import moment from "moment";
+import { getUserId } from "../authorization";
 import { database } from "../database";
 
 const httpTrigger: AzureFunction = async function (
@@ -7,10 +8,19 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const activity = req.body;
+  const idToken = req.headers["authorization"];
+  let userId: string;
+  try {
+    userId = await getUserId(idToken);
+  } catch (err) {
+    context.res = { status: 401, body: err.message };
+    return;
+  }
+
   // TODO: make a proper type check here
   if (isActivityValid(activity)) {
     try {
-      await database.addActivity("", activity);
+      await database.addActivity(userId, activity);
       context.res = {
         body: "Successfully added",
       };
