@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
 import { User } from "./AuthContext";
-import config from "./config.json";
+import config from "./firebaseConfig.json";
 
 firebase.initializeApp(config);
 

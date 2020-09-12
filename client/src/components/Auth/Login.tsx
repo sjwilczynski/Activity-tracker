@@ -3,11 +3,13 @@ import { StyledFirebaseAuth } from "react-firebaseui";
 import firebase from "firebase/app";
 import "firebase/auth";
 
-const uiConfig = {
+const uiConfig: firebaseui.auth.Config = {
   // Popup signin flow rather than redirect flow.
   signInFlow: "popup",
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+  ],
   callbacks: {
     // Avoid redirects after sign-in.
     signInSuccessWithAuthResult: () => false,

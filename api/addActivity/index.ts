@@ -1,6 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { addActivity } from "../utils/dbUtils";
-import * as moment from "moment";
+import moment from "moment";
+import { database } from "../database";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
   // TODO: make a proper type check here
   if (isActivityValid(activity)) {
     try {
-      await addActivity(activity);
+      await database.addActivity("", activity);
       context.res = {
         body: "Successfully added",
       };

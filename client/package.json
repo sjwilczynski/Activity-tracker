@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/react": "9.5.0",
-    "@testing-library/user-event": "7.2.1",
     "@types/chart.js": "2.9.24",
-    "@types/jest": "24.9.1",
     "@types/node": "12.12.58",
     "@types/react": "16.9.49",
     "@types/react-chartjs-2": "2.5.7",
@@ -35,7 +32,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "download-config": "curl -o src/components/Auth/config.json"
+    "download-config": "curl -o src/components/Auth/firebaseConfig.json"
   },
   "proxy": "http://localhost:7071/",
   "eslintConfig": {
