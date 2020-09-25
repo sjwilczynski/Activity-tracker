@@ -8,6 +8,8 @@ export type ActivityRecord = {
   activity: Activity;
 };
 
+export type ActivityRecordWithId = { id: string } & ActivityRecord;
+
 export type ActivitySummary = {
   count: number;
   active: boolean;

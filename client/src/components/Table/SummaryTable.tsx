@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Table } from "react-bootstrap";
-import { ActivityRecord } from "../../data/types";
+import { ActivityRecordWithId } from "../../data/types";
 
 type Props = {
-  records: ActivityRecord[];
+  records: ActivityRecordWithId[];
 };
 
 export function SummaryTable(props: Props) {
@@ -21,7 +21,7 @@ export function SummaryTable(props: Props) {
       </thead>
       <tbody>
         {records.map((record) => (
-          <tr key={record.date}>
+          <tr key={record.id}>
             <td>{record.date}</td>
             <td>{record.activity.name}</td>
           </tr>

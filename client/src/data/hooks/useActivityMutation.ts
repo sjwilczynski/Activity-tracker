@@ -1,5 +1,5 @@
 import { useMutation, useQueryCache } from "react-query";
-import { ActivityRecord } from "../types";
+import { ActivityRecord, ActivityRecordWithId } from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
@@ -16,14 +16,14 @@ export const useActivityMutation = () => {
       queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
 
       // Snapshot the previous value
-      const previousActivityRecords = queryCache.getQueryData<ActivityRecord[]>(
-        getActivitiesQueryId
-      );
+      const previousActivityRecords = queryCache.getQueryData<
+        ActivityRecordWithId[]
+      >(getActivitiesQueryId);
 
       // Optimistically update to the new value
-      queryCache.setQueryData<ActivityRecord[], Error>(
+      queryCache.setQueryData<ActivityRecordWithId[], Error>(
         getActivitiesQueryId,
-        (old) => [...(old || []), activityRecord]
+        (old) => [...(old || []), { ...activityRecord, id: "temporaryId" }]
       );
 
       // Return the snapshotted value
