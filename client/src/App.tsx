@@ -3,33 +3,14 @@ import { SummaryTable } from "./components/Table/SummaryTable";
 import { BarChart } from "./components/Visualization/Charts/BarChart";
 import { SummaryPieChart } from "./components/Visualization/SummaryCharts/SummaryPieChart";
 import { SummaryBarChart } from "./components/Visualization/SummaryCharts/SummaryBarChart";
-import { transformDataToSummaryMap } from "./data/transform";
-import { useQuery } from "react-query";
-import axios from "axios";
-import { ActivityRecord } from "./data/types";
+import { transformDataToSummaryMap } from "./data/utils/transform";
 import { AddActivityForm } from "./components/Forms/AddActivityForm";
-import { AuthProvider } from "./components/Auth/AuthProvider";
-import { useAuthContext } from "./components/Auth/AuthContext";
+import { AuthProvider } from "./auth/AuthProvider";
+import { useActivities } from "./data/hooks/useActivities";
+import { QueryConfigProvider } from "./data/react-query-config/QueryConfigProvider";
 
 function App() {
-  const authContext = useAuthContext();
-  const { getIdToken } = authContext;
-  const { isLoading, error, data } = useQuery<ActivityRecord[], Error>(
-    "chartData",
-    async () => {
-      if (!getIdToken) {
-        throw new Error("No function to fetch the token");
-      } else {
-        const idToken = await getIdToken();
-        const config = { headers: { "x-auth-token": idToken } };
-        const getResult = await axios.get<ActivityRecord[]>(
-          "/api/activities",
-          config
-        );
-        return Object.values(getResult.data);
-      }
-    }
-  );
+  const { isLoading, error, data } = useActivities();
 
   if (isLoading) {
     return <>{"Loading..."}</>;
@@ -59,12 +40,14 @@ function App() {
   );
 }
 
-function AppWithAuth() {
+function AppWithProviders() {
   return (
     <AuthProvider>
-      <App />
+      <QueryConfigProvider>
+        <App />
+      </QueryConfigProvider>
     </AuthProvider>
   );
 }
 
-export default AppWithAuth;
+export default AppWithProviders;

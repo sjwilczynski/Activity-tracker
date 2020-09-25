@@ -2,16 +2,8 @@ import * as React from "react";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 import { DatePickerField } from "./DatePickerField";
-import { ActivityRecord, GetIdToken } from "../../data/types";
-import axios from "axios";
-import { useMutation } from "react-query";
-import { useAuthContext } from "../Auth/AuthContext";
-
-type FormValues = {
-  date: Date;
-  name: string;
-  active: boolean;
-};
+import { ActivityRecord } from "../../data/types";
+import { useActivityMutation } from "../../data/hooks/useActivityMutation";
 
 export function AddActivityForm() {
   const schema = yup.object({
@@ -20,8 +12,7 @@ export function AddActivityForm() {
     active: yup.bool().required(),
   });
 
-  const { getIdToken } = useAuthContext();
-  const [mutate] = useMutation(addActivity);
+  const [addActivity] = useActivityMutation();
 
   return (
     <div>
@@ -33,8 +24,15 @@ export function AddActivityForm() {
           active: true,
         }}
         onSubmit={async (values) => {
+          const activityRecord: ActivityRecord = {
+            date: values.date.toLocaleDateString("en-CA"),
+            activity: {
+              name: values.name,
+              active: values.active,
+            },
+          };
           try {
-            await mutate({ ...values, getIdToken });
+            await addActivity(activityRecord);
           } catch (error) {
             console.log("Unexpected error on adding activity");
           }
@@ -59,24 +57,3 @@ export function AddActivityForm() {
     </div>
   );
 }
-
-const addActivity = async (values: Variables) => {
-  const activityRecord: ActivityRecord = {
-    date: values.date.toLocaleDateString("en-CA"),
-    activity: {
-      name: values.name,
-      active: values.active,
-    },
-  };
-  if (!values.getIdToken) {
-    throw new Error("No function to fetch the token");
-  } else {
-    const idToken = await values.getIdToken();
-    const response = await axios.post("/api/activities", activityRecord, {
-      headers: { "x-auth-token": idToken },
-    });
-    return response;
-  }
-};
-
-type Variables = FormValues & { getIdToken: GetIdToken };
