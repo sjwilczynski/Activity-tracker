@@ -13,6 +13,7 @@ export function getDataInChartJsFormat(
       {
         backgroundColor: colors,
         data: activityCounts,
+        label: "activities",
       },
     ],
   };

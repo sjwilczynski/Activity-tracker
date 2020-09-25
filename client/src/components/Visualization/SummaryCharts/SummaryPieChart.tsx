@@ -14,16 +14,15 @@ type Props = {
 export function SummaryPieChart(props: Props) {
   const { summaryMap } = props;
   const chartJsData = getDataInChartJsFormat(summaryMap);
+  const summaryDataset = getAdditionalSummaryDataset(summaryMap);
+  const data = {
+    labels: chartJsData.labels,
+    datasets: [chartJsData.datasets[0], summaryDataset],
+  };
   return (
     <div style={{ width: 1000, height: 500 }}>
       <Pie
-        data={{
-          ...chartJsData,
-          datasets: [
-            ...chartJsData.datasets,
-            getAdditionalSummaryDataset(summaryMap),
-          ],
-        }}
+        data={data}
         options={{
           maintainAspectRatio: false,
           responsive: true,
@@ -61,5 +60,6 @@ const getAdditionalSummaryDataset = (summaryMap: ActivitySummaryMap) => {
     backgroundColor: ["#2ecc40", "#ff4136"],
     data: [activeCount, inactiveCount],
     weight: 0.35,
+    label: "activeVsInactive",
   };
 };
