@@ -1,20 +1,20 @@
 import * as React from "react";
 import { Pie } from "react-chartjs-2";
 import { ChartJsData } from "../types";
-import { ActivitySummaryMap } from "../../../data/types";
+import { ActivitySummaries } from "../../../data/types";
 import {
   getTotalActiveAndInactiveCount,
   getDataInChartJsFormat,
 } from "../utils";
 
 type Props = {
-  summaryMap: ActivitySummaryMap;
+  activitySummaries: ActivitySummaries;
 };
 
 export function SummaryPieChart(props: Props) {
-  const { summaryMap } = props;
-  const chartJsData = getDataInChartJsFormat(summaryMap);
-  const summaryDataset = getAdditionalSummaryDataset(summaryMap);
+  const { activitySummaries } = props;
+  const chartJsData = getDataInChartJsFormat(activitySummaries);
+  const summaryDataset = getAdditionalSummaryDataset(activitySummaries);
   const data = {
     labels: chartJsData.labels,
     datasets: [chartJsData.datasets[0], summaryDataset],
@@ -52,9 +52,9 @@ const tooltipCallback = {
   },
 };
 
-const getAdditionalSummaryDataset = (summaryMap: ActivitySummaryMap) => {
+const getAdditionalSummaryDataset = (activitySummaries: ActivitySummaries) => {
   const { activeCount, inactiveCount } = getTotalActiveAndInactiveCount(
-    summaryMap
+    activitySummaries
   );
   return {
     backgroundColor: ["#2ecc40", "#ff4136"],

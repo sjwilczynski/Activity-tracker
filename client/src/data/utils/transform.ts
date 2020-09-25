@@ -1,8 +1,8 @@
-import { ActivityRecordWithId, ActivitySummaryMap } from "./../types";
+import { ActivityRecordWithId, ActivitySummaries } from "./../types";
 
 export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
   const activitySummary = records.reduce(
-    (summary: ActivitySummaryMap, activityRecord: ActivityRecordWithId) => {
+    (summary: ActivitySummaries, activityRecord: ActivityRecordWithId) => {
       const { activity } = activityRecord;
       const { name, active } = activity;
       if (summary[name]) {

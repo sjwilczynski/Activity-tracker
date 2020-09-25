@@ -15,7 +15,7 @@ export type ActivitySummary = {
   active: boolean;
 };
 
-export type ActivitySummaryMap = {
+export type ActivitySummaries = {
   [key: string]: ActivitySummary;
 };
 

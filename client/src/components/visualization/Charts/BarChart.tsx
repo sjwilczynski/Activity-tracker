@@ -1,17 +1,17 @@
 import * as React from "react";
 import { Bar } from "react-chartjs-2";
-import { ActivitySummaryMap } from "../../../data/types";
+import { ActivitySummaries } from "../../../data/types";
 import { getDataInChartJsFormat } from "../utils";
 
 type Props = {
-  summaryMap: ActivitySummaryMap;
+  activitySummaries: ActivitySummaries;
 };
 
 export function BarChart(props: Props) {
   return (
     <div style={{ width: 1000, height: 500 }}>
       <Bar
-        data={getDataInChartJsFormat(props.summaryMap)}
+        data={getDataInChartJsFormat(props.activitySummaries)}
         options={{
           maintainAspectRatio: false,
           responsive: true,

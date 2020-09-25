@@ -1,17 +1,17 @@
 import * as React from "react";
-import { ActivitySummaryMap } from "../../../data/types";
+import { ActivitySummaries } from "../../../data/types";
 import { Bar } from "react-chartjs-2";
 import { sortKeysByActive, getTotalCount } from "../utils";
 import { ChartJsData } from "../types";
 
 type Props = {
-  summaryMap: ActivitySummaryMap;
+  activitySummaries: ActivitySummaries;
 };
 
 export function SummaryBarChart(props: Props) {
   return (
     <Bar
-      data={getDataForSummaryBarChart(props.summaryMap)}
+      data={getDataForSummaryBarChart(props.activitySummaries)}
       options={{
         maintainAspectRatio: false,
         responsive: true,
@@ -50,32 +50,32 @@ export function SummaryBarChart(props: Props) {
 }
 
 const getDataForSummaryBarChart = (
-  summaryMap: ActivitySummaryMap
+  activitySummaries: ActivitySummaries
 ): ChartJsData => {
-  const sortedKeys = sortKeysByActive(summaryMap);
+  const sortedKeys = sortKeysByActive(activitySummaries);
   return {
     labels: ["Summary"],
     datasets: [
-      ...getThresholdLines(summaryMap),
-      ...getStackedBars(summaryMap, sortedKeys),
+      ...getThresholdLines(activitySummaries),
+      ...getStackedBars(activitySummaries, sortedKeys),
     ],
   };
 };
 
-const getStackedBars = (summaryMap: ActivitySummaryMap, keys: string[]) => {
+const getStackedBars = (activitySummaries: ActivitySummaries, keys: string[]) => {
   return keys.map((key) => {
     return {
-      data: [summaryMap[key].count],
+      data: [activitySummaries[key].count],
       label: key,
-      backgroundColor: [summaryMap[key].active ? "#2ecc40" : "#ff4136"],
+      backgroundColor: [activitySummaries[key].active ? "#2ecc40" : "#ff4136"],
       borderWidth: 2,
       yAxisID: "y-axis-1",
     };
   });
 };
 
-const getThresholdLines = (summaryMap: ActivitySummaryMap) => {
-  const total = getTotalCount(Object.values(summaryMap));
+const getThresholdLines = (activitySummaries: ActivitySummaries) => {
+  const total = getTotalCount(Object.values(activitySummaries));
   return [1, 2, 3, 4, 5, 6, 7].map((fraction) => {
     return {
       data: [parseFloat(((fraction * total) / 7).toFixed(2))],
