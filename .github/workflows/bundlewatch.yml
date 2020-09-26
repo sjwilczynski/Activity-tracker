@@ -17,6 +17,4 @@ jobs:
       - uses: actions/checkout@v1
       - uses: Borales/actions-yarn@v2.1.0
       - run: yarn && yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build
-      - uses: jackyef/bundlewatch-gh-action@master
-        with:
-          bundlewatch-github-token: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+      - run: npx bundlewatch
