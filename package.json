@@ -1,0 +1,22 @@
+{
+  "name": "Activity-tracker",
+  "version": "1.0.0",
+  "description": "Repository containing api and client for activity tracker app",
+  "repository": "https://github.com/sjwilczynski/Activity-tracker.git",
+  "author": "sjwilczynski <sjwilczynski@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "bundlewatch": "^0.3.1",
+    "depcheck": "^1.2.0",
+    "source-map-explorer": "^2.5.0"
+  },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "client/build/static/js/*.js",
+        "maxSize": "500kB"
+      }
+    ]
+  }
+}
