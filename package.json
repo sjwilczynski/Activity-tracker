@@ -6,6 +6,9 @@
   "author": "sjwilczynski <sjwilczynski@gmail.com>",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "depcheck": "node scripts/depcheck.js"
+  },
   "devDependencies": {
     "bundlewatch": "^0.3.1",
     "depcheck": "^1.2.0",

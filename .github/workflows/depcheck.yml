@@ -1,0 +1,23 @@
+name: "depcheck"
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [synchronize, opened]
+
+jobs:
+  bundlewatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: depcheck
+        run: yarn && yarn run depcheck
+      - name: Post comment
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: scripts/depcheck-report.md

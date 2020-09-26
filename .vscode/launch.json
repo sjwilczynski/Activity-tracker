@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug depcheck",
+      "program": "${workspaceFolder}/scripts/depcheck.js",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
       "name": "Debug client",
       "request": "launch",
       "type": "pwa-chrome",
