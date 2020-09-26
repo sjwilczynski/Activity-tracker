@@ -12,6 +12,8 @@
   "devDependencies": {
     "bundlewatch": "^0.3.1",
     "depcheck": "^1.2.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
     "prettier": "2.1.2",
     "source-map-explorer": "^2.5.0"
   },
@@ -21,6 +23,16 @@
         "path": "client/build/static/js/*.js",
         "maxSize": "500kB"
       }
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged --allow-empty"
+    }
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write"
     ]
   }
 }
