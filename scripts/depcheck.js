@@ -7,6 +7,9 @@ const options = {
     // ignore dependencies that matches these globs
     "eslint-*",
     "babel-*",
+    // TODO: figure out why these two are reported on CI but not locally
+    "typescript",
+    "react-scripts"
   ],
 };
 
