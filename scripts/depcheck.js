@@ -10,13 +10,12 @@ const options = {
   ],
 };
 
-const markdown = "";
-
 const createMarkdownList = (elements) => {
-  let output = "";
+  let output = " ";
   if (elements.length > 0) {
+    output += "\n";
     for (element of elements) {
-      output += `* ${element} \n`;
+      output += `  * ${element} \n`;
     }
   } else {
     output += "None 👍👌👍 \n";
@@ -26,12 +25,12 @@ const createMarkdownList = (elements) => {
 
 const createMarkdown = (packageName, filename) => {
   return (unused) => {
-    let output = `### ${packageName} \n`;
-    output += "### Unused dependecies: \n";
+    let output = `## ${packageName} \n`;
+    output += "* Unused dependecies:";
     output += createMarkdownList(unused.dependencies);
-    output += "### Unused devDependecies: \n";
+    output += "* Unused devDependecies:";
     output += createMarkdownList(unused.devDependencies);
-    output += "### Missing dependecies: \n";
+    output += "* Missing dependecies:";
     output += createMarkdownList(Object.keys(unused.missing));
     fs.appendFileSync(filename, output, (err) => {
       if (err) {

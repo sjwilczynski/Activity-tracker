@@ -8,7 +8,7 @@ on:
     types: [synchronize, opened]
 
 jobs:
-  bundlewatch:
+  depcheck:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
