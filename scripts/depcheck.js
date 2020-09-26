@@ -25,7 +25,7 @@ const createMarkdownList = (elements) => {
 
 const createMarkdown = (packageName, filename) => {
   return (unused) => {
-    let output = `## ${packageName} \n`;
+    let output = `### ${packageName} \n`;
     output += "* Unused dependecies:";
     output += createMarkdownList(unused.dependencies);
     output += "* Unused devDependecies:";
@@ -42,6 +42,11 @@ const createMarkdown = (packageName, filename) => {
 
 const packages = ["client", "api"];
 const markdownFilePath = path.join(__dirname, `depcheck-report.md`);
+fs.appendFileSync(markdownFilePath, "## Depcheck report \n", (err) => {
+  if (err) {
+    throw err;
+  }
+});
 for (package of packages) {
   const packagePath = path.join(__dirname, `../${package}`);
   const markdownCallback = createMarkdown(package, markdownFilePath);
