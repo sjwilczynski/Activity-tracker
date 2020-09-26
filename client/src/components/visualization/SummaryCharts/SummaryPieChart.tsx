@@ -37,8 +37,8 @@ const tooltipCallback = {
   callbacks: {
     label: (tooltipItem: Chart.ChartTooltipItem, data: ChartJsData) => {
       const datasetIndex = tooltipItem?.datasetIndex || 0;
-      const chartData = data.datasets[datasetIndex].data;
-      const totalCount = Object.values(data.datasets[datasetIndex].data).reduce(
+      const chartData = (data.datasets[datasetIndex].data || []) as number[];
+      const totalCount = chartData.reduce(
         (counts, singleCount) => counts + singleCount,
         0
       );
