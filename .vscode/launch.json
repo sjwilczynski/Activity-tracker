@@ -8,9 +8,7 @@
       "name": "Debug depcheck",
       "program": "${workspaceFolder}/scripts/depcheck.js",
       "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node"
     },
     {

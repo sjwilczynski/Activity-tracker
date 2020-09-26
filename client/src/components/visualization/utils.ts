@@ -40,7 +40,10 @@ export const getTotalActiveAndInactiveCount = (
   return { activeCount, inactiveCount };
 };
 
-const getActivityCounts = (activitySummaries: ActivitySummaries, keys: string[]) => {
+const getActivityCounts = (
+  activitySummaries: ActivitySummaries,
+  keys: string[]
+) => {
   return keys.map((key) => activitySummaries[key].count);
 };
 
@@ -54,5 +57,7 @@ const getBackgroundColors = (
   activitySummaries: ActivitySummaries,
   keys: string[]
 ) => {
-  return keys.map((key) => (activitySummaries[key].active ? "#2ecc40" : "#ff4136"));
+  return keys.map((key) =>
+    activitySummaries[key].active ? "#2ecc40" : "#ff4136"
+  );
 };

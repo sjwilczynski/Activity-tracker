@@ -1,2 +1,2 @@
 export const getActivitiesQueryId = "activities";
-export const activitiesApiPath = "/api/activities"
+export const activitiesApiPath = "/api/activities";
