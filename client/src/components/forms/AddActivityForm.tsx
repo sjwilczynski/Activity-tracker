@@ -5,46 +5,49 @@ import { ActivityRecord } from "../../data/types";
 import { useActivityMutation } from "../../data/hooks/useActivityMutation";
 import { Input } from "./Input";
 
-export function AddActivityForm() {
-  const schema = yup.object({
-    date: yup.string().required(),
-    name: yup.string().required(),
-    active: yup.bool().required(),
-  });
+type FormValues = {
+  date: string;
+  name: string;
+  active: boolean;
+};
 
+export function AddActivityForm() {
   const [addActivity] = useActivityMutation();
+  const onSubmit = React.useCallback(
+    async (values: FormValues) => {
+      const activityRecord: ActivityRecord = {
+        date: values.date,
+        activity: {
+          name: values.name,
+          active: values.active,
+        },
+      };
+      try {
+        await addActivity(activityRecord);
+      } catch (error) {
+        console.log("Unexpected error on adding activity");
+      }
+    },
+    [addActivity]
+  );
 
   return (
     <div>
       <Formik
-        validationSchema={schema}
+        validationSchema={yup.object({
+          date: yup.string().required(),
+          name: yup.string().required(),
+          active: yup.bool().required(),
+        })}
         initialValues={{
-          date: "",
+          date: new Date(Date.now()).toLocaleDateString("en-CA"),
           name: "",
           active: true,
         }}
-        onSubmit={async (values) => {
-          const activityRecord: ActivityRecord = {
-            date: values.date,
-            activity: {
-              name: values.name,
-              active: values.active,
-            },
-          };
-          try {
-            await addActivity(activityRecord);
-          } catch (error) {
-            console.log("Unexpected error on adding activity");
-          }
-        }}
+        onSubmit={onSubmit}
       >
         <Form>
-          <Input
-            name="date"
-            label="Date"
-            placeholder="DD/MM/YYYY"
-            type="date"
-          />
+          <Input name="date" label="Date" type="date" />
           <Input
             name="name"
             label="Activity name"
