@@ -13,5 +13,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v1
+      - name: install
+        run: yarn && yarn --cwd client && yarn --cwd api
       - name: lint
-        run: yarn && yarn run lint
+        run: yarn run lint
