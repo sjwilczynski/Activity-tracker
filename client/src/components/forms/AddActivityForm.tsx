@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Formik, Field, Form } from "formik";
+import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { DatePickerField } from "./DatePickerField";
 import { ActivityRecord } from "../../data/types";
 import { useActivityMutation } from "../../data/hooks/useActivityMutation";
+import { Input } from "./Input";
 
 export function AddActivityForm() {
   const schema = yup.object({
-    date: yup.date().required(),
+    date: yup.string().required(),
     name: yup.string().required(),
     active: yup.bool().required(),
   });
@@ -19,13 +19,13 @@ export function AddActivityForm() {
       <Formik
         validationSchema={schema}
         initialValues={{
-          date: new Date(Date.now()),
+          date: "",
           name: "",
           active: true,
         }}
         onSubmit={async (values) => {
           const activityRecord: ActivityRecord = {
-            date: values.date.toLocaleDateString("en-CA"),
+            date: values.date,
             activity: {
               name: values.name,
               active: values.active,
@@ -38,21 +38,22 @@ export function AddActivityForm() {
           }
         }}
       >
-        {({ touched, errors }) => (
-          <Form>
-            <DatePickerField name="date" />
-            {touched.date && errors.date ? <div>{errors.date}</div> : <></>}
-            <Field name="name" />
-            {touched.name && errors.name ? <div>{errors.name}</div> : <></>}
-            <Field name="active" />
-            {touched.active && errors.active ? (
-              <div>{errors.active}</div>
-            ) : (
-              <></>
-            )}
-            <button type="submit">Add activity</button>
-          </Form>
-        )}
+        <Form>
+          <Input
+            name="date"
+            label="Date"
+            placeholder="DD/MM/YYYY"
+            type="date"
+          />
+          <Input
+            name="name"
+            label="Activity name"
+            placeholder="name of the activity"
+            type="text"
+          />
+          <Input name="active" label="Active" type="checkbox" />
+          <button type="submit">Add activity</button>
+        </Form>
       </Formik>
     </div>
   );
