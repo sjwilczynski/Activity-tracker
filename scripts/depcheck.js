@@ -17,7 +17,7 @@ const createMarkdownList = (elements) => {
   let output = " ";
   if (elements.length > 0) {
     output += "\n";
-    for (element of elements) {
+    for (const element of elements) {
       output += `  * ${element} \n`;
     }
   } else {
@@ -43,15 +43,15 @@ const createMarkdown = (packageName, filename) => {
   };
 };
 
-const packages = ["client", "api"];
+const packageNames = ["client", "api"];
 const markdownFilePath = path.join(__dirname, `depcheck-report.md`);
 fs.appendFileSync(markdownFilePath, "## Depcheck report \n", (err) => {
   if (err) {
     throw err;
   }
 });
-for (package of packages) {
-  const packagePath = path.join(__dirname, `../${package}`);
-  const markdownCallback = createMarkdown(package, markdownFilePath);
+for (const packageName of packageNames) {
+  const packagePath = path.join(__dirname, `../${packageName}`);
+  const markdownCallback = createMarkdown(packageName, markdownFilePath);
   depcheck(packagePath, options, markdownCallback);
 }
