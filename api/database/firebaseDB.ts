@@ -2,7 +2,8 @@ import { Database } from "./types";
 import { database } from "../firebase/firebase";
 import { ActivityMap, ActivityRecord } from "../utils/types";
 
-const activityDocument = (userId: string) => `/users/${userId}/activity`;
+const activityDocument = (userId: string): string =>
+  `/users/${userId}/activity`;
 
 export const firebaseDB: Database = {
   getActivities: async (userId: string) => {
@@ -13,7 +14,7 @@ export const firebaseDB: Database = {
   },
   addActivity: async (userId: string, activity: ActivityRecord) => {
     const activitiesRef = database.ref(activityDocument(userId));
-    const reference = await activitiesRef.push(activity);
+    await activitiesRef.push(activity);
   },
   editActivity: async (
     userId: string,

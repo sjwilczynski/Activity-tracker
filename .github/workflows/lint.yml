@@ -1,0 +1,19 @@
+name: "Lint"
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [synchronize, opened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: install
+        run: yarn && yarn --cwd client && yarn --cwd api
+      - name: lint
+        run: yarn run lint

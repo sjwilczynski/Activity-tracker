@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "config:base",
-    ":automergeMinor"
-  ],
+  "extends": ["config:base", ":automergeMinor"],
   "lockFileMaintenance": { "enabled": true },
   "timezone": "Europe/Oslo"
 }

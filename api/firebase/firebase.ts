@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import config from "./firebaseConfig.json";
 import { AdminConfig } from "./types";
 
-const getServiceAccount = (config: AdminConfig) => {
+const getServiceAccount = (config: AdminConfig): admin.ServiceAccount => {
   return {
     clientEmail: config.client_email,
     privateKey: config.private_key,

@@ -8,6 +8,7 @@ import { AddActivityForm } from "./components/forms/AddActivityForm";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useActivities } from "./data/hooks/useActivities";
 import { QueryConfigProvider } from "./data/react-query-config/QueryConfigProvider";
+import { ReactQueryDevtools } from "react-query-devtools";
 
 function App() {
   const { isLoading, error, data } = useActivities();
@@ -45,6 +46,7 @@ function AppWithProviders() {
     <AuthProvider>
       <QueryConfigProvider>
         <App />
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryConfigProvider>
     </AuthProvider>
   );

@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import moment from "moment";
 import { getUserId } from "../authorization";
 import { database } from "../database";
+import { ActivityRecord } from "../utils/types";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -17,7 +18,6 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
 
-  // TODO: make a proper type check here
   if (isActivityValid(activity)) {
     try {
       await database.addActivity(userId, activity);
@@ -38,25 +38,30 @@ const httpTrigger: AzureFunction = async function (
   }
 };
 
-function isActivityValid(activity) {
-  if (!activity || !activity.date || !activity.activity) {
+const isActivityValid = (activity): activity is ActivityRecord => {
+  const castedActivity = activity as ActivityRecord;
+  if (castedActivity == null || castedActivity === undefined) {
     return false;
   }
 
-  if (!moment(activity.date, "YYYY-MM-DD", true).isValid()) {
+  if (!moment(castedActivity.date, "YYYY-MM-DD", true).isValid()) {
     return false;
   }
 
-  const { name, active } = activity.activity;
-  if (!isValidName(name) || typeof active !== "boolean") {
+  const { name, active } = castedActivity.activity;
+  if (
+    typeof name !== "string" ||
+    !isValidName(name) ||
+    typeof active !== "boolean"
+  ) {
     return false;
   }
 
   return true;
-}
+};
 
-function isValidName(name: string) {
+const isValidName = (name: string): boolean => {
   return Boolean(name);
-}
+};
 
 export default httpTrigger;

@@ -62,7 +62,10 @@ const getDataForSummaryBarChart = (
   };
 };
 
-const getStackedBars = (activitySummaries: ActivitySummaries, keys: string[]) => {
+const getStackedBars = (
+  activitySummaries: ActivitySummaries,
+  keys: string[]
+) => {
   return keys.map((key) => {
     return {
       data: [activitySummaries[key].count],

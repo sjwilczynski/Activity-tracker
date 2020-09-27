@@ -10,15 +10,13 @@ on:
 jobs:
   bundlewatch:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
     steps:
       - name: checkout
         uses: actions/checkout@v1
-      - name: yarn
-        uses: Borales/actions-yarn@v2.1.0
-      - name: build & run bundlewatch
-        run: yarn && yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build && npx bundlewatch
+      - name: build client
+        run: yarn && yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build
+        working-directory: client
+      - name: bundlewatch
+        run: yarn && yarn run bundlewatch
         env:
           BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
