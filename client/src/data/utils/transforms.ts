@@ -1,4 +1,4 @@
-import { ActivityRecordWithId, ActivitySummaries } from "./../types";
+import { ActivityRecordWithId, ActivitySummaries } from "../types";
 
 export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
   const activitySummary = records.reduce(
@@ -20,3 +20,5 @@ export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
 
   return activitySummary;
 }
+
+export function filterByDateRange(records: ActivityRecordWithId) {}

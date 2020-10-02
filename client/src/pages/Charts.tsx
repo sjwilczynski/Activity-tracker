@@ -5,7 +5,7 @@ import { BarChart } from "../components/visualization/Charts/BarChart";
 import { SummaryBarChart } from "../components/visualization/SummaryCharts/SummaryBarChart";
 import { SummaryPieChart } from "../components/visualization/SummaryCharts/SummaryPieChart";
 import { useActivities } from "../data/hooks/useActivities";
-import { transformDataToSummaryMap } from "../data/utils/transform";
+import { transformDataToSummaryMap } from "../data/utils/transforms";
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();

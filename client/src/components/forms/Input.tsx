@@ -18,3 +18,20 @@ export const Input = ({ label, ...props }: Props) => {
     </>
   );
 };
+
+export const DateInput = ({ label, ...props }: Omit<Props, "type">) => {
+  const [field, meta] = useField<Date>({ ...props, type: "date" });
+  const { value, ...fieldProps } = field;
+  return (
+    <>
+      <label htmlFor={props.name}>{label}</label>
+      <input
+        {...fieldProps}
+        {...props}
+        value={value.toLocaleDateString("en-CA")}
+        type="date"
+      />
+      {meta.touched && meta.error ? <div>{meta.error}</div> : null}
+    </>
+  );
+};

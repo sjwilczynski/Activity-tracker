@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { ActivityRecordWithId } from "../types";
+import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
@@ -13,11 +13,16 @@ export const useActivities = () => {
     getActivitiesQueryId,
     async () => {
       const config = await getConfig();
-      const activityRecordsResponse = await axios.get<ActivityRecordWithId[]>(
-        activitiesApiPath,
-        config
-      );
-      return activityRecordsResponse.data;
+      const activityRecordsResponse = await axios.get<
+        ActivityRecordWithIdServer[]
+      >(activitiesApiPath, config);
+      return activityRecordsResponse.data.map((activityRecord) => {
+        return {
+          id: activityRecord.id,
+          activity: activityRecord.activity,
+          date: new Date(activityRecord.date),
+        };
+      });
     }
   );
 };
