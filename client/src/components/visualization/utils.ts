@@ -4,7 +4,7 @@ import { ActivitySummaries, ActivitySummary } from "../../data/types";
 export function getDataInChartJsFormat(
   activitySummaries: ActivitySummaries
 ): ChartJsData {
-  const sortedKeys = sortKeysByActive(activitySummaries);
+  const sortedKeys = sortKeys(activitySummaries);
   const activityCounts = getActivityCounts(activitySummaries, sortedKeys);
   const colors = getBackgroundColors(activitySummaries, sortedKeys);
   return {
@@ -19,9 +19,11 @@ export function getDataInChartJsFormat(
   };
 }
 
-export const sortKeysByActive = (activitySummaries: ActivitySummaries) =>
+export const sortKeys = (activitySummaries: ActivitySummaries) =>
   Object.keys(activitySummaries).sort((key1, key2) => {
-    return +activitySummaries[key2].active - +activitySummaries[key1].active;
+    const orderByActive =
+      +activitySummaries[key2].active - +activitySummaries[key1].active;
+    return orderByActive || key2.localeCompare(key1);
   });
 
 export const getTotalActiveAndInactiveCount = (
