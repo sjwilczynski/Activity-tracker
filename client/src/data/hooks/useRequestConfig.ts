@@ -1,6 +1,12 @@
 import { useAuthContext } from "../../auth/AuthContext";
 
-export const useRequestConfig = () => {
+export type ConfigPromise = Promise<{
+  headers: {
+    "x-auth-token": string;
+  };
+}>;
+
+export const useRequestConfig = (): (() => ConfigPromise) => {
   const { getIdToken } = useAuthContext();
   if (!getIdToken) {
     return () => {

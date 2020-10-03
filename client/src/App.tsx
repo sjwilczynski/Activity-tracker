@@ -5,8 +5,10 @@ import { ReactQueryDevtools } from "react-query-devtools";
 import { Profile } from "./pages/Profile";
 import { Charts } from "./pages/Charts";
 import { ActivityList } from "./pages/ActivityList";
+import { useActivitiesPrefetch } from "./data/hooks/useActivities";
 
 function App() {
+  useActivitiesPrefetch();
   return (
     <>
       <Profile />
