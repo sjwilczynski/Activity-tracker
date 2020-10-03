@@ -8,10 +8,11 @@ type Props = {
 };
 
 export function BarChart(props: Props) {
+  const data = getDataInChartJsFormat(props.activitySummaries);
   return (
     <div style={{ width: 1000, height: 500 }}>
       <Bar
-        data={getDataInChartJsFormat(props.activitySummaries)}
+        data={data}
         options={{
           maintainAspectRatio: false,
           responsive: true,
@@ -27,6 +28,9 @@ export function BarChart(props: Props) {
               {
                 gridLines: {
                   display: false,
+                },
+                ticks: {
+                  beginAtZero: true,
                 },
               },
             ],

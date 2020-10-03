@@ -1,5 +1,5 @@
 import { useMutation, useQueryCache } from "react-query";
-import { ActivityRecord, ActivityRecordWithId } from "../types";
+import { ActivityRecordServer, ActivityRecordWithId } from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
@@ -10,37 +10,50 @@ import { useRequestConfig } from "./useRequestConfig";
 export const useActivityMutation = () => {
   const queryCache = useQueryCache();
   const addActivity = useAddActivityFunction();
-  return useMutation<string, Error, ActivityRecord, () => void>(addActivity, {
-    onMutate: (activityRecord) => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
+  return useMutation<string, Error, ActivityRecordServer, () => void>(
+    addActivity,
+    {
+      onMutate: (activityRecord) => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
 
-      // Snapshot the previous value
-      const previousActivityRecords = queryCache.getQueryData<
-        ActivityRecordWithId[]
-      >(getActivitiesQueryId);
+        // Snapshot the previous value
+        const previousActivityRecords = queryCache.getQueryData<
+          ActivityRecordWithId[]
+        >(getActivitiesQueryId);
 
-      // Optimistically update to the new value
-      queryCache.setQueryData<ActivityRecordWithId[], Error>(
-        getActivitiesQueryId,
-        (old) => [...(old || []), { ...activityRecord, id: "temporaryId" }]
-      );
+        // Optimistically update to the new value
+        queryCache.setQueryData<ActivityRecordWithId[], Error>(
+          getActivitiesQueryId,
+          (old) => [
+            ...(old || []),
+            {
+              date: new Date(activityRecord.date),
+              activity: activityRecord.activity,
+              id: "temporaryId",
+            },
+          ]
+        );
 
-      // Return the snapshotted value
-      return () =>
-        queryCache.setQueryData(getActivitiesQueryId, previousActivityRecords);
-    },
-    // If the mutation fails, use the value returned from onMutate to roll back
-    onError: (err, newTodo, rollback) => rollback(),
-    // Always refetch after error or success:
-    onSettled: () =>
-      queryCache.invalidateQueries(getActivitiesQueryId, { exact: true }),
-  });
+        // Return the snapshotted value
+        return () =>
+          queryCache.setQueryData(
+            getActivitiesQueryId,
+            previousActivityRecords
+          );
+      },
+      // If the mutation fails, use the value returned from onMutate to roll back
+      onError: (err, newTodo, rollback) => rollback(),
+      // Always refetch after error or success:
+      onSettled: () =>
+        queryCache.invalidateQueries(getActivitiesQueryId, { exact: true }),
+    }
+  );
 };
 
 const useAddActivityFunction = () => {
   const getConfig = useRequestConfig();
-  return async (activityRecord: ActivityRecord) => {
+  return async (activityRecord: ActivityRecordServer) => {
     const config = await getConfig();
     const response = await axios.post<string>(
       activitiesApiPath,

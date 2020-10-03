@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ActivitySummaries } from "../../../data/types";
 import { Bar } from "react-chartjs-2";
-import { sortKeysByActive, getTotalCount } from "../utils";
+import { sortKeys, getTotalCount } from "../utils";
 import { ChartJsData } from "../types";
 
 type Props = {
@@ -9,9 +9,10 @@ type Props = {
 };
 
 export function SummaryBarChart(props: Props) {
+  const data = getDataForSummaryBarChart(props.activitySummaries);
   return (
     <Bar
-      data={getDataForSummaryBarChart(props.activitySummaries)}
+      data={data}
       options={{
         maintainAspectRatio: false,
         responsive: true,
@@ -52,7 +53,7 @@ export function SummaryBarChart(props: Props) {
 const getDataForSummaryBarChart = (
   activitySummaries: ActivitySummaries
 ): ChartJsData => {
-  const sortedKeys = sortKeysByActive(activitySummaries);
+  const sortedKeys = sortKeys(activitySummaries);
   return {
     labels: ["Summary"],
     datasets: [
