@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Table } from "react-bootstrap";
-import { ActivityRecordWithId } from "../../data/types";
+import { ActivityRecordWithId } from "../../data";
 
 type Props = {
   records: ActivityRecordWithId[];

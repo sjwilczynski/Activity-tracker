@@ -1,4 +1,4 @@
-import { useAuthContext } from "../../auth/AuthContext";
+import { useAuthContext } from "../../auth";
 
 export type ConfigPromise = Promise<{
   headers: {

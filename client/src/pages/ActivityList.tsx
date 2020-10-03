@@ -1,14 +1,16 @@
 import * as React from "react";
-import { DateFilterForm } from "../components/forms/DateFilterForm";
-import { ErrorView } from "../components/states/Error";
-import { Loading } from "../components/states/Loading";
-import { SummaryTable } from "../components/table/SummaryTable";
-import { useActivities } from "../data/hooks/useActivities";
-import { useDateRangeState } from "../data/hooks/useDateRangeState";
 import {
+  DateFilterForm,
+  ErrorView,
+  Loading,
+  SummaryTable,
+} from "../components";
+import {
+  useActivities,
+  useDateRangeState,
   filterByDateRange,
   sortDescendingByDate,
-} from "../data/utils/transforms";
+} from "../data";
 
 export const ActivityList = () => {
   const { isLoading, error, data } = useActivities();

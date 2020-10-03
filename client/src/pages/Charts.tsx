@@ -1,16 +1,17 @@
 import * as React from "react";
-import { DateFilterForm } from "../components/forms/DateFilterForm";
-import { ErrorView } from "../components/states/Error";
-import { Loading } from "../components/states/Loading";
-import { BarChart } from "../components/visualization/Charts/BarChart";
-import { SummaryBarChart } from "../components/visualization/SummaryCharts/SummaryBarChart";
-import { SummaryPieChart } from "../components/visualization/SummaryCharts/SummaryPieChart";
-import { useActivities } from "../data/hooks/useActivities";
-import { useDateRangeState } from "../data/hooks/useDateRangeState";
 import {
+  BarChart,
+  DateFilterForm,
+  ErrorView,
+  Loading,
+  SummaryPieChart,
+} from "../components";
+import {
+  useActivities,
+  useDateRangeState,
   filterByDateRange,
   transformDataToSummaryMap,
-} from "../data/utils/transforms";
+} from "../data";
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
@@ -40,7 +41,7 @@ export const Charts = () => {
         <SummaryPieChart activitySummaries={activitySummaries} />
       </div>
       <div style={{ width: 900, height: 500 }}>
-        <SummaryBarChart activitySummaries={activitySummaries} />
+        <SummaryPieChart activitySummaries={activitySummaries} />
       </div>
     </>
   );

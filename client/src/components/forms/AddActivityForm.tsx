@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { ActivityRecordServer } from "../../data/types";
-import { useActivityMutation } from "../../data/hooks/useActivityMutation";
+import { ActivityRecordServer, useActivityMutation } from "../../data";
 import { DateInput, Input } from "./Input";
 
 type FormValues = {

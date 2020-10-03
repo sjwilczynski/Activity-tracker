@@ -1,15 +1,10 @@
 import * as React from "react";
-import { AuthProvider } from "./auth/AuthProvider";
-import { QueryConfigProvider } from "./data/react-query-config/QueryConfigProvider";
+import { AuthProvider } from "./auth";
 import { ReactQueryDevtools } from "react-query-devtools";
-import { Profile } from "./pages/Profile";
-import { Charts } from "./pages/Charts";
-import { ActivityList } from "./pages/ActivityList";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import { Navigation } from "./components/navigation/Navigation";
-import { PageNotFound } from "./components/navigation/PageNotFound";
-import { Welcome } from "./pages/Welcome";
-import { useActivitiesPrefetch } from "./data/hooks/useActivities";
+import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
+import { Navigation, PageNotFound } from "./components";
+import { Welcome, Profile, Charts, ActivityList } from "./pages";
 
 function App() {
   useActivitiesPrefetch();

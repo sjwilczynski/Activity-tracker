@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Pie } from "react-chartjs-2";
 import { ChartJsData } from "../types";
-import { ActivitySummaries } from "../../../data/types";
+import { ActivitySummaries } from "../../../data";
 import {
   getTotalActiveAndInactiveCount,
   getDataInChartJsFormat,

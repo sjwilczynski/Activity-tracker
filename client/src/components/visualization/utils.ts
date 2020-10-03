@@ -1,5 +1,5 @@
 import { ChartJsData } from "./types";
-import { ActivitySummaries, ActivitySummary } from "../../data/types";
+import { ActivitySummaries, ActivitySummary } from "../../data";
 
 export function getDataInChartJsFormat(
   activitySummaries: ActivitySummaries

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Bar } from "react-chartjs-2";
-import { ActivitySummaries } from "../../../data/types";
+import { ActivitySummaries } from "../../../data";
 import { getDataInChartJsFormat } from "../utils";
 
 type Props = {
