@@ -21,4 +21,21 @@ export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
   return activitySummary;
 }
 
-export function filterByDateRange(records: ActivityRecordWithId) {}
+export function filterByDateRange(
+  records: ActivityRecordWithId[],
+  startDate: Date | undefined,
+  endDate: Date | undefined
+) {
+  return startDate && endDate
+    ? records.filter(
+        (record: ActivityRecordWithId) =>
+          startDate <= record.date && record.date <= endDate
+      )
+    : records;
+}
+
+export function sortDescendingByDate(records: ActivityRecordWithId[]) {
+  return records.sort((record1, record2) => {
+    return record2.date.valueOf() - record1.date.valueOf();
+  });
+}
