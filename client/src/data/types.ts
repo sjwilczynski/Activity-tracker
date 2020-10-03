@@ -8,13 +8,14 @@ export type ActivityRecord = {
   activity: Activity;
 };
 
+export type ActivityRecordServer = {
+  date: string;
+  activity: Activity;
+};
+
 export type ActivityRecordWithId = { id: string } & ActivityRecord;
 
-export type ActivityRecordWithIdServer = {
-  id: string;
-  activity: Activity;
-  date: string;
-};
+export type ActivityRecordWithIdServer = { id: string } & ActivityRecordServer;
 
 export type ActivitySummary = {
   count: number;

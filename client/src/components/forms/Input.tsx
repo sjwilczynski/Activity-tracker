@@ -20,7 +20,7 @@ export const Input = ({ label, ...props }: Props) => {
 };
 
 export const DateInput = ({ label, ...props }: Omit<Props, "type">) => {
-  const [field, meta] = useField<Date>({ ...props, type: "date" });
+  const [field, meta] = useField({ ...props, type: "date" });
   const { value, ...fieldProps } = field;
   return (
     <>
@@ -28,7 +28,11 @@ export const DateInput = ({ label, ...props }: Omit<Props, "type">) => {
       <input
         {...fieldProps}
         {...props}
-        value={value.toLocaleDateString("en-CA")}
+        value={
+          value instanceof Date
+            ? value.toLocaleDateString("en-CA")
+            : value || ""
+        }
         type="date"
       />
       {meta.touched && meta.error ? <div>{meta.error}</div> : null}

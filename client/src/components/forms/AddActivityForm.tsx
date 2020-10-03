@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { ActivityRecord } from "../../data/types";
+import { ActivityRecordServer } from "../../data/types";
 import { useActivityMutation } from "../../data/hooks/useActivityMutation";
 import { DateInput, Input } from "./Input";
 
 type FormValues = {
-  date: Date;
+  date: string;
   name: string;
   active: boolean;
 };
@@ -15,8 +15,8 @@ export function AddActivityForm() {
   const [addActivity] = useActivityMutation();
   const onSubmit = React.useCallback(
     async (values: FormValues) => {
-      const activityRecord: ActivityRecord = {
-        date: values.date,
+      const activityRecord: ActivityRecordServer = {
+        date: new Date(values.date).toLocaleDateString("en-CA"),
         activity: {
           name: values.name,
           active: values.active,
@@ -34,12 +34,12 @@ export function AddActivityForm() {
   return (
     <Formik
       validationSchema={yup.object({
-        date: yup.date().required(),
+        date: yup.string().required(),
         name: yup.string().required(),
         active: yup.bool().required(),
       })}
       initialValues={{
-        date: new Date(Date.now()),
+        date: new Date(Date.now()).toLocaleDateString("en-CA"),
         name: "",
         active: true,
       }}
