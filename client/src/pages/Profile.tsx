@@ -6,7 +6,7 @@ export const Profile = () => {
   const { user } = useAuth();
   return (
     <>
-      <div>Welcome {user?.displayName}</div>
+      <div>User name: {user?.displayName}</div>
       <AddActivityForm />
     </>
   );

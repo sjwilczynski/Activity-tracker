@@ -5,16 +5,25 @@ import { ReactQueryDevtools } from "react-query-devtools";
 import { Profile } from "./pages/Profile";
 import { Charts } from "./pages/Charts";
 import { ActivityList } from "./pages/ActivityList";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Navigation } from "./components/navigation/Navigation";
+import { PageNotFound } from "./components/navigation/PageNotFound";
+import { Welcome } from "./pages/Welcome";
 import { useActivitiesPrefetch } from "./data/hooks/useActivities";
 
 function App() {
   useActivitiesPrefetch();
   return (
-    <>
-      <Profile />
-      <Charts />
-      <ActivityList />
-    </>
+    <BrowserRouter>
+      <Navigation />
+      <Switch>
+        <Route exact path="/" component={Welcome} />
+        <Route exact path="/profile" component={Profile} />
+        <Route exact path="/charts" component={Charts} />
+        <Route exact path="/activity-list" component={ActivityList} />
+        <Route path="/" component={PageNotFound} />
+      </Switch>
+    </BrowserRouter>
   );
 }
 
