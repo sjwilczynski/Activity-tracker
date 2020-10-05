@@ -16,14 +16,13 @@ export function AddActivityForm() {
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: new Date(values.date).toLocaleDateString("en-CA"),
-        activity: {
-          name: values.name,
-          active: values.active,
-        },
+        name: values.name,
+        active: values.active,
       };
       try {
         await addActivity(activityRecord);
       } catch (error) {
+        // TODO: better error handling
         console.log("Unexpected error on adding activity");
       }
     },

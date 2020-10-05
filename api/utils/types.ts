@@ -5,8 +5,7 @@ export type Activity = {
 
 export type ActivityRecord = {
   date: string;
-  activity: Activity;
-};
+} & Activity;
 
 export type ActivityMap = {
   [key: string]: ActivityRecord;

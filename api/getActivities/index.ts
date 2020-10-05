@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
 
-  const activityMap = await database.getActivities(userId);
+  const activityMap = (await database.getActivities(userId)) ?? {};
   const activities = mapToList(activityMap);
 
   context.res = {

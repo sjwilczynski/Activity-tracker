@@ -5,13 +5,11 @@ export type Activity = {
 
 export type ActivityRecord = {
   date: Date;
-  activity: Activity;
-};
+} & Activity;
 
 export type ActivityRecordServer = {
   date: string;
-  activity: Activity;
-};
+} & Activity;
 
 export type ActivityRecordWithId = { id: string } & ActivityRecord;
 

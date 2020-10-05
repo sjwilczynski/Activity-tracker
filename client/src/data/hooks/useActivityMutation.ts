@@ -28,8 +28,8 @@ export const useActivityMutation = () => {
           (old) => [
             ...(old || []),
             {
+              ...activityRecord,
               date: new Date(activityRecord.date),
-              activity: activityRecord.activity,
               id: "temporaryId",
             },
           ]

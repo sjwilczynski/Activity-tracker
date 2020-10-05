@@ -23,7 +23,7 @@ export function SummaryTable(props: Props) {
         {records.map((record) => (
           <tr key={record.id}>
             <td>{record.date.toLocaleDateString("en-CA")}</td>
-            <td>{record.activity.name}</td>
+            <td>{record.name}</td>
           </tr>
         ))}
       </tbody>

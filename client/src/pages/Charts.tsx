@@ -5,6 +5,7 @@ import {
   ErrorView,
   Loading,
   SummaryPieChart,
+  SummaryBarChart,
 } from "../components";
 import {
   useActivities,
@@ -41,7 +42,7 @@ export const Charts = () => {
         <SummaryPieChart activitySummaries={activitySummaries} />
       </div>
       <div style={{ width: 900, height: 500 }}>
-        <SummaryPieChart activitySummaries={activitySummaries} />
+        <SummaryBarChart activitySummaries={activitySummaries} />
       </div>
     </>
   );

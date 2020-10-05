@@ -30,8 +30,7 @@ const fetchActivities = async (
   );
   return activityRecordsResponse.data.map((activityRecord) => {
     return {
-      id: activityRecord.id,
-      activity: activityRecord.activity,
+      ...activityRecord,
       date: new Date(activityRecord.date),
     };
   });

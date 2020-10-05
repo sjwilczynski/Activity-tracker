@@ -48,7 +48,7 @@ const isActivityValid = (activity): activity is ActivityRecord => {
     return false;
   }
 
-  const { name, active } = castedActivity.activity;
+  const { name, active } = castedActivity;
   if (
     typeof name !== "string" ||
     !isValidName(name) ||

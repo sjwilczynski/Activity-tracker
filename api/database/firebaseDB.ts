@@ -22,4 +22,8 @@ export const firebaseDB: Database = {
     newActivity: ActivityRecord
   ) => {},
   deleteActivity: async (userId: string, activityId: string) => {},
+  deleteAllActivities: async (userId: string) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    await activitiesRef.remove();
+  },
 };
