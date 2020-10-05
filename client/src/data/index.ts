@@ -1,6 +1,7 @@
 export { useActivities, useActivitiesPrefetch } from "./hooks/useActivities";
 export { useActivityMutation } from "./hooks/useActivityMutation";
 export { useDateRangeState } from "./hooks/useDateRangeState";
+export { useDeleteAllActivities } from "./hooks/useDeleteAllActivities";
 
 export { QueryConfigProvider } from "./react-query-config/QueryConfigProvider";
 
