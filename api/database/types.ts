@@ -2,7 +2,10 @@ import { ActivityMap, ActivityRecord } from "../utils/types";
 
 export type Database = {
   getActivities: (userId: string) => Promise<ActivityMap | null>;
-  addActivity: (userId: string, activity: ActivityRecord) => Promise<void>;
+  addActivities: (
+    userId: string,
+    activities: ActivityRecord[]
+  ) => Promise<void>;
   editActivity: (
     userId: string,
     activityId: string,

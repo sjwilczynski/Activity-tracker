@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { ActivityRecordServer, useActivityMutation } from "../../data";
+import { ActivityRecordServer, useActivitiesMutation } from "../../data";
 import { DateInput, Input } from "./Input";
 
 type FormValues = {
@@ -11,7 +11,7 @@ type FormValues = {
 };
 
 export function AddActivityForm() {
-  const [addActivity] = useActivityMutation();
+  const [addActivity] = useActivitiesMutation();
   const onSubmit = React.useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -20,7 +20,7 @@ export function AddActivityForm() {
         active: values.active,
       };
       try {
-        await addActivity(activityRecord);
+        await addActivity([activityRecord]);
       } catch (error) {
         // TODO: better error handling
         console.log("Unexpected error on adding activity");
