@@ -1,5 +1,9 @@
 import { useQuery, useQueryCache } from "react-query";
-import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../types";
+import {
+  ActivityRecordServer,
+  ActivityRecordWithId,
+  ActivityRecordWithIdServer,
+} from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
@@ -18,6 +22,20 @@ export const useActivitiesPrefetch = () => {
   const cache = useQueryCache();
   const getConfig = useRequestConfig();
   cache.prefetchQuery(getActivitiesQueryId, () => fetchActivities(getConfig()));
+};
+
+export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
+  const queryCache = useQueryCache();
+  const data = queryCache.getQueryData<ActivityRecordWithId[]>(
+    getActivitiesQueryId
+  );
+  return data?.map((activityRecord) => {
+    return {
+      date: activityRecord.date.toLocaleDateString("en-CA"),
+      name: activityRecord.name,
+      active: activityRecord.active,
+    };
+  });
 };
 
 const fetchActivities = async (

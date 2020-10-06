@@ -1,10 +1,14 @@
 import * as React from "react";
+import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { ErrorView, FileUploadForm } from "../components";
-import { useDeleteAllActivities } from "../data";
+import { useDeleteAllActivities, useExportedActivities } from "../data";
 
 export const Profile = () => {
   const { user } = useAuth();
+  const exportedActivities = useExportedActivities();
+  const exportFile = () => JSON.stringify(exportedActivities);
+
   const [deleteAllActivities, { error, status }] = useDeleteAllActivities();
   if (error) {
     return <ErrorView error={error} />;
@@ -21,6 +25,16 @@ export const Profile = () => {
       <div>
         <FileUploadForm />
       </div>
+      {exportedActivities && (
+        <div>
+          <DownloadLink
+            filename="activities.json"
+            tagName="button"
+            label="Export activities"
+            exportFile={exportFile}
+          />
+        </div>
+      )}
     </>
   );
 };

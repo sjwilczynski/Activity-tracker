@@ -1,4 +1,8 @@
-export { useActivities, useActivitiesPrefetch } from "./hooks/useActivities";
+export {
+  useActivities,
+  useActivitiesPrefetch,
+  useExportedActivities,
+} from "./hooks/useActivities";
 export { useActivitiesMutation } from "./hooks/useActivitiesMutation";
 export { useDateRangeState } from "./hooks/useDateRangeState";
 export { useDeleteAllActivities } from "./hooks/useDeleteAllActivities";
