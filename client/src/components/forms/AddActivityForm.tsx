@@ -11,7 +11,7 @@ type FormValues = {
 };
 
 export function AddActivityForm() {
-  const [addActivities] = useActivitiesMutation();
+  const [addActivities, { status }] = useActivitiesMutation();
   const onSubmit = React.useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -30,30 +30,35 @@ export function AddActivityForm() {
   );
 
   return (
-    <Formik
-      validationSchema={yup.object({
-        date: yup.string().required(),
-        name: yup.string().required(),
-        active: yup.bool().required(),
-      })}
-      initialValues={{
-        date: new Date(Date.now()).toLocaleDateString("en-CA"),
-        name: "",
-        active: true,
-      }}
-      onSubmit={onSubmit}
-    >
-      <Form>
-        <DateInput name="date" label="Date" />
-        <Input
-          name="name"
-          label="Activity name"
-          placeholder="name of the activity"
-          type="text"
-        />
-        <Input name="active" label="Active" type="checkbox" />
-        <button type="submit">Add activity</button>
-      </Form>
-    </Formik>
+    <>
+      <Formik
+        validationSchema={yup.object({
+          date: yup.string().required(),
+          name: yup.string().required(),
+          active: yup.bool().required(),
+        })}
+        initialValues={{
+          date: new Date(Date.now()).toLocaleDateString("en-CA"),
+          name: "",
+          active: true,
+        }}
+        onSubmit={onSubmit}
+      >
+        <Form>
+          <DateInput name="date" label="Date" />
+          <Input
+            name="name"
+            label="Activity name"
+            placeholder="name of the activity"
+            type="text"
+          />
+          <Input name="active" label="Active" type="checkbox" />
+          <button type="submit">Add activity</button>
+        </Form>
+      </Formik>
+      {status === "success" ? (
+        <div>Successfully uploaded the data</div>
+      ) : undefined}
+    </>
   );
 }

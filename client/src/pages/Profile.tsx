@@ -1,7 +1,6 @@
 import * as React from "react";
-import { QueryStatus } from "react-query";
 import { useAuth } from "../auth";
-import { ErrorView } from "../components";
+import { ErrorView, FileUploadForm } from "../components";
 import { useDeleteAllActivities } from "../data";
 
 export const Profile = () => {
@@ -16,9 +15,12 @@ export const Profile = () => {
       {/* TODO: wrap this button in dialog to have confirmation */}
       <button onClick={deleteAllActivities}>Delete all your activities</button>
       {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
-      {status === QueryStatus.Success ? (
+      {status === "success" ? (
         <div>Successfully deleted the data</div>
       ) : undefined}
+      <div>
+        <FileUploadForm />
+      </div>
     </>
   );
 };

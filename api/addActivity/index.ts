@@ -38,7 +38,17 @@ const httpTrigger: AzureFunction = async function (
   }
 };
 
-const areActivitiesValid = (activityRecords): boolean => {
+const areActivitiesValid = (
+  activityRecords
+): activityRecords is ActivityRecord[] => {
+  if (
+    activityRecords === null ||
+    activityRecords === undefined ||
+    activityRecords.length === undefined ||
+    activityRecords.length === 0
+  ) {
+    return false;
+  }
   return activityRecords.every(isActivityValid);
 };
 
