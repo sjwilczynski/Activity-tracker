@@ -11,7 +11,7 @@ type FormValues = {
 };
 
 export function AddActivityForm() {
-  const [addActivity] = useActivitiesMutation();
+  const [addActivities] = useActivitiesMutation();
   const onSubmit = React.useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -20,13 +20,13 @@ export function AddActivityForm() {
         active: values.active,
       };
       try {
-        await addActivity([activityRecord]);
+        await addActivities([activityRecord]);
       } catch (error) {
         // TODO: better error handling
         console.log("Unexpected error on adding activity");
       }
     },
-    [addActivity]
+    [addActivities]
   );
 
   return (
