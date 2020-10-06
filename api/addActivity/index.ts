@@ -8,7 +8,7 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  const activity = req.body;
+  const activities = req.body;
   const idToken = req.headers["x-auth-token"];
   let userId: string;
   try {
@@ -18,9 +18,9 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
 
-  if (isActivityValid(activity)) {
+  if (areActivitiesValid(activities)) {
     try {
-      await database.addActivity(userId, activity);
+      await database.addActivities(userId, activities);
       context.res = {
         body: "Successfully added",
       };
@@ -38,6 +38,20 @@ const httpTrigger: AzureFunction = async function (
   }
 };
 
+const areActivitiesValid = (
+  activityRecords
+): activityRecords is ActivityRecord[] => {
+  if (
+    activityRecords === null ||
+    activityRecords === undefined ||
+    activityRecords.length === undefined ||
+    activityRecords.length === 0
+  ) {
+    return false;
+  }
+  return activityRecords.every(isActivityValid);
+};
+
 const isActivityValid = (activity): activity is ActivityRecord => {
   const castedActivity = activity as ActivityRecord;
   if (castedActivity == null || castedActivity === undefined) {
@@ -48,7 +62,7 @@ const isActivityValid = (activity): activity is ActivityRecord => {
     return false;
   }
 
-  const { name, active } = castedActivity.activity;
+  const { name, active } = castedActivity;
   if (
     typeof name !== "string" ||
     !isValidName(name) ||

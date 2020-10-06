@@ -3,8 +3,7 @@ import { ActivityRecordWithId, ActivitySummaries } from "../types";
 export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
   const activitySummary = records.reduce(
     (summary: ActivitySummaries, activityRecord: ActivityRecordWithId) => {
-      const { activity } = activityRecord;
-      const { name, active } = activity;
+      const { name, active } = activityRecord;
       if (summary[name]) {
         summary[name].count += 1;
       } else {

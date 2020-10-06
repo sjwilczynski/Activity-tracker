@@ -1,5 +1,6 @@
 export { AddActivityForm } from "./forms/AddActivityForm";
 export { DateFilterForm } from "./forms/DateFilterForm";
+export { FileUploadForm } from "./forms/FileUploadForm";
 
 export { Navigation } from "./navigation/Navigation";
 export { PageNotFound } from "./navigation/PageNotFound";

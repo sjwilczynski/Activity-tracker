@@ -7,13 +7,13 @@ import {
 } from "../react-query-config/query-constants";
 import { useRequestConfig } from "./useRequestConfig";
 
-export const useActivityMutation = () => {
+export const useActivitiesMutation = () => {
   const queryCache = useQueryCache();
-  const addActivity = useAddActivityFunction();
-  return useMutation<string, Error, ActivityRecordServer, () => void>(
-    addActivity,
+  const addActivities = useAddActivitiesFunction();
+  return useMutation<string, Error, ActivityRecordServer[], () => void>(
+    addActivities,
     {
-      onMutate: (activityRecord) => {
+      onMutate: (activityRecords) => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
         queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
 
@@ -22,17 +22,20 @@ export const useActivityMutation = () => {
           ActivityRecordWithId[]
         >(getActivitiesQueryId);
 
+        const newActivities: ActivityRecordWithId[] = activityRecords.map(
+          (activityRecord: ActivityRecordServer, index: number) => {
+            return {
+              ...activityRecord,
+              date: new Date(activityRecord.date),
+              id: `temporaryId${index}`,
+            };
+          }
+        );
+
         // Optimistically update to the new value
         queryCache.setQueryData<ActivityRecordWithId[], Error>(
           getActivitiesQueryId,
-          (old) => [
-            ...(old || []),
-            {
-              date: new Date(activityRecord.date),
-              activity: activityRecord.activity,
-              id: "temporaryId",
-            },
-          ]
+          (old) => [...(old || []), ...newActivities]
         );
 
         // Return the snapshotted value
@@ -51,13 +54,13 @@ export const useActivityMutation = () => {
   );
 };
 
-const useAddActivityFunction = () => {
+const useAddActivitiesFunction = () => {
   const getConfig = useRequestConfig();
-  return async (activityRecord: ActivityRecordServer) => {
+  return async (activityRecords: ActivityRecordServer[]) => {
     const config = await getConfig();
     const response = await axios.post<string>(
       activitiesApiPath,
-      activityRecord,
+      activityRecords,
       config
     );
     return response.data;

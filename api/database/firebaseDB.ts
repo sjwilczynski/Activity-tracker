@@ -12,9 +12,19 @@ export const firebaseDB: Database = {
       .once("value");
     return activities.val() as ActivityMap;
   },
-  addActivity: async (userId: string, activity: ActivityRecord) => {
-    const activitiesRef = database.ref(activityDocument(userId));
-    await activitiesRef.push(activity);
+  addActivities: async (userId: string, activities: ActivityRecord[]) => {
+    const activityDocumentPath = activityDocument(userId);
+    const activitiesRef = database.ref(activityDocumentPath);
+    const updates = {};
+    for (let i = 0; i < activities.length; i++) {
+      const newId = activitiesRef.push().key;
+      if (newId === null) {
+        throw new Error(`Unable to create new element at index ${i}`);
+      } else {
+        updates[newId] = activities[i];
+      }
+    }
+    await activitiesRef.update(updates);
   },
   editActivity: async (
     userId: string,
@@ -22,4 +32,8 @@ export const firebaseDB: Database = {
     newActivity: ActivityRecord
   ) => {},
   deleteActivity: async (userId: string, activityId: string) => {},
+  deleteAllActivities: async (userId: string) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    await activitiesRef.remove();
+  },
 };

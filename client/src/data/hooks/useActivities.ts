@@ -1,5 +1,9 @@
 import { useQuery, useQueryCache } from "react-query";
-import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../types";
+import {
+  ActivityRecordServer,
+  ActivityRecordWithId,
+  ActivityRecordWithIdServer,
+} from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
@@ -20,6 +24,20 @@ export const useActivitiesPrefetch = () => {
   cache.prefetchQuery(getActivitiesQueryId, () => fetchActivities(getConfig()));
 };
 
+export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
+  const queryCache = useQueryCache();
+  const data = queryCache.getQueryData<ActivityRecordWithId[]>(
+    getActivitiesQueryId
+  );
+  return data?.map((activityRecord) => {
+    return {
+      date: activityRecord.date.toLocaleDateString("en-CA"),
+      name: activityRecord.name,
+      active: activityRecord.active,
+    };
+  });
+};
+
 const fetchActivities = async (
   configPromise: ConfigPromise
 ): Promise<ActivityRecordWithId[]> => {
@@ -30,8 +48,7 @@ const fetchActivities = async (
   );
   return activityRecordsResponse.data.map((activityRecord) => {
     return {
-      id: activityRecord.id,
-      activity: activityRecord.activity,
+      ...activityRecord,
       date: new Date(activityRecord.date),
     };
   });
