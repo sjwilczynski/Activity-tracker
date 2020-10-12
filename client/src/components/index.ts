@@ -13,3 +13,5 @@ export { SummaryTable } from "./table/SummaryTable";
 export { BarChart } from "./visualization/Charts/BarChart";
 export { SummaryBarChart } from "./visualization/SummaryCharts/SummaryBarChart";
 export { SummaryPieChart } from "./visualization/SummaryCharts/SummaryPieChart";
+
+export { ModalDialog } from "./ModalDialog";
