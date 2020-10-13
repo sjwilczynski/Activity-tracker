@@ -1,7 +1,8 @@
+import { Button } from "@material-ui/core";
 import * as React from "react";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
-import { ErrorView, FileUploadForm } from "../components";
+import { ErrorView, FileUploadForm, ModalDialog } from "../components";
 import { useDeleteAllActivities, useExportedActivities } from "../data";
 
 export const Profile = () => {
@@ -17,11 +18,21 @@ export const Profile = () => {
     <>
       <div>User name: {user?.displayName}</div>
       {/* TODO: wrap this button in dialog to have confirmation */}
-      <button onClick={deleteAllActivities}>Delete all your activities</button>
-      {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
-      {status === "success" ? (
-        <div>Successfully deleted the data</div>
-      ) : undefined}
+      <ModalDialog
+        openButtonText="Delete your activites"
+        title="Delete confirmation"
+        description="Are you sure you want to delete all your activities?"
+        content={
+          <>
+            <Button onClick={deleteAllActivities}>Confirm</Button>
+            {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
+            {status === "success" ? (
+              <div>Successfully deleted the data</div>
+            ) : undefined}
+          </>
+        }
+      />
+
       <div>
         <FileUploadForm />
       </div>
@@ -29,8 +40,9 @@ export const Profile = () => {
         <div>
           <DownloadLink
             filename="activities.json"
-            tagName="button"
-            label="Export activities"
+            tagName="div"
+            style={{}}
+            label={<Button>Export activities</Button>}
             exportFile={exportFile}
           />
         </div>

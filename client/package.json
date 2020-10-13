@@ -26,12 +26,16 @@
     ]
   },
   "dependencies": {
+    "@date-io/date-fns": "1.x",
     "@material-ui/core": "^4.11.0",
     "@material-ui/pickers": "^3.2.10",
     "axios": "0.20.0",
     "chart.js": "2.9.3",
+    "date-fns": "^2.16.1",
     "firebase": "7.23.0",
-    "formik": "2.2.0",
+    "formik": "^2.2.0",
+    "formik-material-ui": "^3.0.0",
+    "formik-material-ui-pickers": "^0.0.11",
     "react": "16.13.1",
     "react-chartjs-2": "2.10.0",
     "react-dom": "16.13.1",

@@ -1,16 +1,13 @@
 import { useCallback, useState } from "react";
 
 export const useDateRangeState = () => {
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const setDateRange = useCallback(
-    (start: Date | undefined, end: Date | undefined) => {
-      setStartDate(start);
-      setEndDate(end);
-    },
-    []
-  );
+  const setDateRange = useCallback((start: Date | null, end: Date | null) => {
+    setStartDate(start);
+    setEndDate(end);
+  }, []);
 
   return { startDate, endDate, setDateRange };
 };
