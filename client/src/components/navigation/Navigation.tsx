@@ -1,13 +1,47 @@
+import { List, ListItem, ListItemText } from "@material-ui/core";
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { NavLink, NavLinkProps } from "react-router-dom";
+import { PermanentDrawer } from "../PermanentDrawer";
+
+const navList = [
+  {
+    text: "Start page",
+    path: "/",
+  },
+  {
+    text: "Profile",
+    path: "/profile",
+  },
+  {
+    text: "Charts",
+    path: "/charts",
+  },
+  {
+    text: "Activity list",
+    path: "/activity-list",
+  },
+];
 
 export const Navigation = () => {
+  const navigation = (
+    <nav>
+      <List>
+        {navList.map((item) => {
+          return <Link {...item} />;
+        })}
+      </List>
+    </nav>
+  );
+  return <PermanentDrawer>{navigation}</PermanentDrawer>;
+};
+
+const Link = ({ text, path }: { text: string; path: string }) => {
+  const ListLink = (props: Omit<NavLinkProps, "to">) => (
+    <NavLink to={path} {...props} />
+  );
   return (
-    <div>
-      <Link to="/">Start page</Link>
-      <Link to="/profile">Profile</Link>
-      <Link to="/charts">Charts</Link>
-      <Link to="/activity-list">Activity list</Link>
-    </div>
+    <ListItem key={text} component={ListLink}>
+      <ListItemText primary={text} />
+    </ListItem>
   );
 };
