@@ -35,13 +35,13 @@ export const Charts = () => {
         endDate={endDate}
         setDateRange={setDateRange}
       />
-      <div style={{ width: 900, height: 500 }}>
+      <div>
         <BarChart activitySummaries={activitySummaries} />
       </div>
-      <div style={{ width: 900, height: 500 }}>
+      <div>
         <SummaryPieChart activitySummaries={activitySummaries} />
       </div>
-      <div style={{ width: 900, height: 500 }}>
+      <div>
         <SummaryBarChart activitySummaries={activitySummaries} />
       </div>
     </>
