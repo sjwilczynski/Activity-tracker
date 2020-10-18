@@ -9,9 +9,7 @@ type Props = {
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
-    navigation: {
-      width: "100%",
-    },
+    navigation: {},
     drawerPaper: {
       width: "100%",
     },
