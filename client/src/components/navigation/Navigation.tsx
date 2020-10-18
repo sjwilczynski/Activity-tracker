@@ -49,8 +49,12 @@ export const Navigation = ({
 };
 
 const Link = ({ text, path }: { text: string; path: string }) => {
-  const ListLink = (props: Omit<NavLinkProps, "to">) => (
-    <NavLink to={path} {...props} />
+  const ListLink = React.useMemo(
+    () =>
+      React.forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
+        <NavLink to={path} ref={ref} {...itemProps} />
+      )),
+    [path]
   );
   return (
     <ListItem component={ListLink}>
