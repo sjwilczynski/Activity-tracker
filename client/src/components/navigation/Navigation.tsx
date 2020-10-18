@@ -1,7 +1,12 @@
 import { List, ListItem, ListItemText } from "@material-ui/core";
 import * as React from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
-import { PermanentDrawer } from "../PermanentDrawer";
+import { NavigationContainer } from "./NavigationContainer";
+
+type Props = {
+  isNavigationOpen: boolean;
+  handleNavigationToggle: () => void;
+};
 
 const navList = [
   {
@@ -22,17 +27,25 @@ const navList = [
   },
 ];
 
-export const Navigation = () => {
+export const Navigation = ({
+  isNavigationOpen,
+  handleNavigationToggle,
+}: Props) => {
   const navigation = (
-    <nav>
-      <List>
-        {navList.map((item) => {
-          return <Link {...item} />;
-        })}
-      </List>
-    </nav>
+    <List>
+      {navList.map((item) => {
+        return <Link key={item.text} {...item} />;
+      })}
+    </List>
   );
-  return <PermanentDrawer>{navigation}</PermanentDrawer>;
+  return (
+    <NavigationContainer
+      handleNavigationToggle={handleNavigationToggle}
+      isNavigationOpen={isNavigationOpen}
+    >
+      {navigation}
+    </NavigationContainer>
+  );
 };
 
 const Link = ({ text, path }: { text: string; path: string }) => {
@@ -40,7 +53,7 @@ const Link = ({ text, path }: { text: string; path: string }) => {
     <NavLink to={path} {...props} />
   );
   return (
-    <ListItem key={text} component={ListLink}>
+    <ListItem component={ListLink}>
       <ListItemText primary={text} />
     </ListItem>
   );

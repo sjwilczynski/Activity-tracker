@@ -1,8 +1,10 @@
-import { makeStyles } from "@material-ui/core";
+import { AppBar, IconButton, makeStyles, Toolbar } from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
 import * as React from "react";
 
 type Props = {
   children: React.ReactNode;
+  handleNavigationToggle: () => void;
 };
 
 const useStyles = makeStyles({
@@ -11,7 +13,18 @@ const useStyles = makeStyles({
   },
 });
 
-export const AppContainer = ({ children }: Props) => {
+export const AppContainer = ({ handleNavigationToggle, children }: Props) => {
   const styles = useStyles();
-  return <div className={styles.container}>{children}</div>;
+  return (
+    <div className={styles.container}>
+      <AppBar position="fixed">
+        <Toolbar>
+          <IconButton color="inherit" onClick={handleNavigationToggle}>
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      {children}
+    </div>
+  );
 };

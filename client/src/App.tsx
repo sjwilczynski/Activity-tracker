@@ -3,14 +3,24 @@ import { AuthProvider } from "./auth";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { BrowserRouter } from "react-router-dom";
 import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
-import { AppContainer, Navigation, UIProvider } from "./components";
+import {
+  AppContainer,
+  Navigation,
+  StylesProvider,
+  PickersContextProvider,
+  useNavigationState,
+} from "./components";
 import { Pages } from "./pages";
 
 function App() {
   useActivitiesPrefetch();
+  const { isNavigationOpen, handleNavigationToggle } = useNavigationState();
   return (
-    <AppContainer>
-      <Navigation />
+    <AppContainer handleNavigationToggle={handleNavigationToggle}>
+      <Navigation
+        isNavigationOpen={isNavigationOpen}
+        handleNavigationToggle={handleNavigationToggle}
+      />
       <Pages />
     </AppContainer>
   );
@@ -20,12 +30,14 @@ function AppWithProviders() {
   return (
     <AuthProvider>
       <QueryConfigProvider>
-        <UIProvider>
+        <PickersContextProvider>
           <BrowserRouter>
-            <App />
-            <ReactQueryDevtools initialIsOpen={false} />
+            <StylesProvider>
+              <App />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </StylesProvider>
           </BrowserRouter>
-        </UIProvider>
+        </PickersContextProvider>
       </QueryConfigProvider>
     </AuthProvider>
   );
