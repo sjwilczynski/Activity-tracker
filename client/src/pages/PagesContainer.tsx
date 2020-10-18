@@ -10,7 +10,10 @@ const useStyles = makeStyles((theme) => {
     container: {
       flexDirection: "column",
       display: "flex",
-      width: "100%",
+      width: "70%",
+      [theme.breakpoints.down("sm")]: {
+        width: "100%",
+      },
     },
     toolbar: theme.mixins.toolbar,
   };
