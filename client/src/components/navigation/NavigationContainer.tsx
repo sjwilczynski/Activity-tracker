@@ -1,29 +1,7 @@
 import React from "react";
-import {
-  Drawer,
-  makeStyles,
-  createStyles,
-  Theme,
-  useTheme,
-  useMediaQuery,
-} from "@material-ui/core";
-
-const useStyles = makeStyles((theme: Theme) => {
-  const drawerWidth = "20%";
-  return createStyles({
-    drawer: {
-      width: drawerWidth,
-      height: "100vh",
-    },
-    drawerPaper: {
-      width: drawerWidth,
-      height: "100vh",
-    },
-    permanentDrawer: {},
-    temporaryDrawer: {},
-    toolbar: theme.mixins.toolbar,
-  });
-});
+import { useTheme, useMediaQuery } from "@material-ui/core";
+import { TemporaryNavigation } from "./TemporaryNavigation";
+import { PermanentNavigation } from "./PermanentNavigation";
 
 type Props = {
   children: React.ReactNode;
@@ -37,35 +15,17 @@ export const NavigationContainer = ({
   children,
 }: Props) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const drawer = matches ? (
-    <Drawer
-      className={styles.temporaryDrawer}
-      variant="temporary"
-      anchor="top"
-      open={isNavigationOpen}
-      onClose={handleNavigationToggle}
-      classes={{
-        paper: styles.drawerPaper,
-      }}
+  const navigation = matches ? (
+    <TemporaryNavigation
+      isNavigationOpen={isNavigationOpen}
+      handleNavigationToggle={handleNavigationToggle}
     >
       {children}
-    </Drawer>
+    </TemporaryNavigation>
   ) : (
-    <Drawer
-      className={styles.permanentDrawer}
-      variant="permanent"
-      open
-      classes={{ paper: styles.drawerPaper }}
-    >
-      {children}
-    </Drawer>
+    <PermanentNavigation>{children}</PermanentNavigation>
   );
 
-  return (
-    <>
-      <nav className={styles.drawer}>{drawer}</nav>
-    </>
-  );
+  return <> {navigation} </>;
 };

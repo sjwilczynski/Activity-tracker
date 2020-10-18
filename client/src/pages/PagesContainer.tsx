@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => {
     container: {
       flexDirection: "column",
       display: "flex",
-      width: "70%",
+      width: "80%",
       [theme.breakpoints.down("sm")]: {
         width: "100%",
       },
