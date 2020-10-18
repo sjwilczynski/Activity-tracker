@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => {
       flexDirection: "column",
       display: "flex",
       width: "80%",
+      height: "100vh",
       [theme.breakpoints.down("sm")]: {
         width: "100%",
       },

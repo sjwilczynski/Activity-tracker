@@ -12,6 +12,8 @@ const useStyles = makeStyles((theme: Theme) => {
     navigation: {},
     drawerPaper: {
       width: "100%",
+      background: theme.palette.primary.main,
+      color: theme.palette.common.white,
     },
     drawer: {},
   });

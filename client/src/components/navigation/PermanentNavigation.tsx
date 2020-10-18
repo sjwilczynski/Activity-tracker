@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme: Theme) => {
     drawerPaper: {
       width: drawerWidth,
       height: "100vh",
+      background: theme.palette.primary.main,
+      color: theme.palette.common.white,
     },
     drawer: {},
   });
