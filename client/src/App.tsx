@@ -5,22 +5,15 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
 import {
   AppContainer,
-  Navigation,
   StylesProvider,
   PickersContextProvider,
-  useNavigationState,
 } from "./components";
 import { Pages } from "./pages";
 
 function App() {
   useActivitiesPrefetch();
-  const { isNavigationOpen, handleNavigationToggle } = useNavigationState();
   return (
-    <AppContainer handleNavigationToggle={handleNavigationToggle}>
-      <Navigation
-        isNavigationOpen={isNavigationOpen}
-        handleNavigationToggle={handleNavigationToggle}
-      />
+    <AppContainer>
       <Pages />
     </AppContainer>
   );

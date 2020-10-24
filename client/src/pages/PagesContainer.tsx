@@ -8,24 +8,20 @@ type Props = {
 const useStyles = makeStyles((theme) => {
   return {
     container: {
+      padding: "3rem",
       flexDirection: "column",
       display: "flex",
       width: "80%",
-      height: "100vh",
+      marginLeft: "20%",
       [theme.breakpoints.down("sm")]: {
         width: "100%",
+        marginLeft: "0",
       },
     },
-    toolbar: theme.mixins.toolbar,
   };
 });
 
 export const PagesContainer = ({ children }: Props) => {
   const styles = useStyles(useTheme());
-  return (
-    <div className={styles.container}>
-      <div className={styles.toolbar} />
-      {children}
-    </div>
-  );
+  return <div className={styles.container}>{children}</div>;
 };
