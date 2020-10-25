@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: build client
         run: yarn && yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build
         working-directory: client
