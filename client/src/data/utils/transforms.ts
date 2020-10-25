@@ -22,8 +22,8 @@ export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
 
 export function filterByDateRange(
   records: ActivityRecordWithId[],
-  startDate: Date | undefined,
-  endDate: Date | undefined
+  startDate: Date | null,
+  endDate: Date | null
 ) {
   return startDate && endDate
     ? records.filter(

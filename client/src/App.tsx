@@ -1,24 +1,21 @@
 import * as React from "react";
 import { AuthProvider } from "./auth";
 import { ReactQueryDevtools } from "react-query-devtools";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
-import { Navigation, PageNotFound } from "./components";
-import { Welcome, Profile, Charts, ActivityList } from "./pages";
+import {
+  AppContainer,
+  StylesProvider,
+  PickersContextProvider,
+} from "./components";
+import { Pages } from "./pages";
 
 function App() {
   useActivitiesPrefetch();
   return (
-    <BrowserRouter>
-      <Navigation />
-      <Switch>
-        <Route exact path="/" component={Welcome} />
-        <Route exact path="/profile" component={Profile} />
-        <Route exact path="/charts" component={Charts} />
-        <Route exact path="/activity-list" component={ActivityList} />
-        <Route path="/" component={PageNotFound} />
-      </Switch>
-    </BrowserRouter>
+    <AppContainer>
+      <Pages />
+    </AppContainer>
   );
 }
 
@@ -26,8 +23,14 @@ function AppWithProviders() {
   return (
     <AuthProvider>
       <QueryConfigProvider>
-        <App />
-        <ReactQueryDevtools initialIsOpen={false} />
+        <PickersContextProvider>
+          <BrowserRouter>
+            <StylesProvider>
+              <App />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </StylesProvider>
+          </BrowserRouter>
+        </PickersContextProvider>
       </QueryConfigProvider>
     </AuthProvider>
   );

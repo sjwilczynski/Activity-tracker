@@ -1,13 +1,44 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { LinkList, NavigationElement } from "./LinkList";
+import { NavigationContainer } from "./NavigationContainer";
 
-export const Navigation = () => {
+type Props = {
+  isNavigationOpen: boolean;
+  handleNavigationToggle: () => void;
+};
+
+const navList: NavigationElement[] = [
+  {
+    text: "Start page",
+    path: "/",
+  },
+  {
+    text: "Profile",
+    path: "/profile",
+  },
+  {
+    text: "Charts",
+    path: "/charts",
+  },
+  {
+    text: "Activity list",
+    path: "/activity-list",
+  },
+];
+
+export const Navigation = ({
+  isNavigationOpen,
+  handleNavigationToggle,
+}: Props) => {
   return (
-    <div>
-      <Link to="/">Start page</Link>
-      <Link to="/profile">Profile</Link>
-      <Link to="/charts">Charts</Link>
-      <Link to="/activity-list">Activity list</Link>
-    </div>
+    <NavigationContainer
+      handleNavigationToggle={handleNavigationToggle}
+      isNavigationOpen={isNavigationOpen}
+    >
+      <LinkList
+        navigationElements={navList}
+        handleNavigationToggle={handleNavigationToggle}
+      />
+    </NavigationContainer>
   );
 };

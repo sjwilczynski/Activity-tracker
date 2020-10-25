@@ -1,11 +1,14 @@
 import * as React from "react";
-import { Formik, Form } from "formik";
+import { Field, Formik, Form } from "formik";
 import * as yup from "yup";
 import { ActivityRecordServer, useActivitiesMutation } from "../../data";
-import { DateInput, Input } from "./Input";
+import { KeyboardDatePicker } from "formik-material-ui-pickers";
+import { CheckboxWithLabel, TextField } from "formik-material-ui";
+import { Button } from "@material-ui/core";
+import { format } from "date-fns";
 
 type FormValues = {
-  date: string;
+  date: Date;
   name: string;
   active: boolean;
 };
@@ -15,7 +18,7 @@ export function AddActivityForm() {
   const onSubmit = React.useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
-        date: new Date(values.date).toLocaleDateString("en-CA"),
+        date: format(values.date, "yyyy-MM-dd"),
         name: values.name,
         active: values.active,
       };
@@ -31,30 +34,45 @@ export function AddActivityForm() {
 
   return (
     <>
-      <Formik
+      <Formik<FormValues>
         validationSchema={yup.object({
-          date: yup.string().required(),
+          date: yup.date().required(),
           name: yup.string().required(),
           active: yup.bool().required(),
         })}
         initialValues={{
-          date: new Date(Date.now()).toLocaleDateString("en-CA"),
+          date: new Date(Date.now()),
           name: "",
           active: true,
         }}
         onSubmit={onSubmit}
       >
-        <Form>
-          <DateInput name="date" label="Date" />
-          <Input
-            name="name"
-            label="Activity name"
-            placeholder="name of the activity"
-            type="text"
-          />
-          <Input name="active" label="Active" type="checkbox" />
-          <button type="submit">Add activity</button>
-        </Form>
+        {({ isValid, dirty }) => (
+          <Form>
+            <Field
+              component={KeyboardDatePicker}
+              name="date"
+              label="Date"
+              format="yyyy-MM-dd"
+            />
+            <Field
+              component={TextField}
+              name="name"
+              label="Activity name"
+              placeholder="name of the activity"
+              type="text"
+            />
+            <Field
+              component={CheckboxWithLabel}
+              name="active"
+              Label={{ label: "Active" }}
+              type="checkbox"
+            />
+            <Button disabled={!isValid || !dirty} type="submit">
+              Add activity
+            </Button>
+          </Form>
+        )}
       </Formik>
       {status === "success" ? (
         <div>Successfully uploaded the data</div>

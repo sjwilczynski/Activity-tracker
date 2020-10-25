@@ -8,8 +8,9 @@ import {
   FormikHelpers,
 } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
+import { Button } from "@material-ui/core";
 
-const FILE_SIZE = 160 * 1024;
+const FILE_SIZE = 80 * 1024;
 const SUPPORTED_FORMATS = ["application/json"];
 
 type FormValues = {
@@ -53,15 +54,14 @@ export function FileUploadForm() {
         }}
         onSubmit={onSubmit}
       >
-        <Form>
-          <Field
-            name="file"
-            title="Select a file"
-            component={CustomFileInput}
-          />
-          <div></div>
-          <button type="submit">Upload file</button>
-        </Form>
+        {({ isValid, dirty }) => (
+          <Form>
+            <Field name="file" component={CustomFileInput} />
+            <Button disabled={!isValid || !dirty} type="submit">
+              Upload file
+            </Button>
+          </Form>
+        )}
       </Formik>
       {status === "success" ? (
         <div>Successfully uploaded the data</div>
@@ -83,8 +83,8 @@ const validate = (values: FormValues) => {
   return errors;
 };
 
-const CustomFileInput = (props: FieldProps & { title: string }) => {
-  const { field, title, form } = props;
+const CustomFileInput = (props: FieldProps<File | null, FormValues>) => {
+  const { field, form } = props;
   const { setFieldValue, errors } = form;
   const { name } = field;
   const onFileInputChange = React.useCallback(
@@ -99,12 +99,18 @@ const CustomFileInput = (props: FieldProps & { title: string }) => {
   return (
     <>
       <input
-        name={name}
+        style={{ display: "none" }}
+        id="contained-button-file"
         type="file"
         onChange={onFileInputChange}
-        title={title}
       />
-      <div>{errors[name]}</div>
+      <label htmlFor="contained-button-file">
+        <Button variant="contained" component="span">
+          Select a file
+        </Button>
+      </label>
+      <div>{field.value?.name}</div>
+      <div>{errors.file}</div>
     </>
   );
 };

@@ -1,66 +1,71 @@
 import * as React from "react";
-import { Formik, Form, FormikErrors } from "formik";
-import { DateInput } from "./Input";
+import { Formik, Form, Field } from "formik";
+import { KeyboardDatePicker } from "formik-material-ui-pickers";
+import { Button } from "@material-ui/core";
+import * as yup from "yup";
 
 type Props = {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  setDateRange: (
-    startDate: Date | undefined,
-    endDate: Date | undefined
-  ) => void;
+  startDate: Date | null;
+  endDate: Date | null;
+  setDateRange: (startDate: Date | null, endDate: Date | null) => void;
 };
 
 type FormValues = {
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: Date | null;
+  endDate: Date | null;
 };
 
 export const DateFilterForm = (props: Props) => {
   const { startDate, endDate, setDateRange } = props;
   const onSubmit = (values: FormValues) => {
     if (values.startDate && values.endDate) {
-      setDateRange(new Date(values.startDate), new Date(values.endDate));
+      setDateRange(values.startDate, values.endDate);
     }
   };
   return (
     <>
-      <Formik
+      <Formik<FormValues>
         initialValues={{
-          startDate: startDate?.toLocaleDateString("en-CA") || "",
-          endDate: endDate?.toLocaleDateString("en-CA") || "",
+          startDate,
+          endDate,
         }}
         onSubmit={onSubmit}
-        validate={(values: FormValues) => {
-          const errors: FormikErrors<FormValues> = {};
-          if (!values.startDate) {
-            errors.startDate = "Start date not set";
-          }
-          if (!values.endDate) {
-            errors.endDate = "End date not set";
-          }
-          return errors;
-        }}
+        validationSchema={yup.object({
+          startDate: yup.date().required(),
+          endDate: yup.date().required(),
+        })}
       >
-        {({ resetForm }) => (
+        {({ resetForm, isValid, dirty }) => (
           <Form>
-            <DateInput name="startDate" label="Start date" />
-            <DateInput name="endDate" label="End date" />
-            <button type="submit">Set date range</button>
-            <button
+            <Field
+              component={KeyboardDatePicker}
+              name="startDate"
+              label="Start date"
+              format="yyyy-MM-dd"
+            />
+            <Field
+              component={KeyboardDatePicker}
+              name="endDate"
+              label="End date"
+              format="yyyy-MM-dd"
+            />
+            <Button disabled={!isValid || !dirty} type="submit">
+              Set date range
+            </Button>
+            <Button
               type="button"
               onClick={() => {
-                setDateRange(undefined, undefined);
+                setDateRange(null, null);
                 resetForm({
                   values: {
-                    startDate: "",
-                    endDate: "",
+                    startDate: null,
+                    endDate: null,
                   },
                 });
               }}
             >
               Stop filtering
-            </button>
+            </Button>
           </Form>
         )}
       </Formik>
