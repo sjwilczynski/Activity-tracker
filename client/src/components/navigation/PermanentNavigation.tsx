@@ -16,8 +16,9 @@ const useStyles = makeStyles((theme: Theme) => {
       width: drawerWidth,
       height: "100vh",
       background: theme.palette.primary.main,
-      color: theme.palette.common.white,
       border: "none",
+      display: "flex",
+      justifyContent: "center",
     },
     drawer: {},
   });
