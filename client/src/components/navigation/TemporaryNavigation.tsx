@@ -9,13 +9,10 @@ type Props = {
 
 const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
-    navigation: {},
     drawerPaper: {
       width: "100%",
       background: theme.palette.primary.main,
-      color: theme.palette.common.white,
     },
-    drawer: {},
   });
 });
 
@@ -26,9 +23,8 @@ export const TemporaryNavigation = ({
 }: Props) => {
   const styles = useStyles();
   return (
-    <nav className={styles.navigation}>
+    <nav>
       <Drawer
-        className={styles.drawer}
         variant="temporary"
         anchor="top"
         open={isNavigationOpen}
