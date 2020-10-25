@@ -1,6 +1,5 @@
-import { List, ListItem, ListItemText } from "@material-ui/core";
 import * as React from "react";
-import { NavLink, NavLinkProps } from "react-router-dom";
+import { LinkList, NavigationElement } from "./LinkList";
 import { NavigationContainer } from "./NavigationContainer";
 
 type Props = {
@@ -8,7 +7,7 @@ type Props = {
   handleNavigationToggle: () => void;
 };
 
-const navList = [
+const navList: NavigationElement[] = [
   {
     text: "Start page",
     path: "/",
@@ -31,34 +30,15 @@ export const Navigation = ({
   isNavigationOpen,
   handleNavigationToggle,
 }: Props) => {
-  const navigation = (
-    <List>
-      {navList.map((item) => {
-        return <Link key={item.text} {...item} />;
-      })}
-    </List>
-  );
   return (
     <NavigationContainer
       handleNavigationToggle={handleNavigationToggle}
       isNavigationOpen={isNavigationOpen}
     >
-      {navigation}
+      <LinkList
+        navigationElements={navList}
+        handleNavigationToggle={handleNavigationToggle}
+      />
     </NavigationContainer>
-  );
-};
-
-const Link = ({ text, path }: { text: string; path: string }) => {
-  const ListLink = React.useMemo(
-    () =>
-      React.forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
-        <NavLink to={path} ref={ref} {...itemProps} />
-      )),
-    [path]
-  );
-  return (
-    <ListItem component={ListLink}>
-      <ListItemText primary={text} />
-    </ListItem>
   );
 };
