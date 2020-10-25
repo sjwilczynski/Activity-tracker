@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import * as React from "react";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 const useStyles = makeStyles((theme) => {
   return {
     container: {
-      padding: "3rem",
+      padding: "2rem",
       flexDirection: "column",
       display: "flex",
       width: "80%",
@@ -22,6 +22,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 export const PagesContainer = ({ children }: Props) => {
-  const styles = useStyles(useTheme());
+  const styles = useStyles();
   return <div className={styles.container}>{children}</div>;
 };
