@@ -24,7 +24,13 @@ export const Profile = () => {
         description="Are you sure you want to delete all your activities?"
         content={
           <>
-            <Button onClick={deleteAllActivities}>Confirm</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={deleteAllActivities}
+            >
+              Confirm
+            </Button>
             {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
             {status === "success" ? (
               <div>Successfully deleted the data</div>
@@ -34,7 +40,12 @@ export const Profile = () => {
       />
 
       <div>
-        <FileUploadForm />
+        <ModalDialog
+          openButtonText="Upload activities"
+          title="Activties upload"
+          description="Select a json file containg activities in a complaint format"
+          content={<FileUploadForm />}
+        />
       </div>
       {exportedActivities && (
         <div>
@@ -42,7 +53,11 @@ export const Profile = () => {
             filename="activities.json"
             tagName="div"
             style={{}}
-            label={<Button>Export activities</Button>}
+            label={
+              <Button variant="contained" color="primary">
+                Export activities
+              </Button>
+            }
             exportFile={exportFile}
           />
         </div>
