@@ -6,3 +6,4 @@ yarn.lock
 .eslintignore
 .env
 .gitignore
+*.py
