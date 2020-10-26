@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, FormikErrors } from "formik";
 import { KeyboardDatePicker } from "formik-material-ui-pickers";
-import { Button } from "@material-ui/core";
-import * as yup from "yup";
+import { Button, makeStyles } from "@material-ui/core";
+import { isBefore } from "date-fns";
 
 type Props = {
   startDate: Date | null;
@@ -15,6 +15,19 @@ type FormValues = {
   endDate: Date | null;
 };
 
+const useStyles = makeStyles((theme) => {
+  return {
+    form: {
+      display: "flex",
+      alignItems: "center",
+      padding: `${theme.spacing(1)}px`,
+      "& > div": {
+        marginRight: theme.spacing(2),
+      },
+    },
+  };
+});
+
 export const DateFilterForm = (props: Props) => {
   const { startDate, endDate, setDateRange } = props;
   const onSubmit = (values: FormValues) => {
@@ -22,6 +35,7 @@ export const DateFilterForm = (props: Props) => {
       setDateRange(values.startDate, values.endDate);
     }
   };
+  const styles = useStyles();
   return (
     <>
       <Formik<FormValues>
@@ -30,45 +44,66 @@ export const DateFilterForm = (props: Props) => {
           endDate,
         }}
         onSubmit={onSubmit}
-        validationSchema={yup.object({
-          startDate: yup.date().required(),
-          endDate: yup.date().required(),
-        })}
+        validate={validate}
       >
         {({ resetForm, isValid, dirty }) => (
-          <Form>
+          <Form className={styles.form}>
             <Field
               component={KeyboardDatePicker}
               name="startDate"
               label="Start date"
               format="yyyy-MM-dd"
+              autoOk
             />
             <Field
               component={KeyboardDatePicker}
               name="endDate"
               label="End date"
               format="yyyy-MM-dd"
+              autoOk
             />
-            <Button disabled={!isValid || !dirty} type="submit">
-              Set date range
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                setDateRange(null, null);
-                resetForm({
-                  values: {
-                    startDate: null,
-                    endDate: null,
-                  },
-                });
-              }}
-            >
-              Stop filtering
-            </Button>
+            {(!startDate || !endDate) && (
+              <Button variant="contained" color="primary" type="submit">
+                Set date range
+              </Button>
+            )}
+            {startDate && endDate && (
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setDateRange(null, null);
+                  resetForm({
+                    values: {
+                      startDate: null,
+                      endDate: null,
+                    },
+                  });
+                }}
+              >
+                Clear range
+              </Button>
+            )}
           </Form>
         )}
       </Formik>
     </>
   );
+};
+
+const validate = (values: FormValues) => {
+  const errors: FormikErrors<FormValues> = {};
+  const { startDate, endDate } = values;
+  if (!startDate) {
+    errors.startDate = "Start date is required";
+  }
+  if (!endDate) {
+    errors.endDate = "End date is required";
+  }
+  if (startDate && endDate && isBefore(endDate, startDate)) {
+    errors.startDate = "Start date is after end date";
+    errors.endDate = "End date is before start date";
+  }
+  return errors;
 };
