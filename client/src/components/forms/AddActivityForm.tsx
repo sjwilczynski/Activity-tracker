@@ -75,6 +75,7 @@ export function AddActivityForm() {
               label="Date"
               format="yyyy-MM-dd"
               className={styles.field}
+              autoOk
             />
             <Field
               component={TextField}
