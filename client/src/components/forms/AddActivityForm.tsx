@@ -19,9 +19,10 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
+      padding: `${theme.spacing(1)}px 0`,
     },
     field: {
-      padding: `${theme.spacing(1)}px 0`,
+      margin: `${theme.spacing(1)}px 0`,
     },
     submit: {
       width: "50%",

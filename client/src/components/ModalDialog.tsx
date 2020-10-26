@@ -46,7 +46,7 @@ export const ModalDialog = (props: Props) => {
   const styles = useStyles();
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={open}>
+      <Button variant="contained" color="primary" onClick={open}>
         {openButtonText}
       </Button>
       <Dialog

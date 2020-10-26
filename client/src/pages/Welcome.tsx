@@ -8,7 +8,7 @@ export const Welcome = () => {
     <>
       <div>Welcome {user?.displayName}</div>
       <ModalDialog
-        openButtonText="Add activity"
+        openButtonText="Quick add"
         title="Fill activity data"
         content={<AddActivityForm />}
       />
