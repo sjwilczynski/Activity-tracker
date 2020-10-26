@@ -8,9 +8,8 @@ export const Welcome = () => {
     <>
       <div>Welcome {user?.displayName}</div>
       <ModalDialog
-        description="Fill activity data"
         openButtonText="Add activity"
-        title="Add activity form"
+        title="Fill activity data"
         content={<AddActivityForm />}
       />
     </>
