@@ -1,14 +1,8 @@
 import * as React from "react";
-import {
-  Formik,
-  Form,
-  Field,
-  FormikErrors,
-  FieldProps,
-  FormikHelpers,
-} from "formik";
+import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
-import { Button } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
+import { FileInput } from "./FileInput";
 
 const FILE_SIZE = 80 * 1024;
 const SUPPORTED_FORMATS = ["application/json"];
@@ -16,6 +10,21 @@ const SUPPORTED_FORMATS = ["application/json"];
 type FormValues = {
   file: File | null;
 };
+
+const useStyles = makeStyles((theme) => {
+  return {
+    form: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: `${theme.spacing(1)}px 0`,
+    },
+    submit: {
+      margin: `${theme.spacing(1)}px 0`,
+    },
+  };
+});
 
 export function FileUploadForm() {
   const [addActivities, { status }] = useActivitiesMutation();
@@ -31,6 +40,11 @@ export function FileUploadForm() {
               const activities = JSON.parse(result);
               if (areActivitiesValid(activities)) {
                 addActivities(activities);
+              } else {
+                formikHelpers.setErrors({
+                  file:
+                    "The specified json doesn't contain activities in proper format",
+                });
               }
             } catch (err) {
               formikHelpers.setErrors({
@@ -45,6 +59,8 @@ export function FileUploadForm() {
     [addActivities]
   );
 
+  const styles = useStyles();
+
   return (
     <>
       <Formik<FormValues>
@@ -55,10 +71,16 @@ export function FileUploadForm() {
         onSubmit={onSubmit}
       >
         {({ isValid, dirty }) => (
-          <Form>
-            <Field name="file" component={CustomFileInput} />
-            <Button disabled={!isValid || !dirty} type="submit">
-              Upload file
+          <Form className={styles.form}>
+            <Field name="file" component={FileInput} />
+            <Button
+              disabled={!isValid || !dirty}
+              variant="contained"
+              color="primary"
+              type="submit"
+              className={styles.submit}
+            >
+              Upload
             </Button>
           </Form>
         )}
@@ -81,36 +103,4 @@ const validate = (values: FormValues) => {
     errors.file = "Unsupported format";
   }
   return errors;
-};
-
-const CustomFileInput = (props: FieldProps<File | null, FormValues>) => {
-  const { field, form } = props;
-  const { setFieldValue, errors } = form;
-  const { name } = field;
-  const onFileInputChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.currentTarget.files;
-      if (files) {
-        setFieldValue(name, files[0]);
-      }
-    },
-    [setFieldValue, name]
-  );
-  return (
-    <>
-      <input
-        style={{ display: "none" }}
-        id="contained-button-file"
-        type="file"
-        onChange={onFileInputChange}
-      />
-      <label htmlFor="contained-button-file">
-        <Button variant="contained" component="span">
-          Select a file
-        </Button>
-      </label>
-      <div>{field.value?.name}</div>
-      <div>{errors.file}</div>
-    </>
-  );
 };

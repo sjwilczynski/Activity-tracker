@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { ActivityRecordServer, useActivitiesMutation } from "../../data";
 import { KeyboardDatePicker } from "formik-material-ui-pickers";
 import { CheckboxWithLabel, TextField } from "formik-material-ui";
-import { Button } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import { format } from "date-fns";
 
 type FormValues = {
@@ -12,6 +12,24 @@ type FormValues = {
   name: string;
   active: boolean;
 };
+
+const useStyles = makeStyles((theme) => {
+  return {
+    form: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      padding: `${theme.spacing(1)}px 0`,
+    },
+    field: {
+      margin: `${theme.spacing(1)}px 0`,
+    },
+    submit: {
+      width: "50%",
+      alignSelf: "center",
+    },
+  };
+});
 
 export function AddActivityForm() {
   const [addActivities, { status }] = useActivitiesMutation();
@@ -32,6 +50,8 @@ export function AddActivityForm() {
     [addActivities]
   );
 
+  const styles = useStyles();
+
   return (
     <>
       <Formik<FormValues>
@@ -48,12 +68,14 @@ export function AddActivityForm() {
         onSubmit={onSubmit}
       >
         {({ isValid, dirty }) => (
-          <Form>
+          <Form className={styles.form}>
             <Field
               component={KeyboardDatePicker}
               name="date"
               label="Date"
               format="yyyy-MM-dd"
+              className={styles.field}
+              autoOk
             />
             <Field
               component={TextField}
@@ -61,14 +83,22 @@ export function AddActivityForm() {
               label="Activity name"
               placeholder="name of the activity"
               type="text"
+              className={styles.field}
             />
             <Field
               component={CheckboxWithLabel}
               name="active"
               Label={{ label: "Active" }}
               type="checkbox"
+              color="primary"
             />
-            <Button disabled={!isValid || !dirty} type="submit">
+            <Button
+              disabled={!isValid || !dirty}
+              variant="contained"
+              color="primary"
+              type="submit"
+              className={styles.submit}
+            >
               Add activity
             </Button>
           </Form>
