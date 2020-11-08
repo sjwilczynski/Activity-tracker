@@ -73,9 +73,9 @@
     teeny-request "^7.0.0"
 
 "@google-cloud/firestore@^4.0.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@google-cloud/firestore/-/firestore-4.5.0.tgz#6308fda60496b662680241ccc7c7bee4516b8ff9"
-  integrity sha512-sExt4E+TlBqyv4l/av6kBZ4YGS99Cc3P5UvLRNj9z41mT9ekPGhIzptbj4K6O7h0KCyDIDOiJdi4gUPH9lip4g==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/firestore/-/firestore-4.7.0.tgz#8a176e41773b2a06320e1281d93994624b321541"
+  integrity sha512-srkT0LxbKBEo3hWlgjJenT6+bPJK4D+vuKiV/EZFc6sWhDNQwgOgKF6Rf16mggHwKOL9Sx08Veu0BUaX1uyh4g==
   dependencies:
     fast-deep-equal "^3.1.1"
     functional-red-black-tree "^1.0.1"
@@ -501,7 +501,7 @@ get-stream@^6.0.0:
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.0.tgz#3e0012cb6827319da2706e601a1583e8629a6718"
   integrity sha512-A1B3Bh1UmL0bidM/YX2NsCOTnGJePL9rO/M+Mw3m9f2gUpfokS0hi5Eah0WSUEWZdZhIZtMjkIYS7mDfOqNHbg==
 
-google-auth-library@^6.0.0, google-auth-library@^6.1.1:
+google-auth-library@^6.0.0, google-auth-library@^6.1.1, google-auth-library@^6.1.3:
   version "6.1.3"
   resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-6.1.3.tgz#39d868140b70d0c4b32c6f6d8f4ccc1400d84dca"
   integrity sha512-m9mwvY3GWbr7ZYEbl61isWmk+fvTmOt0YNUfPOUY2VH8K5pZlAIWJjxEi0PqR3OjMretyiQLI6GURMrPSwHQ2g==
@@ -517,16 +517,16 @@ google-auth-library@^6.0.0, google-auth-library@^6.1.1:
     lru-cache "^6.0.0"
 
 google-gax@^2.2.0:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-2.9.1.tgz#939ccf9cf062cca51a0511c07b00248b9a69175a"
-  integrity sha512-KQ7HiMTB/PAzKv3OU00x6tC1H7MHvSxQfon5BSyW5o+lkMgRA8xoqvlxZCBC1dlW1azOPGF8vScy8QgFmhaQ9Q==
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-2.9.2.tgz#780b2c0fc031c864007e1e198a9b90c7e946cca0"
+  integrity sha512-Pve4osEzNKpBZqFXMfGKBbKCtgnHpUe5IQMh5Ou+Xtg8nLcba94L3gF0xgM5phMdGRRqJn0SMjcuEVmOYu7EBg==
   dependencies:
     "@grpc/grpc-js" "~1.1.1"
     "@grpc/proto-loader" "^0.5.1"
     "@types/long" "^4.0.0"
     abort-controller "^3.0.0"
     duplexify "^4.0.0"
-    google-auth-library "^6.0.0"
+    google-auth-library "^6.1.3"
     is-stream-ended "^0.1.4"
     node-fetch "^2.6.1"
     protobufjs "^6.9.0"
