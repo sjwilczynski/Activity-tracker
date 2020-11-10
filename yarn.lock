@@ -686,10 +686,10 @@ define-properties@^1.1.3:
   dependencies:
     object-keys "^1.0.12"
 
-depcheck@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/depcheck/-/depcheck-1.3.0.tgz#41aace6b54539f224a2eb23dd5c035b83c81fea6"
-  integrity sha512-NVFOTUTITOdnZTxGsyuNQ6QEoXjSse9wJo/OW9TQ/lfcYv61cbLmM/5ydkDiJMYFfSyB3ozfZSFt1JxYIqVIYw==
+depcheck@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/depcheck/-/depcheck-1.3.1.tgz#b4765503da3e6ba1f3810dad0c34c0a649e7e91d"
+  integrity sha512-lLMfqX2J+ZF3xUEqHpgCNk+dA8erAfW6XURGNAIyUS4KL2i3lezXGYDevYk3G0rWCwy/3CpxE8ek10NrURFOtQ==
   dependencies:
     "@babel/parser" "^7.12.5"
     "@babel/traverse" "^7.12.5"
