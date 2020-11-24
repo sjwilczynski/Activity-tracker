@@ -6,7 +6,7 @@ type Props = {
 };
 
 const useStyles = makeStyles((theme: Theme) => {
-  const drawerWidth = "20%";
+  const drawerWidth = "17rem";
   return createStyles({
     navigation: {
       width: drawerWidth,

@@ -8,13 +8,12 @@ type Props = {
 const useStyles = makeStyles((theme) => {
   return {
     container: {
+      overflow: "auto",
       padding: "2rem",
       flexDirection: "column",
       display: "flex",
-      width: "80%",
-      marginLeft: "20%",
+      marginLeft: "17rem",
       [theme.breakpoints.down("sm")]: {
-        width: "100%",
         marginLeft: "0",
       },
     },

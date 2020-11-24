@@ -34,7 +34,7 @@ export const ActivityList = () => {
         endDate={endDate}
         setDateRange={setDateRange}
       />
-      <div style={{ width: 900 }}>
+      <div>
         <SummaryTable records={filteredData} />
       </div>
     </>

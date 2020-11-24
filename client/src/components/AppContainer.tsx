@@ -28,14 +28,12 @@ const useStyles = makeStyles((theme) => {
       justifyContent: "center",
       width: "100%",
     },
-    iconContainer: {
-      width: "20%",
-      [theme.breakpoints.down("sm")]: {
-        width: "0%",
-      },
-    },
     appBar: {
       maxHeight: "64px",
+      display: "none",
+      [theme.breakpoints.down("sm")]: {
+        display: "flex",
+      },
     },
   };
 });
@@ -48,7 +46,7 @@ export const AppContainer = ({ children }: Props) => {
       <div className={styles.container}>
         <AppBar position="sticky" className={styles.appBar}>
           <Toolbar>
-            <div className={styles.iconContainer}>
+            <div>
               <IconButton color="inherit" onClick={handleNavigationToggle}>
                 <MenuIcon />
               </IconButton>
