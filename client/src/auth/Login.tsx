@@ -1,4 +1,3 @@
-import * as React from "react";
 import { StyledFirebaseAuth } from "react-firebaseui";
 import firebase from "firebase/app";
 import "firebase/auth";

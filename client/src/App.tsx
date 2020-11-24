@@ -1,4 +1,3 @@
-import * as React from "react";
 import { AuthProvider } from "./auth";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { BrowserRouter } from "react-router-dom";

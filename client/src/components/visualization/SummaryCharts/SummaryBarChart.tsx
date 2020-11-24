@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ActivitySummaries } from "../../../data";
 import { Bar } from "react-chartjs-2";
 import { sortKeys, getTotalCount } from "../utils";

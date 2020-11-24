@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useCallback } from "react";
 import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, makeStyles } from "@material-ui/core";
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => {
 
 export function FileUploadForm() {
   const [addActivities, { status }] = useActivitiesMutation();
-  const onSubmit = React.useCallback(
+  const onSubmit = useCallback(
     async (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
       let reader = new FileReader();
       const { file } = values;

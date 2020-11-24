@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
-import * as React from "react";
+import { useMemo, forwardRef } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
 
 export type NavigationElement = {
@@ -40,9 +40,9 @@ const Link = ({
 }) => {
   const { text, path } = navigationElement;
   const styles = useStyles();
-  const ListLink = React.useMemo(
+  const ListLink = useMemo(
     () =>
-      React.forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
+      forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
         <NavLink to={path} ref={ref} {...itemProps} exact />
       )),
     [path]

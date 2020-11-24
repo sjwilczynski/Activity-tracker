@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useCallback } from "react";
 import { Field, Formik, Form } from "formik";
 import * as yup from "yup";
 import { ActivityRecordServer, useActivitiesMutation } from "../../data";
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => {
 
 export function AddActivityForm() {
   const [addActivities, { status }] = useActivitiesMutation();
-  const onSubmit = React.useCallback(
+  const onSubmit = useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),

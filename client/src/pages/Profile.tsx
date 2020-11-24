@@ -1,5 +1,4 @@
 import { Button } from "@material-ui/core";
-import * as React from "react";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { ErrorView, FileUploadForm, ModalDialog } from "../components";

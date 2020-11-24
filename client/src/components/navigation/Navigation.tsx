@@ -1,4 +1,3 @@
-import * as React from "react";
 import { LinkList, NavigationElement } from "./LinkList";
 import { NavigationContainer } from "./NavigationContainer";
 

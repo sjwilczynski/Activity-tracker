@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import { Login } from "./Login";
 import { useAuth } from "./useAuth";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { createContext, useContext } from "react";
 
 export type User = {
   displayName: string | null;
@@ -13,12 +13,12 @@ export type Auth = {
   user: User | undefined;
 };
 
-export const AuthContext = React.createContext<Auth>({
+export const AuthContext = createContext<Auth>({
   signOut: undefined,
   getIdToken: undefined,
   user: undefined,
 });
 
 export function useAuthContext(): Auth {
-  return React.useContext(AuthContext);
+  return useContext(AuthContext);
 }
