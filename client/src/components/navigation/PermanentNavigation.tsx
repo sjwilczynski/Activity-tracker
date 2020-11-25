@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     navigation: {
       width: drawerWidth,
-      height: "100vh",
     },
     drawerPaper: {
       width: drawerWidth,
