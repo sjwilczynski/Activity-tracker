@@ -19,16 +19,14 @@ export function SummaryPieChart(props: Props) {
     datasets: [chartJsData.datasets[0], summaryDataset],
   };
   return (
-    <div style={{ width: 1000, height: 500 }}>
-      <Pie
-        data={data}
-        options={{
-          maintainAspectRatio: false,
-          responsive: true,
-          tooltips: tooltipCallback,
-        }}
-      />
-    </div>
+    <Pie
+      data={data}
+      options={{
+        maintainAspectRatio: false,
+        responsive: true,
+        tooltips: tooltipCallback,
+      }}
+    />
   );
 }
 
