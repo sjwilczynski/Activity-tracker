@@ -13,6 +13,7 @@ export { SummaryTable } from "./table/SummaryTable";
 export { BarChart } from "./visualization/Charts/BarChart";
 export { SummaryBarChart } from "./visualization/SummaryCharts/SummaryBarChart";
 export { SummaryPieChart } from "./visualization/SummaryCharts/SummaryPieChart";
+export { ChartWrapper } from "./visualization/ChartWrapper";
 
 export { ModalDialog } from "./ModalDialog";
 export { PickersContextProvider } from "./PickersContextProvider";

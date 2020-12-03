@@ -1,44 +1,63 @@
-import { Button } from "@material-ui/core";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { ErrorView, FileUploadForm, ModalDialog } from "../components";
 import { useDeleteAllActivities, useExportedActivities } from "../data";
 
+const useStyles = makeStyles(() => {
+  return {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      marginTop: "12rem",
+    },
+    lastActivity: {
+      fontWeight: 500,
+    },
+    spacing: {
+      padding: "0.5rem 0",
+    },
+  };
+});
+
 export const Profile = () => {
   const { user } = useAuth();
   const exportedActivities = useExportedActivities();
   const exportFile = () => JSON.stringify(exportedActivities);
+  const styles = useStyles();
 
   const [deleteAllActivities, { error, status }] = useDeleteAllActivities();
   if (error) {
     return <ErrorView error={error} />;
   }
   return (
-    <>
-      <div>User name: {user?.displayName}</div>
-      {/* TODO: wrap this button in dialog to have confirmation */}
-      <ModalDialog
-        openButtonText="Delete your activites"
-        title="Delete confirmation"
-        description="Are you sure you want to delete all your activities?"
-        content={
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={deleteAllActivities}
-            >
-              Confirm
-            </Button>
-            {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
-            {status === "success" ? (
-              <div>Successfully deleted the data</div>
-            ) : undefined}
-          </>
-        }
-      />
+    <div className={styles.container}>
+      <Typography variant="h5">User name: {user?.displayName}</Typography>
+      <div className={styles.spacing}>
+        <ModalDialog
+          openButtonText="Delete your activites"
+          title="Delete confirmation"
+          description="Are you sure you want to delete all your activities?"
+          content={
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={deleteAllActivities}
+              >
+                Confirm
+              </Button>
+              {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
+              {status === "success" ? (
+                <div>Successfully deleted the data</div>
+              ) : undefined}
+            </>
+          }
+        />
+      </div>
 
-      <div>
+      <div className={styles.spacing}>
         <ModalDialog
           openButtonText="Upload activities"
           title="Activties upload"
@@ -47,7 +66,7 @@ export const Profile = () => {
         />
       </div>
       {exportedActivities && (
-        <div>
+        <div className={styles.spacing}>
           <DownloadLink
             filename="activities.json"
             tagName="div"
@@ -61,6 +80,6 @@ export const Profile = () => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };

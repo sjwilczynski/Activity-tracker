@@ -5,6 +5,7 @@ import {
   Loading,
   SummaryPieChart,
   SummaryBarChart,
+  ChartWrapper,
 } from "../components";
 import {
   useActivities,
@@ -34,15 +35,15 @@ export const Charts = () => {
         endDate={endDate}
         setDateRange={setDateRange}
       />
-      <div>
+      <ChartWrapper>
         <BarChart activitySummaries={activitySummaries} />
-      </div>
-      <div>
+      </ChartWrapper>
+      <ChartWrapper>
         <SummaryPieChart activitySummaries={activitySummaries} />
-      </div>
-      <div>
+      </ChartWrapper>
+      <ChartWrapper>
         <SummaryBarChart activitySummaries={activitySummaries} />
-      </div>
+      </ChartWrapper>
     </>
   );
 };

@@ -9,36 +9,34 @@ type Props = {
 export function BarChart(props: Props) {
   const data = getDataInChartJsFormat(props.activitySummaries);
   return (
-    <div style={{ width: 1000, height: 500 }}>
-      <Bar
-        data={data}
-        options={{
-          maintainAspectRatio: false,
-          responsive: true,
-          scales: {
-            xAxes: [
-              {
-                gridLines: {
-                  display: false,
-                },
+    <Bar
+      data={data}
+      options={{
+        maintainAspectRatio: false,
+        responsive: true,
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
               },
-            ],
-            yAxes: [
-              {
-                gridLines: {
-                  display: false,
-                },
-                ticks: {
-                  beginAtZero: true,
-                },
+            },
+          ],
+          yAxes: [
+            {
+              gridLines: {
+                display: false,
               },
-            ],
-          },
-          legend: {
-            display: false,
-          },
-        }}
-      />
-    </div>
+              ticks: {
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
+        legend: {
+          display: false,
+        },
+      }}
+    />
   );
 }
