@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => {
       maxHeight: "64px",
       marginLeft: "0",
       width: "100%",
-      minWidth: 400,
     },
     inlineTitle: {
       marginLeft: "17rem",

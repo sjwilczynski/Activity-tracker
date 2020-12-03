@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => {
     container: {
       display: "flex",
       flexDirection: "column",
+      minWidth: 400,
     },
   };
 });
