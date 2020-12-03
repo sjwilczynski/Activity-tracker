@@ -19,10 +19,14 @@ const useStyles = makeStyles((theme) => {
     form: {
       display: "flex",
       alignItems: "center",
+      flexFlow: "row wrap",
       padding: `${theme.spacing(1)}px`,
-      "& > div": {
-        marginRight: theme.spacing(2),
+      "& > *": {
+        margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(
+          1
+        )}px 0`,
       },
+      margin: `${theme.spacing(1)}px 0`,
     },
   };
 });
@@ -45,7 +49,7 @@ export const DateFilterForm = (props: Props) => {
         onSubmit={onSubmit}
         validate={validate}
       >
-        {({ resetForm, isValid, dirty }) => (
+        {({ resetForm }) => (
           <Form className={styles.form}>
             <Field
               component={KeyboardDatePicker}
