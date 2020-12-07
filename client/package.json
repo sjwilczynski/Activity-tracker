@@ -46,7 +46,7 @@
     "react-query-devtools": "2.6.3",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.1",
-    "yup": "0.32.4"
+    "yup": "0.32.5"
   },
   "devDependencies": {
     "@types/chart.js": "2.9.28",
