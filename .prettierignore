@@ -1,5 +1,6 @@
 api/dist
 client/build
+client/public
 node_modules
 yarn.lock
 .prettierignore
