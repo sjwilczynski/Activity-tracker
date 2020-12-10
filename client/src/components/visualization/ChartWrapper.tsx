@@ -7,7 +7,8 @@ type Props = {
 
 const useStyles = makeStyles((theme) => ({
   chartContainer: {
-    minHeight: "40vh",
+    minHeight: "50vh",
+    minWidth: 500,
   },
 }));
 

@@ -16,6 +16,7 @@ export function SummaryBarChart(props: Props) {
         maintainAspectRatio: false,
         responsive: true,
         legend: {
+          position: "right",
           labels: {
             filter: (item) => !item.text?.includes("threshold"),
           },

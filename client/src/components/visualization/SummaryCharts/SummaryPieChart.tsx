@@ -25,6 +25,9 @@ export function SummaryPieChart(props: Props) {
         maintainAspectRatio: false,
         responsive: true,
         tooltips: tooltipCallback,
+        legend: {
+          position: "right",
+        },
       }}
     />
   );

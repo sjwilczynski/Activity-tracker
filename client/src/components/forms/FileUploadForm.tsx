@@ -4,7 +4,7 @@ import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, makeStyles } from "@material-ui/core";
 import { FileInput } from "./FileInput";
 
-const FILE_SIZE = 80 * 1024;
+const FILE_SIZE = 100 * 1024;
 const SUPPORTED_FORMATS = ["application/json"];
 
 type FormValues = {
