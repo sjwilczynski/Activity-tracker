@@ -13,25 +13,25 @@ function App() {
   useActivitiesPrefetch();
   return (
     <AppContainer>
-      <Pages />
+      <AuthProvider>
+        <Pages />
+      </AuthProvider>
     </AppContainer>
   );
 }
 
 function AppWithProviders() {
   return (
-    <AuthProvider>
-      <QueryConfigProvider>
-        <PickersContextProvider>
-          <BrowserRouter>
-            <StylesProvider>
-              <App />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </StylesProvider>
-          </BrowserRouter>
-        </PickersContextProvider>
-      </QueryConfigProvider>
-    </AuthProvider>
+    <QueryConfigProvider>
+      <PickersContextProvider>
+        <BrowserRouter>
+          <StylesProvider>
+            <App />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </StylesProvider>
+        </BrowserRouter>
+      </PickersContextProvider>
+    </QueryConfigProvider>
   );
 }
 
