@@ -43,7 +43,7 @@ const Link = ({
   const ListLink = useMemo(
     () =>
       forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
-        <NavLink to={path} ref={ref} {...itemProps} exact />
+        <NavLink to={path} ref={ref} {...itemProps} />
       )),
     [path]
   );

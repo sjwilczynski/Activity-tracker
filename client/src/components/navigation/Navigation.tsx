@@ -10,7 +10,7 @@ type Props = {
 const navList: NavigationElement[] = [
   {
     text: "Start page",
-    path: "/",
+    path: "/welcome",
   },
   {
     text: "Profile",
