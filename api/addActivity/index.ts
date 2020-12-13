@@ -58,7 +58,7 @@ const isActivityValid = (activity): activity is ActivityRecord => {
     return false;
   }
 
-  if (!isMatch(castedActivity.date, "YYYY-MM-DD")) {
+  if (!isMatch(castedActivity.date, "yyyy-MM-dd")) {
     return false;
   }
 

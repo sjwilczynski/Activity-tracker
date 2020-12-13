@@ -20,7 +20,7 @@ const isActivityValid = (activity: any): activity is ActivityRecordServer => {
     return false;
   }
 
-  if (!isMatch(castedActivity.date, "YYYY-MM-DD")) {
+  if (!isMatch(castedActivity.date, "yyyy-MM-dd")) {
     return false;
   }
 
