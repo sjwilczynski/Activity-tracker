@@ -16,13 +16,13 @@ const useStyles = makeStyles(() => {
       fontWeight: 500,
     },
     spacing: {
-      padding: "0.5rem 0",
+      padding: "0.5rem",
     },
   };
 });
 
 export const Profile = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const exportedActivities = useExportedActivities();
   const exportFile = () => JSON.stringify(exportedActivities);
   const styles = useStyles();
@@ -80,6 +80,11 @@ export const Profile = () => {
           />
         </div>
       )}
+      <div className={styles.spacing}>
+        <Button variant="contained" color="primary" onClick={signOut}>
+          Sign out
+        </Button>
+      </div>
     </div>
   );
 };
