@@ -1,4 +1,5 @@
 import { ActivityRecordServer } from "../types";
+import { isMatch } from "date-fns";
 
 export const areActivitiesValid = (
   activityRecords: any
@@ -18,10 +19,10 @@ const isActivityValid = (activity: any): activity is ActivityRecordServer => {
   if (castedActivity == null || castedActivity === undefined) {
     return false;
   }
-  // TODO: bring back date validation
-  //   if (!moment(castedActivity.date, "YYYY-MM-DD", true).isValid()) {
-  //     return false;
-  //   }
+
+  if (!isMatch(castedActivity.date, "YYYY-MM-DD")) {
+    return false;
+  }
 
   const { name, active } = castedActivity;
   if (

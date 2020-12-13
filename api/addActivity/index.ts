@@ -1,8 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import moment from "moment";
 import { getUserId } from "../authorization";
 import { database } from "../database";
 import { ActivityRecord } from "../utils/types";
+import { isMatch } from "date-fns";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -58,7 +58,7 @@ const isActivityValid = (activity): activity is ActivityRecord => {
     return false;
   }
 
-  if (!moment(castedActivity.date, "YYYY-MM-DD", true).isValid()) {
+  if (!isMatch(castedActivity.date, "YYYY-MM-DD")) {
     return false;
   }
 
