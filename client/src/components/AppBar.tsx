@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "center",
       width: "100%",
+      minWidth: 415,
       alignItems: "center",
       [theme.breakpoints.up("sm")]: {
         padding: "2rem",

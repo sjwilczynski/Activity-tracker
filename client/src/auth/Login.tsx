@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => {
     text: {
       ...theme.typography.h3,
       display: "flex",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         flexFlow: "column wrap",
         alignItems: "center",
       },
