@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => {
     active: { color: theme.palette.primary.main },
     lazy: { color: theme.palette.error.main },
     or: {
-      margin: "0 0.5rem",
+      margin: "0 1rem",
     },
   };
 });
