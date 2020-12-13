@@ -1,3 +1,4 @@
+import { useAuth } from "../../auth";
 import { LinkList, NavigationElement } from "./LinkList";
 import { NavigationContainer } from "./NavigationContainer";
 
@@ -9,7 +10,7 @@ type Props = {
 const navList: NavigationElement[] = [
   {
     text: "Start page",
-    path: "/",
+    path: "/welcome",
   },
   {
     text: "Profile",
@@ -29,7 +30,8 @@ export const Navigation = ({
   isNavigationOpen,
   handleNavigationToggle,
 }: Props) => {
-  return (
+  const { isSignedIn } = useAuth();
+  return isSignedIn ? (
     <NavigationContainer
       handleNavigationToggle={handleNavigationToggle}
       isNavigationOpen={isNavigationOpen}
@@ -39,5 +41,5 @@ export const Navigation = ({
         handleNavigationToggle={handleNavigationToggle}
       />
     </NavigationContainer>
-  );
+  ) : null;
 };

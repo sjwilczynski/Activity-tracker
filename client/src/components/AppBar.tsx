@@ -6,8 +6,10 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  Avatar,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
+import { useAuth } from "../auth";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -21,16 +23,24 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "center",
       width: "100%",
+      minWidth: 415,
+      alignItems: "center",
+      [theme.breakpoints.up("sm")]: {
+        padding: "2rem",
+      },
     },
     appBar: {
       maxHeight: "64px",
       marginLeft: "0",
-      width: "100%",
     },
-    inlineTitle: {
+    titleSpacing: {
       marginLeft: "17rem",
       padding: "2rem",
-      fontWeight: 400,
+    },
+    logo: {
+      width: "17rem",
+      height: "17rem",
+      marginRight: "2rem",
     },
   };
 });
@@ -40,37 +50,39 @@ type Props = {
 };
 
 export const AppBar = ({ handleNavigationToggle }: Props) => {
+  const { isSignedIn } = useAuth();
   const styles = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const headerVariant = matches ? "h3" : "h1";
   const title = (
+    <Typography variant={headerVariant} align="center" className={styles.title}>
+      Activity tracker
+    </Typography>
+  );
+  const wideScreenTitle = isSignedIn ? (
+    <div className={styles.titleSpacing}>{title}</div>
+  ) : (
     <div className={styles.titleContainer}>
-      <Typography
-        variant={headerVariant}
-        align="center"
-        className={styles.title}
-      >
-        Activity tracker
-      </Typography>
+      <Avatar
+        src="/android-chrome-192x192.png"
+        className={styles.logo}
+        alt="App logo"
+      />
+      <div>{title}</div>
     </div>
   );
-  return (
-    <>
-      {matches ? (
-        <MuiAppBar position="sticky" className={styles.appBar}>
-          <Toolbar>
-            <div>
-              <IconButton color="inherit" onClick={handleNavigationToggle}>
-                <MenuIcon />
-              </IconButton>
-            </div>
-            {title}
-          </Toolbar>
-        </MuiAppBar>
-      ) : (
-        <div className={styles.inlineTitle}>{title}</div>
-      )}
-    </>
+  const narrowScreenTitle = (
+    <MuiAppBar position="sticky" className={styles.appBar}>
+      <Toolbar>
+        {isSignedIn && (
+          <IconButton color="inherit" onClick={handleNavigationToggle}>
+            <MenuIcon />
+          </IconButton>
+        )}
+        <div className={styles.titleContainer}>{title}</div>
+      </Toolbar>
+    </MuiAppBar>
   );
+  return matches ? <>{narrowScreenTitle}</> : <>{wideScreenTitle}</>;
 };
