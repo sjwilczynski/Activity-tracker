@@ -33,8 +33,9 @@ const useStyles = makeStyles((theme) => {
       maxHeight: "64px",
       marginLeft: "0",
     },
-    titleMargin: {
+    titleSpacing: {
       marginLeft: "17rem",
+      padding: "2rem",
     },
     logo: {
       width: "17rem",
@@ -60,7 +61,7 @@ export const AppBar = ({ handleNavigationToggle }: Props) => {
     </Typography>
   );
   const wideScreenTitle = isSignedIn ? (
-    <div className={styles.titleMargin}>{title}</div>
+    <div className={styles.titleSpacing}>{title}</div>
   ) : (
     <div className={styles.titleContainer}>
       <Avatar
