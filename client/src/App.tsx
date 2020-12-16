@@ -1,5 +1,5 @@
 import { AuthProvider } from "./auth";
-import { ReactQueryDevtools } from "react-query-devtools";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { BrowserRouter } from "react-router-dom";
 import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
 import {
