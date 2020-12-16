@@ -1,4 +1,4 @@
-import { useMutation, useQueryCache } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { ActivityRecordServer, ActivityRecordWithId } from "../types";
 import axios from "axios";
 import {
@@ -8,17 +8,17 @@ import {
 import { useRequestConfig } from "./useRequestConfig";
 
 export const useActivitiesMutation = () => {
-  const queryCache = useQueryCache();
+  const client = useQueryClient();
   const addActivities = useAddActivitiesFunction();
   return useMutation<string, Error, ActivityRecordServer[], () => void>(
     addActivities,
     {
       onMutate: (activityRecords) => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
+        client.cancelQueries(getActivitiesQueryId, { exact: true });
 
         // Snapshot the previous value
-        const previousActivityRecords = queryCache.getQueryData<
+        const previousActivityRecords = client.getQueryData<
           ActivityRecordWithId[]
         >(getActivitiesQueryId);
 
@@ -33,23 +33,20 @@ export const useActivitiesMutation = () => {
         );
 
         // Optimistically update to the new value
-        queryCache.setQueryData<ActivityRecordWithId[], Error>(
+        client.setQueryData<ActivityRecordWithId[], Error>(
           getActivitiesQueryId,
           (old) => [...(old || []), ...newActivities]
         );
 
         // Return the snapshotted value
         return () =>
-          queryCache.setQueryData(
-            getActivitiesQueryId,
-            previousActivityRecords
-          );
+          client.setQueryData(getActivitiesQueryId, previousActivityRecords);
       },
       // If the mutation fails, use the value returned from onMutate to roll back
       onError: (err, newTodo, rollback) => rollback(),
       // Always refetch after error or success:
       onSettled: () =>
-        queryCache.invalidateQueries(getActivitiesQueryId, { exact: true }),
+        client.invalidateQueries(getActivitiesQueryId, { exact: true }),
     }
   );
 };

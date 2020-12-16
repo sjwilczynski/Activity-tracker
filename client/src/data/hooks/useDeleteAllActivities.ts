@@ -1,4 +1,4 @@
-import { useMutation, useQueryCache } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useRequestConfig } from "./useRequestConfig";
 import axios from "axios";
 import {
@@ -8,25 +8,25 @@ import {
 import { ActivityRecordWithId } from "../types";
 
 export const useDeleteAllActivities = () => {
-  const queryCache = useQueryCache();
+  const client = useQueryClient();
   const deleteAllActivities = useDeleteAllActivitiesFunction();
   return useMutation<void, Error, {}, () => void>(deleteAllActivities, {
     onMutate: () => {
-      queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
+      client.cancelQueries(getActivitiesQueryId, { exact: true });
 
-      const previousActivityRecords = queryCache.getQueryData<
+      const previousActivityRecords = client.getQueryData<
         ActivityRecordWithId[]
       >(getActivitiesQueryId);
-      queryCache.setQueryData<ActivityRecordWithId[], Error>(
+      client.setQueryData<ActivityRecordWithId[], Error>(
         getActivitiesQueryId,
         []
       );
       return () =>
-        queryCache.setQueryData(getActivitiesQueryId, previousActivityRecords);
+        client.setQueryData(getActivitiesQueryId, previousActivityRecords);
     },
     onError: (err, newTodo, rollback) => rollback(),
     onSettled: () =>
-      queryCache.invalidateQueries(getActivitiesQueryId, { exact: true }),
+      client.invalidateQueries(getActivitiesQueryId, { exact: true }),
   });
 };
 

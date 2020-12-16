@@ -1,4 +1,4 @@
-import { useQuery, useQueryCache } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import {
   ActivityRecordServer,
   ActivityRecordWithId,
@@ -19,16 +19,19 @@ export const useActivities = () => {
 };
 
 export const useActivitiesPrefetch = () => {
-  const cache = useQueryCache();
+  const client = useQueryClient();
   const getConfig = useRequestConfig();
-  cache.prefetchQuery(getActivitiesQueryId, () => fetchActivities(getConfig()));
+  client.prefetchQuery(getActivitiesQueryId, () =>
+    fetchActivities(getConfig())
+  );
 };
 
 export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
-  const queryCache = useQueryCache();
-  const data = queryCache.getQueryData<ActivityRecordWithId[]>(
+  const client = useQueryClient();
+  const data = client.getQueryData<ActivityRecordWithId[]>(
     getActivitiesQueryId
   );
+  // TODO: use query data selectors here
   return data?.map((activityRecord) => {
     return {
       date: activityRecord.date.toLocaleDateString("en-CA"),
@@ -46,6 +49,7 @@ const fetchActivities = async (
     activitiesApiPath,
     config
   );
+  // TODO: use query data selectors here
   return activityRecordsResponse.data.map((activityRecord) => {
     return {
       ...activityRecord,
