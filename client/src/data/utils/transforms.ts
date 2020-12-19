@@ -1,3 +1,4 @@
+import { endOfDay, startOfDay } from "date-fns";
 import { ActivityRecordWithId, ActivitySummaries } from "../types";
 
 export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
@@ -25,12 +26,15 @@ export function filterByDateRange(
   startDate: Date | null,
   endDate: Date | null
 ) {
-  return startDate && endDate
-    ? records.filter(
-        (record: ActivityRecordWithId) =>
-          startDate <= record.date && record.date <= endDate
-      )
-    : records;
+  if (!startDate || !endDate) {
+    return records;
+  }
+  const normalizedStartDate = startOfDay(startDate);
+  const normalizedEndDate = endOfDay(endDate);
+  return records.filter(
+    (record: ActivityRecordWithId) =>
+      normalizedStartDate <= record.date && record.date <= normalizedEndDate
+  );
 }
 
 export function sortDescendingByDate(records: ActivityRecordWithId[]) {
