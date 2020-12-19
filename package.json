@@ -8,7 +8,8 @@
   "private": false,
   "scripts": {
     "depcheck": "node scripts/depcheck.js",
-    "lint": "eslint './**/*.{ts,tsx,js}' --max-warnings=0"
+    "lint": "eslint './**/*.{ts,tsx,js}' --max-warnings=0",
+    "clean": "rm -rf node_modules client/node_modules api/node_modules"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.10.0",
