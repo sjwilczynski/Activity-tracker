@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => {
   return {
     title: {
       fontWeight: 400,
+      whiteSpace: "nowrap",
       [theme.breakpoints.down("sm")]: {
         color: theme.palette.common.white,
       },
@@ -23,15 +24,19 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "center",
       width: "100%",
-      minWidth: 415,
       alignItems: "center",
       [theme.breakpoints.up("sm")]: {
         padding: "2rem",
       },
     },
+    toolbar: {
+      minHeight: 64,
+    },
     appBar: {
-      maxHeight: "64px",
-      marginLeft: "0",
+      padding: "4px 0",
+      minWidth: 415,
+      maxHeight: 72,
+      marginLeft: 0,
     },
     titleSpacing: {
       marginLeft: "17rem",
@@ -74,7 +79,7 @@ export const AppBar = ({ handleNavigationToggle }: Props) => {
   );
   const narrowScreenTitle = (
     <MuiAppBar position="sticky" className={styles.appBar}>
-      <Toolbar>
+      <Toolbar className={styles.toolbar}>
         {isSignedIn && (
           <IconButton color="inherit" onClick={handleNavigationToggle}>
             <MenuIcon />
