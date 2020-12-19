@@ -1,15 +1,12 @@
-import { useQuery, useQueryClient } from "react-query";
-import {
-  ActivityRecordServer,
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-} from "../types";
+import { useIsFetching, useQuery, useQueryClient } from "react-query";
+import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
 } from "../react-query-config/query-constants";
 import { ConfigPromise, useRequestConfig } from "./useRequestConfig";
+import { useCallback } from "react";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
@@ -26,13 +23,23 @@ export const useActivitiesPrefetch = () => {
   );
 };
 
-export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
-  const { data } = useActivities();
-  return data?.map((activityRecord) => ({
-    date: activityRecord.date.toLocaleDateString("en-CA"),
-    name: activityRecord.name,
-    active: activityRecord.active,
-  }));
+export const useExportActivities = (): (() => string) => {
+  const client = useQueryClient();
+
+  return useCallback(() => {
+    const activities = client
+      .getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId)
+      ?.map((activityRecord) => ({
+        date: activityRecord.date.toLocaleDateString("en-CA"),
+        name: activityRecord.name,
+        active: activityRecord.active,
+      }));
+    return JSON.stringify(activities);
+  }, [client]);
+};
+
+export const useIsFetchingActivties = () => {
+  return useIsFetching(getActivitiesQueryId) > 0;
 };
 
 const fetchActivities = async (
