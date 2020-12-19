@@ -27,7 +27,11 @@ export const Profile = () => {
   const exportFile = () => JSON.stringify(exportedActivities);
   const styles = useStyles();
 
-  const [deleteAllActivities, { error, status }] = useDeleteAllActivities();
+  const {
+    mutate: deleteAllActivities,
+    error,
+    status,
+  } = useDeleteAllActivities();
   if (error) {
     return <ErrorView error={error} />;
   }

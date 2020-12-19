@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export function FileUploadForm() {
-  const [addActivities, { status }] = useActivitiesMutation();
+  const { mutate: addActivities, status } = useActivitiesMutation();
   const onSubmit = useCallback(
     async (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
       let reader = new FileReader();

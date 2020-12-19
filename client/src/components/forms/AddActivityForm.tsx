@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export function AddActivityForm() {
-  const [addActivities, { status }] = useActivitiesMutation();
+  const { mutate: addActivities, status } = useActivitiesMutation();
   const onSubmit = useCallback(
     async (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
