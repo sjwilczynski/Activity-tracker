@@ -2,7 +2,11 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { ErrorView, FileUploadForm, ModalDialog } from "../components";
-import { useDeleteAllActivities, useExportedActivities } from "../data";
+import {
+  useDeleteAllActivities,
+  useExportActivities,
+  useIsFetchingActivties,
+} from "../data";
 
 const useStyles = makeStyles(() => {
   return {
@@ -23,8 +27,8 @@ const useStyles = makeStyles(() => {
 
 export const Profile = () => {
   const { user, signOut } = useAuth();
-  const exportedActivities = useExportedActivities();
-  const exportFile = () => JSON.stringify(exportedActivities);
+  const exportActivities = useExportActivities();
+  const isFetchingActivities = useIsFetchingActivties();
   const styles = useStyles();
 
   const {
@@ -69,7 +73,7 @@ export const Profile = () => {
           content={<FileUploadForm />}
         />
       </div>
-      {exportedActivities && (
+      {!isFetchingActivities && (
         <div className={styles.spacing}>
           <DownloadLink
             filename="activities.json"
@@ -80,7 +84,7 @@ export const Profile = () => {
                 Export activities
               </Button>
             }
-            exportFile={exportFile}
+            exportFile={exportActivities}
           />
         </div>
       )}

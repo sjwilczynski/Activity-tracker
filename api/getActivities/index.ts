@@ -26,9 +26,10 @@ const httpTrigger: AzureFunction = async function (
 };
 
 const mapToList = (activityMap: ActivityMap): ActivityRecordWithId[] => {
-  return Object.entries(activityMap).map(([key, activityRecord]) => {
-    return { id: key, ...activityRecord };
-  });
+  return Object.entries(activityMap).map(([key, activityRecord]) => ({
+    id: key,
+    ...activityRecord,
+  }));
 };
 
 export default httpTrigger;

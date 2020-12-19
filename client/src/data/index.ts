@@ -1,7 +1,8 @@
 export {
   useActivities,
   useActivitiesPrefetch,
-  useExportedActivities,
+  useExportActivities,
+  useIsFetchingActivties,
 } from "./hooks/useActivities";
 export { useActivitiesMutation } from "./hooks/useActivitiesMutation";
 export { useDateRangeState } from "./hooks/useDateRangeState";

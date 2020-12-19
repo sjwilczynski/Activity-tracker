@@ -1,15 +1,12 @@
-import { useQuery, useQueryClient } from "react-query";
-import {
-  ActivityRecordServer,
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-} from "../types";
+import { useIsFetching, useQuery, useQueryClient } from "react-query";
+import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../types";
 import axios from "axios";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
 } from "../react-query-config/query-constants";
 import { ConfigPromise, useRequestConfig } from "./useRequestConfig";
+import { useCallback } from "react";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
@@ -26,19 +23,23 @@ export const useActivitiesPrefetch = () => {
   );
 };
 
-export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
+export const useExportActivities = (): (() => string) => {
   const client = useQueryClient();
-  const data = client.getQueryData<ActivityRecordWithId[]>(
-    getActivitiesQueryId
-  );
-  // TODO: use query data selectors here
-  return data?.map((activityRecord) => {
-    return {
-      date: activityRecord.date.toLocaleDateString("en-CA"),
-      name: activityRecord.name,
-      active: activityRecord.active,
-    };
-  });
+
+  return useCallback(() => {
+    const activities = client
+      .getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId)
+      ?.map((activityRecord) => ({
+        date: activityRecord.date.toLocaleDateString("en-CA"),
+        name: activityRecord.name,
+        active: activityRecord.active,
+      }));
+    return JSON.stringify(activities);
+  }, [client]);
+};
+
+export const useIsFetchingActivties = () => {
+  return useIsFetching(getActivitiesQueryId) > 0;
 };
 
 const fetchActivities = async (
@@ -49,11 +50,8 @@ const fetchActivities = async (
     activitiesApiPath,
     config
   );
-  // TODO: use query data selectors here
-  return activityRecordsResponse.data.map((activityRecord) => {
-    return {
-      ...activityRecord,
-      date: new Date(activityRecord.date),
-    };
-  });
+  return activityRecordsResponse.data.map((activityRecord) => ({
+    ...activityRecord,
+    date: new Date(activityRecord.date),
+  }));
 };

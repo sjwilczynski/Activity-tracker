@@ -67,27 +67,23 @@ const getStackedBars = (
   activitySummaries: ActivitySummaries,
   keys: string[]
 ) => {
-  return keys.map((key) => {
-    return {
-      data: [activitySummaries[key].count],
-      label: key,
-      backgroundColor: [activitySummaries[key].active ? "#2ecc40" : "#ff4136"],
-      borderWidth: 2,
-      yAxisID: "y-axis-1",
-    };
-  });
+  return keys.map((key) => ({
+    data: [activitySummaries[key].count],
+    label: key,
+    backgroundColor: [activitySummaries[key].active ? "#2ecc40" : "#ff4136"],
+    borderWidth: 2,
+    yAxisID: "y-axis-1",
+  }));
 };
 
 const getThresholdLines = (activitySummaries: ActivitySummaries) => {
   const total = getTotalCount(Object.values(activitySummaries));
-  return [1, 2, 3, 4, 5, 6, 7].map((fraction) => {
-    return {
-      data: [parseFloat(((fraction * total) / 7).toFixed(2))],
-      type: "line",
-      label: `${fraction} days per week threshold`,
-      fill: false,
-      borderColor: "#000000",
-      yAxisID: "y-axis-2",
-    };
-  });
+  return [1, 2, 3, 4, 5, 6, 7].map((fraction) => ({
+    data: [parseFloat(((fraction * total) / 7).toFixed(2))],
+    type: "line",
+    label: `${fraction} days per week threshold`,
+    fill: false,
+    borderColor: "#000000",
+    yAxisID: "y-axis-2",
+  }));
 };

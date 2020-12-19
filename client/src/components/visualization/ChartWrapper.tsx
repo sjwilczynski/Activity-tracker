@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
   chartContainer: {
     minHeight: "50vh",
     minWidth: 500,
+    position: "relative",
   },
 }));
 

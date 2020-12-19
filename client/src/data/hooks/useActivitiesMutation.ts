@@ -29,13 +29,11 @@ export const useActivitiesMutation = () => {
         client.getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId) || [];
 
       const newActivities: ActivityRecordWithId[] = activityRecords.map(
-        (activityRecord: ActivityRecordServer, index: number) => {
-          return {
-            ...activityRecord,
-            date: new Date(activityRecord.date),
-            id: `temporaryId${index}`,
-          };
-        }
+        (activityRecord: ActivityRecordServer, index: number) => ({
+          ...activityRecord,
+          date: new Date(activityRecord.date),
+          id: `temporaryId${index}`,
+        })
       );
 
       // Optimistically update to the new value
