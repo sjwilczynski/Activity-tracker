@@ -1,8 +1,7 @@
-import * as React from "react";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryCache = new QueryCache({
-  defaultConfig: {
+const queryClient = new QueryClient({
+  defaultOptions: {
     queries: {
       cacheTime: 10 * 60 * 1000,
       staleTime: 10 * 60 * 1000,
@@ -12,8 +11,8 @@ const queryCache = new QueryCache({
 
 export const QueryConfigProvider = (props: { children: React.ReactNode }) => {
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
+    <QueryClientProvider client={queryClient}>
       {props.children}
-    </ReactQueryCacheProvider>
+    </QueryClientProvider>
   );
 };

@@ -1,4 +1,4 @@
-import { useMutation, useQueryCache } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { ActivityRecordServer, ActivityRecordWithId } from "../types";
 import axios from "axios";
 import {
@@ -7,51 +7,59 @@ import {
 } from "../react-query-config/query-constants";
 import { useRequestConfig } from "./useRequestConfig";
 
+export type ActivityMutationContext = {
+  previousActivityRecords: ActivityRecordWithId[];
+};
+
 export const useActivitiesMutation = () => {
-  const queryCache = useQueryCache();
+  const client = useQueryClient();
   const addActivities = useAddActivitiesFunction();
-  return useMutation<string, Error, ActivityRecordServer[], () => void>(
-    addActivities,
-    {
-      onMutate: (activityRecords) => {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        queryCache.cancelQueries(getActivitiesQueryId, { exact: true });
+  return useMutation<
+    string,
+    Error,
+    ActivityRecordServer[],
+    ActivityMutationContext
+  >(addActivities, {
+    onMutate: (activityRecords) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      client.cancelQueries(getActivitiesQueryId, { exact: true });
 
-        // Snapshot the previous value
-        const previousActivityRecords = queryCache.getQueryData<
-          ActivityRecordWithId[]
-        >(getActivitiesQueryId);
+      // Snapshot the previous value
+      const previousActivityRecords =
+        client.getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId) || [];
 
-        const newActivities: ActivityRecordWithId[] = activityRecords.map(
-          (activityRecord: ActivityRecordServer, index: number) => {
-            return {
-              ...activityRecord,
-              date: new Date(activityRecord.date),
-              id: `temporaryId${index}`,
-            };
-          }
-        );
+      const newActivities: ActivityRecordWithId[] = activityRecords.map(
+        (activityRecord: ActivityRecordServer, index: number) => {
+          return {
+            ...activityRecord,
+            date: new Date(activityRecord.date),
+            id: `temporaryId${index}`,
+          };
+        }
+      );
 
-        // Optimistically update to the new value
-        queryCache.setQueryData<ActivityRecordWithId[], Error>(
+      // Optimistically update to the new value
+      client.setQueryData<ActivityRecordWithId[]>(
+        getActivitiesQueryId,
+        (old) => [...(old || []), ...newActivities]
+      );
+
+      // Return the snapshotted value
+      return { previousActivityRecords };
+    },
+    // If the mutation fails, use the value returned from onMutate to roll back
+    onError: (error, variables, context) => {
+      if (context) {
+        client.setQueryData(
           getActivitiesQueryId,
-          (old) => [...(old || []), ...newActivities]
+          context.previousActivityRecords
         );
-
-        // Return the snapshotted value
-        return () =>
-          queryCache.setQueryData(
-            getActivitiesQueryId,
-            previousActivityRecords
-          );
-      },
-      // If the mutation fails, use the value returned from onMutate to roll back
-      onError: (err, newTodo, rollback) => rollback(),
-      // Always refetch after error or success:
-      onSettled: () =>
-        queryCache.invalidateQueries(getActivitiesQueryId, { exact: true }),
-    }
-  );
+      }
+    },
+    // Always refetch after error or success:
+    onSettled: () =>
+      client.invalidateQueries(getActivitiesQueryId, { exact: true }),
+  });
 };
 
 const useAddActivitiesFunction = () => {
