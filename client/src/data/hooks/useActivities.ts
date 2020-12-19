@@ -27,18 +27,12 @@ export const useActivitiesPrefetch = () => {
 };
 
 export const useExportedActivities = (): ActivityRecordServer[] | undefined => {
-  const client = useQueryClient();
-  const data = client.getQueryData<ActivityRecordWithId[]>(
-    getActivitiesQueryId
-  );
-  // TODO: use query data selectors here
-  return data?.map((activityRecord) => {
-    return {
-      date: activityRecord.date.toLocaleDateString("en-CA"),
-      name: activityRecord.name,
-      active: activityRecord.active,
-    };
-  });
+  const { data } = useActivities();
+  return data?.map((activityRecord) => ({
+    date: activityRecord.date.toLocaleDateString("en-CA"),
+    name: activityRecord.name,
+    active: activityRecord.active,
+  }));
 };
 
 const fetchActivities = async (
@@ -49,11 +43,8 @@ const fetchActivities = async (
     activitiesApiPath,
     config
   );
-  // TODO: use query data selectors here
-  return activityRecordsResponse.data.map((activityRecord) => {
-    return {
-      ...activityRecord,
-      date: new Date(activityRecord.date),
-    };
-  });
+  return activityRecordsResponse.data.map((activityRecord) => ({
+    ...activityRecord,
+    date: new Date(activityRecord.date),
+  }));
 };

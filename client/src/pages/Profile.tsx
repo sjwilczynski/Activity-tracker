@@ -1,4 +1,5 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
+import { useCallback } from "react";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { ErrorView, FileUploadForm, ModalDialog } from "../components";
@@ -24,7 +25,9 @@ const useStyles = makeStyles(() => {
 export const Profile = () => {
   const { user, signOut } = useAuth();
   const exportedActivities = useExportedActivities();
-  const exportFile = () => JSON.stringify(exportedActivities);
+  const exportFile = useCallback(() => JSON.stringify(exportedActivities), [
+    exportedActivities,
+  ]);
   const styles = useStyles();
 
   const {

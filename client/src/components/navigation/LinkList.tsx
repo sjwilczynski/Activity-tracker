@@ -18,15 +18,13 @@ export const LinkList = ({
 }: Props) => {
   return (
     <List>
-      {navigationElements.map((item) => {
-        return (
-          <Link
-            key={item.text}
-            navigationElement={item}
-            handleNavigationToggle={handleNavigationToggle}
-          />
-        );
-      })}
+      {navigationElements.map((item) => (
+        <Link
+          key={item.text}
+          navigationElement={item}
+          handleNavigationToggle={handleNavigationToggle}
+        />
+      ))}
     </List>
   );
 };
