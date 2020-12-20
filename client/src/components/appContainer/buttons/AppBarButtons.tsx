@@ -6,7 +6,6 @@ const useStyles = makeStyles((theme) => {
   return {
     buttons: {
       display: "flex",
-      color: theme.palette.primary.main,
       [theme.breakpoints.down("sm")]: {
         color: theme.palette.common.white,
       },
