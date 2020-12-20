@@ -1,26 +1,26 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
 import { ToggleThemeButton } from "./ToggleThemeButton";
 import { GitHubLinkButton } from "./GitHubLinkButton";
+import { AdditionalMenu } from "./AdditionalMenu";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    buttons: {
-      display: "flex",
-      [theme.breakpoints.down("sm")]: {
-        color: theme.palette.common.white,
-      },
-      [theme.breakpoints.up("sm")]: {
-        position: "absolute",
-        top: 10,
-        right: 10,
-      },
-    },
-  };
+const useStyles = makeStyles({
+  buttons: {
+    display: "flex",
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
 });
 
 export const AppBarButtons = () => {
   const styles = useStyles();
-  return (
+  const matches = useMediaQuery(useTheme().breakpoints.down("sm"));
+  return matches ? (
+    <AdditionalMenu>
+      <GitHubLinkButton />
+      <ToggleThemeButton />
+    </AdditionalMenu>
+  ) : (
     <div className={styles.buttons}>
       <GitHubLinkButton />
       <ToggleThemeButton />

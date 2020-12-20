@@ -28,19 +28,21 @@ const useStyles = makeStyles((theme) => {
     titleContainer: {
       display: "flex",
       justifyContent: "center",
-      width: "100%",
       alignItems: "center",
       position: "relative",
-      [theme.breakpoints.up("sm")]: {
-        padding: "2rem",
+      padding: "2rem",
+      [theme.breakpoints.down("sm")]: {
+        padding: 0,
       },
     },
     toolbar: {
       minHeight: 64,
+      display: "flex",
+      justifyContent: "space-between",
+      padding: "0 8px",
     },
     appBar: {
       padding: "4px 0",
-      minWidth: 415,
       maxHeight: 72,
       marginLeft: 0,
     },
