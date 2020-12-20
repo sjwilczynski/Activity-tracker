@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => {
 export function FileUploadForm() {
   const { mutate: addActivities, status } = useActivitiesMutation();
   const onSubmit = useCallback(
-    async (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
+    (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
       let reader = new FileReader();
       const { file } = values;
       if (file) {
