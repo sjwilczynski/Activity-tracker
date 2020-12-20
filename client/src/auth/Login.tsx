@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => {
         alignItems: "center",
       },
     },
-    active: { color: theme.palette.primary.main },
+    active: { color: theme.palette.info.main },
     lazy: { color: theme.palette.error.main },
     or: {
       margin: "0 1rem",

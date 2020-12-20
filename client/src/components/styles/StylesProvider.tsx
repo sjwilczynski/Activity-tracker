@@ -39,6 +39,11 @@ const lightTheme: ThemeOptions = {
       default: "#f2f2f2",
       paper: "#f2f2f2",
     },
+    info: {
+      light: "#76a8d3",
+      main: "#4479a2",
+      dark: "#034d73",
+    },
   },
 };
 
@@ -54,6 +59,11 @@ const darkTheme: ThemeOptions = {
       light: "#b6bec7",
       main: "#868e96",
       dark: "#596168",
+    },
+    info: {
+      light: "#76a8d3",
+      main: "#4479a2",
+      dark: "#034d73",
     },
   },
 };
