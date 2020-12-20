@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core";
-import { Navigation } from "./navigation/Navigation";
-import { useNavigationState } from "./navigation/useNavigationState";
+import { Navigation } from "../navigation/Navigation";
+import { useNavigationState } from "../navigation/useNavigationState";
 import { AppBar } from "./AppBar";
 
 type Props = {

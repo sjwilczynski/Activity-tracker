@@ -18,6 +18,6 @@ export { ChartWrapper } from "./visualization/ChartWrapper";
 
 export { ModalDialog } from "./ModalDialog";
 export { PickersContextProvider } from "./PickersContextProvider";
-export { AppContainer } from "./AppContainer";
+export { AppContainer } from "./appContainer/AppContainer";
 
 export { StylesProvider } from "./styles/StylesProvider";

@@ -1,6 +1,5 @@
 import {
   AppBar as MuiAppBar,
-  IconButton,
   makeStyles,
   Toolbar,
   Typography,
@@ -8,8 +7,9 @@ import {
   useMediaQuery,
   Avatar,
 } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
-import { useAuth } from "../auth";
+import { useAuth } from "../../auth";
+import { AppBarButtons } from "./buttons/AppBarButtons";
+import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -20,11 +20,17 @@ const useStyles = makeStyles((theme) => {
         color: theme.palette.common.white,
       },
     },
+    titleSpacing: {
+      marginLeft: "17rem",
+      padding: "2rem",
+      position: "relative",
+    },
     titleContainer: {
       display: "flex",
       justifyContent: "center",
       width: "100%",
       alignItems: "center",
+      position: "relative",
       [theme.breakpoints.up("sm")]: {
         padding: "2rem",
       },
@@ -38,10 +44,7 @@ const useStyles = makeStyles((theme) => {
       maxHeight: 72,
       marginLeft: 0,
     },
-    titleSpacing: {
-      marginLeft: "17rem",
-      padding: "2rem",
-    },
+
     logo: {
       width: "17rem",
       height: "17rem",
@@ -66,7 +69,10 @@ export const AppBar = ({ handleNavigationToggle }: Props) => {
     </Typography>
   );
   const wideScreenTitle = isSignedIn ? (
-    <div className={styles.titleSpacing}>{title}</div>
+    <div className={styles.titleSpacing}>
+      {title}
+      <AppBarButtons />
+    </div>
   ) : (
     <div className={styles.titleContainer}>
       <Avatar
@@ -75,17 +81,15 @@ export const AppBar = ({ handleNavigationToggle }: Props) => {
         alt="App logo"
       />
       <div>{title}</div>
+      <AppBarButtons />
     </div>
   );
   const narrowScreenTitle = (
     <MuiAppBar position="sticky" className={styles.appBar}>
       <Toolbar className={styles.toolbar}>
-        {isSignedIn && (
-          <IconButton color="inherit" onClick={handleNavigationToggle}>
-            <MenuIcon />
-          </IconButton>
-        )}
+        <NavigationMenuButton handleNavigationToggle={handleNavigationToggle} />
         <div className={styles.titleContainer}>{title}</div>
+        <AppBarButtons />
       </Toolbar>
     </MuiAppBar>
   );
