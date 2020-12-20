@@ -4,7 +4,7 @@ import {
   ThemeOptions,
   ThemeProvider,
 } from "@material-ui/core";
-import { atom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useAtomValue } from "jotai/utils";
 
 type Props = {
@@ -59,13 +59,15 @@ const darkTheme: ThemeOptions = {
 };
 
 const isLightThemeAtom = atom(true);
-export const themeAtom = atom(
+const themeAtom = atom(
   (get) => get(isLightThemeAtom),
   (get, set) => set(isLightThemeAtom, !get(isLightThemeAtom))
 );
+export const useIsLightTheme = () => useAtomValue(themeAtom);
+export const useThemeState = () => useAtom(themeAtom);
 
 export const StylesProvider = ({ children }: Props) => {
-  const isLightTheme = useAtomValue(themeAtom);
+  const isLightTheme = useIsLightTheme();
   const theme = createMuiTheme(isLightTheme ? lightTheme : darkTheme);
   return (
     <ThemeProvider theme={theme}>
