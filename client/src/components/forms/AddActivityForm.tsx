@@ -34,14 +34,14 @@ const useStyles = makeStyles((theme) => {
 export function AddActivityForm() {
   const { mutate: addActivities, status } = useActivitiesMutation();
   const onSubmit = useCallback(
-    async (values: FormValues) => {
+    (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),
         name: values.name,
         active: values.active,
       };
       try {
-        await addActivities([activityRecord]);
+        addActivities([activityRecord]);
       } catch (error) {
         // TODO: better error handling
         console.log("Unexpected error on adding activity");
