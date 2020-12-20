@@ -2,12 +2,8 @@ import { Formik, Form, Field, FormikErrors } from "formik";
 import { KeyboardDatePicker } from "formik-material-ui-pickers";
 import { Button, makeStyles } from "@material-ui/core";
 import { isBefore } from "date-fns";
-
-type Props = {
-  startDate: Date | null;
-  endDate: Date | null;
-  setDateRange: (startDate: Date | null, endDate: Date | null) => void;
-};
+import { atom, useAtom } from "jotai";
+import { useAtomValue } from "jotai/utils";
 
 type FormValues = {
   startDate: Date | null;
@@ -31,11 +27,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export const DateFilterForm = (props: Props) => {
-  const { startDate, endDate, setDateRange } = props;
+const dateRangeAtom = atom<FormValues>({ startDate: null, endDate: null });
+export const useDateRange = () => useAtomValue(dateRangeAtom);
+
+export const DateFilterForm = () => {
+  const [{ startDate, endDate }, setDateRange] = useAtom(dateRangeAtom);
   const onSubmit = (values: FormValues) => {
     if (values.startDate && values.endDate) {
-      setDateRange(values.startDate, values.endDate);
+      setDateRange({ startDate: values.startDate, endDate: values.endDate });
     }
   };
   const styles = useStyles();
@@ -76,7 +75,7 @@ export const DateFilterForm = (props: Props) => {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  setDateRange(null, null);
+                  setDateRange({ startDate: null, endDate: null });
                   resetForm({
                     values: {
                       startDate: null,

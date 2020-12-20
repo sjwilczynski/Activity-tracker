@@ -6,17 +6,17 @@ import {
   SummaryPieChart,
   SummaryBarChart,
   ChartWrapper,
+  useDateRange,
 } from "../components";
 import {
   useActivities,
-  useDateRangeState,
   filterByDateRange,
   transformDataToSummaryMap,
 } from "../data";
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
-  const { startDate, endDate, setDateRange } = useDateRangeState();
+  const { startDate, endDate } = useDateRange();
 
   if (isLoading) {
     return <Loading />;
@@ -30,11 +30,7 @@ export const Charts = () => {
   );
   return (
     <>
-      <DateFilterForm
-        startDate={startDate}
-        endDate={endDate}
-        setDateRange={setDateRange}
-      />
+      <DateFilterForm />
       <ChartWrapper>
         <BarChart activitySummaries={activitySummaries} />
       </ChartWrapper>

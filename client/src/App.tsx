@@ -8,6 +8,7 @@ import {
   PickersContextProvider,
 } from "./components";
 import { Pages } from "./pages";
+import { Provider } from "jotai";
 
 function App() {
   useActivitiesPrefetch();
@@ -23,14 +24,16 @@ function App() {
 function AppWithProviders() {
   return (
     <QueryConfigProvider>
-      <PickersContextProvider>
-        <BrowserRouter>
-          <StylesProvider>
-            <App />
-            <ReactQueryDevtools initialIsOpen={false} />
-          </StylesProvider>
-        </BrowserRouter>
-      </PickersContextProvider>
+      <Provider>
+        <PickersContextProvider>
+          <BrowserRouter>
+            <StylesProvider>
+              <App />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </StylesProvider>
+          </BrowserRouter>
+        </PickersContextProvider>
+      </Provider>
     </QueryConfigProvider>
   );
 }

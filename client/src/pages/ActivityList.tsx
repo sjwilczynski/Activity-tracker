@@ -1,19 +1,19 @@
 import {
   DateFilterForm,
+  useDateRange,
   ErrorView,
   Loading,
   SummaryTable,
 } from "../components";
 import {
   useActivities,
-  useDateRangeState,
   filterByDateRange,
   sortDescendingByDate,
 } from "../data";
 
 export const ActivityList = () => {
   const { isLoading, error, data } = useActivities();
-  const { startDate, endDate, setDateRange } = useDateRangeState();
+  const { startDate, endDate } = useDateRange();
 
   if (isLoading) {
     return <Loading />;
@@ -29,11 +29,7 @@ export const ActivityList = () => {
 
   return (
     <>
-      <DateFilterForm
-        startDate={startDate}
-        endDate={endDate}
-        setDateRange={setDateRange}
-      />
+      <DateFilterForm />
       <div>
         <SummaryTable records={filteredData} />
       </div>
