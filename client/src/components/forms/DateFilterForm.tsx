@@ -55,6 +55,7 @@ export const DateFilterForm = () => {
               name="startDate"
               label="Start date"
               format="yyyy-MM-dd"
+              disabled={false}
               autoOk
             />
             <Field
@@ -62,31 +63,29 @@ export const DateFilterForm = () => {
               name="endDate"
               label="End date"
               format="yyyy-MM-dd"
+              disabled={false}
               autoOk
             />
-            {(!startDate || !endDate) && (
-              <Button variant="contained" color="primary" type="submit">
-                Set date range
-              </Button>
-            )}
-            {startDate && endDate && (
-              <Button
-                type="button"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setDateRange({ startDate: null, endDate: null });
-                  resetForm({
-                    values: {
-                      startDate: null,
-                      endDate: null,
-                    },
-                  });
-                }}
-              >
-                Clear range
-              </Button>
-            )}
+            <Button variant="contained" color="primary" type="submit">
+              Set date range
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              disabled={!startDate || !endDate}
+              onClick={() => {
+                setDateRange({ startDate: null, endDate: null });
+                resetForm({
+                  values: {
+                    startDate: null,
+                    endDate: null,
+                  },
+                });
+              }}
+            >
+              Clear range
+            </Button>
           </Form>
         )}
       </Formik>
