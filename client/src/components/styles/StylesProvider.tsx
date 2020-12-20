@@ -46,9 +46,9 @@ const darkTheme: ThemeOptions = {
   palette: {
     type: "dark",
     primary: {
-      light: "#76a8d3",
-      main: "#4479a2",
-      dark: "#034d73",
+      light: "#666666",
+      main: "#424242",
+      dark: "#000000",
     },
     secondary: {
       light: "#b6bec7",
