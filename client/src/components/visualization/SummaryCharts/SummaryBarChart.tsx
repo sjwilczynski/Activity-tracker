@@ -1,6 +1,6 @@
 import { ActivitySummaries } from "../../../data";
 import { Bar } from "react-chartjs-2";
-import { sortKeys, getTotalCount } from "../utils";
+import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
 import { ChartJsData } from "../types";
 
 type Props = {
@@ -67,10 +67,11 @@ const getStackedBars = (
   activitySummaries: ActivitySummaries,
   keys: string[]
 ) => {
-  return keys.map((key) => ({
+  const colors = getBackgroundColors(activitySummaries, keys);
+  return keys.map((key, index) => ({
     data: [activitySummaries[key].count],
     label: key,
-    backgroundColor: [activitySummaries[key].active ? "#2ecc40" : "#ff4136"],
+    backgroundColor: [colors[index]],
     borderWidth: 2,
     yAxisID: "y-axis-1",
   }));

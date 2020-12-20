@@ -1,5 +1,6 @@
 import { ChartJsData } from "./types";
 import { ActivitySummaries, ActivitySummary } from "../../data";
+import { TinyColor } from "@ctrl/tinycolor";
 
 export function getDataInChartJsFormat(
   activitySummaries: ActivitySummaries
@@ -55,11 +56,36 @@ export const getTotalCount = (summaries: ActivitySummary[]) =>
     0
   );
 
-const getBackgroundColors = (
+export const activeBaseColorHex = "#2ecc40";
+export const inactiveBaseColorHex = "#ff4136";
+
+export const getBackgroundColors = (
   activitySummaries: ActivitySummaries,
   keys: string[]
 ) => {
-  return keys.map((key) =>
-    activitySummaries[key].active ? "#2ecc40" : "#ff4136"
-  );
+  const slices = 15;
+  const activeBaseColor = new TinyColor(activeBaseColorHex);
+  const inactiveBaseColor = new TinyColor(inactiveBaseColorHex);
+  const activeCategoriesCount = keys.filter(
+    (key) => activitySummaries[key].active
+  ).length;
+  const inactiveCategoriesCount = keys.filter(
+    (key) => !activitySummaries[key].active
+  ).length;
+  return [
+    ...activeBaseColor
+      .analogous(
+        activeCategoriesCount + 1,
+        Math.max(slices, 2 * activeCategoriesCount)
+      )
+      .slice(1)
+      .map((c) => c.toHexString()),
+    ...inactiveBaseColor
+      .analogous(
+        inactiveCategoriesCount + 1,
+        Math.max(slices, 2 * inactiveCategoriesCount)
+      )
+      .slice(1)
+      .map((c) => c.toHexString()),
+  ];
 };

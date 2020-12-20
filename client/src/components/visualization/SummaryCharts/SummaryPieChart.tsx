@@ -4,6 +4,8 @@ import { ActivitySummaries } from "../../../data";
 import {
   getTotalActiveAndInactiveCount,
   getDataInChartJsFormat,
+  activeBaseColorHex,
+  inactiveBaseColorHex,
 } from "../utils";
 
 type Props = {
@@ -57,7 +59,7 @@ const getAdditionalSummaryDataset = (activitySummaries: ActivitySummaries) => {
     activitySummaries
   );
   return {
-    backgroundColor: ["#2ecc40", "#ff4136"],
+    backgroundColor: [activeBaseColorHex, inactiveBaseColorHex],
     data: [activeCount, inactiveCount],
     weight: 0.35,
     label: "activeVsInactive",
