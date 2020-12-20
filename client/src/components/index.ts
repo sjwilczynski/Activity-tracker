@@ -1,5 +1,6 @@
 export { AddActivityForm } from "./forms/AddActivityForm";
-export { DateFilterForm } from "./forms/DateFilterForm";
+export { DateFilterForm } from "./forms/DateFilterForm/DateFilterForm";
+export { useDateRange } from "./forms/DateFilterForm/shared";
 export { FileUploadForm } from "./forms/FileUploadForm";
 
 export { Navigation } from "./navigation/Navigation";

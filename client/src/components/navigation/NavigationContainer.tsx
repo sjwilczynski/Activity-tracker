@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useTheme, useMediaQuery } from "@material-ui/core";
 import { TemporaryNavigation } from "./TemporaryNavigation";
 import { PermanentNavigation } from "./PermanentNavigation";
