@@ -1,5 +1,4 @@
 import { createMuiTheme, CssBaseline, ThemeProvider } from "@material-ui/core";
-import * as React from "react";
 
 type Props = {
   children: React.ReactNode;

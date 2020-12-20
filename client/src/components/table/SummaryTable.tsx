@@ -8,7 +8,7 @@ import {
   TablePagination,
   TableRow,
 } from "@material-ui/core";
-import * as React from "react";
+import { useState, ChangeEvent } from "react";
 import { ActivityRecordWithId } from "../../data";
 
 type Props = {
@@ -18,14 +18,14 @@ type Props = {
 export function SummaryTable(props: Props) {
   const { records } = props;
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const changePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const changeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

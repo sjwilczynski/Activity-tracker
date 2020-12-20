@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import * as React from "react";
+import { useState } from "react";
 
 type Props = {
   description?: string;
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => {
 
 export const ModalDialog = (props: Props) => {
   const { description, content, title, openButtonText } = props;
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const open = () => {
     setIsOpen(true);

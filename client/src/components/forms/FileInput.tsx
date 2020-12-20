@@ -5,7 +5,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { FieldProps } from "formik";
-import * as React from "react";
+import { ChangeEvent, useCallback } from "react";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -21,8 +21,8 @@ export const FileInput = <T extends { file: File | null }>(
   const { field, form } = props;
   const { setFieldValue, errors } = form;
   const { name } = field;
-  const onFileInputChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
       const files = event.currentTarget.files;
       if (files) {
         setFieldValue(name, files[0]);
