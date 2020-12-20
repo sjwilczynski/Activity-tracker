@@ -4,18 +4,22 @@ import { ActivitySummaries } from "../../../data";
 import {
   getTotalActiveAndInactiveCount,
   getDataInChartJsFormat,
-  activeBaseColorHex,
-  inactiveBaseColorHex,
+  activeBaseColor,
+  inactiveBaseColor,
 } from "../utils";
+import { useIsLightTheme } from "../../styles/StylesProvider";
 
 type Props = {
   activitySummaries: ActivitySummaries;
 };
 
-export function SummaryPieChart(props: Props) {
-  const { activitySummaries } = props;
-  const chartJsData = getDataInChartJsFormat(activitySummaries);
-  const summaryDataset = getAdditionalSummaryDataset(activitySummaries);
+export function SummaryPieChart({ activitySummaries }: Props) {
+  const isLightTheme = useIsLightTheme();
+  const chartJsData = getDataInChartJsFormat(activitySummaries, isLightTheme);
+  const summaryDataset = getAdditionalSummaryDataset(
+    activitySummaries,
+    isLightTheme
+  );
   const data = {
     labels: chartJsData.labels,
     datasets: [chartJsData.datasets[0], summaryDataset],
@@ -54,12 +58,24 @@ const tooltipCallback = {
   },
 };
 
-const getAdditionalSummaryDataset = (activitySummaries: ActivitySummaries) => {
+const getAdditionalSummaryDataset = (
+  activitySummaries: ActivitySummaries,
+  isLightTheme: boolean
+) => {
   const { activeCount, inactiveCount } = getTotalActiveAndInactiveCount(
     activitySummaries
   );
+  const activeBaseColorThemed = isLightTheme
+    ? activeBaseColor
+    : activeBaseColor.darken(15);
+  const inactiveBaseColorThemed = isLightTheme
+    ? inactiveBaseColor
+    : inactiveBaseColor.darken(15);
   return {
-    backgroundColor: [activeBaseColorHex, inactiveBaseColorHex],
+    backgroundColor: [
+      activeBaseColorThemed.toHexString(),
+      inactiveBaseColorThemed.toHexString(),
+    ],
     data: [activeCount, inactiveCount],
     weight: 0.35,
     label: "activeVsInactive",

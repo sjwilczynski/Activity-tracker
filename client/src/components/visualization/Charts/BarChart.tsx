@@ -1,5 +1,6 @@
 import { Bar } from "react-chartjs-2";
 import { ActivitySummaries } from "../../../data";
+import { useIsLightTheme } from "../../styles/StylesProvider";
 import { getDataInChartJsFormat } from "../utils";
 
 type Props = {
@@ -7,7 +8,8 @@ type Props = {
 };
 
 export function BarChart(props: Props) {
-  const data = getDataInChartJsFormat(props.activitySummaries);
+  const isLightTheme = useIsLightTheme();
+  const data = getDataInChartJsFormat(props.activitySummaries, isLightTheme);
   return (
     <Bar
       data={data}

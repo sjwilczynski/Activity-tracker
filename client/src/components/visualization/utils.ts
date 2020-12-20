@@ -3,11 +3,16 @@ import { ActivitySummaries, ActivitySummary } from "../../data";
 import { TinyColor } from "@ctrl/tinycolor";
 
 export function getDataInChartJsFormat(
-  activitySummaries: ActivitySummaries
+  activitySummaries: ActivitySummaries,
+  isLightTheme: boolean
 ): ChartJsData {
   const sortedKeys = sortKeys(activitySummaries);
   const activityCounts = getActivityCounts(activitySummaries, sortedKeys);
-  const colors = getBackgroundColors(activitySummaries, sortedKeys);
+  const colors = getBackgroundColors(
+    activitySummaries,
+    sortedKeys,
+    isLightTheme
+  );
   return {
     labels: sortedKeys,
     datasets: [
@@ -56,16 +61,21 @@ export const getTotalCount = (summaries: ActivitySummary[]) =>
     0
   );
 
-export const activeBaseColorHex = "#2ecc40";
-export const inactiveBaseColorHex = "#ff4136";
+export const activeBaseColor = new TinyColor("#2ecc40");
+export const inactiveBaseColor = new TinyColor("#ff4136");
 
 export const getBackgroundColors = (
   activitySummaries: ActivitySummaries,
-  keys: string[]
+  keys: string[],
+  isLightTheme: boolean
 ) => {
   const slices = 15;
-  const activeBaseColor = new TinyColor(activeBaseColorHex);
-  const inactiveBaseColor = new TinyColor(inactiveBaseColorHex);
+  const activeBaseColorThemed = isLightTheme
+    ? activeBaseColor
+    : activeBaseColor.darken(15);
+  const inactiveBaseColorThemed = isLightTheme
+    ? inactiveBaseColor
+    : inactiveBaseColor.darken(15);
   const activeCategoriesCount = keys.filter(
     (key) => activitySummaries[key].active
   ).length;
@@ -73,14 +83,14 @@ export const getBackgroundColors = (
     (key) => !activitySummaries[key].active
   ).length;
   return [
-    ...activeBaseColor
+    ...activeBaseColorThemed
       .analogous(
         activeCategoriesCount + 1,
         Math.max(slices, 2 * activeCategoriesCount)
       )
       .slice(1)
       .map((c) => c.toHexString()),
-    ...inactiveBaseColor
+    ...inactiveBaseColorThemed
       .analogous(
         inactiveCategoriesCount + 1,
         Math.max(slices, 2 * inactiveCategoriesCount)
