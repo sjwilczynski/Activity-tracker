@@ -8,6 +8,7 @@ export { useNavigationState } from "./navigation/useNavigationState";
 
 export { ErrorView } from "./states/ErrorView";
 export { Loading } from "./states/Loading";
+export { FeedbackAlert } from "./states/FeedbackAlert";
 
 export { SummaryTable } from "./table/SummaryTable";
 
