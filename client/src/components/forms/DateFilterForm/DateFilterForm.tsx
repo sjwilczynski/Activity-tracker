@@ -10,22 +10,20 @@ import {
   useDateRangeState,
 } from "./shared";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    form: {
-      display: "flex",
-      alignItems: "center",
-      flexFlow: "row wrap",
-      padding: `${theme.spacing(1)}px`,
-      "& > *": {
-        margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(
-          1
-        )}px 0`,
-      },
-      margin: `${theme.spacing(1)}px 0`,
+const useStyles = makeStyles((theme) => ({
+  form: {
+    display: "flex",
+    alignItems: "center",
+    flexFlow: "row wrap",
+    padding: `${theme.spacing(1)}px`,
+    "& > *": {
+      margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(
+        1
+      )}px 0`,
     },
-  };
-});
+    margin: `${theme.spacing(1)}px 0`,
+  },
+}));
 
 export const DateFilterForm = () => {
   const [{ startDate, endDate }, setDateRange] = useDateRangeState();

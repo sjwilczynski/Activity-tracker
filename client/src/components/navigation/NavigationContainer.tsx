@@ -4,24 +4,13 @@ import { PermanentNavigation } from "./PermanentNavigation";
 
 type Props = {
   children: React.ReactNode;
-  isNavigationOpen: boolean;
-  handleNavigationToggle: () => void;
 };
 
-export const NavigationContainer = ({
-  isNavigationOpen,
-  handleNavigationToggle,
-  children,
-}: Props) => {
+export const NavigationContainer = ({ children }: Props) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const navigation = matches ? (
-    <TemporaryNavigation
-      isNavigationOpen={isNavigationOpen}
-      handleNavigationToggle={handleNavigationToggle}
-    >
-      {children}
-    </TemporaryNavigation>
+    <TemporaryNavigation>{children}</TemporaryNavigation>
   ) : (
     <PermanentNavigation>{children}</PermanentNavigation>
   );

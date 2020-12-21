@@ -8,22 +8,20 @@ import {
   useIsFetchingActivties,
 } from "../data";
 
-const useStyles = makeStyles(() => {
-  return {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      marginTop: "12rem",
-    },
-    lastActivity: {
-      fontWeight: 500,
-    },
-    spacing: {
-      padding: "0.5rem",
-    },
-  };
-});
+const useStyles = makeStyles(() => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: "12rem",
+  },
+  lastActivity: {
+    fontWeight: 500,
+  },
+  spacing: {
+    padding: "0.5rem",
+  },
+}));
 
 export const Profile = () => {
   const { user, signOut } = useAuth();

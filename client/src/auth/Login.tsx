@@ -16,29 +16,27 @@ const uiConfig: firebaseui.auth.Config = {
   },
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    container: {
-      display: "flex",
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    padding: "2rem",
+  },
+  text: {
+    ...theme.typography.h3,
+    display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      flexFlow: "column wrap",
       alignItems: "center",
-      flexDirection: "column",
-      padding: "2rem",
     },
-    text: {
-      ...theme.typography.h3,
-      display: "flex",
-      [theme.breakpoints.down("sm")]: {
-        flexFlow: "column wrap",
-        alignItems: "center",
-      },
-    },
-    active: { color: theme.palette.primary.main },
-    lazy: { color: theme.palette.error.main },
-    or: {
-      margin: "0 1rem",
-    },
-  };
-});
+  },
+  active: { color: theme.palette.info.main },
+  lazy: { color: theme.palette.error.main },
+  or: {
+    margin: "0 1rem",
+  },
+}));
 
 export const Login = () => {
   const styles = useStyles();

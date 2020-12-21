@@ -1,12 +1,18 @@
 import { ChartJsData } from "./types";
 import { ActivitySummaries, ActivitySummary } from "../../data";
+import { TinyColor } from "@ctrl/tinycolor";
 
 export function getDataInChartJsFormat(
-  activitySummaries: ActivitySummaries
+  activitySummaries: ActivitySummaries,
+  isLightTheme: boolean
 ): ChartJsData {
   const sortedKeys = sortKeys(activitySummaries);
   const activityCounts = getActivityCounts(activitySummaries, sortedKeys);
-  const colors = getBackgroundColors(activitySummaries, sortedKeys);
+  const colors = getBackgroundColors(
+    activitySummaries,
+    sortedKeys,
+    isLightTheme
+  );
   return {
     labels: sortedKeys,
     datasets: [
@@ -55,11 +61,41 @@ export const getTotalCount = (summaries: ActivitySummary[]) =>
     0
   );
 
-const getBackgroundColors = (
+export const activeBaseColor = new TinyColor("#2ecc40");
+export const inactiveBaseColor = new TinyColor("#ff4136");
+
+export const getBackgroundColors = (
   activitySummaries: ActivitySummaries,
-  keys: string[]
+  keys: string[],
+  isLightTheme: boolean
 ) => {
-  return keys.map((key) =>
-    activitySummaries[key].active ? "#2ecc40" : "#ff4136"
-  );
+  const slices = 15;
+  const activeBaseColorThemed = isLightTheme
+    ? activeBaseColor
+    : activeBaseColor.darken(15);
+  const inactiveBaseColorThemed = isLightTheme
+    ? inactiveBaseColor
+    : inactiveBaseColor.darken(15);
+  const activeCategoriesCount = keys.filter(
+    (key) => activitySummaries[key].active
+  ).length;
+  const inactiveCategoriesCount = keys.filter(
+    (key) => !activitySummaries[key].active
+  ).length;
+  return [
+    ...activeBaseColorThemed
+      .analogous(
+        activeCategoriesCount + 1,
+        Math.max(slices, 2 * activeCategoriesCount)
+      )
+      .slice(1)
+      .map((c) => c.toHexString()),
+    ...inactiveBaseColorThemed
+      .analogous(
+        inactiveCategoriesCount + 1,
+        Math.max(slices, 2 * inactiveCategoriesCount)
+      )
+      .slice(1)
+      .map((c) => c.toHexString()),
+  ];
 };

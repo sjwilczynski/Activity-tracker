@@ -1,11 +1,10 @@
-import { useCallback, useState } from "react";
+import { atom, useAtom } from "jotai";
+import { useUpdateAtom } from "jotai/utils";
 
-export const useNavigationState = () => {
-  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
-
-  const handleNavigationToggle = useCallback(() => {
-    setIsNavigationOpen((isOpen) => !isOpen);
-  }, []);
-
-  return { isNavigationOpen, handleNavigationToggle };
-};
+const isNavigationOpenAtom = atom(false);
+const navigationAtom = atom(
+  (get) => get(isNavigationOpenAtom),
+  (get, set) => set(isNavigationOpenAtom, !get(isNavigationOpenAtom))
+);
+export const useNavigationState = () => useAtom(navigationAtom);
+export const useNavigationToggle = () => useUpdateAtom(navigationAtom);

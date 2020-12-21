@@ -13,23 +13,21 @@ type FormValues = {
   active: boolean;
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      padding: `${theme.spacing(1)}px 0`,
-    },
-    field: {
-      margin: `${theme.spacing(1)}px 0`,
-    },
-    submit: {
-      width: "50%",
-      alignSelf: "center",
-    },
-  };
-});
+const useStyles = makeStyles((theme) => ({
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    padding: `${theme.spacing(1)}px 0`,
+  },
+  field: {
+    margin: `${theme.spacing(1)}px 0`,
+  },
+  submit: {
+    width: "50%",
+    alignSelf: "center",
+  },
+}));
 
 export function AddActivityForm() {
   const { mutate: addActivities, status } = useActivitiesMutation();

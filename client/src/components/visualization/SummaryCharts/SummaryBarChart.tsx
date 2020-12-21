@@ -1,14 +1,16 @@
 import { ActivitySummaries } from "../../../data";
 import { Bar } from "react-chartjs-2";
-import { sortKeys, getTotalCount } from "../utils";
+import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
 import { ChartJsData } from "../types";
+import { useIsLightTheme } from "../../styles/StylesProvider";
 
 type Props = {
   activitySummaries: ActivitySummaries;
 };
 
 export function SummaryBarChart(props: Props) {
-  const data = getDataForSummaryBarChart(props.activitySummaries);
+  const isLightTheme = useIsLightTheme();
+  const data = getDataForSummaryBarChart(props.activitySummaries, isLightTheme);
   return (
     <Bar
       data={data}
@@ -51,26 +53,29 @@ export function SummaryBarChart(props: Props) {
 }
 
 const getDataForSummaryBarChart = (
-  activitySummaries: ActivitySummaries
+  activitySummaries: ActivitySummaries,
+  isLightTheme: boolean
 ): ChartJsData => {
   const sortedKeys = sortKeys(activitySummaries);
   return {
     labels: ["Summary"],
     datasets: [
       ...getThresholdLines(activitySummaries),
-      ...getStackedBars(activitySummaries, sortedKeys),
+      ...getStackedBars(activitySummaries, sortedKeys, isLightTheme),
     ],
   };
 };
 
 const getStackedBars = (
   activitySummaries: ActivitySummaries,
-  keys: string[]
+  keys: string[],
+  isLightTheme: boolean
 ) => {
-  return keys.map((key) => ({
+  const colors = getBackgroundColors(activitySummaries, keys, isLightTheme);
+  return keys.map((key, index) => ({
     data: [activitySummaries[key].count],
     label: key,
-    backgroundColor: [activitySummaries[key].active ? "#2ecc40" : "#ff4136"],
+    backgroundColor: [colors[index]],
     borderWidth: 2,
     yAxisID: "y-axis-1",
   }));

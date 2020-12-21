@@ -11,20 +11,18 @@ type FormValues = {
   file: File | null;
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: `${theme.spacing(1)}px 0`,
-    },
-    submit: {
-      margin: `${theme.spacing(1)}px 0`,
-    },
-  };
-});
+const useStyles = makeStyles((theme) => ({
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: `${theme.spacing(1)}px 0`,
+  },
+  submit: {
+    margin: `${theme.spacing(1)}px 0`,
+  },
+}));
 
 export function FileUploadForm() {
   const { mutate: addActivities, status } = useActivitiesMutation();
