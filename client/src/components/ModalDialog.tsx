@@ -15,6 +15,7 @@ type Props = {
   description?: string;
   content: React.ReactNode;
   title?: string;
+  disabled?: boolean;
   openButtonText: string;
 };
 
@@ -35,7 +36,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ModalDialog = (props: Props) => {
-  const { description, content, title, openButtonText } = props;
+  const {
+    description,
+    content,
+    title,
+    openButtonText,
+    disabled = false,
+  } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const open = () => {
@@ -48,7 +55,12 @@ export const ModalDialog = (props: Props) => {
   const styles = useStyles();
   return (
     <>
-      <Button variant="contained" color="primary" onClick={open}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={open}
+        disabled={disabled}
+      >
         {openButtonText}
       </Button>
       <Dialog

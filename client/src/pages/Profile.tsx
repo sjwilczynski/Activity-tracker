@@ -3,6 +3,7 @@ import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
 import {
+  useActivities,
   useDeleteAllActivities,
   useExportActivities,
   useIsFetchingActivties,
@@ -36,6 +37,7 @@ const useStyles = makeStyles(() => ({
 export const Profile = () => {
   const { user, signOut } = useAuth();
   const exportActivities = useExportActivities();
+  const { data } = useActivities();
   const isFetchingActivities = useIsFetchingActivties();
   const styles = useStyles();
 
@@ -51,9 +53,16 @@ export const Profile = () => {
         <Typography variant="h5">User name: {user?.displayName}</Typography>
         <div className={styles.buttonsContainer}>
           <ModalDialog
+            openButtonText="Upload activities"
+            title="Activties upload"
+            description="Select a json file containg activities in a complaint format"
+            content={<FileUploadForm />}
+          />
+          <ModalDialog
             openButtonText="Delete your activites"
             title="Delete confirmation"
             description="Are you sure you want to delete all your activities?"
+            disabled={isFetchingActivities || !data?.length}
             content={
               <Button
                 variant="contained"
@@ -64,13 +73,6 @@ export const Profile = () => {
               </Button>
             }
           />
-
-          <ModalDialog
-            openButtonText="Upload activities"
-            title="Activties upload"
-            description="Select a json file containg activities in a complaint format"
-            content={<FileUploadForm />}
-          />
           <DownloadLink
             filename="activities.json"
             tagName="div"
@@ -79,7 +81,7 @@ export const Profile = () => {
               <Button
                 variant="contained"
                 color="primary"
-                disabled={isFetchingActivities}
+                disabled={isFetchingActivities || !data?.length}
                 className={styles.buttonGrow}
               >
                 Export activities
