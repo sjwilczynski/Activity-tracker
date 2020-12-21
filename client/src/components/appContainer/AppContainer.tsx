@@ -10,7 +10,7 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    minWidth: 400,
+    minWidth: 420,
   },
 });
 
