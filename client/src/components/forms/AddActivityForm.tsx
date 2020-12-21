@@ -24,10 +24,6 @@ const useStyles = makeStyles((theme) => ({
   field: {
     margin: `${theme.spacing(1)}px 0`,
   },
-  submit: {
-    width: "50%",
-    alignSelf: "center",
-  },
 }));
 
 export function AddActivityForm() {
@@ -91,7 +87,6 @@ export function AddActivityForm() {
               variant="contained"
               color="primary"
               type="submit"
-              className={styles.submit}
             >
               Add activity
             </Button>

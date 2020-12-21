@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(1),
     top: theme.spacing(1),
   },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+  },
 }));
 
 export const ModalDialog = (props: Props) => {
@@ -63,7 +67,7 @@ export const ModalDialog = (props: Props) => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent className={styles.content}>
           {description && (
             <DialogContentText>
               <Typography variant="h6">{description}</Typography>

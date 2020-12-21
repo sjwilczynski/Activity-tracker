@@ -55,15 +55,13 @@ export const Profile = () => {
             title="Delete confirmation"
             description="Are you sure you want to delete all your activities?"
             content={
-              <>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={deleteAllActivities}
-                >
-                  Confirm
-                </Button>
-              </>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={deleteAllActivities}
+              >
+                Confirm
+              </Button>
             }
           />
 
