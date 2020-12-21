@@ -33,7 +33,7 @@ export function SummaryTable(props: Props) {
     return <></>;
   }
   return (
-    <Paper>
+    <Paper elevation={8}>
       <TableContainer>
         <Table size="small">
           <TableHead>

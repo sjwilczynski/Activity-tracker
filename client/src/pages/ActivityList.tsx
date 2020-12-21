@@ -31,9 +31,7 @@ export const ActivityList = () => {
   return data?.length ? (
     <>
       <DateFilterForm />
-      <div>
-        <SummaryTable records={filteredData} />
-      </div>
+      <SummaryTable records={filteredData} />
     </>
   ) : (
     <NoActivitiesPage />
