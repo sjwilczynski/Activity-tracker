@@ -10,6 +10,7 @@ export { ErrorView } from "./states/ErrorView";
 export { Loading } from "./states/Loading";
 export { FeedbackAlert } from "./states/FeedbackAlert";
 export { FeedbackAlertGroup } from "./states/FeedbackAlertGroup";
+export { NoActivitiesPage } from "./states/NoActivitiesPage";
 
 export { SummaryTable } from "./table/SummaryTable";
 

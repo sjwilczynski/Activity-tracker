@@ -7,6 +7,7 @@ import {
   SummaryBarChart,
   ChartWrapper,
   useDateRange,
+  NoActivitiesPage,
 } from "../components";
 import {
   useActivities,
@@ -28,7 +29,7 @@ export const Charts = () => {
   const activitySummaries = transformDataToSummaryMap(
     filterByDateRange(data || [], startDate, endDate)
   );
-  return (
+  return data?.length ? (
     <>
       <DateFilterForm />
       <ChartWrapper>
@@ -41,5 +42,7 @@ export const Charts = () => {
         <SummaryBarChart activitySummaries={activitySummaries} />
       </ChartWrapper>
     </>
+  ) : (
+    <NoActivitiesPage />
   );
 };
