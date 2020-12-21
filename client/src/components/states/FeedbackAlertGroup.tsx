@@ -18,14 +18,10 @@ export const FeedbackAlertGroup = ({
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isRequestError) {
-      setIsError(true);
-    }
+    setIsError(isRequestError);
   }, [isRequestError]);
   useEffect(() => {
-    if (isRequestSuccess) {
-      setIsSuccess(true);
-    }
+    setIsSuccess(isRequestSuccess);
   }, [isRequestSuccess]);
   return (
     <>
