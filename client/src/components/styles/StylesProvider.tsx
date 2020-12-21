@@ -11,6 +11,16 @@ type Props = {
   children: React.ReactNode;
 };
 
+const themeOverrides = {
+  overrides: {
+    MuiTooltip: {
+      tooltip: {
+        fontSize: "0.75rem",
+      },
+    },
+  },
+};
+
 const lightTheme: ThemeOptions = {
   palette: {
     type: "light",
@@ -45,6 +55,7 @@ const lightTheme: ThemeOptions = {
       dark: "#034d73",
     },
   },
+  ...themeOverrides,
 };
 
 const darkTheme: ThemeOptions = {
@@ -65,7 +76,12 @@ const darkTheme: ThemeOptions = {
       main: "#4479a2",
       dark: "#034d73",
     },
+    background: {
+      default: "#303030",
+      paper: "#303030",
+    },
   },
+  ...themeOverrides,
 };
 
 const isLightThemeAtom = atom(true);

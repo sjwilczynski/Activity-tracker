@@ -4,6 +4,7 @@ import {
   ErrorView,
   Loading,
   SummaryTable,
+  NoActivitiesPage,
 } from "../components";
 import {
   useActivities,
@@ -27,12 +28,14 @@ export const ActivityList = () => {
     filterByDateRange(data || [], startDate, endDate)
   );
 
-  return (
+  return data?.length ? (
     <>
       <DateFilterForm />
       <div>
         <SummaryTable records={filteredData} />
       </div>
     </>
+  ) : (
+    <NoActivitiesPage />
   );
 };

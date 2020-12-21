@@ -3,6 +3,7 @@ import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, makeStyles } from "@material-ui/core";
 import { FileInput } from "./FileInput";
+import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
 const FILE_SIZE = 100 * 1024;
 const SUPPORTED_FORMATS = ["application/json"];
@@ -15,8 +16,7 @@ const useStyles = makeStyles((theme) => ({
   form: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
     padding: `${theme.spacing(1)}px 0`,
   },
   submit: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function FileUploadForm() {
-  const { mutate: addActivities, status } = useActivitiesMutation();
+  const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
   const onSubmit = useCallback(
     (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
       let reader = new FileReader();
@@ -34,19 +34,13 @@ export function FileUploadForm() {
         reader.onloadend = () => {
           const { result } = reader;
           if (typeof result === "string") {
-            try {
-              const activities = JSON.parse(result);
-              if (areActivitiesValid(activities)) {
-                addActivities(activities);
-              } else {
-                formikHelpers.setErrors({
-                  file:
-                    "The specified json doesn't contain activities in proper format",
-                });
-              }
-            } catch (err) {
+            const activities = JSON.parse(result);
+            if (areActivitiesValid(activities)) {
+              addActivities(activities);
+            } else {
               formikHelpers.setErrors({
-                file: `Failed to upload the file: ${err.message}`,
+                file:
+                  "The specified json doesn't contain activities in proper format",
               });
             }
           }
@@ -83,9 +77,12 @@ export function FileUploadForm() {
           </Form>
         )}
       </Formik>
-      {status === "success" ? (
-        <div>Successfully uploaded the data</div>
-      ) : undefined}
+      <FeedbackAlertGroup
+        isRequestError={isError}
+        isRequestSuccess={isSuccess}
+        successMessage="Successfully uploaded the file"
+        errorMessage="Failed to upload the file"
+      />
     </>
   );
 }

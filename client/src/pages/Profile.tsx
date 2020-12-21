@@ -1,8 +1,9 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
-import { ErrorView, FileUploadForm, ModalDialog } from "../components";
+import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
 import {
+  useActivities,
   useDeleteAllActivities,
   useExportActivities,
   useIsFetchingActivties,
@@ -21,32 +22,48 @@ const useStyles = makeStyles(() => ({
   spacing: {
     padding: "0.5rem",
   },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    "& > *": {
+      margin: "0.5rem 0",
+    },
+  },
+  buttonGrow: {
+    flex: "1 1 auto",
+  },
 }));
 
 export const Profile = () => {
   const { user, signOut } = useAuth();
   const exportActivities = useExportActivities();
+  const { data } = useActivities();
   const isFetchingActivities = useIsFetchingActivties();
   const styles = useStyles();
 
   const {
     mutate: deleteAllActivities,
-    error,
-    status,
+    isSuccess,
+    isError,
   } = useDeleteAllActivities();
-  if (error) {
-    return <ErrorView error={error} />;
-  }
+
   return (
-    <div className={styles.container}>
-      <Typography variant="h5">User name: {user?.displayName}</Typography>
-      <div className={styles.spacing}>
-        <ModalDialog
-          openButtonText="Delete your activites"
-          title="Delete confirmation"
-          description="Are you sure you want to delete all your activities?"
-          content={
-            <>
+    <>
+      <div className={styles.container}>
+        <Typography variant="h5">User name: {user?.displayName}</Typography>
+        <div className={styles.buttonsContainer}>
+          <ModalDialog
+            openButtonText="Upload activities"
+            title="Activties upload"
+            description="Select a json file containg activities in a complaint format"
+            content={<FileUploadForm />}
+          />
+          <ModalDialog
+            openButtonText="Delete your activites"
+            title="Delete confirmation"
+            description="Are you sure you want to delete all your activities?"
+            disabled={isFetchingActivities || !data?.length}
+            content={
               <Button
                 variant="contained"
                 color="primary"
@@ -54,43 +71,35 @@ export const Profile = () => {
               >
                 Confirm
               </Button>
-              {/* TODO: remove check for status here - create a component encapsulting message on different statuses */}
-              {status === "success" ? (
-                <div>Successfully deleted the data</div>
-              ) : undefined}
-            </>
-          }
-        />
-      </div>
-
-      <div className={styles.spacing}>
-        <ModalDialog
-          openButtonText="Upload activities"
-          title="Activties upload"
-          description="Select a json file containg activities in a complaint format"
-          content={<FileUploadForm />}
-        />
-      </div>
-      {!isFetchingActivities && (
-        <div className={styles.spacing}>
+            }
+          />
           <DownloadLink
             filename="activities.json"
             tagName="div"
-            style={{}}
+            style={{ display: "flex" }}
             label={
-              <Button variant="contained" color="primary">
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={isFetchingActivities || !data?.length}
+                className={styles.buttonGrow}
+              >
                 Export activities
               </Button>
             }
             exportFile={exportActivities}
           />
+          <Button variant="contained" color="primary" onClick={signOut}>
+            Sign out
+          </Button>
         </div>
-      )}
-      <div className={styles.spacing}>
-        <Button variant="contained" color="primary" onClick={signOut}>
-          Sign out
-        </Button>
       </div>
-    </div>
+      <FeedbackAlertGroup
+        isRequestError={isError}
+        isRequestSuccess={isSuccess}
+        successMessage="Successfully deleted all activity data"
+        errorMessage="Failed to delete the activity data"
+      />
+    </>
   );
 };

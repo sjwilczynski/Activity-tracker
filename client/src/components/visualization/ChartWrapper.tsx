@@ -5,15 +5,22 @@ type Props = {
   children: ReactNode;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   chartContainer: {
-    minHeight: "50vh",
-    minWidth: 500,
     position: "relative",
+    minHeight: "50vh",
   },
-}));
+  sizing: {
+    minWidth: 570,
+    padding: "0 2rem",
+  },
+});
 
 export const ChartWrapper = ({ children }: Props) => {
   const styles = useStyles();
-  return <div className={styles.chartContainer}>{children}</div>;
+  return (
+    <div className={styles.sizing}>
+      <div className={styles.chartContainer}>{children}</div>
+    </div>
+  );
 };
