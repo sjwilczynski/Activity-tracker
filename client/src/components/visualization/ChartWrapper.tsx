@@ -5,16 +5,16 @@ type Props = {
   children: ReactNode;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   chartContainer: {
     position: "relative",
+    minHeight: "50vh",
   },
   sizing: {
-    minHeight: "50vh",
-    minWidth: 560,
+    minWidth: 570,
     padding: "0 2rem",
   },
-}));
+});
 
 export const ChartWrapper = ({ children }: Props) => {
   const styles = useStyles();
