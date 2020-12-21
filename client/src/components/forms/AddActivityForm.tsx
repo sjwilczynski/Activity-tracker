@@ -6,6 +6,7 @@ import { KeyboardDatePicker } from "formik-material-ui-pickers";
 import { CheckboxWithLabel, TextField } from "formik-material-ui";
 import { Button, makeStyles } from "@material-ui/core";
 import { format } from "date-fns";
+import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
 type FormValues = {
   date: Date;
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function AddActivityForm() {
-  const { mutate: addActivities, status } = useActivitiesMutation();
+  const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
   const onSubmit = useCallback(
     (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -38,12 +39,7 @@ export function AddActivityForm() {
         name: values.name,
         active: values.active,
       };
-      try {
-        addActivities([activityRecord]);
-      } catch (error) {
-        // TODO: better error handling
-        console.log("Unexpected error on adding activity");
-      }
+      addActivities([activityRecord]);
     },
     [addActivities]
   );
@@ -102,9 +98,12 @@ export function AddActivityForm() {
           </Form>
         )}
       </Formik>
-      {status === "success" ? (
-        <div>Successfully uploaded the data</div>
-      ) : undefined}
+      <FeedbackAlertGroup
+        isRequestError={isError}
+        isRequestSuccess={isSuccess}
+        successMessage="Successfully added the activity"
+        errorMessage="Failed to add the activity"
+      />
     </>
   );
 }

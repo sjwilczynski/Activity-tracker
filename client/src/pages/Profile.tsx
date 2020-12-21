@@ -1,8 +1,7 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
-import { useEffect, useState } from "react";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
-import { FeedbackAlert, FileUploadForm, ModalDialog } from "../components";
+import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
 import {
   useDeleteAllActivities,
   useExportActivities,
@@ -29,25 +28,13 @@ export const Profile = () => {
   const exportActivities = useExportActivities();
   const isFetchingActivities = useIsFetchingActivties();
   const styles = useStyles();
-  const [isError, setIsError] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const {
     mutate: deleteAllActivities,
-    isSuccess: isSuccessDelete,
-    isError: isErrorDelete,
+    isSuccess,
+    isError,
   } = useDeleteAllActivities();
 
-  useEffect(() => {
-    if (isErrorDelete) {
-      setIsError(true);
-    }
-  }, [isErrorDelete]);
-  useEffect(() => {
-    if (isSuccessDelete) {
-      setIsSuccess(true);
-    }
-  }, [isSuccessDelete]);
   return (
     <>
       <div className={styles.container}>
@@ -102,17 +89,11 @@ export const Profile = () => {
           </Button>
         </div>
       </div>
-      <FeedbackAlert
-        open={isSuccess}
-        setOpen={setIsSuccess}
-        severity="success"
-        message="Successfully deleted data"
-      />
-      <FeedbackAlert
-        open={isError}
-        setOpen={setIsError}
-        severity="error"
-        message="Failed to delete data"
+      <FeedbackAlertGroup
+        isRequestError={isError}
+        isRequestSuccess={isSuccess}
+        successMessage="Successfully deleted activity data"
+        errorMessage="Failed to delete activity data"
       />
     </>
   );
