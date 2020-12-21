@@ -7,13 +7,20 @@ type Props = {
 
 const useStyles = makeStyles((theme) => ({
   chartContainer: {
-    minHeight: "50vh",
-    minWidth: 500,
     position: "relative",
+  },
+  sizing: {
+    minHeight: "50vh",
+    minWidth: 560,
+    padding: "0 2rem",
   },
 }));
 
 export const ChartWrapper = ({ children }: Props) => {
   const styles = useStyles();
-  return <div className={styles.chartContainer}>{children}</div>;
+  return (
+    <div className={styles.sizing}>
+      <div className={styles.chartContainer}>{children}</div>
+    </div>
+  );
 };
