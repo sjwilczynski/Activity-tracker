@@ -57,14 +57,12 @@ const Link = ({
   );
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    link: {
-      textAlign: "center",
-      color: theme.palette.secondary.light,
-    },
-    activeLink: {
-      color: theme.palette.common.white,
-    },
-  };
-});
+const useStyles = makeStyles((theme) => ({
+  link: {
+    textAlign: "center",
+    color: theme.palette.secondary.light,
+  },
+  activeLink: {
+    color: theme.palette.common.white,
+  },
+}));

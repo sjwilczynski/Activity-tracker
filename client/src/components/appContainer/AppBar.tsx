@@ -11,49 +11,47 @@ import { useAuth } from "../../auth";
 import { AppBarButtons } from "./buttons/AppBarButtons";
 import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    title: {
-      fontWeight: 400,
-      whiteSpace: "nowrap",
-      [theme.breakpoints.down("sm")]: {
-        color: theme.palette.common.white,
-      },
+const useStyles = makeStyles((theme) => ({
+  title: {
+    fontWeight: 400,
+    whiteSpace: "nowrap",
+    [theme.breakpoints.down("sm")]: {
+      color: theme.palette.common.white,
     },
-    titleSpacing: {
-      marginLeft: "17rem",
-      padding: "2rem",
-      position: "relative",
+  },
+  titleSpacing: {
+    marginLeft: "17rem",
+    padding: "2rem",
+    position: "relative",
+  },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    padding: "2rem",
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
     },
-    titleContainer: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      position: "relative",
-      padding: "2rem",
-      [theme.breakpoints.down("sm")]: {
-        padding: 0,
-      },
-    },
-    toolbar: {
-      minHeight: 64,
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "0 8px",
-    },
-    appBar: {
-      padding: "4px 0",
-      maxHeight: 72,
-      marginLeft: 0,
-    },
+  },
+  toolbar: {
+    minHeight: 64,
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "0 8px",
+  },
+  appBar: {
+    padding: "4px 0",
+    maxHeight: 72,
+    marginLeft: 0,
+  },
 
-    logo: {
-      width: "17rem",
-      height: "17rem",
-      marginRight: "2rem",
-    },
-  };
-});
+  logo: {
+    width: "17rem",
+    height: "17rem",
+    marginRight: "2rem",
+  },
+}));
 
 type Props = {
   handleNavigationToggle: () => void;

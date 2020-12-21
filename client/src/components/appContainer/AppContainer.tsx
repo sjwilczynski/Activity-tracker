@@ -7,14 +7,12 @@ type Props = {
   children: React.ReactNode;
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      minWidth: 400,
-    },
-  };
+const useStyles = makeStyles({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    minWidth: 400,
+  },
 });
 
 export const AppContainer = ({ children }: Props) => {

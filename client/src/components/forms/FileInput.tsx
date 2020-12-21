@@ -7,13 +7,11 @@ import {
 import { FieldProps } from "formik";
 import { ChangeEvent, useCallback } from "react";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    selectButton: {
-      margin: `${theme.spacing(1)}px 0`,
-    },
-  };
-});
+const useStyles = makeStyles((theme) => ({
+  selectButton: {
+    margin: `${theme.spacing(1)}px 0`,
+  },
+}));
 
 export const FileInput = <T extends { file: File | null }>(
   props: FieldProps<File | null, T>

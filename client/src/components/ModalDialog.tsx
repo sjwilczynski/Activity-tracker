@@ -18,19 +18,17 @@ type Props = {
   openButtonText: string;
 };
 
-const useStyles = makeStyles((theme) => {
-  return {
-    dialog: {
-      border: `10px solid ${theme.palette.primary.main}`,
-      borderRadius: "5px",
-    },
-    closeButton: {
-      position: "absolute",
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-    },
-  };
-});
+const useStyles = makeStyles((theme) => ({
+  dialog: {
+    border: `10px solid ${theme.palette.primary.main}`,
+    borderRadius: "5px",
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+  },
+}));
 
 export const ModalDialog = (props: Props) => {
   const { description, content, title, openButtonText } = props;

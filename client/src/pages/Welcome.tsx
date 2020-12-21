@@ -5,22 +5,20 @@ import { useAuth } from "../auth";
 import { AddActivityForm, ModalDialog } from "../components";
 import { ActivityRecord, sortDescendingByDate, useActivities } from "../data";
 
-const useStyles = makeStyles(() => {
-  return {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      marginTop: "12rem",
-    },
-    lastActivity: {
-      fontWeight: 500,
-    },
-    spacing: {
-      padding: "2rem 0",
-    },
-  };
-});
+const useStyles = makeStyles(() => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: "12rem",
+  },
+  lastActivity: {
+    fontWeight: 500,
+  },
+  spacing: {
+    padding: "2rem 0",
+  },
+}));
 
 export const Welcome = () => {
   const { user } = useAuth();

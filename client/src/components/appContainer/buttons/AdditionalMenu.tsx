@@ -6,11 +6,11 @@ type Props = {
   children: ReactNodeArray;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   menuList: {
     padding: 0,
   },
-}));
+});
 
 export const AdditionalMenu = ({ children }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
