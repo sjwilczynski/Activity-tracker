@@ -53,11 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = {
-  handleNavigationToggle: () => void;
-};
-
-export const AppBar = ({ handleNavigationToggle }: Props) => {
+export const AppBar = () => {
   const { isSignedIn } = useAuth();
   const styles = useStyles();
   const theme = useTheme();
@@ -87,7 +83,7 @@ export const AppBar = ({ handleNavigationToggle }: Props) => {
   const narrowScreenTitle = (
     <MuiAppBar position="sticky" className={styles.appBar}>
       <Toolbar className={styles.toolbar}>
-        <NavigationMenuButton handleNavigationToggle={handleNavigationToggle} />
+        <NavigationMenuButton />
         <div className={styles.titleContainer}>{title}</div>
         <AppBarButtons />
       </Toolbar>

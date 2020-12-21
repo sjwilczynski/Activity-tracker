@@ -1,14 +1,14 @@
 import { IconButton, Tooltip } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
+import { useNavigationToggle } from "../../navigation/useNavigationState";
 
-type Props = {
-  handleNavigationToggle: () => void;
+export const NavigationMenuButton = () => {
+  const toggleNavigation = useNavigationToggle();
+  return (
+    <Tooltip title="Expand/collapse navigation menu">
+      <IconButton color="inherit" onClick={toggleNavigation}>
+        <MenuIcon />
+      </IconButton>
+    </Tooltip>
+  );
 };
-
-export const NavigationMenuButton = ({ handleNavigationToggle }: Props) => (
-  <Tooltip title="Expand/collapse navigation menu">
-    <IconButton color="inherit" onClick={handleNavigationToggle}>
-      <MenuIcon />
-    </IconButton>
-  </Tooltip>
-);

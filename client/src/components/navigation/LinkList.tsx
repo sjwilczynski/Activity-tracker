@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
 import { useMemo, forwardRef } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
+import { useNavigationToggle } from "./useNavigationState";
 
 export type NavigationElement = {
   text: string;
@@ -9,21 +10,13 @@ export type NavigationElement = {
 
 type Props = {
   navigationElements: NavigationElement[];
-  handleNavigationToggle: () => void;
 };
 
-export const LinkList = ({
-  navigationElements,
-  handleNavigationToggle,
-}: Props) => {
+export const LinkList = ({ navigationElements }: Props) => {
   return (
     <List>
       {navigationElements.map((item) => (
-        <Link
-          key={item.text}
-          navigationElement={item}
-          handleNavigationToggle={handleNavigationToggle}
-        />
+        <Link key={item.text} navigationElement={item} />
       ))}
     </List>
   );
@@ -31,10 +24,8 @@ export const LinkList = ({
 
 const Link = ({
   navigationElement,
-  handleNavigationToggle,
 }: {
   navigationElement: NavigationElement;
-  handleNavigationToggle: () => void;
 }) => {
   const { text, path } = navigationElement;
   const styles = useStyles();
@@ -45,12 +36,13 @@ const Link = ({
       )),
     [path]
   );
+  const toggleNavigation = useNavigationToggle();
   return (
     <ListItem
       className={styles.link}
       activeClassName={styles.activeLink}
       component={ListLink}
-      onClick={handleNavigationToggle}
+      onClick={toggleNavigation}
     >
       <ListItemText primary={text} />
     </ListItem>
