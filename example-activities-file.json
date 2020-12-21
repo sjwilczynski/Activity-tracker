@@ -1,0 +1,12 @@
+[
+  { "date": "2018-07-28", "name": "nothing", "active": false },
+  { "date": "2018-07-27", "name": "gym", "active": true },
+  { "date": "2018-07-26", "name": "badminton", "active": true },
+  { "date": "2018-07-25", "name": "nothing", "active": false },
+  { "date": "2018-07-24", "name": "nothing", "active": false },
+  { "date": "2018-07-23", "name": "cross fit", "active": true },
+  { "date": "2018-07-22", "name": "nothing", "active": false },
+  { "date": "2018-07-21", "name": "basketball", "active": true },
+  { "date": "2018-07-20", "name": "running", "active": true },
+  { "date": "2018-07-19", "name": "badminton", "active": true }
+]

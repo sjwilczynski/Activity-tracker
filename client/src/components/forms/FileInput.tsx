@@ -2,14 +2,29 @@ import {
   Button,
   makeStyles,
   FormHelperText,
+  Tooltip,
   Typography,
+  IconButton,
 } from "@material-ui/core";
 import { FieldProps } from "formik";
 import { ChangeEvent, useCallback } from "react";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles((theme) => ({
   selectButton: {
     margin: `${theme.spacing(1)}px 0`,
+    flex: "1 1 auto",
+  },
+  selectButtonContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  label: {
+    display: "flex",
+    flex: "1 1 auto",
+  },
+  text: {
+    textAlign: "center",
   },
 }));
 
@@ -39,23 +54,33 @@ export const FileInput = <T extends { file: File | null }>(
         type="file"
         onChange={onFileInputChange}
       />
-      <label htmlFor="contained-button-file">
-        <Button
-          variant="contained"
-          color="primary"
-          component="div"
-          className={styles.selectButton}
-        >
-          Select file
-        </Button>
-      </label>
+      <div className={styles.selectButtonContainer}>
+        <label htmlFor="contained-button-file" className={styles.label}>
+          <Button
+            variant="contained"
+            color="primary"
+            component="div"
+            className={styles.selectButton}
+          >
+            Select file
+          </Button>
+        </label>
+        <Tooltip title="Click to view a file in a format required for upload">
+          <IconButton
+            href="https://github.com/sjwilczynski/Activity-tracker/blob/master/example-activities-file.json"
+            color="inherit"
+          >
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
       {fileName && (
-        <FormHelperText>
+        <FormHelperText className={styles.text}>
           <Typography variant="subtitle1">{fileName}</Typography>
         </FormHelperText>
       )}
       {error && (
-        <FormHelperText error>
+        <FormHelperText error className={styles.text}>
           <Typography variant="subtitle1">{error}</Typography>
         </FormHelperText>
       )}
