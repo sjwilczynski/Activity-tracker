@@ -76,6 +76,10 @@ const darkTheme: ThemeOptions = {
       main: "#4479a2",
       dark: "#034d73",
     },
+    background: {
+      default: "#303030",
+      paper: "#303030",
+    },
   },
   ...themeOverrides,
 };
