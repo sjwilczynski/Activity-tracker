@@ -43,7 +43,7 @@ export const ModalDialog = (props: Props) => {
   };
   const styles = useStyles();
   return (
-    <div>
+    <>
       <Button variant="contained" color="primary" onClick={open}>
         {openButtonText}
       </Button>
@@ -72,6 +72,6 @@ export const ModalDialog = (props: Props) => {
           {content}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };

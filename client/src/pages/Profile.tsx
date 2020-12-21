@@ -21,6 +21,16 @@ const useStyles = makeStyles(() => ({
   spacing: {
     padding: "0.5rem",
   },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    "& > *": {
+      margin: "0.5rem 0",
+    },
+  },
+  buttonGrow: {
+    flex: "1 1 auto",
+  },
 }));
 
 export const Profile = () => {
@@ -39,7 +49,7 @@ export const Profile = () => {
     <>
       <div className={styles.container}>
         <Typography variant="h5">User name: {user?.displayName}</Typography>
-        <div className={styles.spacing}>
+        <div className={styles.buttonsContainer}>
           <ModalDialog
             openButtonText="Delete your activites"
             title="Delete confirmation"
@@ -56,34 +66,29 @@ export const Profile = () => {
               </>
             }
           />
-        </div>
 
-        <div className={styles.spacing}>
           <ModalDialog
             openButtonText="Upload activities"
             title="Activties upload"
             description="Select a json file containg activities in a complaint format"
             content={<FileUploadForm />}
           />
-        </div>
-        <div className={styles.spacing}>
           <DownloadLink
             filename="activities.json"
             tagName="div"
-            style={{}}
+            style={{ display: "flex" }}
             label={
               <Button
                 variant="contained"
                 color="primary"
                 disabled={isFetchingActivities}
+                className={styles.buttonGrow}
               >
                 Export activities
               </Button>
             }
             exportFile={exportActivities}
           />
-        </div>
-        <div className={styles.spacing}>
           <Button variant="contained" color="primary" onClick={signOut}>
             Sign out
           </Button>
