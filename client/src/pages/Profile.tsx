@@ -95,8 +95,8 @@ export const Profile = () => {
       <FeedbackAlertGroup
         isRequestError={isError}
         isRequestSuccess={isSuccess}
-        successMessage="Successfully deleted activity data"
-        errorMessage="Failed to delete activity data"
+        successMessage="Successfully deleted all activity data"
+        errorMessage="Failed to delete the activity data"
       />
     </>
   );

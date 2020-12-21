@@ -80,7 +80,7 @@ export function FileUploadForm() {
       <FeedbackAlertGroup
         isRequestError={isError}
         isRequestSuccess={isSuccess}
-        successMessage="Successfully uploaded the fie"
+        successMessage="Successfully uploaded the file"
         errorMessage="Failed to upload the file"
       />
     </>
