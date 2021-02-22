@@ -12,8 +12,8 @@
     "clean": "rm -rf node_modules client/node_modules api/node_modules"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.15.1",
-    "@typescript-eslint/parser": "4.15.1",
+    "@typescript-eslint/eslint-plugin": "4.15.2",
+    "@typescript-eslint/parser": "4.15.2",
     "bundlewatch": "0.3.2",
     "depcheck": "1.4.0",
     "eslint": "7.20.0",
