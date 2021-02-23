@@ -64,6 +64,6 @@
     "@types/react-query": "1.1.2",
     "@types/react-router-dom": "5.1.7",
     "@types/yup": "0.29.11",
-    "typescript": "4.1.5"
+    "typescript": "4.2.2"
   }
 }
