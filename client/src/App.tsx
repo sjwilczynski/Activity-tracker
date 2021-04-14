@@ -1,7 +1,7 @@
 import { AuthProvider } from "./auth";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { BrowserRouter } from "react-router-dom";
-import { QueryConfigProvider, useActivitiesPrefetch } from "./data";
+import { QueryConfigProvider } from "./data";
 import {
   AppContainer,
   StylesProvider,
@@ -11,7 +11,6 @@ import { Pages } from "./pages";
 import { Provider } from "jotai";
 
 function App() {
-  useActivitiesPrefetch();
   return (
     <AppContainer>
       <AuthProvider>

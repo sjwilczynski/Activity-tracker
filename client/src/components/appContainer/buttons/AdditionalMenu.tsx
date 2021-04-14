@@ -44,8 +44,10 @@ export const AdditionalMenu = ({ children }: Props) => {
         onClose={handleClose}
         MenuListProps={{ className: styles.menuList }}
       >
-        {children.map((child) => (
-          <MenuItem disableGutters>{child}</MenuItem>
+        {children.map((child, index) => (
+          <MenuItem key={index} disableGutters>
+            {child}
+          </MenuItem>
         ))}
       </Menu>
     </>

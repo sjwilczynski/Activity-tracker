@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useActivitiesPrefetch } from "../data";
 import { ActivityList } from "./ActivityList";
 import { Charts } from "./Charts";
 import { PagesContainer } from "./PagesContainer";
@@ -6,6 +7,7 @@ import { Profile } from "./Profile";
 import { Welcome } from "./Welcome";
 
 export const Pages = () => {
+  useActivitiesPrefetch();
   return (
     <PagesContainer>
       <Routes>
