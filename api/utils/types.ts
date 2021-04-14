@@ -12,3 +12,15 @@ export type ActivityMap = {
 };
 
 export type ActivityRecordWithId = ActivityRecord & { id: string };
+
+export type Category = {
+  name: string;
+  active: boolean;
+  description: string;
+  subcategories: Subcategory[];
+};
+
+export type Subcategory = {
+  name: string;
+  description: string;
+};
