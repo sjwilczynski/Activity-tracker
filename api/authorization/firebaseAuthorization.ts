@@ -1,6 +1,11 @@
 import admin from "../firebase/firebase";
 
-export const firebaseGetUserId = async (token: string): Promise<string> => {
+export const firebaseGetUserId = async (
+  token: string | undefined
+): Promise<string> => {
+  if (token === undefined) {
+    throw new Error("No id token");
+  }
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     return decodedToken.uid;
