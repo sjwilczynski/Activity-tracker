@@ -5590,7 +5590,7 @@ firebase@8.4.2:
     "@firebase/storage" "0.5.1"
     "@firebase/util" "1.0.0"
 
-firebaseui@^4.7.1:
+firebaseui@^4.8.0:
   version "4.8.0"
   resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-4.8.0.tgz#74c10a30db17f2cbfe020c91b97d5e3c6e8efbbc"
   integrity sha512-DG8CD+969JHMailhOm8nKo+eJlumIHex0TH18eJeTo0Q2KEt5m/b61S1ky4bavK/nGmLJBRECJytq09/pwhZ0A==
@@ -9954,12 +9954,12 @@ react-fast-compare@^2.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
-react-firebaseui@5.0.0-canary1:
-  version "5.0.0-canary1"
-  resolved "https://registry.yarnpkg.com/react-firebaseui/-/react-firebaseui-5.0.0-canary1.tgz#29ca2b8ff5f946c4f2f75b82db60bfdc1a96187d"
-  integrity sha512-cCzB1QNGxPuL16F2O6+LOtbJ/PBSgaTi0HNbr76IiznvR84YUKMdq9BIaCssFm3GPg1mUUoIkcsZEOL2UlTPjg==
+react-firebaseui@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/react-firebaseui/-/react-firebaseui-5.0.1.tgz#deaaf015ec4a0142ad3360952c3cfaa2b33f07d1"
+  integrity sha512-sn3PnSvWgdUY2+tr1gxZUIS/TKLDfOTMHNBseZlORU64PEQpXMfyt7nfgqCykSuiN80gRed9JUrv+iVdLq6XgA==
   dependencies:
-    firebaseui "^4.7.1"
+    firebaseui "^4.8.0"
 
 react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
