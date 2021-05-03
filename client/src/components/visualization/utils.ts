@@ -1,11 +1,11 @@
-import { ChartJsData } from "./types";
 import { ActivitySummaries, ActivitySummary } from "../../data";
 import { TinyColor } from "@ctrl/tinycolor";
+import { ChartData } from "chart.js";
 
 export function getDataInChartJsFormat(
   activitySummaries: ActivitySummaries,
   isLightTheme: boolean
-): ChartJsData {
+): ChartData<"bar" | "pie", number[], string> {
   const sortedKeys = sortKeys(activitySummaries);
   const activityCounts = getActivityCounts(activitySummaries, sortedKeys);
   const colors = getBackgroundColors(

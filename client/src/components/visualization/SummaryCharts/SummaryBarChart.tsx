@@ -1,8 +1,8 @@
 import { ActivitySummaries } from "../../../data";
 import { Bar } from "react-chartjs-2";
 import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
-import { ChartJsData } from "../types";
 import { useIsLightTheme } from "../../styles/StylesProvider";
+import { ChartData, ChartDataset, ChartOptions, LegendItem } from "chart.js";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -11,51 +11,13 @@ type Props = {
 export function SummaryBarChart(props: Props) {
   const isLightTheme = useIsLightTheme();
   const data = getDataForSummaryBarChart(props.activitySummaries, isLightTheme);
-  return (
-    <Bar
-      data={data}
-      options={{
-        maintainAspectRatio: false,
-        responsive: true,
-        legend: {
-          position: "right",
-          labels: {
-            filter: (item) => !item.text?.includes("threshold"),
-          },
-        },
-        scales: {
-          xAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-              id: "y-axis-1",
-            },
-            {
-              stacked: false,
-              display: false,
-              id: "y-axis-2",
-            },
-          ],
-        },
-      }}
-    />
-  );
+  return <Bar data={data} type="bar" options={chartOptions} />;
 }
 
 const getDataForSummaryBarChart = (
   activitySummaries: ActivitySummaries,
   isLightTheme: boolean
-): ChartJsData => {
+): ChartData<"bar" | "line", number[], string> => {
   const sortedKeys = sortKeys(activitySummaries);
   return {
     labels: ["Summary"],
@@ -70,25 +32,60 @@ const getStackedBars = (
   activitySummaries: ActivitySummaries,
   keys: string[],
   isLightTheme: boolean
-) => {
+): ChartDataset<"bar", number[]>[] => {
   const colors = getBackgroundColors(activitySummaries, keys, isLightTheme);
   return keys.map((key, index) => ({
     data: [activitySummaries[key].count],
     label: key,
+    type: "bar",
     backgroundColor: [colors[index]],
-    borderWidth: 2,
-    yAxisID: "y-axis-1",
+    yAxisID: "y1",
   }));
 };
 
-const getThresholdLines = (activitySummaries: ActivitySummaries) => {
+const getThresholdLines = (
+  activitySummaries: ActivitySummaries
+): ChartDataset<"line", number[]>[] => {
   const total = getTotalCount(Object.values(activitySummaries));
   return [1, 2, 3, 4, 5, 6, 7].map((fraction) => ({
     data: [parseFloat(((fraction * total) / 7).toFixed(2))],
     type: "line",
     label: `${fraction} days per week threshold`,
-    fill: false,
     borderColor: "#000000",
-    yAxisID: "y-axis-2",
+    yAxisID: "y2",
   }));
+};
+
+const chartOptions: ChartOptions = {
+  maintainAspectRatio: false,
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "right",
+      labels: {
+        filter: (item: LegendItem) => !item.text.includes("threshold"),
+      },
+    },
+  },
+  interaction: {
+    mode: "nearest",
+  },
+  scales: {
+    x: {
+      stacked: true,
+      grid: {
+        display: false,
+      },
+    },
+    y1: {
+      stacked: true,
+      grid: {
+        display: false,
+      },
+    },
+    y2: {
+      stacked: false,
+      display: false,
+    },
+  },
 };
