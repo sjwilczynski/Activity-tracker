@@ -3,7 +3,7 @@ import { Bar } from "react-chartjs-2";
 import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
 import { ChartJsData } from "../types";
 import { useIsLightTheme } from "../../styles/StylesProvider";
-import { ChartDataset } from "chart.js";
+import { ChartDataset, LegendItem } from "chart.js";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -23,9 +23,12 @@ export function SummaryBarChart(props: Props) {
           legend: {
             position: "right",
             labels: {
-              filter: (item: any) => !item.text?.includes("threshold"),
+              filter: (item: LegendItem) => !item.text.includes("threshold"),
             },
           },
+        },
+        interaction: {
+          mode: "nearest",
         },
         scales: {
           x: {
@@ -75,7 +78,6 @@ const getStackedBars = (
     label: key,
     type: "bar",
     backgroundColor: [colors[index]],
-    borderWidth: 2,
     yAxisID: "y1",
   }));
 };
@@ -88,7 +90,6 @@ const getThresholdLines = (
     data: [parseFloat(((fraction * total) / 7).toFixed(2))],
     type: "line",
     label: `${fraction} days per week threshold`,
-    fill: false,
     borderColor: "#000000",
     yAxisID: "y2",
   }));
