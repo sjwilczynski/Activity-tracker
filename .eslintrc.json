@@ -4,11 +4,7 @@
     "node": true,
     "es2021": true
   },
-  "extends": [
-    "standard-with-typescript",
-    "prettier",
-    "prettier/@typescript-eslint"
-  ],
+  "extends": ["standard-with-typescript", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["./client/tsconfig.json", "./api/tsconfig.json"]
@@ -22,7 +18,10 @@
         "allowTypedFunctionExpressions": true,
         "allowHigherOrderFunctions": true
       }
-    ]
+    ],
+    "@typescript-eslint/semi": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/quotes": "off"
   },
   "overrides": [
     {
