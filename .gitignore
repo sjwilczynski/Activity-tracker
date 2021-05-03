@@ -1,4 +1,3 @@
 node_modules/*
 depcheck-report.md
 activities*.json
-categories*.json

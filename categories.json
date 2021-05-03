@@ -1,0 +1,152 @@
+[
+  {
+    "name": "nic",
+    "active": false,
+    "description": "",
+    "subcategories": [
+      {
+        "name": "chory",
+        "description": ""
+      },
+      {
+        "name": "urlop",
+        "description": ""
+      },
+      {
+        "name": "kontuzja",
+        "description": ""
+      },
+      {
+        "name": "nic",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "name": "bieganie",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "rakietowe",
+    "description": "",
+    "active": true,
+    "subcategories": [
+      {
+        "name": "badminton",
+        "description": ""
+      },
+      {
+        "name": "squash",
+        "description": ""
+      },
+      {
+        "name": "tenis",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "name": "basen",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "basket",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "cross fit",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "inne",
+    "active": true,
+    "description": "",
+    "subcategories": [
+      {
+        "name": "narty",
+        "description": ""
+      },
+      {
+        "name": "oddychanie",
+        "description": ""
+      },
+      {
+        "name": "rower",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "name": "personalny",
+    "active": true,
+    "description": "",
+    "subcategories": [
+      {
+        "name": "personalny",
+        "description": ""
+      },
+      {
+        "name": "patryk1.1",
+        "description": ""
+      },
+      {
+        "name": "patryk1.2",
+        "description": ""
+      },
+      {
+        "name": "patryk1.3",
+        "description": ""
+      },
+      {
+        "name": "patryk1.4",
+        "description": ""
+      },
+      {
+        "name": "patryk1.5",
+        "description": ""
+      },
+      {
+        "name": "patryk2.1",
+        "description": ""
+      },
+      {
+        "name": "patryk2.2",
+        "description": ""
+      },
+      {
+        "name": "patryk2.3",
+        "description": ""
+      },
+      {
+        "name": "patryk2.4",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "name": "siłka",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "shaun",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  },
+  {
+    "name": "yoga",
+    "active": true,
+    "description": "",
+    "subcategories": []
+  }
+]
