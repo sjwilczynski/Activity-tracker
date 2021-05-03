@@ -8,6 +8,7 @@ import {
   inactiveBaseColor,
 } from "../utils";
 import { useIsLightTheme } from "../../styles/StylesProvider";
+import { TooltipItem } from "chart.js";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -27,12 +28,15 @@ export function SummaryPieChart({ activitySummaries }: Props) {
   return (
     <Pie
       data={data}
+      type="pie"
       options={{
         maintainAspectRatio: false,
         responsive: true,
         tooltips: tooltipCallback,
-        legend: {
-          position: "right",
+        plugins: {
+          legend: {
+            position: "right",
+          },
         },
       }}
     />
@@ -41,18 +45,20 @@ export function SummaryPieChart({ activitySummaries }: Props) {
 
 const tooltipCallback = {
   callbacks: {
-    label: (tooltipItem: Chart.ChartTooltipItem, data: ChartJsData) => {
+    label: (tooltipItem: TooltipItem<"pie">, data: ChartJsData) => {
       const datasetIndex = tooltipItem?.datasetIndex || 0;
       const chartData = (data.datasets[datasetIndex].data || []) as number[];
       const totalCount = chartData.reduce(
         (counts, singleCount) => counts + singleCount,
         0
       );
-      const count = chartData[tooltipItem?.index || 0];
+      const count = chartData[tooltipItem?.dataIndex || 0];
       const percentage = (count / totalCount) * 100;
       // Hack alert: if it's additional summary dataset don't add a label
       const label =
-        datasetIndex === 0 ? data.labels[tooltipItem?.index || 0] + ":" : "";
+        datasetIndex === 0
+          ? data.labels[tooltipItem?.dataIndex || 0] + ":"
+          : "";
       return ` ${label} Count: ${count}, percentage: ${percentage.toFixed(2)}%`;
     },
   },

@@ -3,6 +3,7 @@ import { Bar } from "react-chartjs-2";
 import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
 import { ChartJsData } from "../types";
 import { useIsLightTheme } from "../../styles/StylesProvider";
+import { ChartDataset } from "chart.js";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -14,38 +15,35 @@ export function SummaryBarChart(props: Props) {
   return (
     <Bar
       data={data}
+      type="bar"
       options={{
         maintainAspectRatio: false,
         responsive: true,
-        legend: {
-          position: "right",
-          labels: {
-            filter: (item) => !item.text?.includes("threshold"),
+        plugins: {
+          legend: {
+            position: "right",
+            labels: {
+              filter: (item: any) => !item.text?.includes("threshold"),
+            },
           },
         },
         scales: {
-          xAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-              id: "y-axis-1",
-            },
-            {
-              stacked: false,
+          x: {
+            stacked: true,
+            grid: {
               display: false,
-              id: "y-axis-2",
             },
-          ],
+          },
+          y1: {
+            stacked: true,
+            grid: {
+              display: false,
+            },
+          },
+          y2: {
+            stacked: false,
+            display: false,
+          },
         },
       }}
     />
@@ -70,18 +68,21 @@ const getStackedBars = (
   activitySummaries: ActivitySummaries,
   keys: string[],
   isLightTheme: boolean
-) => {
+): ChartDataset[] => {
   const colors = getBackgroundColors(activitySummaries, keys, isLightTheme);
   return keys.map((key, index) => ({
     data: [activitySummaries[key].count],
     label: key,
+    type: "bar",
     backgroundColor: [colors[index]],
     borderWidth: 2,
-    yAxisID: "y-axis-1",
+    yAxisID: "y1",
   }));
 };
 
-const getThresholdLines = (activitySummaries: ActivitySummaries) => {
+const getThresholdLines = (
+  activitySummaries: ActivitySummaries
+): ChartDataset[] => {
   const total = getTotalCount(Object.values(activitySummaries));
   return [1, 2, 3, 4, 5, 6, 7].map((fraction) => ({
     data: [parseFloat(((fraction * total) / 7).toFixed(2))],
@@ -89,6 +90,6 @@ const getThresholdLines = (activitySummaries: ActivitySummaries) => {
     label: `${fraction} days per week threshold`,
     fill: false,
     borderColor: "#000000",
-    yAxisID: "y-axis-2",
+    yAxisID: "y2",
   }));
 };

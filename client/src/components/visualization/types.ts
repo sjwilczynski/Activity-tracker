@@ -1,6 +1,6 @@
-import { ChartDataSets } from "chart.js";
+import { ChartDataset } from "chart.js";
 
 export type ChartJsData = {
   labels: string[];
-  datasets: ChartDataSets[];
+  datasets: ChartDataset[];
 };

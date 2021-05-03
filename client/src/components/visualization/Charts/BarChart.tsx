@@ -13,30 +13,29 @@ export function BarChart(props: Props) {
   return (
     <Bar
       data={data}
+      type="bar"
       options={{
         maintainAspectRatio: false,
         responsive: true,
         scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
+          x: {
+            grid: {
+              display: false,
             },
-          ],
-          yAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-              ticks: {
-                beginAtZero: true,
-              },
+          },
+          y: {
+            grid: {
+              display: false,
             },
-          ],
+            ticks: {
+              beginAtZero: true,
+            },
+          },
         },
-        legend: {
-          display: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
         },
       }}
     />
