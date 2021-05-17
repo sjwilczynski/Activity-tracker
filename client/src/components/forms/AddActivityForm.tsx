@@ -47,7 +47,7 @@ export function AddActivityForm() {
   );
 
   const styles = useStyles();
-  const availableCategories = useAvailableCategories();
+  const { availableCategories, isLoading } = useAvailableCategories();
 
   return (
     <>
@@ -84,6 +84,8 @@ export function AddActivityForm() {
               }}
               onOpen={handleBlur}
               includeInputInList
+              loading={isLoading}
+              groupBy={(option) => option.categoryName}
               renderInput={(params) => (
                 <Field
                   {...params}
@@ -119,21 +121,27 @@ export function AddActivityForm() {
 }
 
 const useAvailableCategories = () => {
-  const { data: categories } = useCategories();
-  return (categories ?? []).reduce<CategoryOption[]>((acc, category) => {
-    if (category.subcategories?.length) {
-      category.subcategories.forEach((subcategory) =>
+  const { data: categories, isLoading } = useCategories();
+  const availableCategories = (categories ?? []).reduce<CategoryOption[]>(
+    (acc, category) => {
+      if (category.subcategories?.length) {
+        category.subcategories.forEach((subcategory) =>
+          acc.push({
+            name: subcategory.name,
+            categoryName: category.name,
+            active: category.active,
+          })
+        );
+      } else {
         acc.push({
-          name: subcategory.name,
+          name: category.name,
+          categoryName: category.name,
           active: category.active,
-        })
-      );
-    } else {
-      acc.push({
-        name: category.name,
-        active: category.active,
-      });
-    }
-    return acc;
-  }, []);
+        });
+      }
+      return acc;
+    },
+    []
+  );
+  return { availableCategories, isLoading };
 };

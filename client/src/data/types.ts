@@ -18,6 +18,7 @@ export type Subcategory = {
 export type CategoryOption = {
   name: string;
   active: boolean;
+  categoryName: string;
   description?: string;
 };
 
