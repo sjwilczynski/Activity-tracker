@@ -3,6 +3,7 @@ export {
   useActivitiesPrefetch,
   useExportActivities,
   useIsFetchingActivties,
+  useCategories,
 } from "./hooks/useActivities";
 export { useActivitiesMutation } from "./hooks/useActivitiesMutation";
 export { useDeleteAllActivities } from "./hooks/useDeleteAllActivities";

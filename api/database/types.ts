@@ -1,4 +1,4 @@
-import { ActivityMap, ActivityRecord } from "../utils/types";
+import { ActivityMap, ActivityRecord, Category } from "../utils/types";
 
 export type Database = {
   getActivities: (userId: string) => Promise<ActivityMap | null>;
@@ -13,4 +13,13 @@ export type Database = {
   ) => Promise<void>;
   deleteActivity: (userId: string, activityId: string) => Promise<void>;
   deleteAllActivities: (userId: string) => Promise<void>;
+
+  getCategories: (userId: string) => Promise<Category[] | null>;
+  addCategory: (userId: string, category: Category) => Promise<void>;
+  editCategory: (
+    userId: string,
+    categoryName: string,
+    newCategory: Category
+  ) => Promise<void>;
+  deleteCategory: (userId: string, categoryName: string) => Promise<void>;
 };

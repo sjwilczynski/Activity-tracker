@@ -3,6 +3,25 @@ export type Activity = {
   active: boolean;
 };
 
+export type Category = {
+  name: string;
+  active: boolean;
+  description: string;
+  subcategories?: Subcategory[];
+};
+
+export type Subcategory = {
+  name: string;
+  description: string;
+};
+
+export type CategoryOption = {
+  name: string;
+  active: boolean;
+  categoryName: string;
+  description?: string;
+};
+
 export type ActivityRecord = {
   date: Date;
 } & Activity;

@@ -1,9 +1,12 @@
 import { Database } from "./types";
 import { database } from "../firebase/firebase";
-import { ActivityMap, ActivityRecord } from "../utils/types";
+import { ActivityMap, ActivityRecord, Category } from "../utils/types";
 
 const activityDocument = (userId: string): string =>
   `/users/${userId}/activity`;
+
+const categoryDocument = (userId: string): string =>
+  `/users/${userId}/categories`;
 
 export const firebaseDB: Database = {
   getActivities: async (userId: string) => {
@@ -36,4 +39,21 @@ export const firebaseDB: Database = {
     const activitiesRef = database.ref(activityDocument(userId));
     await activitiesRef.remove();
   },
+
+  getCategories: async (userId: string) => {
+    const categories = await database
+      .ref(categoryDocument(userId))
+      .once("value");
+    return Object.values(categories.val());
+  },
+  addCategory: async (userId: string, category: Category) => {
+    const categoriesRef = database.ref(categoryDocument(userId));
+    await categoriesRef.push(category);
+  },
+  editCategory: async (
+    userId: string,
+    categoryName: string,
+    newCategory: Category
+  ) => {},
+  deleteCategory: async (userId: string, categoryName: string) => {},
 };
