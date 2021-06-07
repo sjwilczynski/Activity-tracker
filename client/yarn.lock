@@ -7144,10 +7144,10 @@ jest@26.6.0:
     import-local "^3.0.2"
     jest-cli "^26.6.0"
 
-jotai@0.16.9:
-  version "0.16.9"
-  resolved "https://registry.yarnpkg.com/jotai/-/jotai-0.16.9.tgz#6507f55e77af73615cd20ced1a98cdacdb80c017"
-  integrity sha512-VWKpLxDk3wu/Umb3HNZzGYCsFCdeII2YIEcrCcmNQ3v/JXfanHyw2hBLGoRzMX53ALi5Wt2jRICzg4XOg9dOLw==
+jotai@0.16.10:
+  version "0.16.10"
+  resolved "https://registry.yarnpkg.com/jotai/-/jotai-0.16.10.tgz#4993439e837a1d59e960a6136dd9af5915b168e4"
+  integrity sha512-qhdniEKKU2MyZjV85NAazpddphdoJsIx6gzsWavcDFkLlIGve3Cma0S6uMa7Q4x2PMQkmFALOE1Qq1hlqX8fWQ==
 
 js-sha3@0.8.0:
   version "0.8.0"
