@@ -24,7 +24,7 @@ export function SummaryPieChart({ activitySummaries }: Props) {
     labels: chartJsData.labels,
     datasets: [chartJsData.datasets[0], summaryDataset],
   };
-  return <Pie data={data} type="pie" options={chartOptions} />;
+  return <Pie data={data} options={chartOptions} />;
 }
 
 const tooltipCallback: Partial<TooltipCallbacks<"pie">> = {
@@ -60,9 +60,8 @@ const getAdditionalSummaryDataset = (
   activitySummaries: ActivitySummaries,
   isLightTheme: boolean
 ) => {
-  const { activeCount, inactiveCount } = getTotalActiveAndInactiveCount(
-    activitySummaries
-  );
+  const { activeCount, inactiveCount } =
+    getTotalActiveAndInactiveCount(activitySummaries);
   const activeBaseColorThemed = isLightTheme
     ? activeBaseColor
     : activeBaseColor.darken(15);

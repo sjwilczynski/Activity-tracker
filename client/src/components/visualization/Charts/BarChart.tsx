@@ -11,7 +11,7 @@ type Props = {
 export function BarChart(props: Props) {
   const isLightTheme = useIsLightTheme();
   const data = getDataInChartJsFormat(props.activitySummaries, isLightTheme);
-  return <Bar data={data} type="bar" options={chartOptions} />;
+  return <Bar data={data} options={chartOptions} />;
 }
 
 const chartOptions: ChartOptions<"bar"> = {
