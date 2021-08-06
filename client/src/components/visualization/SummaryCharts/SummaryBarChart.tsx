@@ -11,7 +11,7 @@ type Props = {
 export function SummaryBarChart(props: Props) {
   const isLightTheme = useIsLightTheme();
   const data = getDataForSummaryBarChart(props.activitySummaries, isLightTheme);
-  return <Bar data={data} type="bar" options={chartOptions} />;
+  return <Bar data={data} options={chartOptions} />;
 }
 
 const getDataForSummaryBarChart = (
