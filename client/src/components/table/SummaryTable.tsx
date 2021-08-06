@@ -62,7 +62,7 @@ export function SummaryTable(props: Props) {
         count={records.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onChangePage={changePage}
+        onPageChange={changePage}
         onChangeRowsPerPage={changeRowsPerPage}
       />
     </Paper>
