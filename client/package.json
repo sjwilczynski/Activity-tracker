@@ -32,7 +32,7 @@
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.60",
     "@material-ui/pickers": "3.3.10",
-    "axios": "0.21.2",
+    "axios": "0.21.3",
     "chart.js": "3.5.1",
     "date-fns": "2.23.0",
     "firebase": "8.10.0",
