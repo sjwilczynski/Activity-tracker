@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
-import { useMemo, forwardRef } from "react";
+import { useMemo, forwardRef, useCallback } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";
 
@@ -31,8 +31,8 @@ const Link = ({
   const styles = useStyles();
   const ListLink = useMemo(
     () =>
-      forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
-        <NavLink to={path} ref={ref} {...itemProps} />
+      forwardRef<any, Omit<NavLinkWrapperProps, "to">>((itemProps, ref) => (
+        <NavLinkWrapper to={path} {...itemProps} />
       )),
     [path]
   );
@@ -58,3 +58,20 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.common.white,
   },
 }));
+
+type NavLinkWrapperProps = Omit<NavLinkProps, "className"> & {
+  className: string;
+  activeClassName: string;
+};
+
+const NavLinkWrapper = ({
+  className,
+  activeClassName,
+  ...rest
+}: NavLinkWrapperProps) => {
+  const getClassName = useCallback(
+    ({ isActive }) => `${className} ${isActive ? activeClassName : ""}`,
+    [className, activeClassName]
+  );
+  return <NavLink {...rest} className={getClassName} />;
+};
