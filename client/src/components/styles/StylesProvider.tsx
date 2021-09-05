@@ -1,5 +1,5 @@
 import {
-  createMuiTheme,
+  createTheme,
   CssBaseline,
   ThemeOptions,
   ThemeProvider,
@@ -94,7 +94,7 @@ export const useThemeState = () => useAtom(themeAtom);
 
 export const StylesProvider = ({ children }: Props) => {
   const isLightTheme = useIsLightTheme();
-  const theme = createMuiTheme(isLightTheme ? lightTheme : darkTheme);
+  const theme = createTheme(isLightTheme ? lightTheme : darkTheme);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
