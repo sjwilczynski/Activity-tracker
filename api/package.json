@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "firebase-admin": "9.11.1",
-    "date-fns": "2.23.0"
+    "date-fns": "2.24.0"
   },
   "devDependencies": {
     "@azure/functions": "1.2.3",
