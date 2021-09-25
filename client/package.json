@@ -47,7 +47,7 @@
     "react-download-link": "2.3.0",
     "react-firebaseui": "5.0.2",
     "react-query": "3.24.4",
-    "react-router-dom": "6.0.0-beta.4",
+    "react-router-dom": "6.0.0-beta.5",
     "react-scripts": "4.0.3",
     "workbox-core": "5.1.4",
     "workbox-expiration": "5.1.4",
