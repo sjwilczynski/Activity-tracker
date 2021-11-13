@@ -5567,10 +5567,10 @@ firebase@8.10.0:
     "@firebase/storage" "0.7.0"
     "@firebase/util" "1.3.0"
 
-firebaseui@^4.8.0:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-4.8.1.tgz#29ccbc9dfd579c4453725f88e9cf81c8ea62c580"
-  integrity sha512-Qh8kfqGjMIiVJ2X8MUFsmlf43QFcVc8ungD+kw5T8ACuhQ68IAyUHExlItAfumrcLlqEgyo1MjH0O9fZZAMOKw==
+firebaseui@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-6.0.0.tgz#074580e9e7da93ed3d551a869dbab4e0902701d7"
+  integrity sha512-fhzteivWRTnOhSk5JkIVLmcXk6aVh4ZtW+KAnJijeeZhAyM+Ed9m1YgC4l+VK+NOp+kerVw6HL1mRdvDF6Yeuw==
   dependencies:
     dialog-polyfill "^0.4.7"
     material-design-lite "^1.2.0"
@@ -9822,12 +9822,12 @@ react-fast-compare@^2.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
-react-firebaseui@5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/react-firebaseui/-/react-firebaseui-5.0.2.tgz#7496bc595454abdd3e1c10612bb3446cb125181a"
-  integrity sha512-ZfIWfRKlKAkMwEI+41rMPkwdNEQEfBLXV6TVaN5er3cdwMD0vQecWt6YOE4/v1ELziaj10NNRB8yB42V56QBMQ==
+react-firebaseui@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/react-firebaseui/-/react-firebaseui-6.0.0.tgz#97a075e7caa2fb969c8ded9efbbcefccb1f33ce1"
+  integrity sha512-VzLMiW7DBZCsW/qpP9nky/pPlAoIjDxA2Qyc+QAPf+RjelIkvPPiCBXR2aAz+Upy+ujrx6pYDXj547DW5uC4ww==
   dependencies:
-    firebaseui "^4.8.0"
+    firebaseui "^6.0.0"
 
 react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
