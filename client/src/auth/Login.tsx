@@ -1,6 +1,6 @@
 import { FirebaseAuth } from "react-firebaseui";
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 import { makeStyles } from "@material-ui/core";
 
 const uiConfig: firebaseui.auth.Config = {

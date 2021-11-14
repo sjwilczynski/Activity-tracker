@@ -35,7 +35,7 @@
     "axios": "0.24.0",
     "chart.js": "3.6.0",
     "date-fns": "2.25.0",
-    "firebase": "8.10.0",
+    "firebase": "9.4.1",
     "formik": "2.2.9",
     "formik-material-ui": "3.0.1",
     "formik-material-ui-pickers": "0.0.12",
