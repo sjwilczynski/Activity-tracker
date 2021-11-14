@@ -10,7 +10,10 @@ type Props = {
 
 export function SummaryBarChart(props: Props) {
   const isLightTheme = useIsLightTheme();
-  const data = getDataForSummaryBarChart(props.activitySummaries, isLightTheme);
+  const data = getDataForSummaryBarChart(
+    props.activitySummaries,
+    isLightTheme
+  ) as ChartData<"bar", number[], string>;
   return <Bar data={data} options={chartOptions} />;
 }
 
@@ -56,7 +59,7 @@ const getThresholdLines = (
   }));
 };
 
-const chartOptions: ChartOptions = {
+const chartOptions: ChartOptions<"bar"> = {
   maintainAspectRatio: false,
   responsive: true,
   plugins: {
