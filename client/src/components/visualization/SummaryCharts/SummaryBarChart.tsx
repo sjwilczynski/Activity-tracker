@@ -59,7 +59,7 @@ const getThresholdLines = (
   }));
 };
 
-const chartOptions: ChartOptions = {
+const chartOptions: ChartOptions<"bar"> = {
   maintainAspectRatio: false,
   responsive: true,
   plugins: {
