@@ -7,7 +7,12 @@ import {
   inactiveBaseColor,
 } from "../utils";
 import { useIsLightTheme } from "../../styles/StylesProvider";
-import { ChartOptions, TooltipCallbacks, TooltipItem } from "chart.js";
+import {
+  ChartData,
+  ChartOptions,
+  TooltipCallbacks,
+  TooltipItem,
+} from "chart.js";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -15,7 +20,10 @@ type Props = {
 
 export function SummaryPieChart({ activitySummaries }: Props) {
   const isLightTheme = useIsLightTheme();
-  const chartJsData = getDataInChartJsFormat(activitySummaries, isLightTheme);
+  const chartJsData = getDataInChartJsFormat(
+    activitySummaries,
+    isLightTheme
+  ) as ChartData<"pie", number[], string>;
   const summaryDataset = getAdditionalSummaryDataset(
     activitySummaries,
     isLightTheme
