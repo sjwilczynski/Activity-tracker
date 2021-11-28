@@ -1,4 +1,5 @@
-import { List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
+import { List, ListItem, ListItemText } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useMemo, forwardRef, useCallback } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";

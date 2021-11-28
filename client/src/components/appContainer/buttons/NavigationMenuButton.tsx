@@ -1,5 +1,5 @@
-import { IconButton, Tooltip } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+import { IconButton, Tooltip } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth } from "../../../auth";
 import { useNavigationToggle } from "../../navigation/useNavigationState";
 
@@ -9,7 +9,7 @@ export const NavigationMenuButton = () => {
   const onClick = isSignedIn ? toggleNavigation : undefined;
   return (
     <Tooltip title="Expand/collapse navigation menu">
-      <IconButton color="inherit" onClick={onClick}>
+      <IconButton color="inherit" onClick={onClick} size="large">
         <MenuIcon />
       </IconButton>
     </Tooltip>

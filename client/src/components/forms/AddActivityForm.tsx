@@ -7,10 +7,11 @@ import {
   useActivitiesMutation,
   useCategories,
 } from "../../data";
-import { KeyboardDatePicker } from "formik-material-ui-pickers";
-import { TextField } from "formik-material-ui";
-import { Button, makeStyles } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { DatePicker } from "formik-mui-lab";
+import { TextField } from "formik-mui";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Autocomplete } from "@mui/material";
 import { format } from "date-fns";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
@@ -25,10 +26,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    padding: `${theme.spacing(1)}px 0`,
+    padding: `${theme.spacing(1)} 0`,
   },
   field: {
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
   },
 }));
 
@@ -67,12 +68,13 @@ export function AddActivityForm() {
         {({ isValid, dirty, handleBlur, setFieldValue }) => (
           <Form className={styles.form}>
             <Field
-              component={KeyboardDatePicker}
+              component={DatePicker}
               name="date"
               label="Date"
-              format="yyyy-MM-dd"
+              inputFormat="yyyy-MM-dd"
               className={styles.field}
-              autoOk
+              mask="____-__-__"
+              textField={{ variant: "standard" }}
             />
             <Autocomplete
               id="name-autocomplete"
@@ -95,6 +97,7 @@ export function AddActivityForm() {
                   placeholder="name of the activity"
                   type="text"
                   className={styles.field}
+                  variant="standard"
                 />
               )}
             />

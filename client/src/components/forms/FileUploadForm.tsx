@@ -1,7 +1,8 @@
 import { useCallback } from "react";
 import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
-import { Button, makeStyles } from "@material-ui/core";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { FileInput } from "./FileInput";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
@@ -17,10 +18,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
-    padding: `${theme.spacing(1)}px 0`,
+    padding: `${theme.spacing(1)} 0`,
   },
   submit: {
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
   },
 }));
 
@@ -39,8 +40,7 @@ export function FileUploadForm() {
               addActivities(activities);
             } else {
               formikHelpers.setErrors({
-                file:
-                  "The specified json doesn't contain activities in proper format",
+                file: "The specified json doesn't contain activities in proper format",
               });
             }
           }

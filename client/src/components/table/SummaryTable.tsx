@@ -7,7 +7,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useState, ChangeEvent } from "react";
 import { ActivityRecordWithId } from "../../data";
 
@@ -63,7 +63,7 @@ export function SummaryTable(props: Props) {
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={changePage}
-        onChangeRowsPerPage={changeRowsPerPage}
+        onRowsPerPageChange={changeRowsPerPage}
       />
     </Paper>
   );

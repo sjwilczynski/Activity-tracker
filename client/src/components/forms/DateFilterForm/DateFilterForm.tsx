@@ -1,6 +1,6 @@
 import { Formik, Form, Field, FormikErrors } from "formik";
-import { KeyboardDatePicker } from "formik-material-ui-pickers";
-import { makeStyles } from "@material-ui/core";
+import { DatePicker } from "formik-mui-lab";
+import makeStyles from "@mui/styles/makeStyles";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import {
@@ -15,13 +15,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexFlow: "row wrap",
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
     "& > *": {
-      margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(
-        1
-      )}px 0`,
+      margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
     },
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
   },
 }));
 
@@ -46,20 +44,20 @@ export const DateFilterForm = () => {
       >
         <Form className={styles.form}>
           <Field
-            component={KeyboardDatePicker}
+            component={DatePicker}
             name={startDateFieldKey}
             label="Start date"
-            format="yyyy-MM-dd"
-            disabled={false}
-            autoOk
+            inputFormat="yyyy-MM-dd"
+            mask="____-__-__"
+            textField={{ variant: "standard" }}
           />
           <Field
-            component={KeyboardDatePicker}
+            component={DatePicker}
             name={endDateFieldKey}
             label="End date"
-            format="yyyy-MM-dd"
-            disabled={false}
-            autoOk
+            inputFormat="yyyy-MM-dd"
+            mask="____-__-__"
+            textField={{ variant: "standard" }}
           />
           <FormButtons />
         </Form>

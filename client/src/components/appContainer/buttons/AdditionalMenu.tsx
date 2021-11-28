@@ -1,9 +1,10 @@
-import { makeStyles, Menu, MenuItem } from "@material-ui/core";
-import { useState, ReactNodeArray, MouseEvent } from "react";
+import { Menu, MenuItem } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { useState, MouseEvent, ReactNode } from "react";
 import { AdditionalMenuButton } from "./AdditionalMenuButton";
 
 type Props = {
-  children: ReactNodeArray;
+  children: ReactNode[];
 };
 
 const useStyles = makeStyles({
@@ -28,7 +29,6 @@ export const AdditionalMenu = ({ children }: Props) => {
     <>
       <AdditionalMenuButton onClick={handleClick} />
       <Menu
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",

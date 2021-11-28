@@ -1,12 +1,12 @@
 import {
   AppBar as MuiAppBar,
-  makeStyles,
   Toolbar,
   Typography,
   useTheme,
   useMediaQuery,
   Avatar,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useAuth } from "../../auth";
 import { AppBarButtons } from "./buttons/AppBarButtons";
 import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 400,
     whiteSpace: "nowrap",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       color: theme.palette.common.white,
     },
   },
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     position: "relative",
     padding: "2rem",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       padding: 0,
     },
   },
@@ -57,7 +57,7 @@ export const AppBar = () => {
   const { isSignedIn } = useAuth();
   const styles = useStyles();
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   const headerVariant = matches ? "h3" : "h1";
   const title = (
     <Typography variant={headerVariant} align="center" className={styles.title}>

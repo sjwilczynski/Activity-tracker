@@ -1,18 +1,18 @@
 import {
   Button,
-  makeStyles,
   FormHelperText,
   Tooltip,
   Typography,
   IconButton,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { FieldProps } from "formik";
 import { ChangeEvent, useCallback } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const useStyles = makeStyles((theme) => ({
   selectButton: {
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
     flex: "1 1 auto",
   },
   selectButtonContainer: {
@@ -69,6 +69,7 @@ export const FileInput = <T extends { file: File | null }>(
           <IconButton
             href="https://github.com/sjwilczynski/Activity-tracker/blob/master/example-activities-file.json"
             color="inherit"
+            size="large"
           >
             <InfoOutlinedIcon />
           </IconButton>

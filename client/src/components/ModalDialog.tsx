@@ -5,10 +5,10 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
-  makeStyles,
   Typography,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 
 type Props = {
@@ -75,6 +75,7 @@ export const ModalDialog = (props: Props) => {
             aria-label="close"
             className={styles.closeButton}
             onClick={close}
+            size="large"
           >
             <CloseIcon />
           </IconButton>

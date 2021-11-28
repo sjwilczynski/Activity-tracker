@@ -1,5 +1,5 @@
-import { IconButton, Tooltip } from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { IconButton, Tooltip } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { MouseEvent } from "react";
 
 type Props = {
@@ -14,6 +14,7 @@ export const AdditionalMenuButton = ({ onClick }: Props) => (
       aria-controls="additional-menu"
       color="inherit"
       onClick={onClick}
+      size="large"
     >
       <MoreVertIcon />
     </IconButton>

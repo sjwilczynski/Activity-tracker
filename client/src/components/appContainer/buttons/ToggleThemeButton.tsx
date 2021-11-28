@@ -1,12 +1,12 @@
-import { IconButton, Tooltip } from "@material-ui/core";
-import { Brightness4, Brightness7 } from "@material-ui/icons";
+import { IconButton, Tooltip } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { useThemeState } from "../../styles/StylesProvider";
 
 export const ToggleThemeButton = () => {
   const [isLightTheme, toggleTheme] = useThemeState();
   return (
     <Tooltip title="Toggle light/dark theme">
-      <IconButton onClick={toggleTheme} color="inherit">
+      <IconButton onClick={toggleTheme} color="inherit" size="large">
         {isLightTheme ? <Brightness4 /> : <Brightness7 />}
       </IconButton>
     </Tooltip>
