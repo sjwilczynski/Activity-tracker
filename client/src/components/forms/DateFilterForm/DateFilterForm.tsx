@@ -15,7 +15,7 @@ const StyledForm = styled(Form)(({ theme }) => ({
   alignItems: "center",
   flexFlow: "row wrap",
   padding: theme.spacing(1),
-  "& > *": {
+  "& > div, & > button": {
     margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
   },
   margin: `${theme.spacing(1)} 0`,
