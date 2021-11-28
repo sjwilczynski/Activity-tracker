@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth";

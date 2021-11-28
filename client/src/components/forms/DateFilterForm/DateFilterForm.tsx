@@ -1,6 +1,6 @@
 import { Formik, Form, Field, FormikErrors } from "formik";
 import { KeyboardDatePicker } from "formik-material-ui-pickers";
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import {
@@ -15,13 +15,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexFlow: "row wrap",
-    padding: `${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
     "& > *": {
-      margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(
-        1
-      )}px 0`,
+      margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)}px 0`,
     },
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
   },
 }));
 

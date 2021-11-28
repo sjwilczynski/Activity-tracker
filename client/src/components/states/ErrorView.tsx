@@ -1,5 +1,6 @@
-import { Button, makeStyles } from "@material-ui/core";
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({

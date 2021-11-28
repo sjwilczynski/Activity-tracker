@@ -9,8 +9,9 @@ import {
 } from "../../data";
 import { KeyboardDatePicker } from "formik-material-ui-pickers";
 import { TextField } from "formik-material-ui";
-import { Button, makeStyles } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Autocomplete } from "@mui/material";
 import { format } from "date-fns";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
@@ -25,10 +26,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    padding: `${theme.spacing(1)}px 0`,
+    padding: `${theme.spacing(1)} 0`,
   },
   field: {
-    margin: `${theme.spacing(1)}px 0`,
+    margin: `${theme.spacing(1)} 0`,
   },
 }));
 

@@ -1,13 +1,18 @@
-import { Snackbar, SnackbarOrigin, Slide } from "@material-ui/core";
-import { TransitionProps } from "@material-ui/core/transitions";
-import { Alert, Color } from "@material-ui/lab";
+import {
+  Alert,
+  AlertColor,
+  Snackbar,
+  SnackbarOrigin,
+  Slide,
+} from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
 import { SyntheticEvent, Dispatch, SetStateAction } from "react";
 
 type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   message: string;
-  severity: Color;
+  severity: AlertColor;
 };
 
 export const FeedbackAlert = ({ open, setOpen, severity, message }: Props) => {
@@ -44,6 +49,8 @@ const anchorOrigin: SnackbarOrigin = {
   vertical: "bottom",
 };
 
-const TransitionLeft = (props: TransitionProps) => {
+const TransitionLeft = (
+  props: TransitionProps & { children: React.ReactElement<any, any> }
+) => {
   return <Slide {...props} direction="left" />;
 };

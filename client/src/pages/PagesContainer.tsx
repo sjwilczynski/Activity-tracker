@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 
 type Props = {
   children: React.ReactNode;
@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     display: "flex",
     marginLeft: "17rem",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: "0",
     },
   },

@@ -1,4 +1,6 @@
-import { createStyles, Drawer, makeStyles, Theme } from "@material-ui/core";
+import { Drawer, Theme } from "@mui/material";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { useNavigationState } from "./useNavigationState";
 
 type Props = {

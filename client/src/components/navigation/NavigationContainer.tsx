@@ -1,4 +1,4 @@
-import { useTheme, useMediaQuery } from "@material-ui/core";
+import { useTheme, useMediaQuery } from "@mui/material";
 import { TemporaryNavigation } from "./TemporaryNavigation";
 import { PermanentNavigation } from "./PermanentNavigation";
 
@@ -8,7 +8,7 @@ type Props = {
 
 export const NavigationContainer = ({ children }: Props) => {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   const navigation = matches ? (
     <TemporaryNavigation>{children}</TemporaryNavigation>
   ) : (

@@ -1,4 +1,5 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";

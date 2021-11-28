@@ -1,7 +1,7 @@
 import { FirebaseAuth } from "react-firebaseui";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 
 const uiConfig: firebaseui.auth.Config = {
   // Popup signin flow rather than redirect flow.
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   text: {
     ...theme.typography.h3,
     display: "flex",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexFlow: "column wrap",
       alignItems: "center",
     },
