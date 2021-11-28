@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, useTheme } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";
 
@@ -29,8 +29,10 @@ const Link = ({
 }) => {
   const { text, path } = navigationElement;
   const ListLink = useMemo(
-    () => (itemProps: Omit<NavLinkProps, "to">) =>
-      <NavLinkWrapper to={path} {...itemProps} />,
+    () =>
+      forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
+        <NavLinkWrapper to={path} ref={ref} {...itemProps} />
+      )),
     [path]
   );
   const toggleNavigation = useNavigationToggle();
@@ -41,19 +43,24 @@ const Link = ({
   );
 };
 
-const NavLinkWrapper = (props: NavLinkProps) => {
-  const theme = useTheme();
-  const style: NavLinkProps["style"] = useCallback(
-    ({ isActive }) => {
-      return isActive
-        ? ({ textAlign: "center", color: theme.palette.common.white } as const)
-        : ({
-            textAlign: "center",
-            color: theme.palette.secondary.light,
-          } as const);
-    },
-    [theme]
-  );
+const NavLinkWrapper = forwardRef<any, NavLinkProps>(
+  (props: NavLinkProps, ref) => {
+    const theme = useTheme();
+    const style: NavLinkProps["style"] = useCallback(
+      ({ isActive }) => {
+        return isActive
+          ? ({
+              textAlign: "center",
+              color: theme.palette.common.white,
+            } as const)
+          : ({
+              textAlign: "center",
+              color: theme.palette.secondary.light,
+            } as const);
+      },
+      [theme]
+    );
 
-  return <NavLink {...props} style={style} />;
-};
+    return <NavLink ref={ref} {...props} style={style} />;
+  }
+);
