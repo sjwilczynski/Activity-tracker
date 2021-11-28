@@ -1,5 +1,5 @@
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 export const PickersContextProvider = ({
   children,
@@ -7,8 +7,8 @@ export const PickersContextProvider = ({
   children: React.ReactNode;
 }) => {
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       {children}
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };

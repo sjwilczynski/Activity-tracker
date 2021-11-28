@@ -7,8 +7,8 @@ import {
   useActivitiesMutation,
   useCategories,
 } from "../../data";
-import { KeyboardDatePicker } from "formik-material-ui-pickers";
-import { TextField } from "formik-material-ui";
+import { DatePicker } from "formik-mui-lab";
+import { TextField } from "formik-mui";
 import { Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Autocomplete } from "@mui/material";
@@ -68,7 +68,7 @@ export function AddActivityForm() {
         {({ isValid, dirty, handleBlur, setFieldValue }) => (
           <Form className={styles.form}>
             <Field
-              component={KeyboardDatePicker}
+              component={DatePicker}
               name="date"
               label="Date"
               format="yyyy-MM-dd"

@@ -1,5 +1,5 @@
 import { Formik, Form, Field, FormikErrors } from "formik";
-import { KeyboardDatePicker } from "formik-material-ui-pickers";
+import { DatePicker } from "formik-mui-lab";
 import makeStyles from "@mui/styles/makeStyles";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
@@ -44,7 +44,7 @@ export const DateFilterForm = () => {
       >
         <Form className={styles.form}>
           <Field
-            component={KeyboardDatePicker}
+            component={DatePicker}
             name={startDateFieldKey}
             label="Start date"
             format="yyyy-MM-dd"
@@ -52,7 +52,7 @@ export const DateFilterForm = () => {
             autoOk
           />
           <Field
-            component={KeyboardDatePicker}
+            component={DatePicker}
             name={endDateFieldKey}
             label="End date"
             format="yyyy-MM-dd"
