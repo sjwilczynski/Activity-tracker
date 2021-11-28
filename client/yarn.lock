@@ -2073,7 +2073,7 @@
     "@emotion/cache" "^11.6.0"
     prop-types "^15.7.2"
 
-"@mui/system@^5.2.1":
+"@mui/system@5.2.1", "@mui/system@^5.2.1":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.2.1.tgz#593e9e8d8ab3dd8946f4e98e5ad7feabbcdb8e80"
   integrity sha512-C1mva6Uyk2bGCaa/FiaFseSt2iJymxgA8KnJJyKAz8ZQZzuetUV8JbY1qtV9CG1VlJb+Ldm7pc6Px8t59lGfZw==
