@@ -27,19 +27,19 @@
   },
   "dependencies": {
     "@ctrl/tinycolor": "3.4.0",
-    "@emotion/react": "^11.6.0",
-    "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.1.0",
-    "@mui/lab": "^5.0.0-alpha.54",
-    "@mui/material": "^5.1.0",
-    "@mui/styles": "^5.1.0",
+    "@emotion/react": "11.6.0",
+    "@emotion/styled": "11.6.0",
+    "@mui/icons-material": "5.1.0",
+    "@mui/lab": "5.0.0-alpha.54",
+    "@mui/material": "5.1.0",
+    "@mui/styles": "5.1.0",
     "axios": "0.24.0",
     "chart.js": "3.6.0",
     "date-fns": "2.26.0",
     "firebase": "9.5.0",
     "formik": "2.2.9",
-    "formik-mui": "^4.0.0-alpha.3",
-    "formik-mui-lab": "^1.0.0-alpha.3",
+    "formik-mui": "4.0.0-alpha.3",
+    "formik-mui-lab": "1.0.0-alpha.3",
     "history": "5.1.0",
     "jotai": "1.4.5",
     "react": "17.0.2",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@types/react": "17.0.37",
     "@types/react-dom": "17.0.11",
-    "tiny-warning": "^1.0.3",
+    "tiny-warning": "1.0.3",
     "typescript": "4.5.2"
   }
 }
