@@ -1,10 +1,10 @@
 import { Menu, MenuItem } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { useState, ReactNodeArray, MouseEvent } from "react";
+import { useState, MouseEvent, ReactNode } from "react";
 import { AdditionalMenuButton } from "./AdditionalMenuButton";
 
 type Props = {
-  children: ReactNodeArray;
+  children: ReactNode[];
 };
 
 const useStyles = makeStyles({
