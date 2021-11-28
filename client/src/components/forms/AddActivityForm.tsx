@@ -71,7 +71,7 @@ export function AddActivityForm() {
               component={DatePicker}
               name="date"
               label="Date"
-              format="yyyy-MM-dd"
+              inputFormat="yyyy-MM-dd"
               className={styles.field}
               autoOk
             />

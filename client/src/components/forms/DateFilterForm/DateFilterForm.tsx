@@ -47,7 +47,7 @@ export const DateFilterForm = () => {
             component={DatePicker}
             name={startDateFieldKey}
             label="Start date"
-            format="yyyy-MM-dd"
+            inputFormat="yyyy-MM-dd"
             disabled={false}
             autoOk
           />
@@ -55,7 +55,7 @@ export const DateFilterForm = () => {
             component={DatePicker}
             name={endDateFieldKey}
             label="End date"
-            format="yyyy-MM-dd"
+            inputFormat="yyyy-MM-dd"
             disabled={false}
             autoOk
           />
