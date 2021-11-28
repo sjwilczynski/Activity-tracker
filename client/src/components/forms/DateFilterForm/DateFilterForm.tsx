@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     flexFlow: "row wrap",
     padding: theme.spacing(1),
     "& > *": {
-      margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)}px 0`,
+      margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
     },
     margin: `${theme.spacing(1)} 0`,
   },
@@ -48,16 +48,16 @@ export const DateFilterForm = () => {
             name={startDateFieldKey}
             label="Start date"
             inputFormat="yyyy-MM-dd"
-            disabled={false}
-            autoOk
+            mask="____-__-__"
+            textField={{ variant: "standard" }}
           />
           <Field
             component={DatePicker}
             name={endDateFieldKey}
             label="End date"
             inputFormat="yyyy-MM-dd"
-            disabled={false}
-            autoOk
+            mask="____-__-__"
+            textField={{ variant: "standard" }}
           />
           <FormButtons />
         </Form>

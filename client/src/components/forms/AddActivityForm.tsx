@@ -73,7 +73,8 @@ export function AddActivityForm() {
               label="Date"
               inputFormat="yyyy-MM-dd"
               className={styles.field}
-              autoOk
+              mask="____-__-__"
+              textField={{ variant: "standard" }}
             />
             <Autocomplete
               id="name-autocomplete"
@@ -96,6 +97,7 @@ export function AddActivityForm() {
                   placeholder="name of the activity"
                   type="text"
                   className={styles.field}
+                  variant="standard"
                 />
               )}
             />
