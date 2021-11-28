@@ -25,18 +25,22 @@ import {
   Legend,
   PointElement,
   LineElement,
+  LineController,
+  PieController,
 } from "chart.js";
 
 Chart.register(
+  BarElement,
   BarController,
   CategoryScale,
   ArcElement,
   LinearScale,
-  BarElement,
   Tooltip,
   Legend,
   PointElement,
-  LineElement
+  LineController,
+  LineElement,
+  PieController
 );
 
 export const Charts = () => {
