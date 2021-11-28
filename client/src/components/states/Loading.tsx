@@ -1,17 +1,13 @@
-import { CircularProgress } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { CircularProgress, styled } from "@mui/material";
 
-const useStyles = makeStyles({
-  spinnerContainer: {
-    margin: "12rem auto",
-  },
+const SpinnerContainer = styled("div")({
+  margin: "12rem auto",
 });
 
 export const Loading = () => {
-  const styles = useStyles();
   return (
-    <div className={styles.spinnerContainer}>
+    <SpinnerContainer>
       <CircularProgress color="primary" size="5rem" thickness={2} />
-    </div>
+    </SpinnerContainer>
   );
 };

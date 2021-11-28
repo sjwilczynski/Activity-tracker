@@ -9,11 +9,11 @@ import {
 } from "../../data";
 import { DatePicker } from "formik-mui-lab";
 import { TextField } from "formik-mui";
-import { Button } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, styled, Theme } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { format } from "date-fns";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
+import { SxProps } from "@mui/system";
 
 type FormValues = {
   date: Date;
@@ -21,17 +21,17 @@ type FormValues = {
   active: boolean;
 };
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    padding: `${theme.spacing(1)} 0`,
-  },
-  field: {
-    margin: `${theme.spacing(1)} 0`,
-  },
+const StyledForm = styled(Form)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  padding: `${theme.spacing(1)} 0`,
 }));
+
+const fieldStyle: SxProps<Theme> = {
+  my: 1,
+  mx: 0,
+};
 
 export function AddActivityForm() {
   const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
@@ -47,7 +47,6 @@ export function AddActivityForm() {
     [addActivities]
   );
 
-  const styles = useStyles();
   const { availableCategories, isLoading } = useAvailableCategories();
 
   return (
@@ -66,13 +65,13 @@ export function AddActivityForm() {
         onSubmit={onSubmit}
       >
         {({ isValid, dirty, handleBlur, setFieldValue }) => (
-          <Form className={styles.form}>
+          <StyledForm>
             <Field
               component={DatePicker}
               name="date"
               label="Date"
               inputFormat="yyyy-MM-dd"
-              className={styles.field}
+              sx={fieldStyle}
               mask="____-__-__"
               textField={{ variant: "standard" }}
             />
@@ -96,7 +95,7 @@ export function AddActivityForm() {
                   label="Activity name"
                   placeholder="name of the activity"
                   type="text"
-                  className={styles.field}
+                  sx={fieldStyle}
                   variant="standard"
                 />
               )}
@@ -110,7 +109,7 @@ export function AddActivityForm() {
             >
               Add activity
             </Button>
-          </Form>
+          </StyledForm>
         )}
       </Formik>
       <FeedbackAlertGroup

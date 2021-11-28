@@ -5,89 +5,88 @@ import {
   useTheme,
   useMediaQuery,
   Avatar,
+  styled,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { useAuth } from "../../auth";
 import { AppBarButtons } from "./buttons/AppBarButtons";
 import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    fontWeight: 400,
-    whiteSpace: "nowrap",
-    [theme.breakpoints.down("md")]: {
-      color: theme.palette.common.white,
-    },
-  },
-  titleSpacing: {
-    marginLeft: "17rem",
-    padding: "2rem",
-    position: "relative",
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    padding: "2rem",
-    [theme.breakpoints.down("md")]: {
-      padding: 0,
-    },
-  },
-  toolbar: {
-    minHeight: 64,
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "0 8px",
-  },
-  appBar: {
-    padding: "4px 0",
-    maxHeight: 72,
-    marginLeft: 0,
-  },
+const TypographyTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 400,
+  whiteSpace: "nowrap",
 
-  logo: {
-    width: "17rem",
-    height: "17rem",
-    marginRight: "2rem",
+  [theme.breakpoints.down("md")]: {
+    color: theme.palette.common.white,
   },
 }));
 
+const TitleSpacing = styled("div")({
+  marginLeft: "17rem",
+  padding: "2rem",
+  position: "relative",
+});
+
+const TitleContainer = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  position: "relative",
+  padding: "2rem",
+
+  [theme.breakpoints.down("md")]: {
+    padding: 0,
+  },
+}));
+
+const StyledToolbar = styled(Toolbar)({
+  minHeight: 64,
+  display: "flex",
+  justifyContent: "space-between",
+  padding: "0 8px",
+});
+
+const StyledMuiAppBar = styled(MuiAppBar)({
+  padding: "4px 0",
+  maxHeight: 72,
+  marginLeft: 0,
+});
+
+const AvatarLogo = styled(Avatar)({
+  width: "17rem",
+  height: "17rem",
+  marginRight: "2rem",
+});
+
 export const AppBar = () => {
   const { isSignedIn } = useAuth();
-  const styles = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
   const headerVariant = matches ? "h3" : "h1";
   const title = (
-    <Typography variant={headerVariant} align="center" className={styles.title}>
+    <TypographyTitle variant={headerVariant} align="center">
       Activity tracker
-    </Typography>
+    </TypographyTitle>
   );
   const wideScreenTitle = isSignedIn ? (
-    <div className={styles.titleSpacing}>
+    <TitleSpacing>
       {title}
       <AppBarButtons />
-    </div>
+    </TitleSpacing>
   ) : (
-    <div className={styles.titleContainer}>
-      <Avatar
-        src="/android-chrome-192x192.png"
-        className={styles.logo}
-        alt="App logo"
-      />
+    <TitleContainer>
+      <AvatarLogo src="/android-chrome-192x192.png" alt="App logo" />
       <div>{title}</div>
       <AppBarButtons />
-    </div>
+    </TitleContainer>
   );
   const narrowScreenTitle = (
-    <MuiAppBar position="sticky" className={styles.appBar}>
-      <Toolbar className={styles.toolbar}>
+    <StyledMuiAppBar position="sticky">
+      <StyledToolbar>
         <NavigationMenuButton />
-        <div className={styles.titleContainer}>{title}</div>
+        <TitleContainer>{title}</TitleContainer>
         <AppBarButtons />
-      </Toolbar>
-    </MuiAppBar>
+      </StyledToolbar>
+    </StyledMuiAppBar>
   );
   return matches ? <>{narrowScreenTitle}</> : <>{wideScreenTitle}</>;
 };

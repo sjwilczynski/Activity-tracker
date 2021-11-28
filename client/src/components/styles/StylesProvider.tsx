@@ -1,19 +1,12 @@
 import {
   createTheme,
   CssBaseline,
-  DeprecatedThemeOptions,
   ThemeProvider,
-  Theme,
   StyledEngineProvider,
-  adaptV4Theme,
+  ThemeOptions,
 } from "@mui/material";
 import { atom, useAtom } from "jotai";
 import { useAtomValue } from "jotai/utils";
-
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 type Props = {
   children: React.ReactNode;
@@ -29,7 +22,7 @@ const themeOverrides = {
   },
 };
 
-const lightTheme: DeprecatedThemeOptions = {
+const lightTheme: ThemeOptions = {
   palette: {
     mode: "light",
     primary: {
@@ -66,7 +59,7 @@ const lightTheme: DeprecatedThemeOptions = {
   ...themeOverrides,
 };
 
-const darkTheme: DeprecatedThemeOptions = {
+const darkTheme: ThemeOptions = {
   palette: {
     mode: "dark",
     primary: {
@@ -102,9 +95,7 @@ export const useThemeState = () => useAtom(themeAtom);
 
 export const StylesProvider = ({ children }: Props) => {
   const isLightTheme = useIsLightTheme();
-  const theme = createTheme(
-    adaptV4Theme(isLightTheme ? lightTheme : darkTheme)
-  );
+  const theme = createTheme(isLightTheme ? lightTheme : darkTheme);
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>

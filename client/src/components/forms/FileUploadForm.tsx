@@ -1,8 +1,7 @@
 import { useCallback } from "react";
 import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
-import { Button } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, styled } from "@mui/material";
 import { FileInput } from "./FileInput";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
@@ -13,16 +12,15 @@ type FormValues = {
   file: File | null;
 };
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-    padding: `${theme.spacing(1)} 0`,
-  },
-  submit: {
-    margin: `${theme.spacing(1)} 0`,
-  },
+const StyledForm = styled(Form)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  padding: `${theme.spacing(1)} 0`,
+}));
+
+const ButtonSubmit = styled(Button)(({ theme }) => ({
+  margin: `${theme.spacing(1)} 0`,
 }));
 
 export function FileUploadForm() {
@@ -51,8 +49,6 @@ export function FileUploadForm() {
     [addActivities]
   );
 
-  const styles = useStyles();
-
   return (
     <>
       <Formik<FormValues>
@@ -63,18 +59,17 @@ export function FileUploadForm() {
         onSubmit={onSubmit}
       >
         {({ isValid, dirty }) => (
-          <Form className={styles.form}>
+          <StyledForm>
             <Field name="file" component={FileInput} />
-            <Button
+            <ButtonSubmit
               disabled={!isValid || !dirty}
               variant="contained"
               color="primary"
               type="submit"
-              className={styles.submit}
             >
               Upload
-            </Button>
-          </Form>
+            </ButtonSubmit>
+          </StyledForm>
         )}
       </Formik>
       <FeedbackAlertGroup

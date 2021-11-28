@@ -1,6 +1,5 @@
 import { Formik, Form, Field, FormikErrors } from "formik";
 import { DatePicker } from "formik-mui-lab";
-import makeStyles from "@mui/styles/makeStyles";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import {
@@ -9,18 +8,17 @@ import {
   startDateFieldKey,
   useDateRangeState,
 } from "./shared";
+import { styled } from "@mui/material";
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: "flex",
-    alignItems: "center",
-    flexFlow: "row wrap",
-    padding: theme.spacing(1),
-    "& > *": {
-      margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
-    },
-    margin: `${theme.spacing(1)} 0`,
+const StyledForm = styled(Form)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  flexFlow: "row wrap",
+  padding: theme.spacing(1),
+  "& > div, & > button": {
+    margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
   },
+  margin: `${theme.spacing(1)} 0`,
 }));
 
 export const DateFilterForm = () => {
@@ -31,38 +29,35 @@ export const DateFilterForm = () => {
       setDateRange({ startDate: values.startDate, endDate: values.endDate });
     }
   };
-  const styles = useStyles();
   return (
-    <>
-      <Formik<FormValues>
-        initialValues={{
-          startDate,
-          endDate,
-        }}
-        onSubmit={onSubmit}
-        validate={validate}
-      >
-        <Form className={styles.form}>
-          <Field
-            component={DatePicker}
-            name={startDateFieldKey}
-            label="Start date"
-            inputFormat="yyyy-MM-dd"
-            mask="____-__-__"
-            textField={{ variant: "standard" }}
-          />
-          <Field
-            component={DatePicker}
-            name={endDateFieldKey}
-            label="End date"
-            inputFormat="yyyy-MM-dd"
-            mask="____-__-__"
-            textField={{ variant: "standard" }}
-          />
-          <FormButtons />
-        </Form>
-      </Formik>
-    </>
+    <Formik<FormValues>
+      initialValues={{
+        startDate,
+        endDate,
+      }}
+      onSubmit={onSubmit}
+      validate={validate}
+    >
+      <StyledForm>
+        <Field
+          component={DatePicker}
+          name={startDateFieldKey}
+          label="Start date"
+          inputFormat="yyyy-MM-dd"
+          mask="____-__-__"
+          textField={{ variant: "standard" }}
+        />
+        <Field
+          component={DatePicker}
+          name={endDateFieldKey}
+          label="End date"
+          inputFormat="yyyy-MM-dd"
+          mask="____-__-__"
+          textField={{ variant: "standard" }}
+        />
+        <FormButtons />
+      </StyledForm>
+    </Formik>
   );
 };
 

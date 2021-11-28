@@ -1,25 +1,24 @@
-import { Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled, Typography } from "@mui/material";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth";
 import { AddActivityForm, ModalDialog } from "../components";
 import { ActivityRecord, sortDescendingByDate, useActivities } from "../data";
 
-const useStyles = makeStyles(() => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginTop: "12rem",
-  },
-  lastActivity: {
-    fontWeight: 500,
-  },
-  spacing: {
-    padding: "2rem 0",
-  },
-}));
+const Container = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  marginTop: "12rem",
+});
+
+const LastActivity = styled("span")({
+  fontWeight: 500,
+});
+
+const Spacing = styled("div")({
+  padding: "2rem 0",
+});
 
 export const Welcome = () => {
   const { user } = useAuth();
@@ -32,26 +31,25 @@ export const Welcome = () => {
       setLastActivity(sortDescendingByDate(data)[0]);
     }
   }, [data]);
-  const styles = useStyles();
 
   return (
-    <div className={styles.container}>
+    <Container>
       <Typography variant="h5">Welcome {user?.displayName}</Typography>
-      <div className={styles.spacing}>
+      <Spacing>
         <ModalDialog
           openButtonText="Quick add"
           title="Fill activity data"
           content={<AddActivityForm />}
         />
-      </div>
+      </Spacing>
       {lastActivity && (
         <div>
           Last added:{" "}
-          <span className={styles.lastActivity}>
+          <LastActivity>
             {lastActivity.name} on {format(lastActivity.date, "yyyy-MM-dd")}
-          </span>
+          </LastActivity>
         </div>
       )}
-    </div>
+    </Container>
   );
 };

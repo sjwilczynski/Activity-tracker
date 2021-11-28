@@ -14,6 +14,30 @@ import {
   filterByDateRange,
   transformDataToSummaryMap,
 } from "../data";
+import {
+  Chart,
+  BarController,
+  CategoryScale,
+  ArcElement,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement,
+} from "chart.js";
+
+Chart.register(
+  BarController,
+  CategoryScale,
+  ArcElement,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement
+);
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
