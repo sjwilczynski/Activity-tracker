@@ -1311,7 +1311,7 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.5.tgz#2c40f81449a4e554e9fc6396910ed4843ec2be50"
   integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
 
-"@emotion/react@^11.6.0":
+"@emotion/react@11.6.0":
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.6.0.tgz#61fcb95c1e01255734c2c721cb9beabcf521eb0f"
   integrity sha512-23MnRZFBN9+D1lHXC5pD6z4X9yhPxxtHr6f+iTGz6Fv6Rda0GdefPrsHL7otsEf+//7uqCdT5QtHeRxHCERzuw==
@@ -1340,7 +1340,7 @@
   resolved "https://registry.yarnpkg.com/@emotion/sheet/-/sheet-1.1.0.tgz#56d99c41f0a1cda2726a05aa6a20afd4c63e58d2"
   integrity sha512-u0AX4aSo25sMAygCuQTzS+HsImZFuS8llY8O7b9MDRzbJM0kVJlAz6KNDqcG7pOuQZJmj/8X/rAW+66kMnMW+g==
 
-"@emotion/styled@^11.6.0":
+"@emotion/styled@11.6.0":
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/@emotion/styled/-/styled-11.6.0.tgz#9230d1a7bcb2ebf83c6a579f4c80e0664132d81d"
   integrity sha512-mxVtVyIOTmCAkFbwIp+nCjTXJNgcz4VWkOYQro87jE2QBTydnkiYusMrRGFtzuruiGK4dDaNORk4gH049iiQuw==
@@ -2011,14 +2011,14 @@
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-"@mui/icons-material@^5.1.0":
+"@mui/icons-material@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.1.0.tgz#f733c9505422398b9b56ec9ed04e53db5985e5e0"
   integrity sha512-GD2cNZ2XTqoxX6DMUg+tos1fDUVg6kXWxwo9UuBiRIhK8N+B7CG7vjRDf28LLmewcqIjxqy+T2SEVqDLy1FOYQ==
   dependencies:
     "@babel/runtime" "^7.16.0"
 
-"@mui/lab@^5.0.0-alpha.54":
+"@mui/lab@5.0.0-alpha.54":
   version "5.0.0-alpha.54"
   resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-5.0.0-alpha.54.tgz#6e0f0226e04c408db703428bd056fc8fe357adb1"
   integrity sha512-G7Ic9TQkWT+DA8AUYKU99sQivFjz3WEuy3SsG9I/zc9DanlmUH26F1jdwUcHhEiCNEif7tEzVtIAPhgSGjbgsg==
@@ -2037,7 +2037,7 @@
     react-transition-group "^4.4.2"
     rifm "^0.12.0"
 
-"@mui/material@^5.1.0":
+"@mui/material@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.1.0.tgz#43382d51957b82bb0d102f1c3c1947246ecbc29c"
   integrity sha512-K76v7zRhpJToInSI8sRcEmTwpVFBZ223VIusjZRKXN8JzX+PuErG7skfa1yUuhc3f4VEqcYYUw0LvI+DJJ05eg==
@@ -2073,7 +2073,7 @@
     "@emotion/cache" "^11.5.0"
     prop-types "^15.7.2"
 
-"@mui/styles@^5.1.0":
+"@mui/styles@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@mui/styles/-/styles-5.1.0.tgz#90c374a19647a6a1abe83061e30ccb6ce47dbb6c"
   integrity sha512-1X7LsC3ztFs8MTwso/8PYHnDM3Y0azdTqRnGdN4/8j6jn434sYXN4QrZwXUpAbvGam9i608/EnPaVAIY0IJmVQ==
@@ -5910,12 +5910,12 @@ form-data@^3.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-formik-mui-lab@^1.0.0-alpha.3:
+formik-mui-lab@1.0.0-alpha.3:
   version "1.0.0-alpha.3"
   resolved "https://registry.yarnpkg.com/formik-mui-lab/-/formik-mui-lab-1.0.0-alpha.3.tgz#b96556e82fbea6a4a138ed5abc3392b4516f0157"
   integrity sha512-YgiOPAI9y4+/Ko4ObZfyekho/dVfO6wWSZqQtMMFhicxnePTsjHDT8cipqocf1EsRIssdfViIUZm2xiMxykAMw==
 
-formik-mui@^4.0.0-alpha.3:
+formik-mui@4.0.0-alpha.3:
   version "4.0.0-alpha.3"
   resolved "https://registry.yarnpkg.com/formik-mui/-/formik-mui-4.0.0-alpha.3.tgz#faca4b439c0653a8a33be97772da50709f0aa8c8"
   integrity sha512-a696XpNIYulBd3LcwPt1+3BqtArdA/1hZryxMXT9azwucNwMcnnpVMR10yn6Qycd7eT//qv8V+r1XTBn0X8S1w==
@@ -11607,7 +11607,7 @@ timsort@^0.3.0:
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
 
-tiny-warning@^1.0.2, tiny-warning@^1.0.3:
+tiny-warning@1.0.3, tiny-warning@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tiny-warning/-/tiny-warning-1.0.3.tgz#94a30db453df4c643d0fd566060d60a875d84754"
   integrity sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==
