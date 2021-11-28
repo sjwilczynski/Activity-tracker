@@ -1,4 +1,4 @@
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material";
 import { Navigation } from "../navigation/Navigation";
 import { AppBar } from "./AppBar";
 
@@ -6,22 +6,19 @@ type Props = {
   children: React.ReactNode;
 };
 
-const useStyles = makeStyles({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    minWidth: 420,
-  },
+const Container = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  minWidth: 420,
 });
 
 export const AppContainer = ({ children }: Props) => {
-  const styles = useStyles();
   return (
     <>
-      <div className={styles.container}>
+      <Container>
         <AppBar />
         {children}
-      </div>
+      </Container>
       <Navigation />
     </>
   );

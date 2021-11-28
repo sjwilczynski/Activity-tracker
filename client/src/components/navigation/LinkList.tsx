@@ -1,6 +1,5 @@
-import { List, ListItem, ListItemText } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import { useMemo, forwardRef, useCallback } from "react";
+import { List, ListItem, ListItemText, useTheme } from "@mui/material";
+import { useCallback, useMemo } from "react";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";
 
@@ -29,50 +28,32 @@ const Link = ({
   navigationElement: NavigationElement;
 }) => {
   const { text, path } = navigationElement;
-  const styles = useStyles();
   const ListLink = useMemo(
-    () =>
-      forwardRef<any, Omit<NavLinkWrapperProps, "to">>((itemProps, ref) => (
-        <NavLinkWrapper to={path} {...itemProps} />
-      )),
+    () => (itemProps: Omit<NavLinkProps, "to">) =>
+      <NavLinkWrapper to={path} {...itemProps} />,
     [path]
   );
   const toggleNavigation = useNavigationToggle();
   return (
-    <ListItem
-      className={styles.link}
-      activeClassName={styles.activeLink}
-      component={ListLink}
-      onClick={toggleNavigation}
-    >
+    <ListItem component={ListLink} onClick={toggleNavigation}>
       <ListItemText primary={text} />
     </ListItem>
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  link: {
-    textAlign: "center",
-    color: theme.palette.secondary.light,
-  },
-  activeLink: {
-    color: theme.palette.common.white,
-  },
-}));
-
-type NavLinkWrapperProps = Omit<NavLinkProps, "className"> & {
-  className: string;
-  activeClassName: string;
-};
-
-const NavLinkWrapper = ({
-  className,
-  activeClassName,
-  ...rest
-}: NavLinkWrapperProps) => {
-  const getClassName = useCallback(
-    ({ isActive }) => `${className} ${isActive ? activeClassName : ""}`,
-    [className, activeClassName]
+const NavLinkWrapper = (props: NavLinkProps) => {
+  const theme = useTheme();
+  const style: NavLinkProps["style"] = useCallback(
+    ({ isActive }) => {
+      return isActive
+        ? ({ textAlign: "center", color: theme.palette.common.white } as const)
+        : ({
+            textAlign: "center",
+            color: theme.palette.secondary.light,
+          } as const);
+    },
+    [theme]
   );
-  return <NavLink {...rest} className={getClassName} />;
+
+  return <NavLink {...props} style={style} />;
 };

@@ -1,17 +1,10 @@
 import { Menu, MenuItem } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { useState, MouseEvent, ReactNode } from "react";
 import { AdditionalMenuButton } from "./AdditionalMenuButton";
 
 type Props = {
   children: ReactNode[];
 };
-
-const useStyles = makeStyles({
-  menuList: {
-    padding: 0,
-  },
-});
 
 export const AdditionalMenu = ({ children }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -23,7 +16,6 @@ export const AdditionalMenu = ({ children }: Props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const styles = useStyles();
 
   return (
     <>
@@ -42,7 +34,7 @@ export const AdditionalMenu = ({ children }: Props) => {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        MenuListProps={{ className: styles.menuList }}
+        MenuListProps={{ sx: { p: 0 } }}
       >
         {children.map((child, index) => (
           <MenuItem key={index} disableGutters>

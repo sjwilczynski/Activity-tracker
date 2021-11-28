@@ -1,5 +1,4 @@
-import { Button, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, styled, Typography } from "@mui/material";
 import DownloadLink from "react-download-link";
 import { useAuth } from "../auth";
 import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
@@ -10,37 +9,31 @@ import {
   useIsFetchingActivties,
 } from "../data";
 
-const useStyles = makeStyles(() => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginTop: "12rem",
+const Container = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  marginTop: "12rem",
+});
+
+const ButtonsContainer = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+
+  "& > *": {
+    margin: "0.5rem 0",
   },
-  lastActivity: {
-    fontWeight: 500,
-  },
-  spacing: {
-    padding: "0.5rem",
-  },
-  buttonsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    "& > *": {
-      margin: "0.5rem 0",
-    },
-  },
-  buttonGrow: {
-    flex: "1 1 auto",
-  },
-}));
+});
+
+const ButtonGrow = styled(Button)({
+  flex: "1 1 auto",
+});
 
 export const Profile = () => {
   const { user, signOut } = useAuth();
   const exportActivities = useExportActivities();
   const { data } = useActivities();
   const isFetchingActivities = useIsFetchingActivties();
-  const styles = useStyles();
 
   const {
     mutate: deleteAllActivities,
@@ -50,9 +43,9 @@ export const Profile = () => {
 
   return (
     <>
-      <div className={styles.container}>
+      <Container>
         <Typography variant="h5">User name: {user?.displayName}</Typography>
-        <div className={styles.buttonsContainer}>
+        <ButtonsContainer>
           <ModalDialog
             openButtonText="Upload activities"
             title="Activties upload"
@@ -79,22 +72,21 @@ export const Profile = () => {
             tagName="div"
             style={{ display: "flex" }}
             label={
-              <Button
+              <ButtonGrow
                 variant="contained"
                 color="primary"
                 disabled={isFetchingActivities || !data?.length}
-                className={styles.buttonGrow}
               >
                 Export activities
-              </Button>
+              </ButtonGrow>
             }
             exportFile={exportActivities}
           />
           <Button variant="contained" color="primary" onClick={signOut}>
             Sign out
           </Button>
-        </div>
-      </div>
+        </ButtonsContainer>
+      </Container>
       <FeedbackAlertGroup
         isRequestError={isError}
         isRequestSuccess={isSuccess}

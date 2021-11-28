@@ -1,7 +1,7 @@
 import { FirebaseAuth } from "react-firebaseui";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material";
 
 const uiConfig: firebaseui.auth.Config = {
   // Popup signin flow rather than redirect flow.
@@ -16,38 +16,44 @@ const uiConfig: firebaseui.auth.Config = {
   },
 };
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: "flex",
+const Container = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "column",
+  padding: "2rem",
+});
+
+const Text = styled("div")(({ theme }) => ({
+  ...theme.typography.h3,
+  display: "flex",
+
+  [theme.breakpoints.down("md")]: {
+    flexFlow: "column wrap",
     alignItems: "center",
-    flexDirection: "column",
-    padding: "2rem",
-  },
-  text: {
-    ...theme.typography.h3,
-    display: "flex",
-    [theme.breakpoints.down("md")]: {
-      flexFlow: "column wrap",
-      alignItems: "center",
-    },
-  },
-  active: { color: theme.palette.info.main },
-  lazy: { color: theme.palette.error.main },
-  or: {
-    margin: "0 1rem",
   },
 }));
 
+const SpanActive = styled("span")(({ theme }) => ({
+  color: theme.palette.info.main,
+}));
+
+const SpanLazy = styled("span")(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
+const SpanOr = styled("span")(({ theme }) => ({
+  margin: "0 1rem",
+}));
+
 export const Login = () => {
-  const styles = useStyles();
   return (
-    <div className={styles.container}>
-      <div className={styles.text}>
-        <span className={styles.active}>Team active</span>
-        <span className={styles.or}>or</span>
-        <span className={styles.lazy}>Team lazy</span>
-      </div>
+    <Container>
+      <Text>
+        <SpanActive>Team active</SpanActive>
+        <SpanOr>or</SpanOr>
+        <SpanLazy>Team lazy</SpanLazy>
+      </Text>
       <FirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-    </div>
+    </Container>
   );
 };

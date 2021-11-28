@@ -5,11 +5,12 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Theme,
   Typography,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
+import { SxProps } from "@mui/system";
 
 type Props = {
   description?: string;
@@ -19,21 +20,21 @@ type Props = {
   openButtonText: string;
 };
 
-const useStyles = makeStyles((theme) => ({
-  dialog: {
-    border: `10px solid ${theme.palette.primary.main}`,
-    borderRadius: "5px",
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-  },
-  content: {
-    display: "flex",
-    flexDirection: "column",
-  },
-}));
+const mainDialogStyles: SxProps<Theme> = {
+  border: 10,
+  borderColor: "primary.main",
+};
+
+const closeButtonStyles: SxProps<Theme> = {
+  position: "absolute",
+  right: 4,
+  top: 4,
+};
+
+const contentStyles: SxProps<Theme> = {
+  display: "flex",
+  flexDirection: "column",
+};
 
 export const ModalDialog = (props: Props) => {
   const {
@@ -52,7 +53,7 @@ export const ModalDialog = (props: Props) => {
   const close = () => {
     setIsOpen(false);
   };
-  const styles = useStyles();
+
   return (
     <>
       <Button
@@ -66,21 +67,23 @@ export const ModalDialog = (props: Props) => {
       <Dialog
         open={isOpen}
         onClose={close}
-        PaperProps={{ className: styles.dialog }}
+        PaperProps={{
+          sx: mainDialogStyles,
+        }}
         fullWidth={true}
       >
         <DialogTitle>
           {title && <Typography variant="h5">{title}</Typography>}
           <IconButton
             aria-label="close"
-            className={styles.closeButton}
+            sx={closeButtonStyles}
             onClick={close}
             size="large"
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent className={styles.content}>
+        <DialogContent sx={contentStyles}>
           {description && (
             <DialogContentText>
               <Typography variant="h6">{description}</Typography>

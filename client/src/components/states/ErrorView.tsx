@@ -1,42 +1,37 @@
-import { Button } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, styled } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate } from "react-router-dom";
 
-const useStyles = makeStyles({
-  errorContainer: {
-    margin: "12rem auto",
-    display: "flex",
-    flexDirection: "column",
-  },
-  icon: {
-    marginRight: "0.5rem",
-  },
-  errorInfo: {
-    display: "flex",
-    alignItems: "center",
-    margin: "1rem 0",
-  },
-  errorMessage: {
-    fontWeight: 500,
-    marginLeft: "0.5rem",
-  },
+const ErrorContainer = styled("div")({
+  margin: "12rem auto",
+  display: "flex",
+  flexDirection: "column",
+});
+
+const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)({
+  marginRight: "0.5rem",
+});
+
+const ErrorInfo = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  margin: "1rem 0",
+});
+
+const ErrorMessage = styled("span")({
+  fontWeight: 500,
+  marginLeft: "0.5rem",
 });
 
 export const ErrorView = (props: { error: Error }) => {
-  const styles = useStyles();
   const navigate = useNavigate();
   return (
-    <div className={styles.errorContainer}>
-      <div className={styles.errorInfo}>
-        <ErrorOutlineIcon
-          color="error"
-          fontSize="large"
-          className={styles.icon}
-        />
+    <ErrorContainer>
+      <ErrorInfo>
+        <StyledErrorOutlineIcon color="error" fontSize="large" />
         An error has occurred:
-        <span className={styles.errorMessage}>{props.error.message}</span>
-      </div>
+        <ErrorMessage>{props.error.message}</ErrorMessage>
+      </ErrorInfo>
       <Button
         type="button"
         variant="contained"
@@ -45,6 +40,6 @@ export const ErrorView = (props: { error: Error }) => {
       >
         Back to homepage
       </Button>
-    </div>
+    </ErrorContainer>
   );
 };

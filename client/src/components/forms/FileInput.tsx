@@ -4,29 +4,33 @@ import {
   Tooltip,
   Typography,
   IconButton,
+  Theme,
+  styled,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { FieldProps } from "formik";
 import { ChangeEvent, useCallback } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { SxProps } from "@mui/system";
 
-const useStyles = makeStyles((theme) => ({
-  selectButton: {
-    margin: `${theme.spacing(1)} 0`,
-    flex: "1 1 auto",
-  },
-  selectButtonContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
-  label: {
-    display: "flex",
-    flex: "1 1 auto",
-  },
-  text: {
-    textAlign: "center",
-  },
-}));
+const SelectButtonContainer = styled("div")({
+  display: "flex",
+  alignItems: "center",
+});
+
+const StyledLabel = styled("label")({
+  display: "flex",
+  flex: "1 1 auto",
+});
+
+const StyledFormHelperText = styled(FormHelperText)({
+  textAlign: "center",
+});
+
+const submitButtonStyles: SxProps<Theme> = {
+  my: 1,
+  mx: 0,
+  flex: "1 1 auto",
+};
 
 export const FileInput = <T extends { file: File | null }>(
   props: FieldProps<File | null, T>
@@ -43,7 +47,6 @@ export const FileInput = <T extends { file: File | null }>(
     },
     [setFieldValue, name]
   );
-  const styles = useStyles();
   const fileName = field.value?.name;
   const error = errors.file;
   return (
@@ -54,17 +57,17 @@ export const FileInput = <T extends { file: File | null }>(
         type="file"
         onChange={onFileInputChange}
       />
-      <div className={styles.selectButtonContainer}>
-        <label htmlFor="contained-button-file" className={styles.label}>
+      <SelectButtonContainer>
+        <StyledLabel htmlFor="contained-button-file">
           <Button
             variant="contained"
             color="primary"
             component="div"
-            className={styles.selectButton}
+            sx={submitButtonStyles}
           >
             Select file
           </Button>
-        </label>
+        </StyledLabel>
         <Tooltip title="Click to view a file in a format required for upload">
           <IconButton
             href="https://github.com/sjwilczynski/Activity-tracker/blob/master/example-activities-file.json"
@@ -74,16 +77,16 @@ export const FileInput = <T extends { file: File | null }>(
             <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
-      </div>
+      </SelectButtonContainer>
       {fileName && (
-        <FormHelperText className={styles.text}>
+        <StyledFormHelperText>
           <Typography variant="subtitle1">{fileName}</Typography>
-        </FormHelperText>
+        </StyledFormHelperText>
       )}
       {error && (
-        <FormHelperText error className={styles.text}>
+        <StyledFormHelperText error>
           <Typography variant="subtitle1">{error}</Typography>
-        </FormHelperText>
+        </StyledFormHelperText>
       )}
     </>
   );
