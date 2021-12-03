@@ -6,7 +6,7 @@ import {
   Slide,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { SyntheticEvent, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 type Props = {
   open: boolean;
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const FeedbackAlert = ({ open, setOpen, severity, message }: Props) => {
-  const handleClose = (event?: SyntheticEvent, reason?: string) => {
+  const handleClose = (_event?: any, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
