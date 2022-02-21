@@ -96,10 +96,10 @@
     google-gax "^2.24.1"
     protobufjs "^6.8.6"
 
-"@google-cloud/paginator@^3.0.0":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@google-cloud/paginator/-/paginator-3.0.6.tgz#02a59dccd348d515069779a4f77a4a4fd15594da"
-  integrity sha512-XCTm/GfQIlc1ZxpNtTSs/mnZxC2cePNhxU3X8EzHXKIJ2JFncmJj2Fcd2IP+gbmZaSZnY0juFxbUCkIeuu/2eQ==
+"@google-cloud/paginator@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@google-cloud/paginator/-/paginator-3.0.7.tgz#fb6f8e24ec841f99defaebf62c75c2e744dd419b"
+  integrity sha512-jJNutk0arIQhmpUUQJPJErsojqo834KcyB6X7a1mxuic8i1tKXxde8E69IZxNZawRIlZdIK2QY4WALvlK5MzYQ==
   dependencies:
     arrify "^2.0.0"
     extend "^3.0.2"
@@ -115,12 +115,12 @@
   integrity sha512-j8yRSSqswWi1QqUGKVEKOG03Q7qOoZP6/h2zN2YO+F5h2+DHU0bSrHCK9Y7lo2DI9fBd8qGAw795sf+3Jva4yA==
 
 "@google-cloud/storage@^5.3.0":
-  version "5.18.1"
-  resolved "https://registry.yarnpkg.com/@google-cloud/storage/-/storage-5.18.1.tgz#1bae7345b3ec2b38e874cdefc94e8b62130577ea"
-  integrity sha512-EeVIarDb6u9vE5Se3YaXA8tuW8Ae2xmYLHy43doutTwzkXwizGXVS2Qmc2pouq9ln8qMD9A2f3arvhgAPtK9LQ==
+  version "5.18.2"
+  resolved "https://registry.yarnpkg.com/@google-cloud/storage/-/storage-5.18.2.tgz#0ded98a69323d253e6dd986650edc89b5c504bf9"
+  integrity sha512-hL/6epBF2uPt7YtJoOKI6mVxe6RsKBs7S8o2grE0bFGdQKSOngVHBcstH8jDw7aN2rXGouA2TfVTxH+VapY5cg==
   dependencies:
     "@google-cloud/common" "^3.8.1"
-    "@google-cloud/paginator" "^3.0.0"
+    "@google-cloud/paginator" "^3.0.7"
     "@google-cloud/promisify" "^2.0.0"
     abort-controller "^3.0.0"
     arrify "^2.0.0"
@@ -284,9 +284,9 @@
   integrity sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==
 
 "@types/node@*", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
-  version "17.0.17"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.17.tgz#a8ddf6e0c2341718d74ee3dc413a13a042c45a0c"
-  integrity sha512-e8PUNQy1HgJGV3iU/Bp2+D/DXh3PYeyli8LgIwsQcs1Ar1LoaWHSIT6Rw+H2rNJmiq6SNWiDytfx8+gYj7wDHw==
+  version "17.0.18"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.18.tgz#3b4fed5cfb58010e3a2be4b6e74615e4847f1074"
+  integrity sha512-eKj4f/BsN/qcculZiRSujogjvp5O/k4lOW5m35NopjZM/QwLOR075a8pJW5hD+Rtdm2DaCVPENS6KtSQnUD6BA==
 
 "@types/qs@*":
   version "6.9.7"
@@ -405,9 +405,9 @@ crypto-random-string@^2.0.0:
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
 
 date-and-time@^2.0.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-2.1.1.tgz#caf24efe372d6d0fc9a37f7ae052b198bdc9b135"
-  integrity sha512-70O+o1I79HiYkYiqbY6lTNtQurU2mbOh3hw3MXVXm1xS98nBklNCG6fH1S9OqLqYpEIm3o4OMnzNVys4+XykIA==
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-2.1.2.tgz#5b0e71296bbdd66ff1ce0e456c77d40f1479db5a"
+  integrity sha512-YlQUtuqYGPR58I7jzx4TIjknN9wCKjwewiylIp+P4xMuO23mlZje3Qe9gYCKp/6ncbeNpU8ZnPdhQNZnVphveQ==
 
 date-fns@2.28.0:
   version "2.28.0"
