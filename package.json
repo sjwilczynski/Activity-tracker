@@ -14,8 +14,8 @@
     "pre-commit": "lint-staged --allow-empty"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.14.0",
-    "@typescript-eslint/parser": "5.14.0",
+    "@typescript-eslint/eslint-plugin": "5.15.0",
+    "@typescript-eslint/parser": "5.15.0",
     "bundlewatch": "0.3.3",
     "depcheck": "1.4.3",
     "eslint": "8.11.0",
