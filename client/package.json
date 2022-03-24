@@ -50,11 +50,11 @@
     "react-query": "3.34.16",
     "react-router-dom": "6.2.2",
     "react-scripts": "5.0.0",
-    "workbox-core": "6.5.1",
-    "workbox-expiration": "6.5.1",
-    "workbox-precaching": "6.5.1",
-    "workbox-routing": "6.5.1",
-    "workbox-strategies": "6.5.1",
+    "workbox-core": "6.5.2",
+    "workbox-expiration": "6.5.2",
+    "workbox-precaching": "6.5.2",
+    "workbox-routing": "6.5.2",
+    "workbox-strategies": "6.5.2",
     "yup": "0.32.11"
   },
   "devDependencies": {
