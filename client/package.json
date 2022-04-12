@@ -49,7 +49,7 @@
     "react-firebaseui": "6.0.0",
     "react-query": "3.34.19",
     "react-router-dom": "6.3.0",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "workbox-core": "6.5.2",
     "workbox-expiration": "6.5.2",
     "workbox-precaching": "6.5.2",
