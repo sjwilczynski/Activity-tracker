@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@ctrl/tinycolor": "3.4.1",
-    "@emotion/react": "11.9.0",
-    "@emotion/styled": "11.8.1",
+    "@emotion/react": "11.9.3",
+    "@emotion/styled": "11.9.3",
     "@mui/icons-material": "5.8.0",
     "@mui/lab": "5.0.0-alpha.83",
     "@mui/material": "5.8.1",
