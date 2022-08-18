@@ -35,7 +35,7 @@
     "@mui/system": "5.10.1",
     "axios": "0.27.2",
     "chart.js": "3.9.1",
-    "date-fns": "2.29.1",
+    "date-fns": "2.29.2",
     "firebase": "9.9.2",
     "formik": "2.2.9",
     "formik-mui": "4.0.0",
