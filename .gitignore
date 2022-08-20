@@ -3,3 +3,4 @@ depcheck-report.md
 activities*.json
 firebaseConfig.json
 dist
+local.settings.json
