@@ -2,6 +2,7 @@
   "name": "activity-tracker-client",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "HOST=localhost && react-scripts start",
     "build": "react-scripts build",
