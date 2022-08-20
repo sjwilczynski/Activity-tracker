@@ -32,8 +32,8 @@ const submitButtonStyles: SxProps<Theme> = {
   flex: "1 1 auto",
 };
 
-export const FileInput = <T extends { file: File | null }>(
-  props: FieldProps<File | null, T>
+export const FileInput = (
+  props: FieldProps<File | null, { file: File | null }>
 ) => {
   const { field, form } = props;
   const { setFieldValue, errors } = form;

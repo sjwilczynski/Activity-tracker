@@ -47,7 +47,7 @@ const NavLinkWrapper = forwardRef<any, NavLinkProps>(
   (props: NavLinkProps, ref) => {
     const theme = useTheme();
     const style: NavLinkProps["style"] = useCallback(
-      ({ isActive }) => {
+      ({ isActive }: { isActive: boolean }) => {
         return isActive
           ? ({
               textAlign: "center",
