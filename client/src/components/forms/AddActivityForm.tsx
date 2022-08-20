@@ -7,7 +7,7 @@ import {
   useActivitiesMutation,
   useCategories,
 } from "../../data";
-import { DatePicker } from "formik-mui-lab";
+import { DatePicker } from "formik-mui-x-date-pickers";
 import { TextField } from "formik-mui";
 import { Button, styled, Theme } from "@mui/material";
 import { Autocomplete } from "@mui/material";

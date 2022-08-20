@@ -1,5 +1,5 @@
 import { Formik, Form, Field, FormikErrors } from "formik";
-import { DatePicker } from "formik-mui-lab";
+import { DatePicker } from "formik-mui-x-date-pickers";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import {
