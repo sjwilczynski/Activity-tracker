@@ -39,6 +39,7 @@ const TitleContainer = styled("div")(({ theme }) => ({
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
+  alignItems: "baseline",
   padding: "0 16px",
   minHeight: 64, // needed as otherwise default MUI styling changes position of buttons
   [theme.breakpoints.down("md")]: {
