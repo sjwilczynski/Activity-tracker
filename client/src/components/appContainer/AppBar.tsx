@@ -13,7 +13,6 @@ import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
-  whiteSpace: "nowrap",
 
   [theme.breakpoints.down("md")]: {
     color: theme.palette.common.white,
@@ -37,17 +36,21 @@ const TitleContainer = styled("div")(({ theme }) => ({
   },
 }));
 
-const StyledToolbar = styled(Toolbar)({
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
-  padding: "0 8px",
-});
+  padding: "0 16px",
+  minHeight: 64, // needed as otherwise default MUI styling changes position of buttons
+  [theme.breakpoints.down("md")]: {
+    padding: "0 16px",
+  },
+}));
 
 const StyledMuiAppBar = styled(MuiAppBar)({
   padding: "4px 0",
   justifyContent: "center",
-  marginLeft: 0,
   gridArea: "header",
+  minHeight: 72, // needed as otherwise default MUI styling changes position of buttons
 });
 
 const AvatarLogo = styled(Avatar)({

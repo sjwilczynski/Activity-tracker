@@ -12,7 +12,7 @@ const Container = styled("div")(({ theme }) => ({
                       "navigation content"`,
   [theme.breakpoints.down("md")]: {
     gridTemplateColumns: "1fr",
-    gridTemplateRows: "72px 1fr",
+    gridTemplateRows: "minmax(72px, auto) 1fr",
     gridTemplateAreas: `"header" 
                         "content"`,
   },
