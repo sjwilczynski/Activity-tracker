@@ -13,9 +13,11 @@ import { NavigationMenuButton } from "./buttons/NavigationMenuButton";
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
+  whiteSpace: "nowrap",
 
   [theme.breakpoints.down("md")]: {
     color: theme.palette.common.white,
+    whiteSpace: "normal",
   },
 }));
 
