@@ -1,25 +1,29 @@
 import { styled } from "@mui/material";
+import { Pages } from "../../pages";
 import { Navigation } from "../navigation/Navigation";
 import { AppBar } from "./AppBar";
 
-type Props = {
-  children: React.ReactNode;
-};
+const Container = styled("div")(({ theme }) => ({
+  height: "100%",
+  display: "grid",
+  gridTemplateColumns: "minmax(200px, 17rem) 1fr",
+  gridTemplateRows: "auto 1fr",
+  gridTemplateAreas: `"navigation header" 
+                      "navigation content"`,
+  [theme.breakpoints.down("md")]: {
+    gridTemplateColumns: "1fr",
+    gridTemplateRows: "minmax(min-content, auto) 1fr",
+    gridTemplateAreas: `"header" 
+                        "content"`,
+  },
+}));
 
-const Container = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  minWidth: 420,
-});
-
-export const AppContainer = ({ children }: Props) => {
-  return (
-    <>
-      <Container>
-        <AppBar />
-        {children}
-      </Container>
+export const AppContainer = () => (
+  <>
+    <Container>
       <Navigation />
-    </>
-  );
-};
+      <AppBar />
+      <Pages />
+    </Container>
+  </>
+);

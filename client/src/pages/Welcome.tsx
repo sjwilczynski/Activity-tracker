@@ -9,7 +9,6 @@ const Container = styled("div")({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  marginTop: "12rem",
 });
 
 const LastActivity = styled("span")({

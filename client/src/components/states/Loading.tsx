@@ -1,7 +1,7 @@
 import { CircularProgress, styled } from "@mui/material";
 
 const SpinnerContainer = styled("div")({
-  margin: "12rem auto",
+  margin: "0rem auto",
 });
 
 export const Loading = () => {

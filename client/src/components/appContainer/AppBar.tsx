@@ -17,11 +17,11 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
 
   [theme.breakpoints.down("md")]: {
     color: theme.palette.common.white,
+    whiteSpace: "normal",
   },
 }));
 
 const TitleSpacing = styled("div")({
-  marginLeft: "17rem",
   padding: "2rem",
   position: "relative",
 });
@@ -38,17 +38,22 @@ const TitleContainer = styled("div")(({ theme }) => ({
   },
 }));
 
-const StyledToolbar = styled(Toolbar)({
-  minHeight: 64,
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
-  padding: "0 8px",
-});
+  alignItems: "baseline",
+  padding: "0 16px",
+  minHeight: 64, // needed as otherwise default MUI styling changes position of buttons
+  [theme.breakpoints.down("md")]: {
+    padding: "0 16px",
+  },
+}));
 
 const StyledMuiAppBar = styled(MuiAppBar)({
   padding: "4px 0",
-  maxHeight: 72,
-  marginLeft: 0,
+  justifyContent: "center",
+  gridArea: "header",
+  minHeight: 72, // needed as otherwise default MUI styling changes position of buttons
 });
 
 const AvatarLogo = styled(Avatar)({

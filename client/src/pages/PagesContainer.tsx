@@ -5,13 +5,13 @@ type Props = {
 };
 
 const Container = styled("div")(({ theme }) => ({
-  overflow: "auto",
-  padding: "2rem",
+  padding: "4rem 2rem",
   flexDirection: "column",
   display: "flex",
-  marginLeft: "17rem",
+  gridArea: "content",
+
   [theme.breakpoints.down("md")]: {
-    marginLeft: "0",
+    justifyContent: "center",
   },
 }));
 
