@@ -14,12 +14,12 @@ const closeButtonStyles: SxProps<Theme> = {
   left: 16,
   color: "common.white",
 
-  display: { sm: "flex", md: "none" },
+  display: { xs: "flex", md: "none" },
 };
 const drawerStyles: SxProps<Theme> = {
   position: "sticky",
   top: 0,
-  width: { sm: "17rem", md: "auto" },
+  width: { xs: "17rem", md: "auto" },
   "& .MuiDrawer-paper": {
     position: "relative",
     top: 0,
