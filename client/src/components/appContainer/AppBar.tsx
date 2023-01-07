@@ -21,7 +21,6 @@ const TypographyTitle = styled(Typography)(({ theme }) => ({
 }));
 
 const TitleSpacing = styled("div")({
-  marginLeft: "17rem",
   padding: "2rem",
   position: "relative",
 });
@@ -39,7 +38,6 @@ const TitleContainer = styled("div")(({ theme }) => ({
 }));
 
 const StyledToolbar = styled(Toolbar)({
-  minHeight: 64,
   display: "flex",
   justifyContent: "space-between",
   padding: "0 8px",
@@ -47,8 +45,9 @@ const StyledToolbar = styled(Toolbar)({
 
 const StyledMuiAppBar = styled(MuiAppBar)({
   padding: "4px 0",
-  maxHeight: 72,
+  justifyContent: "center",
   marginLeft: 0,
+  gridArea: "header",
 });
 
 const AvatarLogo = styled(Avatar)({

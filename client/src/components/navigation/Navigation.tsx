@@ -1,6 +1,7 @@
+import { styled, useMediaQuery, useTheme } from "@mui/material";
 import { useAuth } from "../../auth";
 import { LinkList, NavigationElement } from "./LinkList";
-import { NavigationContainer } from "./NavigationContainer";
+import { NavigationDrawer } from "./NavigationDrawer";
 
 const navList: NavigationElement[] = [
   {
@@ -21,11 +22,19 @@ const navList: NavigationElement[] = [
   },
 ];
 
+const NavGridArea = styled("nav")({
+  gridArea: "navigation",
+});
+
 export const Navigation = () => {
   const { isSignedIn } = useAuth();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   return isSignedIn ? (
-    <NavigationContainer>
-      <LinkList navigationElements={navList} />
-    </NavigationContainer>
+    <NavGridArea>
+      <NavigationDrawer variant={matches ? "temporary" : "permanent"}>
+        <LinkList navigationElements={navList} />
+      </NavigationDrawer>
+    </NavGridArea>
   ) : null;
 };

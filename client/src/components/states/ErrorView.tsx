@@ -3,7 +3,6 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate } from "react-router-dom";
 
 const ErrorContainer = styled("div")({
-  margin: "12rem auto",
   display: "flex",
   flexDirection: "column",
 });

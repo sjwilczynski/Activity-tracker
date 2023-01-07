@@ -7,18 +7,7 @@ import {
   StylesProvider,
   PickersContextProvider,
 } from "./components";
-import { Pages } from "./pages";
 import { Provider } from "jotai";
-
-function App() {
-  return (
-    <AppContainer>
-      <AuthProvider>
-        <Pages />
-      </AuthProvider>
-    </AppContainer>
-  );
-}
 
 function AppWithProviders() {
   return (
@@ -27,7 +16,9 @@ function AppWithProviders() {
         <PickersContextProvider>
           <BrowserRouter>
             <StylesProvider>
-              <App />
+              <AuthProvider>
+                <AppContainer />
+              </AuthProvider>
               <ReactQueryDevtools initialIsOpen={false} />
             </StylesProvider>
           </BrowserRouter>
