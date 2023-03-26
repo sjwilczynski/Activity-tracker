@@ -7,6 +7,7 @@ import axios from "axios";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
+  getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
 import type { ConfigPromise } from "../useRequestConfig";
 import { useRequestConfig } from "../useRequestConfig";
@@ -19,11 +20,10 @@ export const useActivities = () => {
   );
 };
 
-export const useActivitiesPrefetch = () => {
-  const client = useQueryClient();
+export const useActivitiesWithLimit = () => {
   const getConfig = useRequestConfig();
-  client.prefetchQuery(getActivitiesQueryId, () =>
-    fetchActivities(getConfig())
+  return useQuery(getActivitiesQueryIdWithLimit, () =>
+    fetchActivities(getConfig(), 5)
   );
 };
 
@@ -47,12 +47,14 @@ export const useIsFetchingActivties = () => {
 };
 
 const fetchActivities = async (
-  configPromise: ConfigPromise
+  configPromise: ConfigPromise,
+  limit?: number
 ): Promise<ActivityRecordWithId[]> => {
   const config = await configPromise;
+  const params = limit ? { params: { limit } } : {};
   const activityRecordsResponse = await axios.get<ActivityRecordWithIdServer[]>(
     activitiesApiPath,
-    config
+    { ...config, ...params }
   );
   return activityRecordsResponse.data.map((activityRecord) => ({
     ...activityRecord,

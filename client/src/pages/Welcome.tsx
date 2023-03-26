@@ -1,10 +1,9 @@
 import { styled, Typography } from "@mui/material";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
 import { useAuth } from "../auth";
 import { AddActivityForm, ModalDialog } from "../components";
-import type { ActivityRecord } from "../data";
-import { sortDescendingByDate, useActivities } from "../data";
+import { useActivitiesWithLimit } from "../data";
+import { sortDescendingByDate } from "../data";
 
 const Container = styled("div")({
   display: "flex",
@@ -22,15 +21,8 @@ const Spacing = styled("div")({
 
 export const Welcome = () => {
   const { user } = useAuth();
-  const { data } = useActivities();
-  const [lastActivity, setLastActivity] = useState<ActivityRecord | undefined>(
-    undefined
-  );
-  useEffect(() => {
-    if (data) {
-      setLastActivity(sortDescendingByDate(data)[0]);
-    }
-  }, [data]);
+  const { data } = useActivitiesWithLimit();
+  const lastActivity = data ? sortDescendingByDate(data)[0] : undefined;
 
   return (
     <Container>

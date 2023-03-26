@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import {
   getActivitiesQueryId,
   activitiesApiPath,
+  getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
 import type { ActivityRecordWithId } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
@@ -15,24 +16,43 @@ export const useDeleteAllActivities = () => {
     deleteAllActivities,
     {
       onMutate: () => {
-        client.cancelQueries(getActivitiesQueryId, { exact: true });
-
-        const previousActivityRecords =
+        const previousFullRecords =
           client.getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId) ||
           [];
-        client.setQueryData<ActivityRecordWithId[]>(getActivitiesQueryId, []);
-        return { previousActivityRecords };
+        const previousLimitedRecords =
+          client.getQueryData<ActivityRecordWithId[]>(
+            getActivitiesQueryIdWithLimit
+          ) || [];
+        [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
+          (queryId) => {
+            client.cancelQueries(queryId, { exact: true });
+
+            client.setQueryData<ActivityRecordWithId[]>(
+              getActivitiesQueryId,
+              []
+            );
+          }
+        );
+        return { previousLimitedRecords, previousFullRecords };
       },
       onError: (_error, _variables, context) => {
         if (context) {
           client.setQueryData(
             getActivitiesQueryId,
-            context.previousActivityRecords
+            context.previousFullRecords
+          );
+          client.setQueryData(
+            getActivitiesQueryIdWithLimit,
+            context.previousLimitedRecords
           );
         }
       },
       onSettled: () =>
-        client.invalidateQueries(getActivitiesQueryId, { exact: true }),
+        [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
+          (queryId) => {
+            client.invalidateQueries(queryId, { exact: true });
+          }
+        ),
     }
   );
 };

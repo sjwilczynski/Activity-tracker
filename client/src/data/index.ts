@@ -1,6 +1,6 @@
 export {
   useActivities,
-  useActivitiesPrefetch,
+  useActivitiesWithLimit,
   useExportActivities,
   useIsFetchingActivties,
 } from "./hooks/activities/useActivities";
