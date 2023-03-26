@@ -17,8 +17,8 @@ export const useEditActivityFormSubmit = (id: string) => {
     (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),
-        name: values.name,
-        active: values.active,
+        name: values.category.name,
+        active: values.category.active,
       };
       editActivity({ id, record: activityRecord });
     },

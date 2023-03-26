@@ -12,8 +12,8 @@ export const useAddActivityFormSubmit = () => {
     (values: FormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),
-        name: values.name,
-        active: values.active,
+        name: values.category.name,
+        active: values.category.active,
       };
       addActivities([activityRecord]);
     },

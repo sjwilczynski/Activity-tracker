@@ -2,12 +2,12 @@ import type { FormikProps } from "formik";
 import { Formik } from "formik";
 import type { ComponentProps, ReactNode } from "react";
 import * as yup from "yup";
+import type { CategoryOption } from "../../../data";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 
 export type FormValues = {
   date: Date;
-  name: string;
-  active: boolean;
+  category: CategoryOption;
 };
 
 type Props = {
@@ -27,14 +27,16 @@ export const FormWrapper = ({
       <Formik<FormValues>
         validationSchema={yup.object({
           date: yup.date().required(),
-          name: yup.string().required(),
-          active: yup.bool().required(),
+          category: yup.object({
+            name: yup.string().required(),
+            categoryName: yup.string().required(),
+            active: yup.bool().required(),
+          }),
         })}
         initialValues={
           initialValues ?? {
             date: new Date(Date.now()),
-            name: "",
-            active: true,
+            category: { name: "", active: false, categoryName: "" },
           }
         }
         onSubmit={onSubmit}

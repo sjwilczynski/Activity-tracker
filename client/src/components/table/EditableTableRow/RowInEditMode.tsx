@@ -2,6 +2,7 @@ import { Button, CircularProgress, TableCell, TableRow } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import type { ActivityRecordWithId } from "../../../data";
+import { useAvailableCategories } from "../../../data";
 import {
   CategoriesAutocomplete,
   DatePickerField,
@@ -21,6 +22,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
   const { onSubmit, isSuccess, isError, isLoading } = useEditActivityFormSubmit(
     record.id
   );
+  const { availableCategories } = useAvailableCategories();
   useCancelOnSuccess(isSuccess, onCancel);
   return (
     <TableRow>
@@ -28,8 +30,14 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
         onSubmit={onSubmit}
         initialValues={{
           date: record.date,
-          name: record.name,
-          active: record.active,
+          category: {
+            name: record.name,
+            categoryName:
+              availableCategories.find(
+                (category) => category.name === record.name
+              )?.categoryName ?? "",
+            active: record.active,
+          },
         }}
         successMessage="Successfully edited activity"
         errorMessage="Failed to edit activity"
@@ -43,7 +51,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
             </TableCell>
             <TableCell>
               <CategoriesAutocomplete
-                name="name"
+                name="category"
                 label="Activity name"
                 setFieldValue={setFieldValue}
                 handleBlur={handleBlur}
@@ -66,7 +74,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
                 >
                   Cancel
                 </Button>
-                {true && <CircularProgress size={20} />}
+                {isLoading && <CircularProgress size={20} />}
               </Actions>
             </TableCell>
           </>
@@ -82,7 +90,7 @@ const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
   useEffect(() => {
     if (isSuccess && !successRef.current) {
       // trigger onCancel after a second
-      timeoutRef.current = setTimeout(onCancel, 3000);
+      timeoutRef.current = setTimeout(onCancel, 1500);
       successRef.current = isSuccess;
     }
     return () => {

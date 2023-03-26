@@ -39,7 +39,7 @@ export const useEditActivityMutation = () => {
 
           // Optimistically update to the new value
           client.setQueryData<ActivityRecordWithId[]>(queryId, (old) => [
-            ...(old || []),
+            ...(old?.filter((record) => record.id !== newActivity.id) || []),
             ...[newActivity],
           ]);
         }

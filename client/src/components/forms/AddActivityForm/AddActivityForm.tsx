@@ -29,27 +29,30 @@ export function AddActivityForm() {
       isRequestError={isError}
       isRequestSuccess={isSuccess}
     >
-      {({ isValid, dirty, handleBlur, setFieldValue }) => (
-        <StyledForm>
-          <DatePickerField name="date" label="Date" style={fieldStyle} />
-          <CategoriesAutocomplete
-            name="name"
-            style={fieldStyle}
-            label="Activity name"
-            setFieldValue={setFieldValue}
-            handleBlur={handleBlur}
-          />
-          <Field name="active" type="checkbox" hidden />
-          <Button
-            disabled={!isValid || !dirty}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Add activity
-          </Button>
-        </StyledForm>
-      )}
+      {({ isValid, dirty, handleBlur, setFieldValue, values }) => {
+        console.log(values);
+        return (
+          <StyledForm>
+            <DatePickerField name="date" label="Date" style={fieldStyle} />
+            <CategoriesAutocomplete
+              name="category"
+              style={fieldStyle}
+              label="Activity name"
+              setFieldValue={setFieldValue}
+              handleBlur={handleBlur}
+            />
+            <Field name="active" type="checkbox" hidden />
+            <Button
+              disabled={!isValid || !dirty}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Add activity
+            </Button>
+          </StyledForm>
+        );
+      }}
     </FormWrapper>
   );
 }
