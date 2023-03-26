@@ -13,15 +13,13 @@ const Container = styled("div")({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  gap: "2rem",
 });
 
 const ButtonsContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
-
-  "& > *": {
-    margin: "0.5rem 0",
-  },
+  gap: "0.5rem",
 });
 
 const ButtonGrow = styled(Button)({
