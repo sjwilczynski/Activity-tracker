@@ -1,6 +1,11 @@
 import { Database } from "./types";
 import { database } from "../firebase/firebase";
-import { ActivityMap, ActivityRecord, Category } from "../utils/types";
+import {
+  ActivityMap,
+  ActivityRecord,
+  Category,
+  CategoryMap,
+} from "../utils/types";
 
 const activityDocument = (userId: string): string =>
   `/users/${userId}/activity`;
@@ -60,11 +65,16 @@ export const firebaseDB: Database = {
     const categories = await database
       .ref(categoryDocument(userId))
       .once("value");
-    return Object.values(categories.val());
+    return categories.val() as CategoryMap;
   },
   addCategory: async (userId: string, category: Category) => {
     const categoriesRef = database.ref(categoryDocument(userId));
-    await categoriesRef.push(category);
+    const newId = categoriesRef.push().key;
+    if (newId === null) {
+      throw new Error("Unable to add new category");
+    } else {
+      await categoriesRef.push({ ...category, id: newId });
+    }
   },
   editCategory: async (
     userId: string,

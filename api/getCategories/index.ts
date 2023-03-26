@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
+import { mapToList } from "../utils/mapToList";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -15,7 +16,8 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
 
-  const categories = (await database.getCategories(userId)) ?? {};
+  const categoriesMap = (await database.getCategories(userId)) ?? {};
+  const categories = mapToList(categoriesMap);
 
   context.res = {
     // status: 200, /* Defaults to 200 */

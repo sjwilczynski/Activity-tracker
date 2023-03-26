@@ -7,9 +7,7 @@ export type ActivityRecord = {
   date: string;
 } & Activity;
 
-export type ActivityMap = {
-  [key: string]: ActivityRecord;
-};
+export type ActivityMap = Record<string, ActivityRecord>;
 
 export type ActivityRecordWithId = ActivityRecord & { id: string };
 
@@ -19,6 +17,10 @@ export type Category = {
   description: string;
   subcategories: Subcategory[];
 };
+
+export type CategoryWithId = Category & { id: string };
+
+export type CategoryMap = Record<string, Category>;
 
 export type Subcategory = {
   name: string;

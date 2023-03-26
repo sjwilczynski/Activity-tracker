@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
-import { ActivityMap, ActivityRecordWithId } from "../utils/types";
+import { mapToList } from "../utils/mapToList";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -23,13 +23,6 @@ const httpTrigger: AzureFunction = async function (
     // status: 200, /* Defaults to 200 */
     body: activities,
   };
-};
-
-const mapToList = (activityMap: ActivityMap): ActivityRecordWithId[] => {
-  return Object.entries(activityMap).map(([key, activityRecord]) => ({
-    id: key,
-    ...activityRecord,
-  }));
 };
 
 export default httpTrigger;
