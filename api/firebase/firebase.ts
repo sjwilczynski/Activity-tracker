@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import config from "./firebaseConfig.json";
 import type { AdminConfig } from "./types";
 
 const getServiceAccount = (config: AdminConfig): admin.ServiceAccount => ({
@@ -6,9 +7,6 @@ const getServiceAccount = (config: AdminConfig): admin.ServiceAccount => ({
   privateKey: config.private_key,
   projectId: config.project_id,
 });
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require("./firebaseConfig.json") as AdminConfig;
 
 admin.initializeApp({
   credential: admin.credential.cert(getServiceAccount(config)),
