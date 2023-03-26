@@ -1,5 +1,5 @@
 import { Pie } from "react-chartjs-2";
-import { ActivitySummaries } from "../../../data";
+import type { ActivitySummaries } from "../../../data";
 import {
   getTotalActiveAndInactiveCount,
   getDataInChartJsFormat,
@@ -7,7 +7,7 @@ import {
   inactiveBaseColor,
 } from "../utils";
 import { useIsLightTheme } from "../../styles/StylesProvider";
-import {
+import type {
   ChartData,
   ChartOptions,
   TooltipCallbacks,

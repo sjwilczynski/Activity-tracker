@@ -1,4 +1,4 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
 import { mapToList } from "../utils/mapToList";
@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: err.message };
+    context.res = { status: 401, body: (err as Error).message };
     return;
   }
 

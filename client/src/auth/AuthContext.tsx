@@ -8,7 +8,7 @@ export type User = {
 };
 
 export type Auth = {
-  signOut: ((_event?: any) => Promise<void>) | undefined;
+  signOut: ((_event?: unknown) => Promise<void>) | undefined;
   getIdToken: (() => Promise<string>) | undefined;
   user: User | undefined;
 };

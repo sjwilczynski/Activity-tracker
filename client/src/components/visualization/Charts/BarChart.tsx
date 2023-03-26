@@ -1,6 +1,6 @@
-import { ChartData, ChartOptions } from "chart.js";
+import type { ChartData, ChartOptions } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { ActivitySummaries } from "../../../data";
+import type { ActivitySummaries } from "../../../data";
 import { useIsLightTheme } from "../../styles/StylesProvider";
 import { getDataInChartJsFormat } from "../utils";
 

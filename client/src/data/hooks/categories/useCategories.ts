@@ -4,8 +4,9 @@ import {
   getCategoriesQueryId,
   categoriesApiPath,
 } from "../../react-query-config/query-constants";
-import { Category } from "../../types";
-import { useRequestConfig, ConfigPromise } from "../useRequestConfig";
+import type { Category } from "../../types";
+import type { ConfigPromise } from "../useRequestConfig";
+import { useRequestConfig } from "../useRequestConfig";
 
 export const useCategories = () => {
   const getConfig = useRequestConfig();

@@ -1,3 +1,4 @@
+import type { Theme } from "@mui/material";
 import {
   Button,
   Dialog,
@@ -5,12 +6,11 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
-  Theme,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
-import { SxProps } from "@mui/system";
+import type { SxProps } from "@mui/system";
 
 type Props = {
   description?: string;

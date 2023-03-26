@@ -1,19 +1,16 @@
 import { useCallback } from "react";
 import { Field, Formik, Form } from "formik";
 import * as yup from "yup";
-import {
-  ActivityRecordServer,
-  CategoryOption,
-  useActivitiesMutation,
-  useCategories,
-} from "../../data";
+import type { ActivityRecordServer, CategoryOption } from "../../data";
+import { useActivitiesMutation, useCategories } from "../../data";
 import { DatePicker } from "formik-mui-x-date-pickers";
 import { TextField } from "formik-mui";
-import { Button, styled, Theme } from "@mui/material";
+import type { Theme } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { format } from "date-fns";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
-import { SxProps } from "@mui/system";
+import type { SxProps } from "@mui/system";
 
 type FormValues = {
   date: Date;

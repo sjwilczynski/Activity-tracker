@@ -1,6 +1,6 @@
 import { IconButton, Tooltip } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { MouseEvent } from "react";
+import type { MouseEvent } from "react";
 
 type Props = {
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;

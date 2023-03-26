@@ -1,9 +1,9 @@
+import type { ThemeOptions } from "@mui/material";
 import {
   createTheme,
   CssBaseline,
   ThemeProvider,
   StyledEngineProvider,
-  ThemeOptions,
 } from "@mui/material";
 import { atom, useAtom } from "jotai";
 import { useAtomValue } from "jotai/utils";

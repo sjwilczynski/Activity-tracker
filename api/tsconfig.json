@@ -1,14 +1,11 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "target": "es6",
     "outDir": "dist",
     "rootDir": ".",
     "sourceMap": true,
-    "strict": false,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "strictNullChecks": true,
-    "isolatedModules": true
+    "moduleResolution": "node"
   }
 }

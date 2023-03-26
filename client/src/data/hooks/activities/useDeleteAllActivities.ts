@@ -4,14 +4,14 @@ import {
   getActivitiesQueryId,
   activitiesApiPath,
 } from "../../react-query-config/query-constants";
-import { ActivityRecordWithId } from "../../types";
+import type { ActivityRecordWithId } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
-import { ActivityMutationContext } from "./useActivitiesMutation";
+import type { ActivityMutationContext } from "./useActivitiesMutation";
 
 export const useDeleteAllActivities = () => {
   const client = useQueryClient();
   const deleteAllActivities = useDeleteAllActivitiesFunction();
-  return useMutation<void, Error, {}, ActivityMutationContext>(
+  return useMutation<void, Error, never, ActivityMutationContext>(
     deleteAllActivities,
     {
       onMutate: () => {
@@ -23,7 +23,7 @@ export const useDeleteAllActivities = () => {
         client.setQueryData<ActivityRecordWithId[]>(getActivitiesQueryId, []);
         return { previousActivityRecords };
       },
-      onError: (error, variables, context) => {
+      onError: (_error, _variables, context) => {
         if (context) {
           client.setQueryData(
             getActivitiesQueryId,

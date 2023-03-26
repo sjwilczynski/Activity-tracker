@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemText, useTheme } from "@mui/material";
 import { forwardRef, useCallback, useMemo } from "react";
-import { NavLink, NavLinkProps } from "react-router-dom";
+import type { NavLinkProps } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";
 
 export type NavigationElement = {
@@ -30,7 +31,7 @@ const Link = ({
   const { text, path } = navigationElement;
   const ListLink = useMemo(
     () =>
-      forwardRef<any, Omit<NavLinkProps, "to">>((itemProps, ref) => (
+      forwardRef<unknown, Omit<NavLinkProps, "to">>((itemProps, ref) => (
         <NavLinkWrapper to={path} ref={ref} {...itemProps} />
       )),
     [path]
@@ -43,6 +44,7 @@ const Link = ({
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const NavLinkWrapper = forwardRef<any, NavLinkProps>(
   (props: NavLinkProps, ref) => {
     const theme = useTheme();

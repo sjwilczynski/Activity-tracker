@@ -1,7 +1,8 @@
-import { ActivityRecordServer } from "../types";
+import type { ActivityRecordServer } from "../types";
 import { isMatch } from "date-fns";
 
 export const areActivitiesValid = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   activityRecords: any
 ): activityRecords is ActivityRecordServer[] => {
   if (
@@ -14,7 +15,9 @@ export const areActivitiesValid = (
   return activityRecords.every(isActivityValid);
 };
 
-const isActivityValid = (activity: any): activity is ActivityRecordServer => {
+const isActivityValid = (
+  activity: unknown
+): activity is ActivityRecordServer => {
   const castedActivity = activity as ActivityRecordServer;
   if (castedActivity == null || castedActivity === undefined) {
     return false;

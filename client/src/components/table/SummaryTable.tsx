@@ -8,8 +8,9 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import { useState, ChangeEvent } from "react";
-import { ActivityRecordWithId } from "../../data";
+import type { ChangeEvent } from "react";
+import { useState } from "react";
+import type { ActivityRecordWithId } from "../../data";
 
 type Props = {
   records: ActivityRecordWithId[];

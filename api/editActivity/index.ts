@@ -1,7 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
-import { ActivityRecord } from "../utils/types";
+import type { ActivityRecord } from "../utils/types";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: err.message };
+    context.res = { status: 401, body: (err as Error).message };
     return;
   }
 
@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
     await database.editActivity(userId, id, activity);
     context.res = { status: 204 };
   } catch (err) {
-    context.res = { status: 404, body: err.message };
+    context.res = { status: 404, body: (err as Error).message };
   }
 };
 

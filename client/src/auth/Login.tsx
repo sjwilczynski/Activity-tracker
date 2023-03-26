@@ -41,9 +41,9 @@ const SpanLazy = styled("span")(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
-const SpanOr = styled("span")(({ theme }) => ({
+const SpanOr = styled("span")({
   margin: "0 1rem",
-}));
+});
 
 export const Login = () => {
   return (

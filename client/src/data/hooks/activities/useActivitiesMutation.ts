@@ -4,7 +4,7 @@ import {
   getActivitiesQueryId,
   activitiesApiPath,
 } from "../../react-query-config/query-constants";
-import { ActivityRecordWithId, ActivityRecordServer } from "../../types";
+import type { ActivityRecordWithId, ActivityRecordServer } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
 
 export type ActivityMutationContext = {
@@ -46,7 +46,7 @@ export const useActivitiesMutation = () => {
       return { previousActivityRecords };
     },
     // If the mutation fails, use the value returned from onMutate to roll back
-    onError: (error, variables, context) => {
+    onError: (_error, _variables, context) => {
       if (context) {
         client.setQueryData(
           getActivitiesQueryId,

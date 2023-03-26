@@ -1,5 +1,6 @@
 import { Menu, MenuItem } from "@mui/material";
-import { useState, MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
+import { useState } from "react";
 import { AdditionalMenuButton } from "./AdditionalMenuButton";
 
 type Props = {

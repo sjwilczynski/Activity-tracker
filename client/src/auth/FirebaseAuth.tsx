@@ -3,7 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 
-interface Props {
+type Props = {
   // The Firebase UI Web UI Config object.
   // See: https://github.com/firebase/firebaseui-web#configuration
   uiConfig: firebaseui.auth.Config;
@@ -12,9 +12,10 @@ interface Props {
   // disableAutoSignIn().
   uiCallback?(ui: firebaseui.auth.AuthUI): void;
   // The Firebase App auth instance to use.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   firebaseAuth: any; // As firebaseui-web
   className?: string;
-}
+};
 
 const FirebaseAuth = ({
   uiConfig,
@@ -44,7 +45,9 @@ const FirebaseAuth = ({
     }
 
     // Render the firebaseUi Widget.
-    firebaseUiWidget.start(elementRef.current!, uiConfig);
+    if (elementRef.current) {
+      firebaseUiWidget.start(elementRef.current, uiConfig);
+    }
 
     return () => {
       unregisterAuthObserver();

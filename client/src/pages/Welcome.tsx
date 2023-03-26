@@ -3,7 +3,8 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth";
 import { AddActivityForm, ModalDialog } from "../components";
-import { ActivityRecord, sortDescendingByDate, useActivities } from "../data";
+import type { ActivityRecord } from "../data";
+import { sortDescendingByDate, useActivities } from "../data";
 
 const Container = styled("div")({
   display: "flex",

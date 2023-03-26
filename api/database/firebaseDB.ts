@@ -1,6 +1,6 @@
-import { Database } from "./types";
+import type { Database } from "./types";
 import { database } from "../firebase/firebase";
-import {
+import type {
   ActivityMap,
   ActivityRecord,
   Category,
@@ -23,7 +23,7 @@ export const firebaseDB: Database = {
   addActivities: async (userId: string, activities: ActivityRecord[]) => {
     const activityDocumentPath = activityDocument(userId);
     const activitiesRef = database.ref(activityDocumentPath);
-    const updates = {};
+    const updates: Record<string, ActivityRecord> = {};
     for (let i = 0; i < activities.length; i++) {
       const newId = activitiesRef.push().key;
       if (newId === null) {

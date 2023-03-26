@@ -1,6 +1,7 @@
 import { styled, useMediaQuery, useTheme } from "@mui/material";
 import { useAuth } from "../../auth";
-import { LinkList, NavigationElement } from "./LinkList";
+import type { NavigationElement } from "./LinkList";
+import { LinkList } from "./LinkList";
 import { NavigationDrawer } from "./NavigationDrawer";
 
 const navList: NavigationElement[] = [

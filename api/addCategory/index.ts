@@ -1,7 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
-import { Category, Subcategory } from "../utils/types";
+import type { Category, Subcategory } from "../utils/types";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: err.message };
+    context.res = { status: 401, body: (err as Error).message };
     return;
   }
 
@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (
     } catch (err) {
       context.res = {
         status: 500,
-        body: err.message,
+        body: (err as Error).message,
       };
     }
   } else {
@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = async function (
   }
 };
 
-const isCategoryValid = (category): category is Category => {
+const isCategoryValid = (category: unknown): category is Category => {
   if (category === null || category === undefined) {
     return false;
   }
@@ -55,7 +55,9 @@ const isCategoryValid = (category): category is Category => {
   return subcategories.every(isSubcategoryValid);
 };
 
-const isSubcategoryValid = (subcategory): subcategory is Subcategory => {
+const isSubcategoryValid = (
+  subcategory: unknown
+): subcategory is Subcategory => {
   const castedSubcategory = subcategory as Subcategory;
   if (castedSubcategory == null || castedSubcategory === undefined) {
     return false;

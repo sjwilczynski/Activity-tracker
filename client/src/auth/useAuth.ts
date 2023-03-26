@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { User } from "./AuthContext";
+import type { User } from "./AuthContext";
 import config from "./firebaseConfig.json";
 
 firebase.initializeApp(config);
@@ -32,12 +32,9 @@ export const useAuth = () => {
     ? () => currentUser?.getIdToken()
     : undefined;
 
-  const signOut = useCallback(
-    (_event?: any) => {
-      return auth.signOut();
-    },
-    [auth]
-  );
+  const signOut = useCallback(() => {
+    return auth.signOut();
+  }, [auth]);
 
   return {
     isSignedIn,

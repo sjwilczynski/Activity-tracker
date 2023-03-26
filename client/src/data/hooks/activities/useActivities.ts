@@ -1,11 +1,15 @@
 import { useIsFetching, useQuery, useQueryClient } from "react-query";
-import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../../types";
+import type {
+  ActivityRecordWithId,
+  ActivityRecordWithIdServer,
+} from "../../types";
 import axios from "axios";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
 } from "../../react-query-config/query-constants";
-import { ConfigPromise, useRequestConfig } from "../useRequestConfig";
+import type { ConfigPromise } from "../useRequestConfig";
+import { useRequestConfig } from "../useRequestConfig";
 import { useCallback } from "react";
 
 export const useActivities = () => {

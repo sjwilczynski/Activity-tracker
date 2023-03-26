@@ -8,9 +8,9 @@ import {
   startOfYear,
 } from "date-fns";
 import { useCallback } from "react";
+import type { FormValues } from "./shared";
 import {
   endDateFieldKey,
-  FormValues,
   startDateFieldKey,
   useDateRangeState,
   useSetDateRange,

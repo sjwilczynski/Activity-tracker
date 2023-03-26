@@ -1,7 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { getUserId } from "../authorization";
 import { database } from "../database";
-import { ActivityRecord } from "../utils/types";
+import type { ActivityRecord } from "../utils/types";
 import { isMatch } from "date-fns";
 
 const httpTrigger: AzureFunction = async function (
@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: err.message };
+    context.res = { status: 401, body: (err as Error).message };
     return;
   }
 
@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
     } catch (err) {
       context.res = {
         status: 500,
-        body: err.message,
+        body: (err as Error).message,
       };
     }
   } else {
@@ -39,7 +39,8 @@ const httpTrigger: AzureFunction = async function (
 };
 
 const areActivitiesValid = (
-  activityRecords
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  activityRecords: any
 ): activityRecords is ActivityRecord[] => {
   if (
     activityRecords === null ||
@@ -52,7 +53,7 @@ const areActivitiesValid = (
   return activityRecords.every(isActivityValid);
 };
 
-const isActivityValid = (activity): activity is ActivityRecord => {
+const isActivityValid = (activity: unknown): activity is ActivityRecord => {
   const castedActivity = activity as ActivityRecord;
   if (castedActivity == null || castedActivity === undefined) {
     return false;

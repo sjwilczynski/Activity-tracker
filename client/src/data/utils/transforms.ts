@@ -1,5 +1,5 @@
 import { endOfDay, startOfDay } from "date-fns";
-import { ActivityRecordWithId, ActivitySummaries } from "../types";
+import type { ActivityRecordWithId, ActivitySummaries } from "../types";
 
 export function transformDataToSummaryMap(records: ActivityRecordWithId[]) {
   const activitySummary = records.reduce(

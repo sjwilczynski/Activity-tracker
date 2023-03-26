@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
+import type { FormikErrors, FormikHelpers } from "formik";
+import { Formik, Form, Field } from "formik";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, styled } from "@mui/material";
 import { FileInput } from "./FileInput";
@@ -27,7 +28,7 @@ export function FileUploadForm() {
   const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
   const onSubmit = useCallback(
     (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
-      let reader = new FileReader();
+      const reader = new FileReader();
       const { file } = values;
       if (file) {
         reader.onloadend = () => {

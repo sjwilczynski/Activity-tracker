@@ -1,12 +1,7 @@
-import {
-  Alert,
-  AlertColor,
-  Snackbar,
-  SnackbarOrigin,
-  Slide,
-} from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
-import { Dispatch, SetStateAction } from "react";
+import type { AlertColor, SnackbarOrigin } from "@mui/material";
+import { Alert, Snackbar, Slide } from "@mui/material";
+import type { TransitionProps } from "@mui/material/transitions";
+import type { Dispatch, SetStateAction } from "react";
 
 type Props = {
   open: boolean;
@@ -16,7 +11,7 @@ type Props = {
 };
 
 export const FeedbackAlert = ({ open, setOpen, severity, message }: Props) => {
-  const handleClose = (_event?: any, reason?: string) => {
+  const handleClose = (_event?: unknown, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
@@ -50,7 +45,7 @@ const anchorOrigin: SnackbarOrigin = {
 };
 
 const TransitionLeft = (
-  props: TransitionProps & { children: React.ReactElement<any, any> }
+  props: TransitionProps & { children: React.ReactElement }
 ) => {
   return <Slide {...props} direction="left" />;
 };
