@@ -3,10 +3,10 @@ export {
   useActivitiesPrefetch,
   useExportActivities,
   useIsFetchingActivties,
-  useCategories,
-} from "./hooks/useActivities";
-export { useActivitiesMutation } from "./hooks/useActivitiesMutation";
-export { useDeleteAllActivities } from "./hooks/useDeleteAllActivities";
+} from "./hooks/activities/useActivities";
+export { useActivitiesMutation } from "./hooks/activities/useActivitiesMutation";
+export { useDeleteAllActivities } from "./hooks/activities/useDeleteAllActivities";
+export { useCategories } from "./hooks/categories/useCategories";
 export { QueryConfigProvider } from "./react-query-config/QueryConfigProvider";
 
 export * from "./types";

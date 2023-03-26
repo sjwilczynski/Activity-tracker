@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "react-query";
-import { ActivityRecordServer, ActivityRecordWithId } from "../types";
 import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
 import {
-  activitiesApiPath,
   getActivitiesQueryId,
-} from "../react-query-config/query-constants";
-import { useRequestConfig } from "./useRequestConfig";
+  activitiesApiPath,
+} from "../../react-query-config/query-constants";
+import { ActivityRecordWithId, ActivityRecordServer } from "../../types";
+import { useRequestConfig } from "../useRequestConfig";
 
 export type ActivityMutationContext = {
   previousActivityRecords: ActivityRecordWithId[];

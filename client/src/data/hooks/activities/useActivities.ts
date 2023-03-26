@@ -1,30 +1,17 @@
 import { useIsFetching, useQuery, useQueryClient } from "react-query";
-import {
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-  Category,
-} from "../types";
+import { ActivityRecordWithId, ActivityRecordWithIdServer } from "../../types";
 import axios from "axios";
 import {
   activitiesApiPath,
-  categoriesApiPath,
   getActivitiesQueryId,
-  getCategoriesQueryId,
-} from "../react-query-config/query-constants";
-import { ConfigPromise, useRequestConfig } from "./useRequestConfig";
+} from "../../react-query-config/query-constants";
+import { ConfigPromise, useRequestConfig } from "../useRequestConfig";
 import { useCallback } from "react";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
   return useQuery<ActivityRecordWithId[], Error>(getActivitiesQueryId, () =>
     fetchActivities(getConfig())
-  );
-};
-
-export const useCategories = () => {
-  const getConfig = useRequestConfig();
-  return useQuery<Category[], Error>(getCategoriesQueryId, () =>
-    fetchCategories(getConfig())
   );
 };
 
@@ -67,15 +54,4 @@ const fetchActivities = async (
     ...activityRecord,
     date: new Date(activityRecord.date),
   }));
-};
-
-const fetchCategories = async (
-  configPromise: ConfigPromise
-): Promise<Category[]> => {
-  const config = await configPromise;
-  const categoriesResponse = await axios.get<Category[]>(
-    categoriesApiPath,
-    config
-  );
-  return categoriesResponse.data;
 };

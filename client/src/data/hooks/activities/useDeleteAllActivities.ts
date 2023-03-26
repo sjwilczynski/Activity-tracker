@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "react-query";
-import { useRequestConfig } from "./useRequestConfig";
 import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
 import {
-  activitiesApiPath,
   getActivitiesQueryId,
-} from "../react-query-config/query-constants";
-import { ActivityRecordWithId } from "../types";
+  activitiesApiPath,
+} from "../../react-query-config/query-constants";
+import { ActivityRecordWithId } from "../../types";
+import { useRequestConfig } from "../useRequestConfig";
 import { ActivityMutationContext } from "./useActivitiesMutation";
 
 export const useDeleteAllActivities = () => {
