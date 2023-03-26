@@ -1,4 +1,7 @@
-export { AddActivityForm } from "./forms/AddActivityForm";
+export { AddActivityForm } from "./forms/AddActivityForm/AddActivityForm";
+export { FormWrapper } from "./forms/AddActivityForm/FormWrapper";
+export { CategoriesAutocomplete } from "./forms/AddActivityForm/AddActivityFormFields/CategoriesAutocomplete";
+export { DatePickerField } from "./forms/AddActivityForm/AddActivityFormFields/DatePickerField";
 export { DateFilterForm } from "./forms/DateFilterForm/DateFilterForm";
 export { useDateRange } from "./forms/DateFilterForm/shared";
 export { FileUploadForm } from "./forms/FileUploadForm";
