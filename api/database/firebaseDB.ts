@@ -14,11 +14,17 @@ const categoryDocument = (userId: string): string =>
   `/users/${userId}/categories`;
 
 export const firebaseDB: Database = {
-  getActivities: async (userId: string) => {
-    const activities = await database
+  getActivities: async (userId: string, limit?: number) => {
+    const activitiesQuery = await database
       .ref(activityDocument(userId))
-      .once("value");
-    return activities.val() as ActivityMap;
+      .orderByChild("date");
+
+    const limitedActivitiesQuery = await (limit
+      ? activitiesQuery.limitToLast(limit)
+      : activitiesQuery
+    ).once("value");
+
+    return limitedActivitiesQuery.val() as ActivityMap;
   },
   addActivities: async (userId: string, activities: ActivityRecord[]) => {
     const activityDocumentPath = activityDocument(userId);

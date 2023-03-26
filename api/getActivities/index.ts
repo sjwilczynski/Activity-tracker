@@ -16,7 +16,9 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
 
-  const activityMap = (await database.getActivities(userId)) ?? {};
+  const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
+
+  const activityMap = (await database.getActivities(userId, limit)) ?? {};
   const activities = mapToList(activityMap);
 
   context.res = {

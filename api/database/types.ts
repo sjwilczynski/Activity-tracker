@@ -6,7 +6,10 @@ import type {
 } from "../utils/types";
 
 export type Database = {
-  getActivities: (userId: string) => Promise<ActivityMap | null>;
+  getActivities: (
+    userId: string,
+    limit?: number
+  ) => Promise<ActivityMap | null>;
   addActivities: (
     userId: string,
     activities: ActivityRecord[]
