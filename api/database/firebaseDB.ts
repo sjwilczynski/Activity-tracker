@@ -33,8 +33,24 @@ export const firebaseDB: Database = {
     userId: string,
     activityId: string,
     newActivity: ActivityRecord
-  ) => {},
-  deleteActivity: async (userId: string, activityId: string) => {},
+  ) => {
+    const activityDocumentPath = activityDocument(userId);
+    const activityRef = database.ref(`${activityDocumentPath}/${activityId}`);
+    const activity = await activityRef.once("value");
+    if (!activity.exists()) {
+      throw new Error(`Unable to find activity with id ${activityId}`);
+    }
+    await activityRef.update(newActivity);
+  },
+  deleteActivity: async (userId: string, activityId: string) => {
+    const activityDocumentPath = activityDocument(userId);
+    const activityRef = database.ref(`${activityDocumentPath}/${activityId}`);
+    const activity = await activityRef.once("value");
+    if (!activity.exists()) {
+      throw new Error(`Unable to find activity with id ${activityId}`);
+    }
+    await activityRef.remove();
+  },
   deleteAllActivities: async (userId: string) => {
     const activitiesRef = database.ref(activityDocument(userId));
     await activitiesRef.remove();
@@ -54,6 +70,28 @@ export const firebaseDB: Database = {
     userId: string,
     categoryName: string,
     newCategory: Category
-  ) => {},
-  deleteCategory: async (userId: string, categoryName: string) => {},
+  ) => {
+    const categoryRef = database.ref(
+      `${categoryDocument(userId)}/${categoryName}`
+    );
+    const category = await categoryRef.once("value");
+    if (!category.exists()) {
+      throw new Error(`Unable to find category with name ${categoryName}`);
+    }
+    await categoryRef.update(newCategory);
+  },
+  deleteCategory: async (userId: string, categoryName: string) => {
+    const categoryRef = database.ref(
+      `${categoryDocument(userId)}/${categoryName}`
+    );
+    const category = await categoryRef.once("value");
+    if (!category.exists()) {
+      throw new Error(`Unable to find category with name ${categoryName}`);
+    }
+    await categoryRef.remove();
+  },
+  deleteAllCategories: async (userId) => {
+    const categoriesRef = database.ref(categoryDocument(userId));
+    await categoriesRef.remove();
+  },
 };
