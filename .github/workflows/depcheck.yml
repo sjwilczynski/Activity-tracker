@@ -11,7 +11,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: depcheck
-        run: yarn && (cd client; yarn) && yarn depcheck
+        run: yarn && yarn depcheck
       - name: Post comment
         uses: machine-learning-apps/pr-comment@master
         env:

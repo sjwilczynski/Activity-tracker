@@ -13,11 +13,13 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - name: install
+        run: yarn
       - name: build client
-        run: yarn && yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build
+        run: yarn run download-config ${{ secrets.CLIENT_CONFIG_URL }} && yarn run build
         working-directory: client
       - name: bundlewatch
-        run: yarn && yarn run bundlewatch
+        run: yarn run bundlewatch
         env:
           BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
