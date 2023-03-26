@@ -1,9 +1,8 @@
 import type { FormikProps } from "formik";
 import { Formik } from "formik";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import * as yup from "yup";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
-import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
 
 export type FormValues = {
   date: Date;
@@ -13,18 +12,16 @@ export type FormValues = {
 
 type Props = {
   children: (props: FormikProps<FormValues>) => ReactNode;
-  successMessage: string;
-  errorMessage: string;
+  onSubmit: (values: FormValues) => void;
   initialValues?: FormValues;
-};
+} & ComponentProps<typeof FeedbackAlertGroup>;
 
 export const FormWrapper = ({
   children,
-  successMessage,
-  errorMessage,
+  onSubmit,
   initialValues,
+  ...rest
 }: Props) => {
-  const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
   return (
     <>
       <Formik<FormValues>
@@ -44,12 +41,7 @@ export const FormWrapper = ({
       >
         {(renderProps) => children(renderProps)}
       </Formik>
-      <FeedbackAlertGroup
-        isRequestError={isError}
-        isRequestSuccess={isSuccess}
-        successMessage={successMessage}
-        errorMessage={errorMessage}
-      />
+      <FeedbackAlertGroup {...rest} />
     </>
   );
 };

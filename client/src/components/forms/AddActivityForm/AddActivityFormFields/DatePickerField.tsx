@@ -5,7 +5,7 @@ import { DatePicker } from "formik-mui-x-date-pickers";
 type Props = {
   name: string;
   label: string;
-  style: DatePickerProps["sx"];
+  style?: DatePickerProps["sx"];
 };
 
 export const DatePickerField = (props: Props) => (

@@ -10,7 +10,7 @@ type Props = {
   name: string;
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  style: AutocompleteProps<any, any, any, any>["sx"];
+  style?: AutocompleteProps<any, any, any, any>["sx"];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setFieldValue: (name: string, value: any) => void;
   handleBlur: ReturnType<typeof useFormik>["handleBlur"];
@@ -34,6 +34,7 @@ export const CategoriesAutocomplete = ({
         setFieldValue("active", value?.active);
       }}
       onOpen={handleBlur}
+      isOptionEqualToValue={(option, value) => option.name === value.name}
       includeInputInList
       loading={isLoading}
       groupBy={(option) => option.categoryName}
