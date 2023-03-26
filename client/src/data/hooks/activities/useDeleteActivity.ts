@@ -1,21 +1,21 @@
 import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
+import { useQueryClient, useMutation } from "react-query";
 import {
-  getActivitiesQueryId,
   activitiesApiPath,
+  getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
 import type { ActivityRecordWithId } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
 import type { ActivityMutationContext } from "./useActivitiesMutation";
 
-export const useDeleteAllActivities = () => {
+export const useDeleteActivity = () => {
   const client = useQueryClient();
-  const deleteAllActivities = useDeleteAllActivitiesFunction();
-  return useMutation<void, Error, never, ActivityMutationContext>(
-    deleteAllActivities,
+  const deleteActivity = useDeleteActivityFunction();
+  return useMutation<void, Error, string, ActivityMutationContext>(
+    deleteActivity,
     {
-      onMutate: () => {
+      onMutate: (activityId) => {
         const previousFullRecords =
           client.getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId) ||
           [];
@@ -27,7 +27,12 @@ export const useDeleteAllActivities = () => {
           (queryId) => {
             client.cancelQueries(queryId, { exact: true });
 
-            client.setQueryData<ActivityRecordWithId[]>(queryId, []);
+            client.setQueryData<ActivityRecordWithId[]>(
+              queryId,
+              previousFullRecords.filter(
+                (activity) => activity.id !== activityId
+              )
+            );
           }
         );
         return { previousLimitedRecords, previousFullRecords };
@@ -54,10 +59,10 @@ export const useDeleteAllActivities = () => {
   );
 };
 
-const useDeleteAllActivitiesFunction = () => {
+const useDeleteActivityFunction = () => {
   const getConfig = useRequestConfig();
-  return async () => {
+  return async (activityId: string) => {
     const config = await getConfig();
-    await axios.delete<string>(activitiesApiPath, config);
+    await axios.delete<string>(`${activitiesApiPath}\\${activityId}`, config);
   };
 };

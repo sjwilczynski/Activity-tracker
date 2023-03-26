@@ -11,6 +11,7 @@ import {
 import type { ChangeEvent } from "react";
 import { useState } from "react";
 import type { ActivityRecordWithId } from "../../data";
+import { EditableTableRow } from "./EditableTableRow/EditableTableRow";
 
 type Props = {
   records: ActivityRecordWithId[];
@@ -41,18 +42,14 @@ export function SummaryTable(props: Props) {
             <TableRow>
               <TableCell>Date</TableCell>
               <TableCell>Activity name</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {records
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell>
-                    {record.date.toLocaleDateString("en-CA")}
-                  </TableCell>
-                  <TableCell>{record.name}</TableCell>
-                </TableRow>
+                <EditableTableRow key={record.id} record={record} />
               ))}
           </TableBody>
         </Table>
