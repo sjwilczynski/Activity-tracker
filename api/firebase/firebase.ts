@@ -1,7 +1,5 @@
 import * as admin from "firebase-admin";
 import type { AdminConfig } from "./types";
-import fs from "fs";
-import path from "path";
 
 const getServiceAccount = (config: AdminConfig): admin.ServiceAccount => ({
   clientEmail: config.client_email,
@@ -9,11 +7,8 @@ const getServiceAccount = (config: AdminConfig): admin.ServiceAccount => ({
   projectId: config.project_id,
 });
 
-const pathToConfig = path.join(__dirname, "./firebaseConfig.json");
-
-const config = JSON.parse(
-  fs.readFileSync(pathToConfig, { encoding: "utf-8" })
-) as AdminConfig;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require("./firebaseConfig.json") as AdminConfig;
 
 admin.initializeApp({
   credential: admin.credential.cert(getServiceAccount(config)),
