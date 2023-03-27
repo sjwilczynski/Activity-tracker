@@ -19,6 +19,15 @@ type Props = {
   onCancel: () => void;
 };
 
+const hiddenLabelStyle = {
+  "& > label": {
+    display: "none",
+  },
+  "& > .MuiInput-root": {
+    marginTop: 0,
+  },
+};
+
 export const RowInEditMode = ({ record, onCancel }: Props) => {
   const { onSubmit, isSuccess, isError, isLoading } = useEditActivityFormSubmit(
     record.id
@@ -42,17 +51,23 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
             },
           }}
         >
-          {({ isValid, dirty, handleBlur, setFieldValue, values }) => (
+          {({ isValid, dirty, handleBlur, values }) => (
             <>
               <TableCell>
-                <DatePickerField name="date" label="Date" />
+                <DatePickerField
+                  name="date"
+                  label="Date"
+                  style={hiddenLabelStyle}
+                  size="small"
+                />
               </TableCell>
               <TableCell>
                 <CategoriesAutocomplete
                   name="category"
                   label="Activity name"
-                  setFieldValue={setFieldValue}
                   handleBlur={handleBlur}
+                  style={hiddenLabelStyle}
+                  size="small"
                 />
                 <Field name="active" type="checkbox" hidden />
               </TableCell>

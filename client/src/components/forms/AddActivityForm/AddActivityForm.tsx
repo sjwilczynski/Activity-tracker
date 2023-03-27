@@ -25,8 +25,7 @@ export function AddActivityForm() {
   return (
     <>
       <FormWrapper onSubmit={onSubmit}>
-        {({ isValid, dirty, handleBlur, setFieldValue, values }) => {
-          console.log(values);
+        {({ isValid, dirty, handleBlur }) => {
           return (
             <StyledForm>
               <DatePickerField name="date" label="Date" style={fieldStyle} />
@@ -34,7 +33,6 @@ export function AddActivityForm() {
                 name="category"
                 style={fieldStyle}
                 label="Activity name"
-                setFieldValue={setFieldValue}
                 handleBlur={handleBlur}
               />
               <Field name="active" type="checkbox" hidden />

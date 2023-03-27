@@ -5,17 +5,21 @@ import { DatePicker } from "formik-mui-x-date-pickers";
 type Props = {
   name: string;
   label: string;
-  style?: DatePickerProps["sx"];
+  style?: NonNullable<DatePickerProps["textField"]>["sx"];
+  size?: NonNullable<DatePickerProps["textField"]>["size"];
 };
 
 export const DatePickerField = (props: Props) => (
   <Field
-    component={DatePicker}
+    component={props.size === "small" ? SmallDatePicker : DatePicker}
     name={props.name}
     label={props.label}
     inputFormat="yyyy-MM-dd"
-    sx={props.style}
     mask="____-__-__"
-    textField={{ variant: "standard" }}
+    textField={{ variant: "standard", sx: props.style }}
   />
+);
+
+const SmallDatePicker = (props: DatePickerProps) => (
+  <DatePicker {...props} size="small" />
 );

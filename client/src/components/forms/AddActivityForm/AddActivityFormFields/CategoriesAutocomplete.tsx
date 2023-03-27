@@ -15,7 +15,7 @@ type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   style?: AutocompleteProps<any, any, any, any>["sx"];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setFieldValue: (name: string, value: any) => void;
+  size?: AutocompleteProps<any, any, any, any>["size"];
   handleBlur: ReturnType<typeof useFormik>["handleBlur"];
 };
 
@@ -23,7 +23,7 @@ export const CategoriesAutocomplete = ({
   name,
   label,
   style,
-  // setFieldValue,
+  size,
   handleBlur,
 }: Props) => {
   const { availableCategories, isLoading } = useAvailableCategories();
@@ -31,6 +31,7 @@ export const CategoriesAutocomplete = ({
     <Field
       id="name-autocomplete"
       component={Autocomplete}
+      size={size}
       name={name}
       options={availableCategories}
       getOptionLabel={(category: CategoryOption) => category.name}
