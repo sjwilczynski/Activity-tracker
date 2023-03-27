@@ -33,7 +33,7 @@
   "bundlewatch": {
     "files": [
       {
-        "path": "client/build/static/js/*.js",
+        "path": "client/build/assets/*.js",
         "maxSize": "500kB"
       }
     ]
