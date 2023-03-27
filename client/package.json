@@ -14,7 +14,6 @@
     "sleep": "sleep 6",
     "download-config": "curl -o src/auth/firebaseConfig.json"
   },
-  "proxy": "http://localhost:7071/",
   "browserslist": {
     "production": [
       ">0.2%",
