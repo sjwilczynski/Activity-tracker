@@ -2,11 +2,14 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "es6",
+    "allowJs": false,
+    "resolveJsonModule": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["vite/client"]
   },
   "include": ["src"]
 }
