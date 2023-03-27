@@ -6,6 +6,7 @@ import { DatePickerField } from "./AddActivityFormFields/DatePickerField";
 import { CategoriesAutocomplete } from "./AddActivityFormFields/CategoriesAutocomplete";
 import { FormWrapper } from "./FormWrapper";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
+import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 
 const StyledForm = styled(Form)(({ theme }) => ({
   display: "flex",
@@ -22,37 +23,39 @@ const fieldStyle: SxProps<Theme> = {
 export function AddActivityForm() {
   const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
   return (
-    <FormWrapper
-      onSubmit={onSubmit}
-      successMessage="Activity added successfully"
-      errorMessage="Failed to add activity"
-      isRequestError={isError}
-      isRequestSuccess={isSuccess}
-    >
-      {({ isValid, dirty, handleBlur, setFieldValue, values }) => {
-        console.log(values);
-        return (
-          <StyledForm>
-            <DatePickerField name="date" label="Date" style={fieldStyle} />
-            <CategoriesAutocomplete
-              name="category"
-              style={fieldStyle}
-              label="Activity name"
-              setFieldValue={setFieldValue}
-              handleBlur={handleBlur}
-            />
-            <Field name="active" type="checkbox" hidden />
-            <Button
-              disabled={!isValid || !dirty}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Add activity
-            </Button>
-          </StyledForm>
-        );
-      }}
-    </FormWrapper>
+    <>
+      <FormWrapper onSubmit={onSubmit}>
+        {({ isValid, dirty, handleBlur, setFieldValue, values }) => {
+          console.log(values);
+          return (
+            <StyledForm>
+              <DatePickerField name="date" label="Date" style={fieldStyle} />
+              <CategoriesAutocomplete
+                name="category"
+                style={fieldStyle}
+                label="Activity name"
+                setFieldValue={setFieldValue}
+                handleBlur={handleBlur}
+              />
+              <Field name="active" type="checkbox" hidden />
+              <Button
+                disabled={!isValid || !dirty}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Add activity
+              </Button>
+            </StyledForm>
+          );
+        }}
+      </FormWrapper>
+      <FeedbackAlertGroup
+        successMessage="Activity added successfully"
+        errorMessage="Failed to add activity"
+        isRequestError={isError}
+        isRequestSuccess={isSuccess}
+      />
+    </>
   );
 }

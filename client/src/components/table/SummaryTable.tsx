@@ -37,7 +37,13 @@ export function SummaryTable(props: Props) {
   return (
     <Paper elevation={8}>
       <TableContainer>
-        <Table size="small">
+        <Table
+          size="small"
+          sx={{
+            tableLayout: "fixed",
+            width: "100%",
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Date</TableCell>
