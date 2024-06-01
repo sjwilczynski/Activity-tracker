@@ -6,7 +6,7 @@ import { Button, styled } from "@mui/material";
 import { FileInput } from "./FileInput";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 
-const FILE_SIZE = 100 * 1024;
+const FILE_SIZE = 1000 * 1024;
 const SUPPORTED_FORMATS = ["application/json"];
 
 type FormValues = {
