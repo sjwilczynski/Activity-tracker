@@ -13,10 +13,9 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules client/node_modules api/node_modules",
-    "depcheck": "node scripts/depcheck.js",
+    "depcheck": "bun scripts/depcheck.mjs",
     "lint": "eslint ./**/*.{ts,tsx,js} --max-warnings=0",
-    "pre-commit": "lint-staged --allow-empty",
-    "prepare": "husky install"
+    "pre-commit": "lint-staged --allow-empty"
   },
   "lint-staged": {
     "./**/*.{ts,tsx,js}": [
