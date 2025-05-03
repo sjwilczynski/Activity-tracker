@@ -1,9 +1,9 @@
 import admin from "../firebase/firebase";
 
-export const firebaseGetUserId = async (
-  token: string | undefined
+export const getUserId = async (
+  token: string | null | undefined
 ): Promise<string> => {
-  if (token === undefined) {
+  if (token === undefined || token === null) {
     throw new Error("Received no id token");
   }
   try {

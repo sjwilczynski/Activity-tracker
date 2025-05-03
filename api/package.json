@@ -3,25 +3,24 @@
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
-  "engines": {
-    "node": ">=16.0.0",
-    "yarn": ">=1.20.0"
-  },
+  "main": "dist/**/*.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "prestart": "yarn run build",
+    "download-config": "curl -o firebase/firebaseConfig.json",
     "sleep": "sleep 6",
+    "prestart": "bun run build",
     "start": "func start",
-    "test": "echo \"No tests yet...\"",
-    "download-config": "curl -o firebase/firebaseConfig.json"
+    "watch": "tsc -w"
   },
   "dependencies": {
+    "@azure/functions": "^4.0.0",
     "date-fns": "2.29.2",
     "firebase-admin": "11.6.0"
   },
   "devDependencies": {
-    "@azure/functions": "3.2.0",
-    "typescript": "5.0.2"
+    "typescript": "5.8.3"
+  },
+  "engines": {
+    "bun": ">=1.2.0"
   }
 }

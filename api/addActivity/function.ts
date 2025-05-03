@@ -1,42 +1,45 @@
-import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { getUserId } from "../authorization";
-import { database } from "../database";
+import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
+import { getUserId } from "../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../database/firebaseDB";
 import type { ActivityRecord } from "../utils/types";
 import { isMatch } from "date-fns";
 
-const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
-): Promise<void> {
-  const activities = req.body;
-  const idToken = req.headers["x-auth-token"];
+async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
+  let activities: unknown;
+  try {
+    activities = await request.json();
+  } catch (e) {
+    return { status: 400, body: "Invalid JSON body" };
+  }
+
+  const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: (err as Error).message };
-    return;
+    return { status: 401, body: (err as Error).message };
   }
 
   if (areActivitiesValid(activities)) {
     try {
       await database.addActivities(userId, activities);
-      context.res = {
+      return {
+        status: 200,
         body: "Successfully added",
       };
     } catch (err) {
-      context.res = {
+      return {
         status: 500,
         body: (err as Error).message,
       };
     }
   } else {
-    context.res = {
-      status: 500,
-      body: "Activity is invalid",
+    return {
+      status: 400, // Use 400 for invalid input
+      body: "Activity data is invalid",
     };
   }
-};
+}
 
 const areActivitiesValid = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +48,7 @@ const areActivitiesValid = (
   if (
     activityRecords === null ||
     activityRecords === undefined ||
-    activityRecords.length === undefined ||
+    !Array.isArray(activityRecords) || // Check if it's an array
     activityRecords.length === 0
   ) {
     return false;
@@ -79,4 +82,9 @@ const isValidName = (name: string): boolean => {
   return Boolean(name);
 };
 
-export default httpTrigger;
+app.http("addActivity", {
+  methods: ["POST"],
+  authLevel: "anonymous",
+  route: "activities",
+  handler: addActivity,
+});

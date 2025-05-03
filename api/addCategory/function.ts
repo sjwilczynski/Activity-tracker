@@ -1,41 +1,43 @@
-import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { getUserId } from "../authorization";
-import { database } from "../database";
+import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
+import { getUserId } from "../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../database/firebaseDB";
 import type { Category, Subcategory } from "../utils/types";
 
-const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
-): Promise<void> {
-  const category = req.body;
-  const idToken = req.headers["x-auth-token"];
+async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
+  let category: unknown;
+  try {
+    category = await request.json();
+  } catch (e) {
+    return { status: 400, body: "Invalid JSON body" };
+  }
+  const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
     userId = await getUserId(idToken);
   } catch (err) {
-    context.res = { status: 401, body: (err as Error).message };
-    return;
+    return { status: 401, body: (err as Error).message };
   }
 
   if (isCategoryValid(category)) {
     try {
       await database.addCategory(userId, category);
-      context.res = {
+      return {
+        status: 200,
         body: "Successfully added",
       };
     } catch (err) {
-      context.res = {
+      return {
         status: 500,
         body: (err as Error).message,
       };
     }
   } else {
-    context.res = {
-      status: 500,
-      body: "Category is invalid",
+    return {
+      status: 400,
+      body: "Category data is invalid",
     };
   }
-};
+}
 
 const isCategoryValid = (category: unknown): category is Category => {
   if (category === null || category === undefined) {
@@ -71,4 +73,9 @@ const isSubcategoryValid = (
   return true;
 };
 
-export default httpTrigger;
+app.http("addCategory", {
+  methods: ["POST"],
+  authLevel: "anonymous",
+  route: "categories",
+  handler: addCategory,
+});

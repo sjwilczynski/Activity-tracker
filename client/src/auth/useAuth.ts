@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+import { initializeApp } from "firebase/app";
+import { getAuth, type User as FirebaseUser } from "firebase/auth";
 import type { User } from "./AuthContext";
 import config from "./firebaseConfig.json";
 
-firebase.initializeApp(config);
+initializeApp(config);
 
 export const useAuth = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [currentUser, setCurentUser] = useState<firebase.User | undefined>(
+  const [currentUser, setCurentUser] = useState<FirebaseUser | undefined>(
     undefined
   );
-  const auth = firebase.auth();
+  const auth = getAuth();
 
   useEffect(() => {
     const unregisterAuthObserver = auth.onAuthStateChanged((user) => {
@@ -44,7 +44,7 @@ export const useAuth = () => {
   };
 };
 
-const getUser = (user: firebase.User): User => {
+const getUser = (user: FirebaseUser): User => {
   const { displayName, email, photoURL, uid } = user;
   return { displayName, email, photoURL, uid };
 };

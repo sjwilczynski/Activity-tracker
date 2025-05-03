@@ -19,9 +19,8 @@ export const firebaseDB: Database = {
       .ref(activityDocument(userId))
       .orderByChild("date");
 
-    const limitedActivitiesQuery = await (limit
-      ? activitiesQuery.limitToLast(limit)
-      : activitiesQuery
+    const limitedActivitiesQuery = await (
+      limit ? activitiesQuery.limitToLast(limit) : activitiesQuery
     ).once("value");
 
     return limitedActivitiesQuery.val() as ActivityMap;
