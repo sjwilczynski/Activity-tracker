@@ -43,6 +43,9 @@
     "bun": ">=1.2.0"
   },
   "bundlewatch": {
+    "trackBranches": [
+      "master"
+    ],
     "files": [
       {
         "path": "client/build/assets/*.js",
