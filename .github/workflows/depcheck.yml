@@ -17,9 +17,8 @@ jobs:
       - name: depcheck
         run: bun install && bun run depcheck
       - name: Post comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: mshick/add-pr-comment@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          body-path: scripts/depcheck-report.md
-          comment-id: depcheck
+          message-path: scripts/depcheck-report.md
