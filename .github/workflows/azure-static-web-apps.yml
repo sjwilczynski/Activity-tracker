@@ -23,6 +23,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: Install
+        run: bun install
       - name: Build api
         run: bun run download-config ${{ secrets.API_CONFIG_URL_NEW }} && bun run sleep && bun run build
         working-directory: api
