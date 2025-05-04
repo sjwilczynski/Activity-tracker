@@ -7,7 +7,6 @@
   "scripts": {
     "build": "tsc",
     "download-config": "curl -o firebase/firebaseConfig.json",
-    "lint": "eslint --max-warnings=0",
     "sleep": "sleep 6",
     "prestart": "bun run build",
     "start": "func start",
