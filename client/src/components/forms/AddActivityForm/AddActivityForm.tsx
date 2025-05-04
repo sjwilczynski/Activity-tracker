@@ -7,6 +7,8 @@ import { CategoriesAutocomplete } from "./AddActivityFormFields/CategoriesAutoco
 import { FormWrapper } from "./FormWrapper";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
+import { type ActivityRecordWithId } from "../../../data";
+import { addDays } from "date-fns";
 
 const StyledForm = styled(Form)(({ theme }) => ({
   display: "flex",
@@ -20,11 +22,24 @@ const fieldStyle: SxProps<Theme> = {
   mx: 0,
 };
 
-export function AddActivityForm() {
+type Props = {
+  lastActivity: ActivityRecordWithId | undefined;
+};
+
+export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
+
+  const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
+
   return (
     <>
-      <FormWrapper onSubmit={onSubmit}>
+      <FormWrapper
+        onSubmit={onSubmit}
+        initialValues={{
+          date: initialDate,
+          category: { name: "", active: false, categoryName: "" },
+        }}
+      >
         {({ isValid, dirty, handleBlur }) => {
           return (
             <StyledForm>
