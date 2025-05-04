@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
-  "main": "dist/**/*.js",
+  "main": "dist/functions/**/*.js",
   "scripts": {
     "build": "tsc",
     "download-config": "curl -o firebase/firebaseConfig.json",

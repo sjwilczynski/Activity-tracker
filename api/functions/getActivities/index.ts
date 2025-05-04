@@ -1,7 +1,7 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
-import { mapToList } from "../utils/mapToList";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
+import { mapToList } from "../../utils/mapToList";
 
 async function getActivities(request: HttpRequest): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");

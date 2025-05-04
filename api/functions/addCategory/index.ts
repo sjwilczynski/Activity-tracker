@@ -1,7 +1,7 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
-import type { Category, Subcategory } from "../utils/types";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
+import type { Category, Subcategory } from "../../utils/types";
 
 async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
   let category: unknown;

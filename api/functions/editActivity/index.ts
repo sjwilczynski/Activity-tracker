@@ -1,8 +1,9 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
+import type { ActivityRecord } from "../../utils/types";
 
-async function deleteActivity(request: HttpRequest): Promise<HttpResponseInit> {
+async function editActivity(request: HttpRequest): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
@@ -11,6 +12,7 @@ async function deleteActivity(request: HttpRequest): Promise<HttpResponseInit> {
     return { status: 401, body: (err as Error).message };
   }
 
+  const activity = (await request.json()) as ActivityRecord;
   const activityId = request.params.activityId;
 
   if (!activityId) {
@@ -18,16 +20,16 @@ async function deleteActivity(request: HttpRequest): Promise<HttpResponseInit> {
   }
 
   try {
-    await database.deleteActivity(userId, activityId);
+    await database.editActivity(userId, activityId, activity);
     return { status: 204 };
   } catch (err) {
     return { status: 404, body: (err as Error).message };
   }
 }
 
-app.http("deleteActivity", {
-  methods: ["DELETE"],
+app.http("editActivity", {
+  methods: ["PUT"],
   authLevel: "anonymous",
   route: "activities/{activityId}",
-  handler: deleteActivity,
+  handler: editActivity,
 });

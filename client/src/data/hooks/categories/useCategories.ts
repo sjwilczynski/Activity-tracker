@@ -1,11 +1,10 @@
-import axios from "axios";
 import { useQuery } from "react-query";
 import {
   getCategoriesQueryId,
   categoriesApiPath,
 } from "../../react-query-config/query-constants";
 import type { Category, CategoryOption } from "../../types";
-import type { ConfigPromise } from "../useRequestConfig";
+import type { HeadersPromise } from "../useRequestConfig";
 import { useRequestConfig } from "../useRequestConfig";
 
 export const useCategories = () => {
@@ -16,14 +15,20 @@ export const useCategories = () => {
 };
 
 const fetchCategories = async (
-  configPromise: ConfigPromise
+  headersPromise: HeadersPromise
 ): Promise<Category[]> => {
-  const config = await configPromise;
-  const categoriesResponse = await axios.get<Category[]>(
-    categoriesApiPath,
-    config
-  );
-  return categoriesResponse.data;
+  const headers = await headersPromise;
+
+  const response = await fetch(categoriesApiPath, {
+    method: "GET",
+    headers: headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return (await response.json()) as Category[];
 };
 
 export const useAvailableCategories = () => {

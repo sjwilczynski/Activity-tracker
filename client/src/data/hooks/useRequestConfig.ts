@@ -1,12 +1,8 @@
 import { useAuthContext } from "../../auth";
 
-export type ConfigPromise = Promise<{
-  headers: {
-    "x-auth-token": string;
-  };
-}>;
+export type HeadersPromise = Promise<Record<string, string>>;
 
-export const useRequestConfig = (): (() => ConfigPromise) => {
+export const useRequestConfig = (): (() => HeadersPromise) => {
   const { getIdToken } = useAuthContext();
   if (!getIdToken) {
     return () => {
@@ -15,7 +11,7 @@ export const useRequestConfig = (): (() => ConfigPromise) => {
   } else {
     return async () => {
       const idToken = await getIdToken();
-      return { headers: { "x-auth-token": idToken } };
+      return { "x-auth-token": idToken };
     };
   }
 };

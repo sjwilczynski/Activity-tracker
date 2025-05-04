@@ -1,6 +1,6 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
 
 async function deleteCategory(request: HttpRequest): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");

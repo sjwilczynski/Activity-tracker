@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import {
   activitiesApiPath,
@@ -71,11 +70,20 @@ export const useEditActivityMutation = () => {
 const useEditActivityFunction = () => {
   const getConfig = useRequestConfig();
   return async (activityId: string, activityRecord: ActivityRecordServer) => {
-    const config = await getConfig();
-    await axios.put<string>(
-      `${activitiesApiPath}\\${activityId}`,
-      activityRecord,
-      config
-    );
+    const headers = await getConfig();
+
+    const url = `${activitiesApiPath}/${activityId}`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(activityRecord),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
   };
 };
