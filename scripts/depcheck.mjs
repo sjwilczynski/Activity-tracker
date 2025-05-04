@@ -1,6 +1,10 @@
-const depcheck = require("depcheck");
-const path = require("path");
-const fs = require("fs");
+import depcheck from "depcheck";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const options = {
   ignoreMatches: [
@@ -50,5 +54,5 @@ fs.appendFileSync(markdownFilePath, "## Depcheck report \n", (err) => {
 for (const packageName of packageNames) {
   const packagePath = path.join(__dirname, `../${packageName}`);
   const markdownCallback = createMarkdown(packageName, markdownFilePath);
-  depcheck(packagePath, options, markdownCallback);
+  depcheck(packagePath, options).then(markdownCallback);
 }
