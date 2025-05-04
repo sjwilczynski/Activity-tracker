@@ -1,7 +1,7 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
-import type { ActivityRecord } from "../utils/types";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
+import type { ActivityRecord } from "../../utils/types";
 import { isMatch } from "date-fns";
 
 async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {

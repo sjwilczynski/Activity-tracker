@@ -1,8 +1,8 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
-import { getUserId } from "../authorization/firebaseAuthorization";
-import { firebaseDB as database } from "../database/firebaseDB";
+import { getUserId } from "../../authorization/firebaseAuthorization";
+import { firebaseDB as database } from "../../database/firebaseDB";
 
-async function deleteCategories(
+async function deleteActivities(
   request: HttpRequest
 ): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
@@ -14,21 +14,21 @@ async function deleteCategories(
   }
 
   try {
-    await database.deleteAllCategories(userId);
+    await database.deleteAllActivities(userId);
     return {
       status: 204,
     };
   } catch {
     return {
       status: 500,
-      body: "Error when trying to delete categories",
+      body: "Error when trying to delete the activities",
     };
   }
 }
 
-app.http("deleteCategories", {
+app.http("deleteActivities", {
   methods: ["DELETE"],
   authLevel: "anonymous",
-  route: "categories",
-  handler: deleteCategories,
+  route: "activities",
+  handler: deleteActivities,
 });
