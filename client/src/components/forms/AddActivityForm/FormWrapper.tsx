@@ -31,7 +31,11 @@ export const FormWrapper = ({ children, onSubmit, initialValues }: Props) => (
         category: { name: "", active: false, categoryName: "" },
       }
     }
-    onSubmit={onSubmit}
+    onSubmit={(values, { resetForm }) => {
+      onSubmit(values);
+      resetForm();
+    }}
+    enableReinitialize
   >
     {(renderProps) => children(renderProps)}
   </Formik>
