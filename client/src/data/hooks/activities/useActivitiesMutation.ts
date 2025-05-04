@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import {
   getActivitiesQueryId,
@@ -17,7 +16,7 @@ export const useActivitiesMutation = () => {
   const client = useQueryClient();
   const addActivities = useAddActivitiesFunction();
   return useMutation<
-    string,
+    Response,
     Error,
     ActivityRecordServer[],
     ActivityMutationContext
@@ -77,12 +76,20 @@ export const useActivitiesMutation = () => {
 const useAddActivitiesFunction = () => {
   const getConfig = useRequestConfig();
   return async (activityRecords: ActivityRecordServer[]) => {
-    const config = await getConfig();
-    const response = await axios.post<string>(
-      activitiesApiPath,
-      activityRecords,
-      config
-    );
-    return response.data;
+    const headers = await getConfig();
+
+    const response = await fetch(activitiesApiPath, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(activityRecords),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response;
   };
 };

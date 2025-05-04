@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useQueryClient, useMutation } from "react-query";
 import {
   activitiesApiPath,
@@ -62,7 +61,14 @@ export const useDeleteActivity = () => {
 const useDeleteActivityFunction = () => {
   const getConfig = useRequestConfig();
   return async (activityId: string) => {
-    const config = await getConfig();
-    await axios.delete<string>(`${activitiesApiPath}\\${activityId}`, config);
+    const headers = await getConfig();
+    const url = `${activitiesApiPath}/${activityId}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: headers,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
   };
 };

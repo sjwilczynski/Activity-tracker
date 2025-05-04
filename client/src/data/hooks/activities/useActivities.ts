@@ -3,13 +3,12 @@ import type {
   ActivityRecordWithId,
   ActivityRecordWithIdServer,
 } from "../../types";
-import axios from "axios";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
-import type { ConfigPromise } from "../useRequestConfig";
+import type { HeadersPromise } from "../useRequestConfig";
 import { useRequestConfig } from "../useRequestConfig";
 import { useCallback } from "react";
 
@@ -47,16 +46,29 @@ export const useIsFetchingActivties = () => {
 };
 
 const fetchActivities = async (
-  configPromise: ConfigPromise,
+  headersPromise: HeadersPromise,
   limit?: number
 ): Promise<ActivityRecordWithId[]> => {
-  const config = await configPromise;
-  const params = limit ? { params: { limit } } : {};
-  const activityRecordsResponse = await axios.get<ActivityRecordWithIdServer[]>(
-    activitiesApiPath,
-    { ...config, ...params }
-  );
-  return activityRecordsResponse.data.map((activityRecord) => ({
+  const headers = await headersPromise;
+
+  const url = new URL(activitiesApiPath, window.location.origin);
+  if (limit) {
+    url.searchParams.append("limit", String(limit));
+  }
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const activityRecordsResponse =
+    (await response.json()) as ActivityRecordWithIdServer[];
+
+  return activityRecordsResponse.map((activityRecord) => ({
     ...activityRecord,
     date: new Date(activityRecord.date),
   }));
