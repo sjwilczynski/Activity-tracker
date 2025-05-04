@@ -8,7 +8,7 @@ async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
   let activities: unknown;
   try {
     activities = await request.json();
-  } catch (e) {
+  } catch {
     return { status: 400, body: "Invalid JSON body" };
   }
 

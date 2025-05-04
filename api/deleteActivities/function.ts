@@ -18,7 +18,7 @@ async function deleteActivities(
     return {
       status: 204,
     };
-  } catch (err) {
+  } catch {
     return {
       status: 500,
       body: "Error when trying to delete the activities",

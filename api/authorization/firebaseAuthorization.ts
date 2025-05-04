@@ -9,7 +9,7 @@ export const getUserId = async (
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     return decodedToken.uid;
-  } catch (err) {
+  } catch {
     throw new Error(`Unable to identify the user using token: ${token}`);
   }
 };

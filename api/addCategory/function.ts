@@ -7,7 +7,7 @@ async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
   let category: unknown;
   try {
     category = await request.json();
-  } catch (e) {
+  } catch {
     return { status: 400, body: "Invalid JSON body" };
   }
   const idToken = request.headers.get("x-auth-token");
