@@ -38,6 +38,7 @@ export const DateFilterForm = () => {
       }}
       onSubmit={onSubmit}
       validate={validate}
+      enableReinitialize
     >
       <StyledForm>
         <Field
