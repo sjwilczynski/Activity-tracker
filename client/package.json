@@ -43,7 +43,7 @@
     "react-dom": "18.2.0",
     "react-download-link": "2.3.0",
     "react-query": "3.39.3",
-    "react-router-dom": "6.3.0",
+    "react-router-dom": "^6.30.2",
     "yup": "1.7.1"
   },
   "devDependencies": {

@@ -43,28 +43,27 @@ export const useDateRangeState = (): [FormValues, (values: FormValues) => void] 
   }), [startDateParam, endDateParam]);
 
   const setDateRange = useCallback((values: FormValues) => {
-    // NOTE: Including searchParams in deps causes callback recreation on URL changes.
-    // To optimize, upgrade react-router-dom to 6.4+ and use functional updater:
-    // setSearchParams((currentParams) => { ... return newParams; })
-    const newParams = new URLSearchParams(searchParams);
+    setSearchParams((currentParams) => {
+      const newParams = new URLSearchParams(currentParams);
 
-    const serializedStart = serializeDate(values.startDate);
-    const serializedEnd = serializeDate(values.endDate);
+      const serializedStart = serializeDate(values.startDate);
+      const serializedEnd = serializeDate(values.endDate);
 
-    if (serializedStart) {
-      newParams.set(startDateFieldKey, serializedStart);
-    } else {
-      newParams.delete(startDateFieldKey);
-    }
+      if (serializedStart) {
+        newParams.set(startDateFieldKey, serializedStart);
+      } else {
+        newParams.delete(startDateFieldKey);
+      }
 
-    if (serializedEnd) {
-      newParams.set(endDateFieldKey, serializedEnd);
-    } else {
-      newParams.delete(endDateFieldKey);
-    }
+      if (serializedEnd) {
+        newParams.set(endDateFieldKey, serializedEnd);
+      } else {
+        newParams.delete(endDateFieldKey);
+      }
 
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+      return newParams;
+    });
+  }, [setSearchParams]);
 
   return [dateRange, setDateRange];
 };
