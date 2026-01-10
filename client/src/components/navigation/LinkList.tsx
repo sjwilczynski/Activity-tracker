@@ -1,7 +1,7 @@
 import { List, ListItem, ListItemText, useTheme } from "@mui/material";
 import { forwardRef, useCallback, useMemo } from "react";
 import type { NavLinkProps } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useNavigationToggle } from "./useNavigationState";
 
 export type NavigationElement = {
@@ -29,12 +29,18 @@ const Link = ({
   navigationElement: NavigationElement;
 }) => {
   const { text, path } = navigationElement;
+  const location = useLocation();
+
   const ListLink = useMemo(
     () =>
       forwardRef<unknown, Omit<NavLinkProps, "to">>((itemProps, ref) => (
-        <NavLinkWrapper to={path} ref={ref} {...itemProps} />
+        <NavLinkWrapper
+          to={{ pathname: path, search: location.search }}
+          ref={ref}
+          {...itemProps}
+        />
       )),
-    [path]
+    [path, location.search]
   );
   const toggleNavigation = useNavigationToggle();
   return (
