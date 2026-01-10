@@ -20,7 +20,7 @@ jobs:
       - name: install
         run: bun install
       - name: build client
-        run: bun run download-config ${{ secrets.CLIENT_CONFIG_URL }} && bun run build
+        run: bun run build
         working-directory: client
       - name: bundlewatch
         run: bun run bundlewatch
