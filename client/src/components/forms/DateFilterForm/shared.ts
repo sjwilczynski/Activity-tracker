@@ -12,7 +12,10 @@ export const endDateFieldKey = "endDate";
 
 const serializeDate = (date: Date | null): string | null => {
   if (!date) return null;
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 const deserializeDate = (dateString: string | null): Date | null => {
@@ -26,44 +29,56 @@ export const useDateRange = (): FormValues => {
   const startDateParam = searchParams.get(startDateFieldKey);
   const endDateParam = searchParams.get(endDateFieldKey);
 
-  return useMemo(() => ({
-    startDate: deserializeDate(startDateParam),
-    endDate: deserializeDate(endDateParam),
-  }), [startDateParam, endDateParam]);
+  return useMemo(
+    () => ({
+      startDate: deserializeDate(startDateParam),
+      endDate: deserializeDate(endDateParam),
+    }),
+    [startDateParam, endDateParam]
+  );
 };
 
-export const useDateRangeState = (): [FormValues, (values: FormValues) => void] => {
+export const useDateRangeState = (): [
+  FormValues,
+  (values: FormValues) => void,
+] => {
   const [searchParams, setSearchParams] = useSearchParams();
   const startDateParam = searchParams.get(startDateFieldKey);
   const endDateParam = searchParams.get(endDateFieldKey);
 
-  const dateRange = useMemo(() => ({
-    startDate: deserializeDate(startDateParam),
-    endDate: deserializeDate(endDateParam),
-  }), [startDateParam, endDateParam]);
+  const dateRange = useMemo(
+    () => ({
+      startDate: deserializeDate(startDateParam),
+      endDate: deserializeDate(endDateParam),
+    }),
+    [startDateParam, endDateParam]
+  );
 
-  const setDateRange = useCallback((values: FormValues) => {
-    setSearchParams((currentParams) => {
-      const newParams = new URLSearchParams(currentParams);
+  const setDateRange = useCallback(
+    (values: FormValues) => {
+      setSearchParams((currentParams) => {
+        const newParams = new URLSearchParams(currentParams);
 
-      const serializedStart = serializeDate(values.startDate);
-      const serializedEnd = serializeDate(values.endDate);
+        const serializedStart = serializeDate(values.startDate);
+        const serializedEnd = serializeDate(values.endDate);
 
-      if (serializedStart) {
-        newParams.set(startDateFieldKey, serializedStart);
-      } else {
-        newParams.delete(startDateFieldKey);
-      }
+        if (serializedStart) {
+          newParams.set(startDateFieldKey, serializedStart);
+        } else {
+          newParams.delete(startDateFieldKey);
+        }
 
-      if (serializedEnd) {
-        newParams.set(endDateFieldKey, serializedEnd);
-      } else {
-        newParams.delete(endDateFieldKey);
-      }
+        if (serializedEnd) {
+          newParams.set(endDateFieldKey, serializedEnd);
+        } else {
+          newParams.delete(endDateFieldKey);
+        }
 
-      return newParams;
-    });
-  }, [setSearchParams]);
+        return newParams;
+      });
+    },
+    [setSearchParams]
+  );
 
   return [dateRange, setDateRange];
 };
