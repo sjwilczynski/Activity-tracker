@@ -6,9 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "download-config": "curl -o src/auth/firebaseConfig.json",
     "serve": "vite preview",
-    "sleep": "sleep 6",
     "start": "vite"
   },
   "browserslist": {

@@ -1,7 +1,8 @@
 node_modules
 depcheck-report.md
 activities*.json
-firebaseConfig.json
+# API firebase config contains private key - never commit
+api/firebase/firebaseConfig.json
 dist
 local.settings.json
 client/build

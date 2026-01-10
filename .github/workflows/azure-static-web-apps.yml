@@ -25,11 +25,8 @@ jobs:
           bun-version: latest
       - name: Install
         run: bun install
-        # - name: Build api
-        #   run: bun run download-config ${{ secrets.API_CONFIG_URL_NEW }} && bun run sleep && bun run build
-        working-directory: api
       - name: Build client
-        run: bun run download-config ${{ secrets.CLIENT_CONFIG_URL }} && bun run sleep && bun run build
+        run: bun run build
         working-directory: client
       - name: Deploy
         id: builddeploy
@@ -41,7 +38,7 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match you app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           api_location: api # Api source code path - optional
-          api_build_command: npm run download-config ${{ secrets.API_CONFIG_URL_NEW }} && npm run sleep && npm run build
+          api_build_command: echo "${{ secrets.API_FIREBASE_CONFIG }}" | base64 -d > firebase/firebaseConfig.json && bun run build
           app_location: client/build # App source code path
           skip_app_build: true
           ###### End of Repository/Build Configurations ######

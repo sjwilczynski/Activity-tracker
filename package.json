@@ -14,6 +14,7 @@
   "scripts": {
     "clean": "rm -rf node_modules client/node_modules api/node_modules",
     "depcheck": "bun scripts/depcheck.mjs",
+    "dev": "bun run --filter '*' start",
     "lint": "eslint --max-warnings=0",
     "pre-commit": "lint-staged --allow-empty"
   },

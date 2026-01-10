@@ -6,8 +6,6 @@
   "main": "dist/functions/**/*.js",
   "scripts": {
     "build": "tsc",
-    "download-config": "curl -o firebase/firebaseConfig.json",
-    "sleep": "sleep 6",
     "prestart": "bun run build",
     "start": "func start",
     "watch": "tsc -w"
