@@ -11,12 +11,12 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0",
+    "@azure/functions": "^4.11.0",
     "date-fns": "2.29.2",
     "firebase-admin": "11.6.0"
   },
   "devDependencies": {
-    "typescript": "5.8.3"
+    "typescript": "5.9.3"
   },
   "engines": {
     "bun": ">=1.2.0"
