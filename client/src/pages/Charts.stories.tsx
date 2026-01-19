@@ -6,50 +6,33 @@ import { Charts } from "./Charts";
 const meta: Meta<typeof Charts> = {
   title: "Pages/Charts",
   component: Charts,
-  parameters: {
-    layout: "fullscreen",
-  },
-  tags: ["autodocs"],
 };
 
 export default meta;
 type Story = StoryObj<typeof Charts>;
 
-// Generate dates for mock data
 const generateDate = (daysAgo: number): string => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
   return date.toISOString().split("T")[0];
 };
 
-// Default story - normal state with chart data
 export const Default: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for data to load", async () => {
-      await waitFor(
-        () => {
-          expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    await step("Verify date filter is visible", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
-    });
+    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
 
-    await step("Verify charts are rendered", async () => {
-      // Charts are rendered inside canvas elements
-      const canvasElements = canvasElement.querySelectorAll("canvas");
-      expect(canvasElements.length).toBe(3); // BarChart, PieChart, SummaryBarChart
-    });
+    const chartElements = canvasElement.querySelectorAll("canvas");
+    expect(chartElements.length).toBe(3);
   },
 };
 
-// Loading state
 export const Loading: Story = {
   parameters: {
     msw: {
@@ -62,11 +45,10 @@ export const Loading: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    expect(canvas.getByRole("progressbar")).toBeInTheDocument();
   },
 };
 
-// Error state
 export const ErrorState: Story = {
   parameters: {
     msw: {
@@ -77,85 +59,54 @@ export const ErrorState: Story = {
       ],
     },
   },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for error to display", async () => {
-      await waitFor(
-        () => {
-          expect(
-            canvas.getByText(/an error has occurred/i)
-          ).toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
-    });
-
-    await step("Verify back to homepage button exists", async () => {
-      expect(
-        canvas.getByRole("button", { name: /back to homepage/i })
-      ).toBeInTheDocument();
-    });
+    await canvas.findByText(/an error has occurred/i);
+    expect(
+      canvas.getByRole("button", { name: /back to homepage/i })
+    ).toBeInTheDocument();
   },
 };
 
-// Empty state - no activities
 export const EmptyState: Story = {
   parameters: {
     msw: {
       handlers: [http.get("*/api/activities", () => HttpResponse.json([]))],
     },
   },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for page to load", async () => {
-      await waitFor(
-        () => {
-          expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
-
-    await step("Verify empty state message", async () => {
-      expect(canvas.getByText(/no activities/i)).toBeInTheDocument();
-    });
+    expect(
+      canvas.getByText(/haven't added any activities/i)
+    ).toBeInTheDocument();
   },
 };
 
-// Date filter interaction
 export const DateFilterInteraction: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for page to load", async () => {
-      await waitFor(
-        () => {
-          expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    await step("Verify date filter form is present", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
-    });
+    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
 
-    await step("Click submit button to apply filter", async () => {
-      const submitButton = canvas.getByRole("button", { name: /submit/i });
-      await userEvent.click(submitButton);
-    });
+    await userEvent.click(
+      canvas.getByRole("button", { name: /show current month/i })
+    );
 
-    await step("Verify charts still render after filter", async () => {
-      const canvasElements = canvasElement.querySelectorAll("canvas");
-      expect(canvasElements.length).toBe(3);
-    });
+    const chartElements = canvasElement.querySelectorAll("canvas");
+    expect(chartElements.length).toBe(3);
   },
 };
 
-// Single activity type
 export const SingleActivityType: Story = {
   parameters: {
     msw: {
@@ -172,26 +123,18 @@ export const SingleActivityType: Story = {
       ],
     },
   },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for data to load", async () => {
-      await waitFor(
-        () => {
-          expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    await step("Verify charts render with single activity type", async () => {
-      const canvasElements = canvasElement.querySelectorAll("canvas");
-      expect(canvasElements.length).toBe(3);
-    });
+    const chartElements = canvasElement.querySelectorAll("canvas");
+    expect(chartElements.length).toBe(3);
   },
 };
 
-// Many activity types
 export const ManyActivityTypes: Story = {
   parameters: {
     msw: {
@@ -223,21 +166,14 @@ export const ManyActivityTypes: Story = {
       ],
     },
   },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await step("Wait for data to load", async () => {
-      await waitFor(
-        () => {
-          expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    await step("Verify charts render with many activity types", async () => {
-      const canvasElements = canvasElement.querySelectorAll("canvas");
-      expect(canvasElements.length).toBe(3);
-    });
+    const chartElements = canvasElement.querySelectorAll("canvas");
+    expect(chartElements.length).toBe(3);
   },
 };

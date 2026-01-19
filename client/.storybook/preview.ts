@@ -1,5 +1,5 @@
 import type { Preview } from "@storybook/react-vite";
-import { sb } from "storybook/test";
+import { sb, configure } from "storybook/test";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { handlers } from "../src/mocks/handlers";
 import { withAllProviders } from "../src/mocks/decorators";
@@ -10,6 +10,10 @@ sb.mock(import("../src/auth/useAuth.ts"));
 // Initialize MSW
 initialize({
   onUnhandledRequest: "bypass",
+});
+
+configure({
+  asyncUtilTimeout: 3000,
 });
 
 const preview: Preview = {

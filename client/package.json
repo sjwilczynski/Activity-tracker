@@ -9,7 +9,8 @@
     "build-storybook": "storybook build",
     "serve": "vite preview",
     "start": "vite",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "test": "vitest run"
   },
   "browserslist": {
     "production": [
