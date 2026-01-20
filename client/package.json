@@ -60,6 +60,7 @@
     "@vitejs/plugin-react": "5.1.2",
     "@vitest/browser-playwright": "^4.0.17",
     "@vitest/coverage-v8": "^4.0.17",
+    "chromatic": "^13.3.5",
     "eslint-plugin-storybook": "^10.1.11",
     "msw": "^2.12.7",
     "msw-storybook-addon": "^2.0.6",
@@ -75,7 +76,8 @@
     "vitest": "^4.0.17"
   },
   "engines": {
-    "bun": ">=1.2.0"
+    "bun": ">=1.2.0",
+    "node": ">=22.18.0"
   },
   "msw": {
     "workerDirectory": [
