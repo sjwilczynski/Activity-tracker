@@ -4,9 +4,6 @@ import { initialize, mswLoader } from "msw-storybook-addon";
 import { handlers } from "../src/mocks/handlers";
 import { withAllProviders } from "../src/mocks/decorators";
 
-// Mock the useAuth module to avoid Firebase dependency
-sb.mock(import("../src/auth/useAuth.ts"));
-
 // Initialize MSW
 initialize({
   onUnhandledRequest: "bypass",
@@ -15,6 +12,9 @@ initialize({
 configure({
   asyncUtilTimeout: 3000,
 });
+
+// Mock the useAuth module to avoid Firebase dependency
+sb.mock(import("../src/auth/useAuth.ts"));
 
 const preview: Preview = {
   parameters: {

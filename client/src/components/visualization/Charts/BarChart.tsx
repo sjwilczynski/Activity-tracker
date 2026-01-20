@@ -14,7 +14,9 @@ export function BarChart(props: Props) {
     props.activitySummaries,
     isLightTheme
   ) as ChartData<"bar", number[], string>;
-  return <Bar data={data} options={chartOptions} />;
+  return (
+    <Bar aria-label="Activities bar chart" data={data} options={chartOptions} />
+  );
 }
 
 const chartOptions: ChartOptions<"bar"> = {

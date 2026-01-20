@@ -18,5 +18,16 @@ const config: StorybookConfig = {
     getAbsolutePath("@chromatic-com/storybook"),
   ],
   framework: getAbsolutePath("@storybook/react-vite"),
+  viteFinal: (config) => {
+    // Remove VitePWA plugin for Storybook builds (it causes issues with large manager files)
+    config.plugins = config.plugins?.filter(
+      (plugin) =>
+        !plugin ||
+        (typeof plugin === "object" &&
+          "name" in plugin &&
+          !plugin.name?.startsWith("vite-plugin-pwa"))
+    );
+    return config;
+  },
 };
 export default config;
