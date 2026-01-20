@@ -44,8 +44,7 @@
     "typescript": "5.9.3"
   },
   "engines": {
-    "bun": ">=1.2.0",
-    "node": ">=22.18.0"
+    "bun": ">=1.2.0"
   },
   "bundlewatch": {
     "trackBranches": [
