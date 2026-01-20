@@ -7,3 +7,5 @@ dist
 local.settings.json
 client/build
 .env
+*storybook.log
+storybook-static

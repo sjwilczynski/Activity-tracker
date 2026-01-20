@@ -7,7 +7,12 @@ const SpinnerContainer = styled("div")({
 export const Loading = () => {
   return (
     <SpinnerContainer>
-      <CircularProgress color="primary" size="5rem" thickness={2} />
+      <CircularProgress
+        aria-label="Loading..."
+        color="primary"
+        size="5rem"
+        thickness={2}
+      />
     </SpinnerContainer>
   );
 };

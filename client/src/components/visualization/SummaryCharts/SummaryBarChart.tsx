@@ -19,7 +19,13 @@ export function SummaryBarChart(props: Props) {
     props.activitySummaries,
     isLightTheme
   ) as ChartData<"bar", number[], string>;
-  return <Bar data={data} options={chartOptions} />;
+  return (
+    <Bar
+      aria-label="Activities summary bar chart"
+      data={data}
+      options={chartOptions}
+    />
+  );
 }
 
 const getDataForSummaryBarChart = (

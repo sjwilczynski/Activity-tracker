@@ -32,7 +32,13 @@ export function SummaryPieChart({ activitySummaries }: Props) {
     labels: chartJsData.labels,
     datasets: [chartJsData.datasets[0], summaryDataset],
   };
-  return <Pie data={data} options={chartOptions} />;
+  return (
+    <Pie
+      aria-label="Activities summary pie chart"
+      data={data}
+      options={chartOptions}
+    />
+  );
 }
 
 const tooltipCallback: Partial<TooltipCallbacks<"pie">> = {

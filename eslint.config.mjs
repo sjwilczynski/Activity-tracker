@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
@@ -20,6 +23,8 @@ export default defineConfig([
     "client/build",
     "**/node_modules/",
     "**/scripts/",
+    "**/storybook-static/",
+    "**/mockServiceWorker.js",
   ]),
   {
     extends: compat.extends(
@@ -48,4 +53,5 @@ export default defineConfig([
       ],
     },
   },
+  ...storybook.configs["flat/recommended"],
 ]);

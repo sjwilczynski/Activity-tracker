@@ -1,6 +1,6 @@
 import { Button, styled, Typography } from "@mui/material";
 import DownloadLink from "react-download-link";
-import { useAuth } from "../auth";
+import { useAuthContext } from "../auth";
 import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
 import {
   useActivities,
@@ -27,7 +27,7 @@ const ButtonGrow = styled(Button)({
 });
 
 export const Profile = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthContext();
   const exportActivities = useExportActivities();
   const { data } = useActivities();
   const isFetchingActivities = useIsFetchingActivties();
