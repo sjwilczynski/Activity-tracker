@@ -23,6 +23,8 @@ export default defineConfig([
     "client/build",
     "**/node_modules/",
     "**/scripts/",
+    "**/storybook-static/",
+    "**/mockServiceWorker.js",
   ]),
   {
     extends: compat.extends(
@@ -51,4 +53,5 @@ export default defineConfig([
       ],
     },
   },
+  ...storybook.configs["flat/recommended"],
 ]);
