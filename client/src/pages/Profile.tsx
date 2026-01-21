@@ -58,7 +58,7 @@ export const Profile = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={deleteAllActivities}
+                onClick={() => deleteAllActivities()}
               >
                 Confirm
               </Button>

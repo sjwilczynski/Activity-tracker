@@ -1,5 +1,5 @@
 import type { Decorator } from "@storybook/react-vite";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "jotai";
 import { AuthContext, type User, type Auth } from "../auth/AuthContext";
@@ -20,7 +20,7 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0,
         staleTime: 0,
       },
     },
