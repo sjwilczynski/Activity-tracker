@@ -1,4 +1,4 @@
-name: "Bundlewatch"
+name: "Size Limit"
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     types: [synchronize, opened]
 
 jobs:
-  bundlewatch:
+  size-limit:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -22,8 +22,7 @@ jobs:
       - name: build client
         run: bun run build
         working-directory: client
-      - name: bundlewatch
-        run: bun run bundlewatch
-        env:
-          BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+      - name: size-limit
+        uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

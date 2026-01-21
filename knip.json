@@ -1,0 +1,15 @@
+{
+  "workspaces": {
+    ".": {},
+    "client": {
+      "entry": ["src/index.tsx", "src/**/*.stories.tsx"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "api": {
+      "entry": ["functions/*/index.ts"],
+      "project": ["**/*.ts"]
+    }
+  },
+  "ignore": ["**/build/**", "**/dist/**", "**/.storybook/**", "**/mocks/**"],
+  "ignoreExportsUsedInFile": true
+}
