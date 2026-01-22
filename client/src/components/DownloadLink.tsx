@@ -1,12 +1,12 @@
 import type { ReactNode, CSSProperties, MouseEvent } from "react";
 
-interface DownloadLinkProps {
+type DownloadLinkProps = {
   filename: string;
   tagName?: string;
   style?: CSSProperties;
   label: ReactNode;
   exportFile: () => string;
-}
+};
 
 export const DownloadLink = ({
   filename,
