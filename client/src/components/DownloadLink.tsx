@@ -1,4 +1,4 @@
-import { ReactNode, CSSProperties, MouseEvent } from "react";
+import type { ReactNode, CSSProperties, MouseEvent } from "react";
 
 interface DownloadLinkProps {
   filename: string;
