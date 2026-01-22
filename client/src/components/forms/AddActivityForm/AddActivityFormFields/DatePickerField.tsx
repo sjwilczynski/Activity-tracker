@@ -14,9 +14,8 @@ export const DatePickerField = (props: Props) => {
   const [field] = useField<Date>(props.name);
   const selectedDate = field.value;
 
-  const dayOfWeek = selectedDate && isValid(selectedDate)
-    ? format(selectedDate, "EEE")
-    : "";
+  const dayOfWeek =
+    selectedDate && isValid(selectedDate) ? format(selectedDate, "EEE") : "";
 
   return (
     <Field
@@ -28,7 +27,7 @@ export const DatePickerField = (props: Props) => {
       textField={{
         variant: "standard",
         sx: props.style,
-        helperText: dayOfWeek
+        helperText: dayOfWeek,
       }}
     />
   );

@@ -26,9 +26,7 @@ export const useDeleteActivity = () => {
 
           client.setQueryData<ActivityRecordWithId[]>(
             queryId,
-            previousFullRecords.filter(
-              (activity) => activity.id !== activityId
-            )
+            previousFullRecords.filter((activity) => activity.id !== activityId)
           );
         }
       );
