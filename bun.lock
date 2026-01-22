@@ -13,6 +13,7 @@
         "depcheck": "1.4.7",
         "eslint": "9.39.2",
         "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-storybook": "^10.1.11",
         "globals": "^16.0.0",
         "husky": "9.1.7",
         "lint-staged": "15.5.1",
@@ -57,7 +58,6 @@
         "react": "18.3.1",
         "react-chartjs-2": "4.3.1",
         "react-dom": "18.3.1",
-        "react-download-link": "2.3.0",
         "react-router-dom": "6.30.3",
         "yup": "1.7.1",
       },
@@ -74,7 +74,6 @@
         "@vitest/browser-playwright": "^4.0.17",
         "@vitest/coverage-v8": "^4.0.17",
         "chromatic": "^13.3.5",
-        "eslint-plugin-storybook": "^10.1.11",
         "msw": "^2.12.7",
         "msw-storybook-addon": "^2.0.6",
         "playwright": "^1.57.0",
@@ -1660,8 +1659,6 @@
     "react-docgen-typescript": ["react-docgen-typescript@2.4.0", "", { "peerDependencies": { "typescript": ">= 4.3.x" } }, "sha512-ZtAp5XTO5HRzQctjPU0ybY0RRCQO19X/8fxn3w7y2VVTUbGHDKULPTL4ky3vB05euSgG5NpALhEhDPvQ56wvXg=="],
 
     "react-dom": ["react-dom@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0", "scheduler": "^0.23.2" }, "peerDependencies": { "react": "^18.3.1" } }, "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw=="],
-
-    "react-download-link": ["react-download-link@2.3.0", "", { "dependencies": { "prop-types": "^15.6.0" } }, "sha512-0aoj2DJFBfiD9jtdIn+WAseO1GSYmgkB5y5Ljt3DeC7j1RUlx0rR5y4S+wZwdxGhvgFogCzyh5Pa4W4YE+Pg/Q=="],
 
     "react-fast-compare": ["react-fast-compare@2.0.4", "", {}, "sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw=="],
 
