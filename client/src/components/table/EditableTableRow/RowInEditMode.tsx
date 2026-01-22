@@ -29,7 +29,7 @@ const hiddenLabelStyle = {
 };
 
 export const RowInEditMode = ({ record, onCancel }: Props) => {
-  const { onSubmit, isSuccess, isError, isLoading } = useEditActivityFormSubmit(
+  const { onSubmit, isSuccess, isError, isPending } = useEditActivityFormSubmit(
     record.id
   );
   const { availableCategories } = useAvailableCategories();
@@ -74,7 +74,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
               <TableCell>
                 <Actions>
                   <Button
-                    disabled={!isValid || !dirty || isLoading}
+                    disabled={!isValid || !dirty || isPending}
                     onClick={() => onSubmit(values)}
                     startIcon={<SaveIcon />}
                   >
@@ -83,11 +83,11 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
                   <Button
                     startIcon={<CancelIcon />}
                     onClick={onCancel}
-                    disabled={isLoading}
+                    disabled={isPending}
                   >
                     Cancel
                   </Button>
-                  {isLoading && <CircularProgress size={20} />}
+                  {isPending && <CircularProgress size={20} />}
                 </Actions>
               </TableCell>
             </>

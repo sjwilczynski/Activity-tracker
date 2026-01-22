@@ -1,6 +1,11 @@
 import { Button, styled, Typography } from "@mui/material";
 import { useAuthContext } from "../auth";
-import { DownloadLink, FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
+import {
+  DownloadLink,
+  FeedbackAlertGroup,
+  FileUploadForm,
+  ModalDialog,
+} from "../components";
 import {
   useActivities,
   useDeleteAllActivities,
@@ -57,7 +62,7 @@ export const Profile = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={deleteAllActivities}
+                onClick={() => deleteAllActivities()}
               >
                 Confirm
               </Button>

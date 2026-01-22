@@ -26,6 +26,10 @@
       "prettier --write"
     ]
   },
+  "overrides": {
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
@@ -35,6 +39,7 @@
     "depcheck": "1.4.7",
     "eslint": "9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-storybook": "^10.1.11",
     "globals": "^16.0.0",
     "husky": "9.1.7",
     "lint-staged": "15.5.1",

@@ -11,7 +11,7 @@ export const useEditActivityFormSubmit = (id: string) => {
     mutate: editActivity,
     isError,
     isSuccess,
-    isLoading,
+    isPending,
   } = useEditActivityMutation();
   const onSubmit = useCallback(
     (values: FormValues) => {
@@ -24,5 +24,5 @@ export const useEditActivityFormSubmit = (id: string) => {
     },
     [editActivity]
   );
-  return { onSubmit, isError, isSuccess, isLoading };
+  return { onSubmit, isError, isSuccess, isPending };
 };

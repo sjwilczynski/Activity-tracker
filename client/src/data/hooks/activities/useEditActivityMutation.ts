@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
@@ -16,7 +16,8 @@ export const useEditActivityMutation = () => {
     Error,
     { id: string } & { record: ActivityRecordServer },
     ActivityMutationContext
-  >(({ id, record }) => editActivityFunction(id, record), {
+  >({
+    mutationFn: ({ id, record }) => editActivityFunction(id, record),
     onMutate: ({ id, record }) => {
       // Snapshot the previous value
       const previousFullRecords =
@@ -28,7 +29,7 @@ export const useEditActivityMutation = () => {
       [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
         (queryId) => {
           // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-          client.cancelQueries(queryId, { exact: true });
+          client.cancelQueries({ queryKey: queryId, exact: true });
 
           const newActivity: ActivityRecordWithId = {
             ...record,
@@ -61,7 +62,7 @@ export const useEditActivityMutation = () => {
     onSettled: () =>
       [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
         (queryId) => {
-          client.invalidateQueries(queryId, { exact: true });
+          client.invalidateQueries({ queryKey: queryId, exact: true });
         }
       ),
   });
