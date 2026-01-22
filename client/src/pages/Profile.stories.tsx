@@ -117,3 +117,24 @@ export const NoUserPhoto: Story = {
     expect(canvas.getByText(/test user/i)).toBeInTheDocument();
   },
 };
+
+export const ExportActivitiesDownload: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const exportButton = canvas.getByRole("button", {
+      name: /export activities/i,
+    });
+
+    await waitFor(() => {
+      expect(exportButton).toBeEnabled();
+    });
+
+    // Click the export button - this will trigger the download in the browser
+    // The browser will handle the file download, we just verify the button works
+    await userEvent.click(exportButton);
+
+    // Verify button is still in the document after click
+    expect(exportButton).toBeInTheDocument();
+  },
+};

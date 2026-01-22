@@ -1,7 +1,6 @@
 import { Button, styled, Typography } from "@mui/material";
-import DownloadLink from "react-download-link";
 import { useAuthContext } from "../auth";
-import { FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
+import { DownloadLink, FeedbackAlertGroup, FileUploadForm, ModalDialog } from "../components";
 import {
   useActivities,
   useDeleteAllActivities,

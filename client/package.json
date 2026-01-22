@@ -44,7 +44,6 @@
     "react": "18.2.0",
     "react-chartjs-2": "4.3.1",
     "react-dom": "18.2.0",
-    "react-download-link": "2.3.0",
     "react-query": "3.39.3",
     "react-router-dom": "6.30.3",
     "yup": "1.7.1"
