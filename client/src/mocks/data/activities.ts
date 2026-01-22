@@ -1,8 +1,11 @@
 import type { ActivityRecordWithIdServer } from "../../data/types";
 
+// Fixed reference date to ensure stable mocks for visual regression testing
+const REFERENCE_DATE = new Date("2024-02-10T12:00:00.000Z");
+
 // Generate dates for the past 30 days
 const generateDate = (daysAgo: number): string => {
-  const date = new Date();
+  const date = new Date(REFERENCE_DATE);
   date.setDate(date.getDate() - daysAgo);
   return date.toISOString().split("T")[0];
 };
@@ -44,7 +47,7 @@ export const createMockActivity = (
   overrides?: Partial<ActivityRecordWithIdServer>
 ): ActivityRecordWithIdServer => ({
   id: crypto.randomUUID(),
-  date: new Date().toISOString().split("T")[0],
+  date: REFERENCE_DATE.toISOString().split("T")[0],
   name: "New Activity",
   active: true,
   ...overrides,
