@@ -11,9 +11,12 @@ initialize({
   onUnhandledRequest: "bypass",
 });
 
-// Mock the system date to match the reference date used in mock data
+// Mock the system date to 2 days after the reference date used in mock data
 // This ensures date-dependent features (like "show current month") work correctly
-MockDate.set(REFERENCE_DATE);
+// and better represents typical usage where users view past activities
+const mockedDate = new Date(REFERENCE_DATE);
+mockedDate.setDate(mockedDate.getDate() + 2);
+MockDate.set(mockedDate);
 
 configure({
   asyncUtilTimeout: 3000,
