@@ -148,18 +148,35 @@ export const DeleteRowInteraction: Story = {
 };
 
 export const DateFilterInteraction: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
     await canvas.findByRole("table");
 
-    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    await step("Verify date filter is visible", async () => {
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    });
 
-    await userEvent.click(
-      canvas.getByRole("button", { name: /show current month/i })
-    );
+    await step("Verify initial data is loaded", async () => {
+      expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
+    });
 
-    expect(canvas.getByRole("table")).toBeInTheDocument();
+    await step("Apply current month filter and verify data exists", async () => {
+      await userEvent.click(
+        canvas.getByRole("button", { name: /show current month/i })
+      );
+
+      // Wait for the filtered data to load and verify it's not empty
+      // The mocked date (2024-02-10) should show February activities
+      await waitFor(() => {
+        const paginationText = canvas.getByText(/\d+–\d+ of \d+/i);
+        expect(paginationText).toBeInTheDocument();
+        // Verify the count is greater than 0 (not "0 of 0")
+        expect(paginationText.textContent).not.toMatch(/0–0 of 0/i);
+      });
+
+      expect(canvas.getByRole("table")).toBeInTheDocument();
+    });
   },
 };
