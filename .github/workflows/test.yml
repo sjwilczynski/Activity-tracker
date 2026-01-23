@@ -20,6 +20,6 @@ jobs:
       - name: install
         run: bun install
       - name: install playwright
-        run: bunx playwright install chromium
+        run: bunx playwright install --with-deps chromium
       - name: test
         run: bun run --cwd client test
