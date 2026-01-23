@@ -1,7 +1,7 @@
 import type { ActivityRecordWithIdServer } from "../../data/types";
 
 // Fixed reference date to ensure stable mocks for visual regression testing
-const REFERENCE_DATE = new Date("2024-02-10T12:00:00.000Z");
+export const REFERENCE_DATE = new Date("2024-02-10T12:00:00.000Z");
 
 // Generate dates for the past 30 days
 const generateDate = (daysAgo: number): string => {
