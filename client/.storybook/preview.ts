@@ -2,9 +2,14 @@ import type { Preview } from "@storybook/react-vite";
 import { sb, configure } from "storybook/test";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import MockDate from "mockdate";
+import { Chart } from "chart.js";
 import { handlers } from "../src/mocks/handlers";
 import { withAllProviders } from "../src/mocks/decorators";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
+
+// Disable Chart.js animations in Storybook to fix rendering issues
+// in the constrained iframe environment
+Chart.defaults.animation = false;
 
 // Initialize MSW
 initialize({
