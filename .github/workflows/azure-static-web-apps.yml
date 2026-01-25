@@ -29,6 +29,8 @@ jobs:
         run: |
           echo "${{ secrets.API_FIREBASE_CONFIG }}" | base64 -d > api/firebase/firebaseConfig.json
           bun run --filter '*' build
+          cp api/host.json api/dist/
+          cp api/package.json api/dist/
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
