@@ -32,6 +32,7 @@ jobs:
           cp api/host.json api/dist/
           cp api/package.json api/dist/
           sed -i 's|"main": "dist/|"main": "|' api/dist/package.json
+          cp -r api/node_modules api/dist/
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
