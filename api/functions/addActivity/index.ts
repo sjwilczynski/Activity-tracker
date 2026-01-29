@@ -2,7 +2,8 @@ import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
 import { getUserId } from "../../authorization/firebaseAuthorization";
 import { firebaseDB as database } from "../../database/firebaseDB";
 import type { ActivityRecord } from "../../utils/types";
-import { isMatch } from "date-fns";
+
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
   let activities: unknown;
@@ -62,7 +63,10 @@ const isActivityValid = (activity: unknown): activity is ActivityRecord => {
     return false;
   }
 
-  if (!isMatch(castedActivity.date, "yyyy-MM-dd")) {
+  if (
+    typeof castedActivity.date !== "string" ||
+    !DATE_REGEX.test(castedActivity.date)
+  ) {
     return false;
   }
 
