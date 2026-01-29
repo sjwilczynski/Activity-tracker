@@ -25,12 +25,12 @@ jobs:
           bun-version: latest
       - name: Install
         run: bun install
+      - name: Setup Firebase Config
+        run: echo "${{ secrets.API_FIREBASE_CONFIG }}" | base64 -d > api/firebase/firebaseConfig.json
       - name: Typecheck API
         run: bun run --filter api typecheck
       - name: Build All
-        run: |
-          echo "${{ secrets.API_FIREBASE_CONFIG }}" | base64 -d > api/firebase/firebaseConfig.json
-          bun run --filter '*' build
+        run: bun run --filter '*' build
       - name: Deploy with SWA CLI
         run: |
           bunx @azure/static-web-apps-cli deploy client/build \
