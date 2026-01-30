@@ -1,9 +1,12 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
 import { getUserId } from "../../authorization/firebaseAuthorization";
 import { firebaseDB as database } from "../../database/firebaseDB";
-import type { ActivityRecord } from "../../utils/types";
-
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+import {
+  checkRateLimit,
+  getRateLimitHeaders,
+} from "../../rateLimit/rateLimiter";
+import { LIMITS } from "../../validation/constants";
+import { validateActivityBatch } from "../../validation/validators";
 
 async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
   let activities: unknown;
@@ -21,70 +24,46 @@ async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
     return { status: 401, body: (err as Error).message };
   }
 
-  if (areActivitiesValid(activities)) {
-    try {
-      await database.addActivities(userId, activities);
+  const rateLimitResult = await checkRateLimit(userId);
+  if (!rateLimitResult.allowed) {
+    return {
+      status: 429,
+      headers: getRateLimitHeaders(rateLimitResult),
+      body: "Too many requests. Please try again later.",
+    };
+  }
+
+  const validation = validateActivityBatch(activities);
+  if (!validation.valid) {
+    return { status: 400, body: validation.error };
+  }
+
+  const validatedActivities = validation.data!;
+
+  try {
+    const currentCount = await database.getActivityCount(userId);
+    if (
+      currentCount + validatedActivities.length >
+      LIMITS.MAX_ACTIVITIES_PER_USER
+    ) {
       return {
-        status: 200,
-        body: "Successfully added",
-      };
-    } catch (err) {
-      return {
-        status: 500,
-        body: (err as Error).message,
+        status: 400,
+        body: `Activity limit exceeded. Maximum ${LIMITS.MAX_ACTIVITIES_PER_USER} activities per user.`,
       };
     }
-  } else {
+
+    await database.addActivities(userId, validatedActivities);
     return {
-      status: 400, // Use 400 for invalid input
-      body: "Activity data is invalid",
+      status: 200,
+      body: "Successfully added",
+    };
+  } catch (err) {
+    return {
+      status: 500,
+      body: (err as Error).message,
     };
   }
 }
-
-const areActivitiesValid = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activityRecords: any
-): activityRecords is ActivityRecord[] => {
-  if (
-    activityRecords === null ||
-    activityRecords === undefined ||
-    !Array.isArray(activityRecords) || // Check if it's an array
-    activityRecords.length === 0
-  ) {
-    return false;
-  }
-  return activityRecords.every(isActivityValid);
-};
-
-const isActivityValid = (activity: unknown): activity is ActivityRecord => {
-  const castedActivity = activity as ActivityRecord;
-  if (castedActivity == null || castedActivity === undefined) {
-    return false;
-  }
-
-  if (
-    typeof castedActivity.date !== "string" ||
-    !DATE_REGEX.test(castedActivity.date)
-  ) {
-    return false;
-  }
-
-  const { name, active } = castedActivity;
-  if (
-    typeof name !== "string" ||
-    !isValidName(name) ||
-    typeof active !== "boolean"
-  ) {
-    return false;
-  }
-
-  return true;
-};
-
-const isValidName = (name: string): boolean => {
-  return Boolean(name);
-};
 
 app.http("addActivity", {
   methods: ["POST"],
