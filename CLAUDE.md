@@ -27,3 +27,7 @@ bun run --filter '*' build  # Build both frontend and API
 ## Special Notes
 
 Whenever something is changed that would affect the correctness of notes in `CLAUDE.md`, please update those notes as well. Whenever mistake is made, add a note about the mistake and how to avoid it in the future.
+
+## Planning
+
+Plans should be concise, in case of lack of enough information, ask for more details.
