@@ -8,6 +8,7 @@
     "build": "node esbuild.config.mjs",
     "prestart": "bun run build",
     "start": "func start",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "watch": "tsc -w"
   },
@@ -17,7 +18,8 @@
   },
   "devDependencies": {
     "esbuild": "^0.24.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "bun": ">=1.2.0"
