@@ -1,23 +1,23 @@
-import { Button, CircularProgress, TableCell, TableRow } from "@mui/material";
+import styled from "@emotion/styled";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
+import { Button, CircularProgress, TableCell, TableRow } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
+import { useEffect, useRef } from "react";
 import type { ActivityRecordWithId, CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
 import {
-  DatePicker,
   CategoryAutocomplete,
+  DatePicker,
   getErrorMessage,
 } from "../../forms/adapters";
-import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
-import { useEffect, useRef } from "react";
-import styled from "@emotion/styled";
-import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
-import { useForm } from "@tanstack/react-form";
 import {
   categoryOptionSchema,
+  dateSchema,
   type ActivityFormValues,
 } from "../../forms/schemas";
-import { z } from "zod";
+import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
+import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
 
 type Props = {
   record: ActivityRecordWithId;
@@ -32,8 +32,6 @@ const hiddenLabelStyle = {
     marginTop: 0,
   },
 };
-
-const dateSchema = z.date({ required_error: "Date is required" });
 
 export const RowInEditMode = ({ record, onCancel }: Props) => {
   const { onSubmit, isSuccess, isError, isPending } = useEditActivityFormSubmit(

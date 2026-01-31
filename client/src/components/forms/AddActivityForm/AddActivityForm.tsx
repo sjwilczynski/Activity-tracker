@@ -1,13 +1,12 @@
-import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
 import { Button, styled, type TextFieldProps } from "@mui/material";
-import { DatePicker, CategoryAutocomplete, getErrorMessage } from "../adapters";
-import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
-import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
-import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
+import { useForm } from "@tanstack/react-form";
 import { addDays } from "date-fns";
-import { categoryOptionSchema, type ActivityFormValues } from "../schemas";
-import { z } from "zod";
+import { useState } from "react";
+import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
+import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
+import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
+import { categoryOptionSchema, dateSchema } from "../schemas";
+import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
 
 const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
@@ -31,8 +30,6 @@ const emptyCategory: CategoryOption = {
   categoryName: "",
 };
 
-const dateSchema = z.date({ required_error: "Date is required" });
-
 export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
   const [submitCount, setSubmitCount] = useState(0);
@@ -43,7 +40,7 @@ export function AddActivityForm({ lastActivity }: Props) {
     defaultValues: {
       date: initialDate,
       category: emptyCategory,
-    } as ActivityFormValues,
+    },
     onSubmit: ({ value }) => {
       onSubmit(value);
       form.reset();

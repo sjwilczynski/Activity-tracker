@@ -1,10 +1,13 @@
-import { useForm } from "@tanstack/react-form";
-import { isBefore } from "date-fns";
-import { FormButtons } from "./FormButtons";
-import type { FormValues } from "./shared";
-import { useDateRangeState } from "./shared";
 import { Alert, styled } from "@mui/material";
-import { NullableDatePicker, getErrorMessage } from "../adapters";
+import { useForm } from "@tanstack/react-form";
+import {
+  NullableDatePicker,
+  getErrorMessage,
+  getFormErrorMessage,
+} from "../adapters";
+import { dateFilterSchema } from "../schemas";
+import { FormButtons } from "./FormButtons";
+import { useDateRangeState } from "./shared";
 
 const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
@@ -29,21 +32,9 @@ export const DateFilterForm = () => {
     defaultValues: {
       startDate,
       endDate,
-    } as FormValues,
+    },
     validators: {
-      onSubmit: ({ value }) => {
-        const { startDate, endDate } = value;
-        if (!startDate) {
-          return "Start date is required";
-        }
-        if (!endDate) {
-          return "End date is required";
-        }
-        if (startDate && endDate && isBefore(endDate, startDate)) {
-          return "Start date must be before end date";
-        }
-        return undefined;
-      },
+      onSubmit: dateFilterSchema,
     },
     onSubmit: ({ value }) => {
       if (value.startDate && value.endDate) {
@@ -63,7 +54,9 @@ export const DateFilterForm = () => {
       <form.Subscribe selector={(state) => state.errorMap.onSubmit}>
         {(error) =>
           error ? (
-            <FormErrorAlert severity="error">{error}</FormErrorAlert>
+            <FormErrorAlert severity="error">
+              {getFormErrorMessage(error)}
+            </FormErrorAlert>
           ) : null
         }
       </form.Subscribe>

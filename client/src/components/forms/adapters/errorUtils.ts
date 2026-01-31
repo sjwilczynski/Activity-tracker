@@ -11,3 +11,17 @@ export function getErrorMessage(
   if (typeof error === "string") return error;
   return error.message;
 }
+
+/**
+ * Extract the first error message from form-level error map (Standard Schema format).
+ * Form-level errors from Standard Schema are structured as Record<string, StandardSchemaV1Issue[]>
+ */
+export function getFormErrorMessage(
+  errorMap: Record<string, StandardSchemaV1Issue[]> | undefined
+): string | undefined {
+  if (!errorMap) return undefined;
+  const firstKey = Object.keys(errorMap)[0];
+  if (!firstKey) return undefined;
+  const issues = errorMap[firstKey];
+  return issues?.[0]?.message;
+}
