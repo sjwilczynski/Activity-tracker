@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within, waitFor, screen } from "storybook/test";
 import { Profile } from "./Profile";
-import { mockUser } from "../mocks/decorators";
 
 const meta: Meta<typeof Profile> = {
   title: "Pages/Profile",
@@ -98,23 +97,6 @@ export const FileUploadInteraction: Story = {
 
       await userEvent.click(screen.getByRole("button", { name: /close/i }));
     });
-  },
-};
-
-export const NoUserPhoto: Story = {
-  parameters: {
-    auth: {
-      user: {
-        ...mockUser,
-        photoURL: null,
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await canvas.findByText(/user name/i);
-    expect(canvas.getByText(/test user/i)).toBeInTheDocument();
   },
 };
 

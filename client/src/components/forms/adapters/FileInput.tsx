@@ -39,6 +39,20 @@ type FileInputProps = {
   error?: string;
 };
 
+/**
+ * Makes File object properties enumerable so TanStack Form's deep equality check
+ * can detect changes between different files.
+ * Workaround for: https://github.com/TanStack/form/issues/1932
+ */
+function makeFileEnumerable(file: File): File {
+  Object.defineProperties(file, {
+    name: { value: file.name, enumerable: true },
+    size: { value: file.size, enumerable: true },
+    type: { value: file.type, enumerable: true },
+  });
+  return file;
+}
+
 export const FileInput = ({
   value,
   onChange,
@@ -47,9 +61,12 @@ export const FileInput = ({
 }: FileInputProps) => {
   const onFileInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      const files = event.currentTarget.files;
+      const input = event.target;
+      const files = input.files;
       if (files && files[0]) {
-        onChange(files[0]);
+        onChange(makeFileEnumerable(files[0]));
+        // Reset the input value to allow selecting the same file again
+        input.value = "";
       }
     },
     [onChange]
@@ -60,6 +77,7 @@ export const FileInput = ({
   return (
     <>
       <input
+        key={fileName ?? "empty"}
         style={{ display: "none" }}
         id="contained-button-file"
         type="file"
