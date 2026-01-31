@@ -162,5 +162,12 @@ export const FormResetAfterSubmit: Story = {
         expect(input).toHaveValue("");
       });
     });
+
+    await step("Verify activity name input is focused", async () => {
+      const input = canvas.getByLabelText(/activity name/i);
+      await waitFor(() => {
+        expect(input).toHaveFocus();
+      });
+    });
   },
 };

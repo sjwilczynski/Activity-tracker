@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { useState } from "react";
 import { Button, styled, type TextFieldProps } from "@mui/material";
 import { DatePicker, CategoryAutocomplete, getErrorMessage } from "../adapters";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
@@ -34,6 +35,7 @@ const dateSchema = z.date({ required_error: "Date is required" });
 
 export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
+  const [submitCount, setSubmitCount] = useState(0);
 
   const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
 
@@ -47,6 +49,7 @@ export function AddActivityForm({ lastActivity }: Props) {
       form.reset();
       form.setFieldValue("date", initialDate);
       form.setFieldValue("category", emptyCategory);
+      setSubmitCount((c) => c + 1);
     },
   });
 
@@ -84,12 +87,14 @@ export function AddActivityForm({ lastActivity }: Props) {
         >
           {(field) => (
             <CategoryAutocomplete
+              key={submitCount}
               value={field.state.value}
               onChange={field.handleChange}
               onBlur={field.handleBlur}
               error={getErrorMessage(field.state.meta.errors)}
               label="Activity name"
               style={fieldStyle}
+              autoFocus={submitCount > 0}
             />
           )}
         </form.Field>

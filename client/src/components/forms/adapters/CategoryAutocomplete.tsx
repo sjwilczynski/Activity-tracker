@@ -10,6 +10,7 @@ type CategoryAutocompleteProps = {
   label: string;
   style?: TextFieldProps["sx"];
   size?: "small" | "medium";
+  autoFocus?: boolean;
 };
 
 export const CategoryAutocomplete = ({
@@ -20,6 +21,7 @@ export const CategoryAutocomplete = ({
   label,
   style,
   size,
+  autoFocus,
 }: CategoryAutocompleteProps) => {
   const { availableCategories, isLoading } = useAvailableCategories();
 
@@ -52,6 +54,7 @@ export const CategoryAutocomplete = ({
           variant="standard"
           error={!!error}
           helperText={error}
+          autoFocus={autoFocus}
         />
       )}
     />

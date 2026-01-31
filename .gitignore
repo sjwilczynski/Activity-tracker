@@ -10,3 +10,4 @@ client/build
 *storybook.log
 storybook-static
 .fuse*
+chromatic.config.json
