@@ -42,5 +42,3 @@ export type ActivitySummary = {
 export type ActivitySummaries = {
   [key: string]: ActivitySummary;
 };
-
-export type GetIdToken = (() => Promise<string>) | undefined;

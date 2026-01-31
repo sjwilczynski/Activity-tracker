@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "client": {
+      "entry": ["src/index.tsx", "src/**/*.stories.tsx"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["@vitest/coverage-v8", "chromatic"]
+    },
+    "api": {
+      "entry": ["functions/*/index.ts"],
+      "project": ["**/*.ts"],
+      "ignoreBinaries": ["func"]
+    }
+  },
+  "ignore": ["**/build/**", "**/dist/**", "**/.storybook/**", "**/mocks/**"],
+  "ignoreDependencies": [
+    "@typescript-eslint/eslint-plugin",
+    "eslint-config-prettier",
+    "husky"
+  ],
+  "ignoreExportsUsedInFile": true
+}
