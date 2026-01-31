@@ -1,17 +1,15 @@
-import type { FormikErrors } from "formik";
-import { Formik, Form, Field } from "formik";
-import { DatePicker } from "formik-mui-x-date-pickers";
-import { isBefore } from "date-fns";
-import { FormButtons } from "./FormButtons";
-import type { FormValues } from "./shared";
+import { Alert, styled } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
 import {
-  endDateFieldKey,
-  startDateFieldKey,
-  useDateRangeState,
-} from "./shared";
-import { styled } from "@mui/material";
+  NullableDatePicker,
+  getErrorMessage,
+  getFormErrorMessage,
+} from "../adapters";
+import { dateFilterSchema } from "../schemas";
+import { FormButtons } from "./FormButtons";
+import { useDateRangeState } from "./shared";
 
-const StyledForm = styled(Form)(({ theme }) => ({
+const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexFlow: "row wrap",
@@ -22,59 +20,69 @@ const StyledForm = styled(Form)(({ theme }) => ({
   margin: `${theme.spacing(1)} 0`,
 }));
 
+const FormErrorAlert = styled(Alert)(({ theme }) => ({
+  width: "100%",
+  marginBottom: theme.spacing(1),
+}));
+
 export const DateFilterForm = () => {
   const [{ startDate, endDate }, setDateRange] = useDateRangeState();
 
-  const onSubmit = (values: FormValues) => {
-    if (values.startDate && values.endDate) {
-      setDateRange({ startDate: values.startDate, endDate: values.endDate });
-    }
-  };
-  return (
-    <Formik<FormValues>
-      initialValues={{
-        startDate,
-        endDate,
-      }}
-      onSubmit={onSubmit}
-      validate={validate}
-      enableReinitialize
-    >
-      <StyledForm>
-        <Field
-          component={DatePicker}
-          name={startDateFieldKey}
-          label="Start date"
-          inputFormat="yyyy-MM-dd"
-          mask="____-__-__"
-          textField={{ variant: "standard" }}
-        />
-        <Field
-          component={DatePicker}
-          name={endDateFieldKey}
-          label="End date"
-          inputFormat="yyyy-MM-dd"
-          mask="____-__-__"
-          textField={{ variant: "standard" }}
-        />
-        <FormButtons />
-      </StyledForm>
-    </Formik>
-  );
-};
+  const form = useForm({
+    defaultValues: {
+      startDate,
+      endDate,
+    },
+    validators: {
+      onSubmit: dateFilterSchema,
+    },
+    onSubmit: ({ value }) => {
+      if (value.startDate && value.endDate) {
+        setDateRange({ startDate: value.startDate, endDate: value.endDate });
+      }
+    },
+  });
 
-const validate = (values: FormValues) => {
-  const errors: FormikErrors<FormValues> = {};
-  const { startDate, endDate } = values;
-  if (!startDate) {
-    errors.startDate = "Start date is required";
-  }
-  if (!endDate) {
-    errors.endDate = "End date is required";
-  }
-  if (startDate && endDate && isBefore(endDate, startDate)) {
-    errors.startDate = "Start date is after end date";
-    errors.endDate = "End date is before start date";
-  }
-  return errors;
+  return (
+    <StyledForm
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+        {(error) =>
+          error ? (
+            <FormErrorAlert severity="error">
+              {getFormErrorMessage(error)}
+            </FormErrorAlert>
+          ) : null
+        }
+      </form.Subscribe>
+      <form.Field name="startDate">
+        {(field) => (
+          <NullableDatePicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="Start date"
+          />
+        )}
+      </form.Field>
+      <form.Field name="endDate">
+        {(field) => (
+          <NullableDatePicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="End date"
+          />
+        )}
+      </form.Field>
+      <FormButtons form={form} />
+    </StyledForm>
+  );
 };

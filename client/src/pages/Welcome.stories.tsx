@@ -121,3 +121,53 @@ export const WithLastActivity: Story = {
     expect(canvas.getByText(/2024-06-15/)).toBeInTheDocument();
   },
 };
+
+export const FormResetAfterSubmit: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    await step("Fill the form with activity data", async () => {
+      const input = canvas.getByLabelText(/activity name/i);
+      await userEvent.click(input);
+      await userEvent.type(input, "Running");
+
+      const option = await screen.findByRole("option", { name: /running/i });
+      await userEvent.click(option);
+    });
+
+    await step("Verify form is filled", async () => {
+      const input = canvas.getByLabelText(/activity name/i);
+      expect(input).toHaveValue("Running");
+    });
+
+    await step("Submit the form", async () => {
+      const submitBtn = canvas.getByRole("button", { name: /add activity/i });
+      await waitFor(() => {
+        expect(submitBtn).toBeEnabled();
+      });
+      await userEvent.click(submitBtn);
+    });
+
+    await step("Verify success message appears", async () => {
+      await canvas.findByText(/activity added successfully/i);
+    });
+
+    await step("Verify form is reset after successful submission", async () => {
+      const input = canvas.getByLabelText(/activity name/i);
+      await waitFor(() => {
+        expect(input).toHaveValue("");
+      });
+    });
+
+    await step("Verify activity name input is focused", async () => {
+      const input = canvas.getByLabelText(/activity name/i);
+      await waitFor(() => {
+        expect(input).toHaveFocus();
+      });
+    });
+  },
+};

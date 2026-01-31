@@ -4,7 +4,7 @@ import {
   useEditActivityMutation,
   type ActivityRecordServer,
 } from "../../../data";
-import type { FormValues } from "../../forms";
+import type { ActivityFormValues } from "../../forms/schemas";
 
 export const useEditActivityFormSubmit = (id: string) => {
   const {
@@ -14,7 +14,7 @@ export const useEditActivityFormSubmit = (id: string) => {
     isPending,
   } = useEditActivityMutation();
   const onSubmit = useCallback(
-    (values: FormValues) => {
+    (values: ActivityFormValues) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),
         name: values.category.name,
@@ -22,7 +22,7 @@ export const useEditActivityFormSubmit = (id: string) => {
       };
       editActivity({ id, record: activityRecord });
     },
-    [editActivity]
+    [editActivity, id]
   );
   return { onSubmit, isError, isSuccess, isPending };
 };
