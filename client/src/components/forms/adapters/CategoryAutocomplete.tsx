@@ -1,25 +1,27 @@
-import type { FieldApi } from "@tanstack/react-form";
 import { Autocomplete, TextField, type TextFieldProps } from "@mui/material";
 import type { CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
 
-type TanstackAutocompleteProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  field: FieldApi<any, any, CategoryOption, any>;
+type CategoryAutocompleteProps = {
+  value: CategoryOption;
+  onChange: (value: CategoryOption) => void;
+  onBlur: () => void;
+  error?: string;
   label: string;
   style?: TextFieldProps["sx"];
   size?: "small" | "medium";
 };
 
-export const TanstackAutocomplete = ({
-  field,
+export const CategoryAutocomplete = ({
+  value,
+  onChange,
+  onBlur,
+  error,
   label,
   style,
   size,
-}: TanstackAutocompleteProps) => {
+}: CategoryAutocompleteProps) => {
   const { availableCategories, isLoading } = useAvailableCategories();
-  const error = field.state.meta.errors?.[0];
-  const value = field.state.value;
 
   return (
     <Autocomplete
@@ -36,11 +38,11 @@ export const TanstackAutocomplete = ({
       groupBy={(option: CategoryOption) => option.categoryName}
       onChange={(_, newValue) => {
         if (newValue) {
-          field.handleChange(newValue);
+          onChange(newValue);
         }
       }}
-      onBlur={field.handleBlur}
-      onOpen={field.handleBlur}
+      onBlur={onBlur}
+      onOpen={onBlur}
       renderInput={(params) => (
         <TextField
           {...params}

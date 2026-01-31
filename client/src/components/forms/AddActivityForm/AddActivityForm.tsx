@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Button, styled, type TextFieldProps } from "@mui/material";
-import { TanstackDatePicker, TanstackAutocomplete } from "../adapters";
+import { DatePicker, CategoryAutocomplete, getErrorMessage } from "../adapters";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
@@ -66,7 +66,14 @@ export function AddActivityForm({ lastActivity }: Props) {
           }}
         >
           {(field) => (
-            <TanstackDatePicker field={field} label="Date" style={fieldStyle} />
+            <DatePicker
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
+              label="Date"
+              style={fieldStyle}
+            />
           )}
         </form.Field>
         <form.Field
@@ -76,8 +83,11 @@ export function AddActivityForm({ lastActivity }: Props) {
           }}
         >
           {(field) => (
-            <TanstackAutocomplete
-              field={field}
+            <CategoryAutocomplete
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
               label="Activity name"
               style={fieldStyle}
             />

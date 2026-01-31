@@ -4,7 +4,7 @@ import { FormButtons } from "./FormButtons";
 import type { FormValues } from "./shared";
 import { useDateRangeState } from "./shared";
 import { styled } from "@mui/material";
-import { TanstackNullableDatePicker } from "../adapters";
+import { NullableDatePicker, getErrorMessage } from "../adapters";
 
 const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
@@ -57,12 +57,24 @@ export const DateFilterForm = () => {
     >
       <form.Field name="startDate">
         {(field) => (
-          <TanstackNullableDatePicker field={field} label="Start date" />
+          <NullableDatePicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="Start date"
+          />
         )}
       </form.Field>
       <form.Field name="endDate">
         {(field) => (
-          <TanstackNullableDatePicker field={field} label="End date" />
+          <NullableDatePicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="End date"
+          />
         )}
       </form.Field>
       <FormButtons form={form} />

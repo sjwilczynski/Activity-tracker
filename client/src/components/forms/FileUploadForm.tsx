@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useForm } from "@tanstack/react-form";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, styled } from "@mui/material";
-import { TanstackFileInput } from "./adapters";
+import { FileInput, getErrorMessage } from "./adapters";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 import { fileSchema } from "./schemas";
 
@@ -71,7 +71,14 @@ export function FileUploadForm() {
             onChange: fileSchema,
           }}
         >
-          {(field) => <TanstackFileInput field={field} />}
+          {(field) => (
+            <FileInput
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
+            />
+          )}
         </form.Field>
         <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
           {([canSubmit, isDirty]) => (

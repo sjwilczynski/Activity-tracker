@@ -1,4 +1,3 @@
-import type { FieldApi } from "@tanstack/react-form";
 import type { Theme } from "@mui/material";
 import {
   Button,
@@ -33,24 +32,30 @@ const submitButtonStyles: SxProps<Theme> = {
   flex: "1 1 auto",
 };
 
-type TanstackFileInputProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  field: FieldApi<any, any, File | null, any>;
+type FileInputProps = {
+  value: File | null;
+  onChange: (value: File | null) => void;
+  onBlur: () => void;
+  error?: string;
 };
 
-export const TanstackFileInput = ({ field }: TanstackFileInputProps) => {
+export const FileInput = ({
+  value,
+  onChange,
+  onBlur,
+  error,
+}: FileInputProps) => {
   const onFileInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const files = event.currentTarget.files;
       if (files && files[0]) {
-        field.handleChange(files[0]);
+        onChange(files[0]);
       }
     },
-    [field]
+    [onChange]
   );
 
-  const fileName = field.state.value?.name;
-  const error = field.state.meta.errors?.[0];
+  const fileName = value?.name;
 
   return (
     <>
@@ -59,7 +64,7 @@ export const TanstackFileInput = ({ field }: TanstackFileInputProps) => {
         id="contained-button-file"
         type="file"
         onChange={onFileInputChange}
-        onBlur={field.handleBlur}
+        onBlur={onBlur}
       />
       <SelectButtonContainer>
         <StyledLabel htmlFor="contained-button-file">

@@ -3,7 +3,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import type { ActivityRecordWithId, CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
-import { TanstackDatePicker, TanstackAutocomplete } from "../../forms/adapters";
+import {
+  DatePicker,
+  CategoryAutocomplete,
+  getErrorMessage,
+} from "../../forms/adapters";
 import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
 import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
@@ -67,8 +71,11 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
             }}
           >
             {(field) => (
-              <TanstackDatePicker
-                field={field}
+              <DatePicker
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                error={getErrorMessage(field.state.meta.errors)}
                 label="Date"
                 style={hiddenLabelStyle}
                 size="small"
@@ -84,8 +91,11 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
             }}
           >
             {(field) => (
-              <TanstackAutocomplete
-                field={field}
+              <CategoryAutocomplete
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                error={getErrorMessage(field.state.meta.errors)}
                 label="Activity name"
                 style={hiddenLabelStyle}
                 size="small"
