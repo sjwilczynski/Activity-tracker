@@ -25,3 +25,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           skip_step: install
           build_script: bun run --cwd client build
+          package_manager: bun
