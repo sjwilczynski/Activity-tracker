@@ -10,6 +10,7 @@ type DatePickerProps = {
   label: string;
   style?: TextFieldProps["sx"];
   size?: "small" | "medium";
+  showDayOfWeek?: boolean;
 };
 
 export const DatePicker = ({
@@ -20,8 +21,10 @@ export const DatePicker = ({
   label,
   style,
   size,
+  showDayOfWeek = true,
 }: DatePickerProps) => {
-  const dayOfWeek = value && isValid(value) ? format(value, "EEE") : "";
+  const dayOfWeek =
+    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
 
   return (
     <MuiDatePicker
@@ -57,6 +60,7 @@ type NullableDatePickerProps = {
   label: string;
   style?: TextFieldProps["sx"];
   size?: "small" | "medium";
+  showDayOfWeek?: boolean;
 };
 
 export const NullableDatePicker = ({
@@ -67,8 +71,10 @@ export const NullableDatePicker = ({
   label,
   style,
   size,
+  showDayOfWeek = false,
 }: NullableDatePickerProps) => {
-  const dayOfWeek = value && isValid(value) ? format(value, "EEE") : "";
+  const dayOfWeek =
+    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
 
   return (
     <MuiDatePicker
