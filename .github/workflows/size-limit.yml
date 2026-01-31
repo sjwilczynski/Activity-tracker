@@ -19,10 +19,9 @@ jobs:
           bun-version: latest
       - name: install
         run: bun install
-      - name: build client
-        run: bun run build
-        working-directory: client
       - name: size-limit
         uses: andresz1/size-limit-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          skip_step: install
+          custom_build: bun run --cwd client build
