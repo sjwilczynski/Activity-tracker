@@ -1,13 +1,13 @@
-import { AuthProvider } from "./auth";
-import { ReactQueryDevtools } from "react-query/devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Provider } from "jotai";
 import { BrowserRouter } from "react-router-dom";
-import { QueryConfigProvider } from "./data";
+import { AuthProvider } from "./auth";
 import {
   AppContainer,
-  StylesProvider,
   PickersContextProvider,
+  StylesProvider,
 } from "./components";
-import { Provider } from "jotai";
+import { QueryConfigProvider } from "./data";
 
 function AppWithProviders() {
   return (

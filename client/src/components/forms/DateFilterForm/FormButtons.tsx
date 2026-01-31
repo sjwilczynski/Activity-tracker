@@ -1,5 +1,5 @@
-import { useField, useFormikContext } from "formik";
 import { Button } from "@mui/material";
+import type { AnyFormApi } from "@tanstack/react-form";
 import {
   endOfMonth,
   endOfYear,
@@ -8,32 +8,33 @@ import {
   startOfYear,
 } from "date-fns";
 import { useCallback } from "react";
-import type { FormValues } from "./shared";
-import {
-  endDateFieldKey,
-  startDateFieldKey,
-  useDateRangeState,
-  useSetDateRange,
-} from "./shared";
+import { useDateRangeState, useSetDateRange } from "./shared";
 
-export const FormButtons = () => {
-  const { resetForm } = useFormikContext<FormValues>();
+type FormButtonsProps = {
+  form: AnyFormApi;
+};
+
+export const FormButtons = ({ form }: FormButtonsProps) => {
   const [{ startDate, endDate }, setDateRange] = useDateRangeState();
 
   const customFormReset = useCallback(() => {
     setDateRange({ startDate: null, endDate: null });
-    resetForm({
-      values: {
-        startDate: null,
-        endDate: null,
-      },
-    });
-  }, [resetForm, setDateRange]);
+    form.reset();
+    form.setFieldValue("startDate", null);
+    form.setFieldValue("endDate", null);
+  }, [form, setDateRange]);
+
   const showCurrentMonth = useShowCurrentPeriodCallback(
+    form,
     startOfMonth,
     endOfMonth
   );
-  const showCurrentYear = useShowCurrentPeriodCallback(startOfYear, endOfYear);
+  const showCurrentYear = useShowCurrentPeriodCallback(
+    form,
+    startOfYear,
+    endOfYear
+  );
+
   return (
     <>
       <Button variant="contained" color="primary" type="submit">
@@ -69,14 +70,12 @@ export const FormButtons = () => {
 };
 
 const useShowCurrentPeriodCallback = (
+  form: AnyFormApi,
   startOfPeriod: (date: Date) => Date,
   endOfPeriod: (date: Date) => Date
 ) => {
   const setDateRange = useSetDateRange();
-  const [, , { setValue: setStartDate }] = useField<Date | null>(
-    startDateFieldKey
-  );
-  const [, , { setValue: setEndDate }] = useField<Date | null>(endDateFieldKey);
+
   return useCallback(() => {
     const today = startOfToday();
     const periodStart = startOfPeriod(today);
@@ -85,7 +84,7 @@ const useShowCurrentPeriodCallback = (
       startDate: periodStart,
       endDate: periodEnd,
     });
-    setStartDate(periodStart);
-    setEndDate(periodEnd);
-  }, [setDateRange, startOfPeriod, endOfPeriod, setStartDate, setEndDate]);
+    form.setFieldValue("startDate", periodStart);
+    form.setFieldValue("endDate", periodEnd);
+  }, [setDateRange, startOfPeriod, endOfPeriod, form]);
 };

@@ -1,4 +1,4 @@
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { mockCategories } from "../data/categories";
 
 export const categoryHandlers = [

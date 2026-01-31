@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor, screen } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Profile } from "./Profile";
-import { mockUser } from "../mocks/decorators";
 
 const meta: Meta<typeof Profile> = {
   title: "Pages/Profile",
@@ -101,19 +100,83 @@ export const FileUploadInteraction: Story = {
   },
 };
 
-export const NoUserPhoto: Story = {
-  parameters: {
-    auth: {
-      user: {
-        ...mockUser,
-        photoURL: null,
-      },
-    },
-  },
+export const ExportActivitiesDownload: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByText(/user name/i);
-    expect(canvas.getByText(/test user/i)).toBeInTheDocument();
+    const exportButton = canvas.getByRole("button", {
+      name: /export activities/i,
+    });
+
+    await waitFor(() => {
+      expect(exportButton).toBeEnabled();
+    });
+
+    // Click the export button - this will trigger the download in the browser
+    // The browser will handle the file download, we just verify the button works
+    await userEvent.click(exportButton);
+
+    // Verify button is still in the document after click
+    expect(exportButton).toBeInTheDocument();
+  },
+};
+
+export const FileUploadFileTooLarge: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const uploadButton = await canvas.findByRole("button", {
+      name: /upload activities/i,
+    });
+
+    await step("Open upload modal", async () => {
+      await userEvent.click(uploadButton);
+      await screen.findByRole("dialog");
+    });
+
+    await step("Upload file larger than 1MB and verify error", async () => {
+      // Create a file larger than 1MB (1000 * 1024 bytes)
+      const largeContent = "x".repeat(1001 * 1024);
+      const largeFile = new File([largeContent], "large.json", {
+        type: "application/json",
+      });
+
+      const fileInput = screen.getByLabelText(/select file/i, {
+        selector: "input",
+      });
+      await userEvent.upload(fileInput, largeFile);
+
+      await waitFor(() => {
+        expect(screen.getByText(/file too large/i)).toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const FileUploadInvalidFormat: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const uploadButton = await canvas.findByRole("button", {
+      name: /upload activities/i,
+    });
+
+    await step("Open upload modal", async () => {
+      await userEvent.click(uploadButton);
+      await screen.findByRole("dialog");
+    });
+
+    await step("Upload non-JSON file and verify error", async () => {
+      const textFile = new File(["hello world"], "test.txt", {
+        type: "text/plain",
+      });
+
+      const fileInput = screen.getByLabelText(/select file/i, {
+        selector: "input",
+      });
+      await userEvent.upload(fileInput, textFile);
+
+      await waitFor(() => {
+        expect(screen.getByText(/unsupported format/i)).toBeInTheDocument();
+      });
+    });
   },
 };

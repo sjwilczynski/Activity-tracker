@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor } from "storybook/test";
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Charts } from "./Charts";
 
 const meta: Meta<typeof Charts> = {
@@ -88,22 +88,47 @@ export const EmptyState: Story = {
 };
 
 export const DateFilterInteraction: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
     await waitFor(() => {
       expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    await step("Verify date filter is visible", async () => {
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    });
 
-    await userEvent.click(
-      canvas.getByRole("button", { name: /show current month/i })
+    await step("Verify initial charts are rendered with data", async () => {
+      const chartElements = canvasElement.querySelectorAll("canvas");
+      expect(chartElements.length).toBe(3);
+      // Verify charts have actual content (not empty state)
+      expect(
+        canvas.queryByText(/haven't added any activities/i)
+      ).not.toBeInTheDocument();
+    });
+
+    await step(
+      "Apply current month filter and verify data exists",
+      async () => {
+        await userEvent.click(
+          canvas.getByRole("button", { name: /show current month/i })
+        );
+
+        // Wait for filter to apply and verify charts still render
+        await waitFor(() => {
+          const chartElements = canvasElement.querySelectorAll("canvas");
+          expect(chartElements.length).toBe(3);
+        });
+
+        // Verify we're not showing the empty state after filtering
+        // The mocked date (2024-02-10) should have activities in February
+        expect(
+          canvas.queryByText(/haven't added any activities/i)
+        ).not.toBeInTheDocument();
+      }
     );
-
-    const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(3);
   },
 };
 

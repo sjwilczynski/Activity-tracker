@@ -1,15 +1,15 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import viteTsconfigPaths from "vite-tsconfig-paths";
-import { VitePWA } from "vite-plugin-pwa";
+import { defineConfig } from "vite";
 import checker from "vite-plugin-checker";
+import { VitePWA } from "vite-plugin-pwa";
+import viteTsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname

@@ -10,6 +10,7 @@ export type Database = {
     userId: string,
     limit?: number
   ) => Promise<ActivityMap | null>;
+  getActivityCount: (userId: string) => Promise<number>;
   addActivities: (
     userId: string,
     activities: ActivityRecord[]
@@ -23,6 +24,7 @@ export type Database = {
   deleteAllActivities: (userId: string) => Promise<void>;
 
   getCategories: (userId: string) => Promise<CategoryMap | null>;
+  getCategoryCount: (userId: string) => Promise<number>;
   addCategory: (userId: string, category: Category) => Promise<void>;
   editCategory: (
     userId: string,

@@ -1,29 +1,31 @@
-import { useIsFetching, useQuery, useQueryClient } from "react-query";
-import type {
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-} from "../../types";
+import { useIsFetching, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
+import type {
+  ActivityRecordWithId,
+  ActivityRecordWithIdServer,
+} from "../../types";
 import type { HeadersPromise } from "../useRequestConfig";
 import { useRequestConfig } from "../useRequestConfig";
-import { useCallback } from "react";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
-  return useQuery<ActivityRecordWithId[], Error>(getActivitiesQueryId, () =>
-    fetchActivities(getConfig())
-  );
+  return useQuery<ActivityRecordWithId[], Error>({
+    queryKey: getActivitiesQueryId,
+    queryFn: () => fetchActivities(getConfig()),
+  });
 };
 
 export const useActivitiesWithLimit = () => {
   const getConfig = useRequestConfig();
-  return useQuery(getActivitiesQueryIdWithLimit, () =>
-    fetchActivities(getConfig(), 5)
-  );
+  return useQuery({
+    queryKey: getActivitiesQueryIdWithLimit,
+    queryFn: () => fetchActivities(getConfig(), 5),
+  });
 };
 
 export const useExportActivities = (): (() => string) => {
@@ -42,7 +44,7 @@ export const useExportActivities = (): (() => string) => {
 };
 
 export const useIsFetchingActivties = () => {
-  return useIsFetching(getActivitiesQueryId) > 0;
+  return useIsFetching({ queryKey: getActivitiesQueryId }) > 0;
 };
 
 const fetchActivities = async (

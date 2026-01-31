@@ -2,8 +2,7 @@ import { styled, Typography } from "@mui/material";
 import { format } from "date-fns";
 import { useAuth } from "../auth";
 import { AddActivityForm, Loading } from "../components";
-import { useActivitiesWithLimit } from "../data";
-import { sortDescendingByDate } from "../data";
+import { sortDescendingByDate, useActivitiesWithLimit } from "../data";
 
 const Container = styled("div")({
   display: "flex",

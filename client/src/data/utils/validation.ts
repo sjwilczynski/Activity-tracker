@@ -1,5 +1,5 @@
-import type { ActivityRecordServer } from "../types";
 import { isMatch } from "date-fns";
+import type { ActivityRecordServer } from "../types";
 
 export const areActivitiesValid = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

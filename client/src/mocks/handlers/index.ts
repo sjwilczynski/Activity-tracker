@@ -1,9 +1,9 @@
 export {
-  activityHandlers,
   activityErrorHandlers,
+  activityHandlers,
   resetActivities,
 } from "./activities";
-export { categoryHandlers, categoryErrorHandlers } from "./categories";
+export { categoryErrorHandlers, categoryHandlers } from "./categories";
 
 import { activityHandlers } from "./activities";
 import { categoryHandlers } from "./categories";

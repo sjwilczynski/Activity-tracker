@@ -1,4 +1,3 @@
-import type { Database } from "./types";
 import { database } from "../firebase/firebase";
 import type {
   ActivityMap,
@@ -6,6 +5,7 @@ import type {
   Category,
   CategoryMap,
 } from "../utils/types";
+import type { Database } from "./types";
 
 const activityDocument = (userId: string): string =>
   `/users/${userId}/activity`;
@@ -24,6 +24,10 @@ export const firebaseDB: Database = {
     ).once("value");
 
     return limitedActivitiesQuery.val() as ActivityMap;
+  },
+  getActivityCount: async (userId: string) => {
+    const snapshot = await database.ref(activityDocument(userId)).once("value");
+    return snapshot.numChildren();
   },
   addActivities: async (userId: string, activities: ActivityRecord[]) => {
     const activityDocumentPath = activityDocument(userId);
@@ -71,6 +75,10 @@ export const firebaseDB: Database = {
       .ref(categoryDocument(userId))
       .once("value");
     return categories.val() as CategoryMap;
+  },
+  getCategoryCount: async (userId: string) => {
+    const snapshot = await database.ref(categoryDocument(userId)).once("value");
+    return snapshot.numChildren();
   },
   addCategory: async (userId: string, category: Category) => {
     const categoriesRef = database.ref(categoryDocument(userId));

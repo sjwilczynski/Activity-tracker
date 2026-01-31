@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor, screen } from "storybook/test";
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { ActivityList } from "./ActivityList";
 
 const meta: Meta<typeof ActivityList> = {
@@ -148,18 +148,72 @@ export const DeleteRowInteraction: Story = {
 };
 
 export const DateFilterInteraction: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
     await canvas.findByRole("table");
 
-    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    await step("Verify date filter is visible", async () => {
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    });
 
-    await userEvent.click(
-      canvas.getByRole("button", { name: /show current month/i })
+    await step("Verify initial data is loaded", async () => {
+      expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
+    });
+
+    await step(
+      "Apply current month filter and verify data exists",
+      async () => {
+        await userEvent.click(
+          canvas.getByRole("button", { name: /show current month/i })
+        );
+
+        // Wait for the filtered data to load and verify it's not empty
+        // The mocked date (2024-02-10) should show February activities
+        await waitFor(() => {
+          const paginationText = canvas.getByText(/\d+–\d+ of \d+/i);
+          expect(paginationText).toBeInTheDocument();
+          // Verify the count is greater than 0 (not "0 of 0")
+          expect(paginationText.textContent).not.toMatch(/0–0 of 0/i);
+        });
+
+        expect(canvas.getByRole("table")).toBeInTheDocument();
+      }
     );
+  },
+};
 
-    expect(canvas.getByRole("table")).toBeInTheDocument();
+export const DateFilterInvalidRange: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByRole("table");
+
+    await step("Set end date before start date", async () => {
+      const startDateInput = canvas.getByLabelText(/start date/i);
+      const endDateInput = canvas.getByLabelText(/end date/i);
+
+      // Clear and set start date to a later date
+      await userEvent.clear(startDateInput);
+      await userEvent.type(startDateInput, "2024-12-31");
+
+      // Clear and set end date to an earlier date
+      await userEvent.clear(endDateInput);
+      await userEvent.type(endDateInput, "2024-01-01");
+    });
+
+    await step("Submit and verify error message", async () => {
+      const filterButton = canvas.getByRole("button", {
+        name: /set date range/i,
+      });
+      await userEvent.click(filterButton);
+
+      await waitFor(() => {
+        expect(
+          canvas.getByText(/start date must be before/i)
+        ).toBeInTheDocument();
+      });
+    });
   },
 };

@@ -9,3 +9,5 @@ client/build
 .env
 *storybook.log
 storybook-static
+.fuse*
+chromatic.config.json

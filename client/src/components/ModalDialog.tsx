@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import type { Theme } from "@mui/material";
 import {
   Button,
@@ -8,9 +9,8 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
 import type { SxProps } from "@mui/system";
+import { useState } from "react";
 
 type Props = {
   description?: string;

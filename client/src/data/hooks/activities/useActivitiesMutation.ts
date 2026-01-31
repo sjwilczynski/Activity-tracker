@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getActivitiesQueryId,
   activitiesApiPath,
+  getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
-import type { ActivityRecordWithId, ActivityRecordServer } from "../../types";
+import type { ActivityRecordServer, ActivityRecordWithId } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
 
 export type ActivityMutationContext = {
@@ -20,7 +20,8 @@ export const useActivitiesMutation = () => {
     Error,
     ActivityRecordServer[],
     ActivityMutationContext
-  >(addActivities, {
+  >({
+    mutationFn: addActivities,
     onMutate: (activityRecords) => {
       // Snapshot the previous value
       const previousFullRecords =
@@ -32,7 +33,7 @@ export const useActivitiesMutation = () => {
       [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
         (queryId) => {
           // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-          client.cancelQueries(queryId, { exact: true });
+          client.cancelQueries({ queryKey: queryId, exact: true });
 
           const newActivities: ActivityRecordWithId[] = activityRecords.map(
             (activityRecord: ActivityRecordServer, index: number) => ({
@@ -67,7 +68,7 @@ export const useActivitiesMutation = () => {
     onSettled: () =>
       [getActivitiesQueryId, getActivitiesQueryIdWithLimit].forEach(
         (queryId) => {
-          client.invalidateQueries(queryId, { exact: true });
+          client.invalidateQueries({ queryKey: queryId, exact: true });
         }
       ),
   });

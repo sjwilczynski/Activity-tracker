@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
+import { useCallback, useEffect, useState } from "react";
 import type { User } from "./AuthContext";
 import config from "./firebaseConfig.json";
 

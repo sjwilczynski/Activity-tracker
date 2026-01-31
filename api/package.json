@@ -5,18 +5,21 @@
   "license": "MIT",
   "main": "dist/functions/**/*.js",
   "scripts": {
-    "build": "tsc",
+    "build": "node esbuild.config.mjs",
     "prestart": "bun run build",
     "start": "func start",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "watch": "tsc -w"
   },
   "dependencies": {
     "@azure/functions": "^4.11.0",
-    "date-fns": "2.29.2",
     "firebase-admin": "11.6.0"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
+    "esbuild": "^0.24.0",
+    "typescript": "5.9.3",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "bun": ">=1.2.0"

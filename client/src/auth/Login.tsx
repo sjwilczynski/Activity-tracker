@@ -1,6 +1,6 @@
+import { styled } from "@mui/material";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { styled } from "@mui/material";
 import FirebaseAuth from "./FirebaseAuth";
 
 const uiConfig: firebaseui.auth.Config = {

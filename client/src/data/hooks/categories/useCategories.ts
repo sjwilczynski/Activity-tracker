@@ -1,7 +1,7 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-  getCategoriesQueryId,
   categoriesApiPath,
+  getCategoriesQueryId,
 } from "../../react-query-config/query-constants";
 import type { Category, CategoryOption } from "../../types";
 import type { HeadersPromise } from "../useRequestConfig";
@@ -9,9 +9,10 @@ import { useRequestConfig } from "../useRequestConfig";
 
 export const useCategories = () => {
   const getConfig = useRequestConfig();
-  return useQuery<Category[], Error>(getCategoriesQueryId, () =>
-    fetchCategories(getConfig())
-  );
+  return useQuery<Category[], Error>({
+    queryKey: getCategoriesQueryId,
+    queryFn: () => fetchCategories(getConfig()),
+  });
 };
 
 const fetchCategories = async (

@@ -1,18 +1,18 @@
-import { Pie } from "react-chartjs-2";
-import type { ActivitySummaries } from "../../../data";
-import {
-  getTotalActiveAndInactiveCount,
-  getDataInChartJsFormat,
-  activeBaseColor,
-  inactiveBaseColor,
-} from "../utils";
-import { useIsLightTheme } from "../../styles/StylesProvider";
 import type {
   ChartData,
   ChartOptions,
   TooltipCallbacks,
   TooltipItem,
 } from "chart.js";
+import { Pie } from "react-chartjs-2";
+import type { ActivitySummaries } from "../../../data";
+import { useIsLightTheme } from "../../styles/StylesProvider";
+import {
+  activeBaseColor,
+  getDataInChartJsFormat,
+  getTotalActiveAndInactiveCount,
+  inactiveBaseColor,
+} from "../utils";
 
 type Props = {
   activitySummaries: ActivitySummaries;

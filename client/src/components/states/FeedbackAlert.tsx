@@ -1,5 +1,5 @@
 import type { AlertColor, SnackbarOrigin } from "@mui/material";
-import { Alert, Snackbar, Slide } from "@mui/material";
+import { Alert, Slide, Snackbar } from "@mui/material";
 import type { TransitionProps } from "@mui/material/transitions";
 import type { Dispatch, SetStateAction } from "react";
 
