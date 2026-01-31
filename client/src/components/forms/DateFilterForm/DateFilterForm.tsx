@@ -1,17 +1,12 @@
-import type { FormikErrors } from "formik";
-import { Formik, Form, Field } from "formik";
-import { DatePicker } from "formik-mui-x-date-pickers";
+import { useForm } from "@tanstack/react-form";
 import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import type { FormValues } from "./shared";
-import {
-  endDateFieldKey,
-  startDateFieldKey,
-  useDateRangeState,
-} from "./shared";
+import { useDateRangeState } from "./shared";
 import { styled } from "@mui/material";
+import { TanstackNullableDatePicker } from "../adapters";
 
-const StyledForm = styled(Form)(({ theme }) => ({
+const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexFlow: "row wrap",
@@ -25,56 +20,52 @@ const StyledForm = styled(Form)(({ theme }) => ({
 export const DateFilterForm = () => {
   const [{ startDate, endDate }, setDateRange] = useDateRangeState();
 
-  const onSubmit = (values: FormValues) => {
-    if (values.startDate && values.endDate) {
-      setDateRange({ startDate: values.startDate, endDate: values.endDate });
-    }
-  };
-  return (
-    <Formik<FormValues>
-      initialValues={{
-        startDate,
-        endDate,
-      }}
-      onSubmit={onSubmit}
-      validate={validate}
-      enableReinitialize
-    >
-      <StyledForm>
-        <Field
-          component={DatePicker}
-          name={startDateFieldKey}
-          label="Start date"
-          inputFormat="yyyy-MM-dd"
-          mask="____-__-__"
-          textField={{ variant: "standard" }}
-        />
-        <Field
-          component={DatePicker}
-          name={endDateFieldKey}
-          label="End date"
-          inputFormat="yyyy-MM-dd"
-          mask="____-__-__"
-          textField={{ variant: "standard" }}
-        />
-        <FormButtons />
-      </StyledForm>
-    </Formik>
-  );
-};
+  const form = useForm({
+    defaultValues: {
+      startDate,
+      endDate,
+    } as FormValues,
+    validators: {
+      onSubmit: ({ value }) => {
+        const { startDate, endDate } = value;
+        if (!startDate) {
+          return "Start date is required";
+        }
+        if (!endDate) {
+          return "End date is required";
+        }
+        if (startDate && endDate && isBefore(endDate, startDate)) {
+          return "Start date must be before end date";
+        }
+        return undefined;
+      },
+    },
+    onSubmit: ({ value }) => {
+      if (value.startDate && value.endDate) {
+        setDateRange({ startDate: value.startDate, endDate: value.endDate });
+      }
+    },
+  });
 
-const validate = (values: FormValues) => {
-  const errors: FormikErrors<FormValues> = {};
-  const { startDate, endDate } = values;
-  if (!startDate) {
-    errors.startDate = "Start date is required";
-  }
-  if (!endDate) {
-    errors.endDate = "End date is required";
-  }
-  if (startDate && endDate && isBefore(endDate, startDate)) {
-    errors.startDate = "Start date is after end date";
-    errors.endDate = "End date is before start date";
-  }
-  return errors;
+  return (
+    <StyledForm
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field name="startDate">
+        {(field) => (
+          <TanstackNullableDatePicker field={field} label="Start date" />
+        )}
+      </form.Field>
+      <form.Field name="endDate">
+        {(field) => (
+          <TanstackNullableDatePicker field={field} label="End date" />
+        )}
+      </form.Field>
+      <FormButtons form={form} />
+    </StyledForm>
+  );
 };

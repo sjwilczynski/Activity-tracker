@@ -1,19 +1,13 @@
 import { useCallback } from "react";
-import type { FormikErrors, FormikHelpers } from "formik";
-import { Formik, Form, Field } from "formik";
+import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, styled } from "@mui/material";
-import { FileInput } from "./FileInput";
+import { TanstackFileInput } from "./adapters";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
+import { fileSchema } from "./schemas";
 
-const FILE_SIZE = 1000 * 1024;
-const SUPPORTED_FORMATS = ["application/json"];
-
-type FormValues = {
-  file: File | null;
-};
-
-const StyledForm = styled(Form)(({ theme }) => ({
+const StyledForm = styled("form")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
@@ -26,53 +20,73 @@ const ButtonSubmit = styled(Button)(({ theme }) => ({
 
 export function FileUploadForm() {
   const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
-  const onSubmit = useCallback(
-    (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => {
-      const reader = new FileReader();
-      const { file } = values;
-      if (file) {
-        reader.onloadend = () => {
-          const { result } = reader;
-          if (typeof result === "string") {
-            const activities = JSON.parse(result);
-            if (areActivitiesValid(activities)) {
-              addActivities(activities);
-            } else {
-              formikHelpers.setErrors({
-                file: "The specified json doesn't contain activities in proper format",
-              });
-            }
-          }
-        };
-        reader.readAsText(file);
-      }
+
+  const form = useForm({
+    defaultValues: {
+      file: null as File | null,
     },
-    [addActivities]
+    onSubmit: ({ value }) => {
+      handleSubmit(value.file);
+    },
+  });
+
+  const handleSubmit = useCallback(
+    (file: File | null) => {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const { result } = reader;
+        if (typeof result === "string") {
+          const activities = JSON.parse(result);
+          if (areActivitiesValid(activities)) {
+            addActivities(activities);
+            form.reset();
+          } else {
+            form.setFieldMeta("file", (meta) => ({
+              ...meta,
+              errors: [
+                "The specified json doesn't contain activities in proper format",
+              ],
+            }));
+          }
+        }
+      };
+      reader.readAsText(file);
+    },
+    [addActivities, form]
   );
 
   return (
     <>
-      <Formik<FormValues>
-        validate={validate}
-        initialValues={{
-          file: null,
+      <StyledForm
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
         }}
-        onSubmit={onSubmit}
       >
-        {({ isValid, dirty }) => (
-          <StyledForm>
-            <Field name="file" component={FileInput} />
+        <form.Field
+          name="file"
+          validators={{
+            onChange: zodValidator(fileSchema),
+          }}
+        >
+          {(field) => <TanstackFileInput field={field} />}
+        </form.Field>
+        <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
+          {([canSubmit, isDirty]) => (
             <ButtonSubmit
-              disabled={!isValid || !dirty}
+              disabled={!canSubmit || !isDirty}
               variant="contained"
               color="primary"
               type="submit"
             >
               Upload
             </ButtonSubmit>
-          </StyledForm>
-        )}
-      </Formik>
+          )}
+        </form.Subscribe>
+      </StyledForm>
       <FeedbackAlertGroup
         isRequestError={isError}
         isRequestSuccess={isSuccess}
@@ -82,16 +96,3 @@ export function FileUploadForm() {
     </>
   );
 }
-
-const validate = (values: FormValues) => {
-  const errors: FormikErrors<FormValues> = {};
-  const { file } = values;
-  if (!file) {
-    errors.file = "File is required";
-  } else if (file.size > FILE_SIZE) {
-    errors.file = "File too large";
-  } else if (!SUPPORTED_FORMATS.includes(file.type)) {
-    errors.file = "Unsupported format";
-  }
-  return errors;
-};

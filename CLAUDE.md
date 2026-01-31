@@ -24,6 +24,14 @@ bun run --filter '*' build  # Build both frontend and API
 - React Query manages server state and caching
 - API functions: CRUD for activities and categories
 
+### Testing
+
+In the `/client` folder we rely on Storybook with play functions for component testing and interaction testing, testing addon allows us to run them as vitest tests.
+
+In the `/api` folder we use vitest for unit testing the utils related to functions.
+
+All newly added code should include respective tests.
+
 ## Special Notes
 
 Whenever something is changed that would affect the correctness of notes in `CLAUDE.md`, please update those notes as well. Whenever mistake is made, add a note about the mistake and how to avoid it in the future.

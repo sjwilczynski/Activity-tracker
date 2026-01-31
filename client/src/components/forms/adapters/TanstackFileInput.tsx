@@ -1,3 +1,4 @@
+import type { FieldApi } from "@tanstack/react-form";
 import type { Theme } from "@mui/material";
 import {
   Button,
@@ -7,7 +8,6 @@ import {
   IconButton,
   styled,
 } from "@mui/material";
-import type { FieldProps } from "formik";
 import type { ChangeEvent } from "react";
 import { useCallback } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -33,23 +33,25 @@ const submitButtonStyles: SxProps<Theme> = {
   flex: "1 1 auto",
 };
 
-export const FileInput = (
-  props: FieldProps<File | null, { file: File | null }>
-) => {
-  const { field, form } = props;
-  const { setFieldValue, errors } = form;
-  const { name } = field;
+type TanstackFileInputProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  field: FieldApi<any, any, File | null, any>;
+};
+
+export const TanstackFileInput = ({ field }: TanstackFileInputProps) => {
   const onFileInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const files = event.currentTarget.files;
-      if (files) {
-        setFieldValue(name, files[0]);
+      if (files && files[0]) {
+        field.handleChange(files[0]);
       }
     },
-    [setFieldValue, name]
+    [field]
   );
-  const fileName = field.value?.name;
-  const error = errors.file;
+
+  const fileName = field.state.value?.name;
+  const error = field.state.meta.errors?.[0];
+
   return (
     <>
       <input
@@ -57,6 +59,7 @@ export const FileInput = (
         id="contained-button-file"
         type="file"
         onChange={onFileInputChange}
+        onBlur={field.handleBlur}
       />
       <SelectButtonContainer>
         <StyledLabel htmlFor="contained-button-file">
