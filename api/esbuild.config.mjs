@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { cpSync, readdirSync, statSync, readFileSync, writeFileSync } from "fs";
+import { cpSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
 
 // Find all function entry points

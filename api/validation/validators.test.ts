@@ -1,14 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { LIMITS } from "./constants";
 import {
+  validateActivityBatch,
   validateActivityName,
   validateActivityRecord,
-  validateActivityBatch,
+  validateCategory,
   validateCategoryName,
   validateDescription,
   validateSubcategory,
-  validateCategory,
 } from "./validators";
-import { LIMITS } from "./constants";
 
 describe("validateActivityName", () => {
   it("accepts valid name", () => {

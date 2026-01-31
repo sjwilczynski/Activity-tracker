@@ -1,11 +1,11 @@
 import {
+  Avatar,
   AppBar as MuiAppBar,
+  styled,
   Toolbar,
   Typography,
-  useTheme,
   useMediaQuery,
-  Avatar,
-  styled,
+  useTheme,
 } from "@mui/material";
 import { useAuth } from "../../auth";
 import { AppBarButtons } from "./buttons/AppBarButtons";

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RATE_LIMIT } from "../validation/constants";
 
 // Mock Firebase - factory must be inline
@@ -15,8 +15,8 @@ vi.mock("../firebase/firebase", () => {
 });
 
 // Import after mocking
-import { checkRateLimit, getRateLimitHeaders } from "./rateLimiter";
 import { database } from "../firebase/firebase";
+import { checkRateLimit, getRateLimitHeaders } from "./rateLimiter";
 
 // Access mocks through the database object
 const mockRef = (database as unknown as { __mockRef: ReturnType<typeof vi.fn> })

@@ -1,7 +1,7 @@
 import { styled, useMediaQuery, useTheme } from "@mui/material";
-import { ToggleThemeButton } from "./ToggleThemeButton";
-import { GitHubLinkButton } from "./GitHubLinkButton";
 import { AdditionalMenu } from "./AdditionalMenu";
+import { GitHubLinkButton } from "./GitHubLinkButton";
+import { ToggleThemeButton } from "./ToggleThemeButton";
 
 const ButtonsContainer = styled("div")({
   display: "flex",

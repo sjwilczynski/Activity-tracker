@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor } from "storybook/test";
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Charts } from "./Charts";
 
 const meta: Meta<typeof Charts> = {
@@ -109,23 +109,26 @@ export const DateFilterInteraction: Story = {
       ).not.toBeInTheDocument();
     });
 
-    await step("Apply current month filter and verify data exists", async () => {
-      await userEvent.click(
-        canvas.getByRole("button", { name: /show current month/i })
-      );
+    await step(
+      "Apply current month filter and verify data exists",
+      async () => {
+        await userEvent.click(
+          canvas.getByRole("button", { name: /show current month/i })
+        );
 
-      // Wait for filter to apply and verify charts still render
-      await waitFor(() => {
-        const chartElements = canvasElement.querySelectorAll("canvas");
-        expect(chartElements.length).toBe(3);
-      });
+        // Wait for filter to apply and verify charts still render
+        await waitFor(() => {
+          const chartElements = canvasElement.querySelectorAll("canvas");
+          expect(chartElements.length).toBe(3);
+        });
 
-      // Verify we're not showing the empty state after filtering
-      // The mocked date (2024-02-10) should have activities in February
-      expect(
-        canvas.queryByText(/haven't added any activities/i)
-      ).not.toBeInTheDocument();
-    });
+        // Verify we're not showing the empty state after filtering
+        // The mocked date (2024-02-10) should have activities in February
+        expect(
+          canvas.queryByText(/haven't added any activities/i)
+        ).not.toBeInTheDocument();
+      }
+    );
   },
 };
 

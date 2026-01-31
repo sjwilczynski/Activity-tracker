@@ -1,4 +1,4 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   activitiesApiPath,
   getActivitiesQueryId,

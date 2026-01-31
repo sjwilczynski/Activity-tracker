@@ -1,5 +1,5 @@
-import { IconButton, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { IconButton, Tooltip } from "@mui/material";
 import { useAuth } from "../../../auth";
 import { useNavigationToggle } from "../../navigation/useNavigationState";
 

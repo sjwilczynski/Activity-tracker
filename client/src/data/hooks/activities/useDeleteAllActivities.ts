@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getActivitiesQueryId,
   activitiesApiPath,
+  getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
 import type { ActivityRecordWithId } from "../../types";

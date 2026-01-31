@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor, screen } from "storybook/test";
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { ActivityList } from "./ActivityList";
 
 const meta: Meta<typeof ActivityList> = {

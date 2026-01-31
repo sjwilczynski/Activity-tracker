@@ -1,4 +1,3 @@
-import type { Database } from "./types";
 import { database } from "../firebase/firebase";
 import type {
   ActivityMap,
@@ -6,6 +5,7 @@ import type {
   Category,
   CategoryMap,
 } from "../utils/types";
+import type { Database } from "./types";
 
 const activityDocument = (userId: string): string =>
   `/users/${userId}/activity`;

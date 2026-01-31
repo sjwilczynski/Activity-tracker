@@ -1,6 +1,6 @@
-import type { ActivitySummaries, ActivitySummary } from "../../data";
 import { TinyColor } from "@ctrl/tinycolor";
 import type { ChartData } from "chart.js";
+import type { ActivitySummaries, ActivitySummary } from "../../data";
 
 export function getDataInChartJsFormat(
   activitySummaries: ActivitySummaries,

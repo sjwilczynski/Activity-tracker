@@ -1,5 +1,5 @@
 import { Close } from "@mui/icons-material";
-import type { Theme, DrawerProps } from "@mui/material";
+import type { DrawerProps, Theme } from "@mui/material";
 import { Drawer, IconButton } from "@mui/material";
 import type { SxProps } from "@mui/system";
 import { useNavigationState } from "./useNavigationState";

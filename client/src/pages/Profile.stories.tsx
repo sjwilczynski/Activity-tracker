@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within, waitFor, screen } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Profile } from "./Profile";
 
 const meta: Meta<typeof Profile> = {

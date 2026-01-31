@@ -1,8 +1,8 @@
 import type { Decorator } from "@storybook/react-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router-dom";
 import { Provider } from "jotai";
-import { AuthContext, type User, type Auth } from "../auth/AuthContext";
+import { MemoryRouter } from "react-router-dom";
+import { AuthContext, type Auth, type User } from "../auth/AuthContext";
 import { PickersContextProvider } from "../components/PickersContextProvider";
 import { StylesProvider } from "../components/styles/StylesProvider";
 

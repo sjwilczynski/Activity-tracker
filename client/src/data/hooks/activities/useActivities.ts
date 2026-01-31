@@ -1,16 +1,16 @@
 import { useIsFetching, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-} from "../../types";
+import { useCallback } from "react";
 import {
   activitiesApiPath,
   getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
 } from "../../react-query-config/query-constants";
+import type {
+  ActivityRecordWithId,
+  ActivityRecordWithIdServer,
+} from "../../types";
 import type { HeadersPromise } from "../useRequestConfig";
 import { useRequestConfig } from "../useRequestConfig";
-import { useCallback } from "react";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();

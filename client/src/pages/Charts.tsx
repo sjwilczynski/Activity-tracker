@@ -1,33 +1,33 @@
 import {
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PieController,
+  PointElement,
+  Tooltip,
+} from "chart.js";
+import {
   BarChart,
+  ChartWrapper,
   DateFilterForm,
   ErrorView,
   Loading,
-  SummaryPieChart,
-  SummaryBarChart,
-  ChartWrapper,
-  useDateRange,
   NoActivitiesPage,
+  SummaryBarChart,
+  SummaryPieChart,
+  useDateRange,
 } from "../components";
 import {
-  useActivities,
   filterByDateRange,
   transformDataToSummaryMap,
+  useActivities,
 } from "../data";
-import {
-  Chart,
-  BarController,
-  CategoryScale,
-  ArcElement,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-  PointElement,
-  LineElement,
-  LineController,
-  PieController,
-} from "chart.js";
 
 Chart.register(
   BarElement,

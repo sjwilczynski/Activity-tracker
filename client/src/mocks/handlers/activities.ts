@@ -1,9 +1,9 @@
-import { http, HttpResponse, delay } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import type {
   ActivityRecordServer,
   ActivityRecordWithIdServer,
 } from "../../data/types";
-import { mockActivities, createMockActivity } from "../data/activities";
+import { createMockActivity, mockActivities } from "../data/activities";
 
 let activities = [...mockActivities];
 

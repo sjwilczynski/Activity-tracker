@@ -1,15 +1,15 @@
 import {
   DateFilterForm,
-  useDateRange,
   ErrorView,
   Loading,
-  SummaryTable,
   NoActivitiesPage,
+  SummaryTable,
+  useDateRange,
 } from "../components";
 import {
-  useActivities,
   filterByDateRange,
   sortDescendingByDate,
+  useActivities,
 } from "../data";
 
 export const ActivityList = () => {

@@ -1,9 +1,9 @@
-import { TableRow, TableCell, Button } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Button, TableCell, TableRow } from "@mui/material";
+import { useCallback } from "react";
 import type { ActivityRecordWithId } from "../../../data";
 import { useDeleteActivity } from "../../../data";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useCallback } from "react";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 
 type Props = {

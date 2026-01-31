@@ -1,13 +1,13 @@
-import type { ActivitySummaries } from "../../../data";
-import { Bar } from "react-chartjs-2";
-import { sortKeys, getTotalCount, getBackgroundColors } from "../utils";
-import { useIsLightTheme } from "../../styles/StylesProvider";
 import type {
   ChartData,
   ChartDataset,
   ChartOptions,
   LegendItem,
 } from "chart.js";
+import { Bar } from "react-chartjs-2";
+import type { ActivitySummaries } from "../../../data";
+import { useIsLightTheme } from "../../styles/StylesProvider";
+import { getBackgroundColors, getTotalCount, sortKeys } from "../utils";
 
 type Props = {
   activitySummaries: ActivitySummaries;
