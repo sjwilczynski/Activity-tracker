@@ -1,9 +1,8 @@
-import { useCallback } from "react";
+import { Button, styled } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
-import { Button, styled } from "@mui/material";
-import { FileInput, getErrorMessage } from "./adapters";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
+import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
 
 const StyledForm = styled("form")(({ theme }) => ({
@@ -25,12 +24,7 @@ export function FileUploadForm() {
       file: null as File | null,
     },
     onSubmit: ({ value }) => {
-      handleSubmit(value.file);
-    },
-  });
-
-  const handleSubmit = useCallback(
-    (file: File | null) => {
+      const file = value.file;
       if (!file) return;
 
       const reader = new FileReader();
@@ -53,8 +47,7 @@ export function FileUploadForm() {
       };
       reader.readAsText(file);
     },
-    [addActivities, form]
-  );
+  });
 
   return (
     <>
