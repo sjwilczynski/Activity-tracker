@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { areActivitiesValid, useActivitiesMutation } from "../../data";
 import { Button, styled } from "@mui/material";
 import { TanstackFileInput } from "./adapters";
@@ -69,7 +68,7 @@ export function FileUploadForm() {
         <form.Field
           name="file"
           validators={{
-            onChange: zodValidator(fileSchema),
+            onChange: fileSchema,
           }}
         >
           {(field) => <TanstackFileInput field={field} />}

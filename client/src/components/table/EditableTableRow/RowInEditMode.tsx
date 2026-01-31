@@ -9,7 +9,6 @@ import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import {
   categoryOptionSchema,
   type ActivityFormValues,
@@ -64,7 +63,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
           <form.Field
             name="date"
             validators={{
-              onChange: zodValidator(dateSchema),
+              onChange: dateSchema,
             }}
           >
             {(field) => (
@@ -81,7 +80,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
           <form.Field
             name="category"
             validators={{
-              onChange: zodValidator(categoryOptionSchema),
+              onChange: categoryOptionSchema,
             }}
           >
             {(field) => (

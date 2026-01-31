@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { Button, styled, type TextFieldProps } from "@mui/material";
 import { TanstackDatePicker, TanstackAutocomplete } from "../adapters";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
@@ -63,7 +62,7 @@ export function AddActivityForm({ lastActivity }: Props) {
         <form.Field
           name="date"
           validators={{
-            onChange: zodValidator(dateSchema),
+            onChange: dateSchema,
           }}
         >
           {(field) => (
@@ -73,7 +72,7 @@ export function AddActivityForm({ lastActivity }: Props) {
         <form.Field
           name="category"
           validators={{
-            onChange: zodValidator(categoryOptionSchema),
+            onChange: categoryOptionSchema,
           }}
         >
           {(field) => (
