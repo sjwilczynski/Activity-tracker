@@ -3,7 +3,7 @@ import { isBefore } from "date-fns";
 import { FormButtons } from "./FormButtons";
 import type { FormValues } from "./shared";
 import { useDateRangeState } from "./shared";
-import { styled } from "@mui/material";
+import { Alert, styled } from "@mui/material";
 import { NullableDatePicker, getErrorMessage } from "../adapters";
 
 const StyledForm = styled("form")(({ theme }) => ({
@@ -15,6 +15,11 @@ const StyledForm = styled("form")(({ theme }) => ({
     margin: `${theme.spacing(1)} ${theme.spacing(2)} ${theme.spacing(1)} 0`,
   },
   margin: `${theme.spacing(1)} 0`,
+}));
+
+const FormErrorAlert = styled(Alert)(({ theme }) => ({
+  width: "100%",
+  marginBottom: theme.spacing(1),
 }));
 
 export const DateFilterForm = () => {
@@ -55,6 +60,13 @@ export const DateFilterForm = () => {
         form.handleSubmit();
       }}
     >
+      <form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+        {(error) =>
+          error ? (
+            <FormErrorAlert severity="error">{error}</FormErrorAlert>
+          ) : null
+        }
+      </form.Subscribe>
       <form.Field name="startDate">
         {(field) => (
           <NullableDatePicker
