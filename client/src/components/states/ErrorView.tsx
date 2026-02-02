@@ -1,6 +1,6 @@
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Button, styled } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const ErrorContainer = styled("div")({
   display: "flex",

@@ -11,3 +11,4 @@ client/build
 storybook-static
 .fuse*
 chromatic.config.json
+client/.react-router

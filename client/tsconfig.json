@@ -5,7 +5,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node", "@react-router/node"],
+    "rootDirs": [".", ".react-router/types"]
   },
-  "include": ["src"]
+  "include": ["src", ".react-router/types/**/*"]
 }

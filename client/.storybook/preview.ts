@@ -4,7 +4,7 @@ import MockDate from "mockdate";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { configure, sb } from "storybook/test";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
-import { withAllProviders } from "../src/mocks/decorators";
+import { withAllProviders, withRouter } from "../src/mocks/decorators";
 import { handlers } from "../src/mocks/handlers";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
@@ -50,7 +50,7 @@ const preview: Preview = {
       handlers: handlers,
     },
   },
-  decorators: [withAllProviders],
+  decorators: [withRouter, withAllProviders],
   loaders: [mswLoader],
 };
 

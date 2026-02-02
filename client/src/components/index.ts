@@ -21,7 +21,7 @@ export { ChartWrapper } from "./visualization/ChartWrapper";
 export { SummaryBarChart } from "./visualization/SummaryCharts/SummaryBarChart";
 export { SummaryPieChart } from "./visualization/SummaryCharts/SummaryPieChart";
 
-export { AppContainer } from "./appContainer/AppContainer";
+export { AppBar } from "./appContainer/AppBar";
 export { DownloadLink } from "./DownloadLink";
 export { ModalDialog } from "./ModalDialog";
 export { PickersContextProvider } from "./PickersContextProvider";

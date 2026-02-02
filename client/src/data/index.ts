@@ -12,6 +12,11 @@ export {
   useAvailableCategories,
   useCategories,
 } from "./hooks/categories/useCategories";
+export {
+  activitiesQueryOptions,
+  activitiesWithLimitQueryOptions,
+  categoriesQueryOptions,
+} from "./queryOptions";
 export { QueryConfigProvider } from "./react-query-config/QueryConfigProvider";
 
 export * from "./types";

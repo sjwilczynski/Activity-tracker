@@ -1,7 +1,7 @@
 import type { Decorator } from "@storybook/react-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "jotai";
-import { MemoryRouter } from "react-router-dom";
+import { withRouter } from "storybook-addon-remix-react-router";
 import { AuthContext, type Auth, type User } from "../auth/AuthContext";
 import { PickersContextProvider } from "../components/PickersContextProvider";
 import { StylesProvider } from "../components/styles/StylesProvider";
@@ -33,23 +33,24 @@ const createMockAuthContext = (user: User | undefined = mockUser): Auth => ({
   user,
 });
 
+// Router decorator using storybook-addon-remix-react-router
+export { withRouter };
+
 // Full app decorator with all providers (replicates App.tsx hierarchy)
+// Note: This decorator does not include router - use withRouter decorator separately
 export const withAllProviders: Decorator = (Story, context) => {
   const queryClient = createTestQueryClient();
-  const initialEntries = context.parameters?.router?.initialEntries || ["/"];
   const user = context.parameters?.auth?.user ?? mockUser;
 
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
         <PickersContextProvider>
-          <MemoryRouter initialEntries={initialEntries}>
-            <StylesProvider>
-              <AuthContext.Provider value={createMockAuthContext(user)}>
-                <Story />
-              </AuthContext.Provider>
-            </StylesProvider>
-          </MemoryRouter>
+          <StylesProvider>
+            <AuthContext.Provider value={createMockAuthContext(user)}>
+              <Story />
+            </AuthContext.Provider>
+          </StylesProvider>
         </PickersContextProvider>
       </Provider>
     </QueryClientProvider>
