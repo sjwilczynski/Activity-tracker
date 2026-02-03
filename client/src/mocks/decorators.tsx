@@ -5,6 +5,7 @@ import { withRouter } from "storybook-addon-remix-react-router";
 import { AuthContext, type Auth, type User } from "../auth/AuthContext";
 import { PickersContextProvider } from "../components/PickersContextProvider";
 import { StylesProvider } from "../components/styles/StylesProvider";
+import { testContext } from "./testContext";
 
 // Mock user for stories
 export const mockUser: User = {
@@ -40,6 +41,7 @@ export { withRouter };
 // Note: This decorator does not include router - use withRouter decorator separately
 export const withAllProviders: Decorator = (Story, context) => {
   const queryClient = createTestQueryClient();
+  testContext.setQueryClient(queryClient);
   const user = context.parameters?.auth?.user ?? mockUser;
 
   return (

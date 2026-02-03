@@ -31,7 +31,8 @@ const emptyCategory: CategoryOption = {
 };
 
 export function AddActivityForm({ lastActivity }: Props) {
-  const { onSubmit, isSuccess, isError } = useAddActivityFormSubmit();
+  const { onSubmit, isSuccess, isError, isPending } =
+    useAddActivityFormSubmit();
   const [submitCount, setSubmitCount] = useState(0);
 
   const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
@@ -98,12 +99,12 @@ export function AddActivityForm({ lastActivity }: Props) {
         <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
           {([canSubmit, isDirty]) => (
             <Button
-              disabled={!canSubmit || !isDirty}
+              disabled={!canSubmit || !isDirty || isPending}
               variant="contained"
               color="primary"
               type="submit"
             >
-              Add activity
+              {isPending ? "Adding..." : "Add activity"}
             </Button>
           )}
         </form.Subscribe>

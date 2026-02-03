@@ -1,18 +1,15 @@
 import { format } from "date-fns";
 import { useCallback } from "react";
-import {
-  useEditActivityMutation,
-  type ActivityRecordServer,
-} from "../../../data";
+import { useFetcher } from "react-router";
+import type { ActivityRecordServer } from "../../../data";
 import type { ActivityFormValues } from "../../forms/schemas";
 
 export const useEditActivityFormSubmit = (id: string) => {
-  const {
-    mutate: editActivity,
-    isError,
-    isSuccess,
-    isPending,
-  } = useEditActivityMutation();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isError = fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.data?.ok === true;
+  const isPending = fetcher.state !== "idle";
+
   const onSubmit = useCallback(
     (values: ActivityFormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -20,9 +17,17 @@ export const useEditActivityFormSubmit = (id: string) => {
         name: values.category.name,
         active: values.category.active,
       };
-      editActivity({ id, record: activityRecord });
+      fetcher.submit(
+        {
+          intent: "edit",
+          id,
+          record: JSON.stringify(activityRecord),
+        },
+        { method: "post", action: "/activity-list" }
+      );
     },
-    [editActivity, id]
+    [fetcher, id]
   );
+
   return { onSubmit, isError, isSuccess, isPending };
 };

@@ -1,6 +1,7 @@
 import { Button, styled } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
-import { areActivitiesValid, useActivitiesMutation } from "../../data";
+import { useFetcher } from "react-router";
+import { areActivitiesValid } from "../../data";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
@@ -17,7 +18,9 @@ const ButtonSubmit = styled(Button)(({ theme }) => ({
 }));
 
 export function FileUploadForm() {
-  const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isError = fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.data?.ok === true;
 
   const form = useForm({
     defaultValues: {
@@ -33,7 +36,13 @@ export function FileUploadForm() {
         if (typeof result === "string") {
           const activities = JSON.parse(result);
           if (areActivitiesValid(activities)) {
-            addActivities(activities);
+            fetcher.submit(
+              {
+                intent: "add",
+                activities: JSON.stringify(activities),
+              },
+              { method: "post", action: "/welcome" }
+            );
             form.reset();
           } else {
             form.setFieldMeta("file", (meta) => ({

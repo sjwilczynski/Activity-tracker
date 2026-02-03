@@ -2,8 +2,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, TableCell, TableRow } from "@mui/material";
 import { useCallback } from "react";
+import { useFetcher } from "react-router";
 import type { ActivityRecordWithId } from "../../../data";
-import { useDeleteActivity } from "../../../data";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 
 type Props = {
@@ -13,10 +13,20 @@ type Props = {
 
 export const RowInReadMode = (props: Props) => {
   const { record, onEdit } = props;
-  const { mutate, isSuccess, isError } = useDeleteActivity();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isSuccess = fetcher.data?.ok === true;
+  const isError = fetcher.data?.error !== undefined;
+
   const deleteActivity = useCallback(() => {
-    mutate(record.id);
-  }, [record.id]);
+    fetcher.submit(
+      {
+        intent: "delete",
+        id: record.id,
+      },
+      { method: "post", action: "/activity-list" }
+    );
+  }, [record.id, fetcher]);
+
   return (
     <>
       <TableRow onClick={onEdit}>

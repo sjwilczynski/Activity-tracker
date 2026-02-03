@@ -4,10 +4,6 @@ export {
   useExportActivities,
   useIsFetchingActivties,
 } from "./hooks/activities/useActivities";
-export { useActivitiesMutation } from "./hooks/activities/useActivitiesMutation";
-export { useDeleteActivity } from "./hooks/activities/useDeleteActivity";
-export { useDeleteAllActivities } from "./hooks/activities/useDeleteAllActivities";
-export { useEditActivityMutation } from "./hooks/activities/useEditActivityMutation";
 export {
   useAvailableCategories,
   useCategories,
