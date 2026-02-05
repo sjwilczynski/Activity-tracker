@@ -33,7 +33,7 @@ jobs:
         run: bun run --filter '*' build
       - name: Deploy with SWA CLI
         run: |
-          bunx @azure/static-web-apps-cli deploy client/build \
+          bunx @azure/static-web-apps-cli deploy client/build/client \
             --api-location api/dist \
             --env production \
             --api-language node \
