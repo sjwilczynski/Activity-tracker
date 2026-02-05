@@ -1,5 +1,6 @@
 import { Button, styled } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
+import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { areActivitiesValid } from "../../data";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
@@ -43,7 +44,6 @@ export function FileUploadForm() {
               },
               { method: "post", action: "/welcome" }
             );
-            form.reset();
           } else {
             form.setFieldMeta("file", (meta) => ({
               ...meta,
@@ -57,6 +57,22 @@ export function FileUploadForm() {
       reader.readAsText(file);
     },
   });
+
+  const isPending = fetcher.state !== "idle";
+  const prevIsSuccess = useRef(isSuccess);
+
+  useEffect(() => {
+    if (isPending) {
+      prevIsSuccess.current = false;
+    }
+  }, [isPending]);
+
+  useEffect(() => {
+    if (isSuccess && !prevIsSuccess.current) {
+      form.reset();
+    }
+    prevIsSuccess.current = isSuccess;
+  }, [isSuccess, form]);
 
   return (
     <>

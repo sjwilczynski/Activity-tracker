@@ -7,6 +7,13 @@ import { getLoadContext } from "../root";
 
 export { RouteErrorBoundary as ErrorBoundary };
 
+function getSafeReturnTo(value: string | null): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/welcome";
+  }
+  return value;
+}
+
 export async function clientLoader() {
   const { authService } = getLoadContext();
   await authService.waitForAuth();
@@ -14,7 +21,7 @@ export async function clientLoader() {
   // If already signed in, redirect to welcome (or returnTo)
   if (authService.isSignedIn()) {
     const url = new URL(window.location.href);
-    const returnTo = url.searchParams.get("returnTo") || "/welcome";
+    const returnTo = getSafeReturnTo(url.searchParams.get("returnTo"));
     throw redirect(returnTo);
   }
 
@@ -24,7 +31,7 @@ export async function clientLoader() {
 export default function LoginRoute() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/welcome";
+  const returnTo = getSafeReturnTo(searchParams.get("returnTo"));
 
   // Listen for auth state changes to redirect after login
   useEffect(() => {

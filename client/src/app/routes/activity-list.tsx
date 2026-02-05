@@ -36,9 +36,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
-  }
-
-  if (intent === "delete") {
+  } else if (intent === "delete") {
     const id = formData.get("id") as string;
 
     const response = await fetch(`/api/activities/${id}`, {
@@ -49,6 +47,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
+  } else {
+    return { error: "Unknown intent" };
   }
 
   await queryClient.invalidateQueries({ queryKey: ["activities"] });

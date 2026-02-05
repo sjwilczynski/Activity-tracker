@@ -21,7 +21,6 @@ export const RowInReadMode = (props: Props) => {
   const { record, onEdit } = props;
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isDeleting = fetcher.state !== "idle";
-  const isSuccess = fetcher.data?.ok === true;
   const isError = fetcher.data?.error !== undefined;
 
   const deleteActivity = useCallback(
@@ -76,7 +75,7 @@ export const RowInReadMode = (props: Props) => {
       </TableRow>
       <FeedbackAlertGroup
         isRequestError={isError}
-        isRequestSuccess={isSuccess}
+        isRequestSuccess={false}
         successMessage="Successfully deleted the activity"
         errorMessage="Failed to delete the activity"
       />
