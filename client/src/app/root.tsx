@@ -45,8 +45,41 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link
+          rel="mask-icon"
+          href="/android-chrome-192x192.png"
+          color="#4479a2"
+        />
         <link rel="manifest" href="/manifest.webmanifest" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+        <title>Activity tracker</title>
+        <meta
+          name="description"
+          content="Activity tracker is an app to track your sport related activities regurarly."
+        />
+        <meta name="theme-color" content="#4479a2" />
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              "html, body, #root { height: 100%; margin: 0; padding: 0; }",
+          }}
+        />
         <Meta />
         <Links />
       </head>
