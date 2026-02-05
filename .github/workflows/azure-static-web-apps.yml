@@ -37,5 +37,5 @@ jobs:
             --api-location api/dist \
             --env production \
             --api-language node \
-            --api-version 20 \
+            --api-version 22 \
             --deployment-token ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_KIND_MEADOW_01A0DD103 }}

@@ -26,7 +26,7 @@ export const useEditActivityFormSubmit = (id: string) => {
         { method: "post", action: "/activity-list" }
       );
     },
-    [fetcher, id]
+    [fetcher.submit, id]
   );
 
   return { onSubmit, isError, isSuccess, isPending };
