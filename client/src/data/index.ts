@@ -13,8 +13,6 @@ export {
   activitiesWithLimitQueryOptions,
   categoriesQueryOptions,
 } from "./queryOptions";
-export { QueryConfigProvider } from "./react-query-config/QueryConfigProvider";
-
 export * from "./types";
 export * from "./utils/transforms";
 export * from "./utils/validation";

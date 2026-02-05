@@ -25,6 +25,7 @@ export default defineConfig([
     "**/scripts/",
     "**/storybook-static/",
     "**/mockServiceWorker.js",
+    "client/.react-router",
   ]),
   {
     extends: compat.extends(
