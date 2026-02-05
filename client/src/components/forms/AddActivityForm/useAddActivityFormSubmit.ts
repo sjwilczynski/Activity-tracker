@@ -1,13 +1,15 @@
 import { format } from "date-fns";
 import { useCallback } from "react";
-import {
-  useActivitiesMutation,
-  type ActivityRecordServer,
-} from "../../../data";
+import { useFetcher } from "react-router";
+import type { ActivityRecordServer } from "../../../data";
 import type { ActivityFormValues } from "../schemas";
 
 export const useAddActivityFormSubmit = () => {
-  const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const isPending = fetcher.state !== "idle";
+
   const onSubmit = useCallback(
     (values: ActivityFormValues) => {
       const activityRecord: ActivityRecordServer = {
@@ -15,9 +17,16 @@ export const useAddActivityFormSubmit = () => {
         name: values.category.name,
         active: values.category.active,
       };
-      addActivities([activityRecord]);
+      fetcher.submit(
+        {
+          intent: "add",
+          activities: JSON.stringify([activityRecord]),
+        },
+        { method: "post", action: "/welcome" }
+      );
     },
-    [addActivities]
+    [fetcher.submit]
   );
-  return { onSubmit, isError, isSuccess };
+
+  return { onSubmit, isError, isSuccess, isPending };
 };

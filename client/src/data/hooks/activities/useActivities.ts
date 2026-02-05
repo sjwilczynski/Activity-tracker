@@ -1,31 +1,23 @@
 import { useIsFetching, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import {
-  activitiesApiPath,
-  getActivitiesQueryId,
-  getActivitiesQueryIdWithLimit,
-} from "../../react-query-config/query-constants";
-import type {
-  ActivityRecordWithId,
-  ActivityRecordWithIdServer,
-} from "../../types";
-import type { HeadersPromise } from "../useRequestConfig";
+  activitiesQueryOptions,
+  activitiesWithLimitQueryOptions,
+} from "../../queryOptions";
+import { getActivitiesQueryId } from "../../react-query-config/query-constants";
+import type { ActivityRecordWithId } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
-  return useQuery<ActivityRecordWithId[], Error>({
-    queryKey: getActivitiesQueryId,
-    queryFn: () => fetchActivities(getConfig()),
-  });
+  const getAuthToken = async () => (await getConfig())["x-auth-token"];
+  return useQuery(activitiesQueryOptions(getAuthToken));
 };
 
 export const useActivitiesWithLimit = () => {
   const getConfig = useRequestConfig();
-  return useQuery({
-    queryKey: getActivitiesQueryIdWithLimit,
-    queryFn: () => fetchActivities(getConfig(), 5),
-  });
+  const getAuthToken = async () => (await getConfig())["x-auth-token"];
+  return useQuery(activitiesWithLimitQueryOptions(getAuthToken));
 };
 
 export const useExportActivities = (): (() => string) => {
@@ -33,7 +25,7 @@ export const useExportActivities = (): (() => string) => {
 
   return useCallback(() => {
     const activities = client
-      .getQueryData<ActivityRecordWithId[]>(getActivitiesQueryId)
+      .getQueryData<ActivityRecordWithId[]>([...getActivitiesQueryId])
       ?.map((activityRecord) => ({
         date: activityRecord.date.toLocaleDateString("en-CA"),
         name: activityRecord.name,
@@ -44,34 +36,5 @@ export const useExportActivities = (): (() => string) => {
 };
 
 export const useIsFetchingActivties = () => {
-  return useIsFetching({ queryKey: getActivitiesQueryId }) > 0;
-};
-
-const fetchActivities = async (
-  headersPromise: HeadersPromise,
-  limit?: number
-): Promise<ActivityRecordWithId[]> => {
-  const headers = await headersPromise;
-
-  const url = new URL(activitiesApiPath, window.location.origin);
-  if (limit) {
-    url.searchParams.append("limit", String(limit));
-  }
-
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const activityRecordsResponse =
-    (await response.json()) as ActivityRecordWithIdServer[];
-
-  return activityRecordsResponse.map((activityRecord) => ({
-    ...activityRecord,
-    date: new Date(activityRecord.date),
-  }));
+  return useIsFetching({ queryKey: [...getActivitiesQueryId] }) > 0;
 };

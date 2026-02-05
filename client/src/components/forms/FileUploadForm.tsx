@@ -1,6 +1,8 @@
 import { Button, styled } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
-import { areActivitiesValid, useActivitiesMutation } from "../../data";
+import { useEffect, useRef } from "react";
+import { useFetcher } from "react-router";
+import { areActivitiesValid } from "../../data";
 import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
 import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
@@ -17,7 +19,9 @@ const ButtonSubmit = styled(Button)(({ theme }) => ({
 }));
 
 export function FileUploadForm() {
-  const { mutate: addActivities, isError, isSuccess } = useActivitiesMutation();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
 
   const form = useForm({
     defaultValues: {
@@ -33,8 +37,13 @@ export function FileUploadForm() {
         if (typeof result === "string") {
           const activities = JSON.parse(result);
           if (areActivitiesValid(activities)) {
-            addActivities(activities);
-            form.reset();
+            fetcher.submit(
+              {
+                intent: "add",
+                activities: JSON.stringify(activities),
+              },
+              { method: "post", action: "/welcome" }
+            );
           } else {
             form.setFieldMeta("file", (meta) => ({
               ...meta,
@@ -48,6 +57,22 @@ export function FileUploadForm() {
       reader.readAsText(file);
     },
   });
+
+  const isPending = fetcher.state !== "idle";
+  const prevIsSuccess = useRef(isSuccess);
+
+  useEffect(() => {
+    if (isPending) {
+      prevIsSuccess.current = false;
+    }
+  }, [isPending]);
+
+  useEffect(() => {
+    if (isSuccess && !prevIsSuccess.current) {
+      form.reset();
+    }
+    prevIsSuccess.current = isSuccess;
+  }, [isSuccess, form]);
 
   return (
     <>

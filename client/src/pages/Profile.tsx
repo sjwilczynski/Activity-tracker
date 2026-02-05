@@ -1,4 +1,5 @@
 import { Button, styled, Typography } from "@mui/material";
+import { useFetcher } from "react-router";
 import { useAuthContext } from "../auth";
 import {
   DownloadLink,
@@ -8,7 +9,6 @@ import {
 } from "../components";
 import {
   useActivities,
-  useDeleteAllActivities,
   useExportActivities,
   useIsFetchingActivties,
 } from "../data";
@@ -36,11 +36,16 @@ export const Profile = () => {
   const { data } = useActivities();
   const isFetchingActivities = useIsFetchingActivties();
 
-  const {
-    mutate: deleteAllActivities,
-    isSuccess,
-    isError,
-  } = useDeleteAllActivities();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+
+  const deleteAllActivities = () => {
+    fetcher.submit(
+      { intent: "delete-all" },
+      { method: "post", action: "/profile" }
+    );
+  };
 
   return (
     <>
@@ -62,7 +67,7 @@ export const Profile = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => deleteAllActivities()}
+                onClick={deleteAllActivities}
               >
                 Confirm
               </Button>

@@ -1,7 +1,7 @@
 import { List, ListItem, ListItemText, useTheme } from "@mui/material";
 import { forwardRef, useCallback, useMemo } from "react";
-import type { NavLinkProps } from "react-router-dom";
-import { NavLink, useLocation } from "react-router-dom";
+import type { NavLinkProps } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import { useNavigationToggle } from "./useNavigationState";
 
 export type NavigationElement = {

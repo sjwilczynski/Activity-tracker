@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "workspaces": {
     "client": {
-      "entry": ["src/index.tsx", "src/**/*.stories.tsx"],
+      "entry": ["src/app/routes/**/*.tsx", "src/**/*.stories.tsx"],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": ["@vitest/coverage-v8", "chromatic"]
     },

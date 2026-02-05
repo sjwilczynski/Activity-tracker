@@ -1,35 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  categoriesApiPath,
-  getCategoriesQueryId,
-} from "../../react-query-config/query-constants";
-import type { Category, CategoryOption } from "../../types";
-import type { HeadersPromise } from "../useRequestConfig";
+import { categoriesQueryOptions } from "../../queryOptions";
+import type { CategoryOption } from "../../types";
 import { useRequestConfig } from "../useRequestConfig";
 
 export const useCategories = () => {
   const getConfig = useRequestConfig();
-  return useQuery<Category[], Error>({
-    queryKey: getCategoriesQueryId,
-    queryFn: () => fetchCategories(getConfig()),
-  });
-};
-
-const fetchCategories = async (
-  headersPromise: HeadersPromise
-): Promise<Category[]> => {
-  const headers = await headersPromise;
-
-  const response = await fetch(categoriesApiPath, {
-    method: "GET",
-    headers: headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return (await response.json()) as Category[];
+  const getAuthToken = async () => (await getConfig())["x-auth-token"];
+  return useQuery(categoriesQueryOptions(getAuthToken));
 };
 
 export const useAvailableCategories = () => {

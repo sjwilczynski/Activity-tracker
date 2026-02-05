@@ -2,10 +2,12 @@ import type { Preview } from "@storybook/react-vite";
 import { Chart } from "chart.js";
 import MockDate from "mockdate";
 import { initialize, mswLoader } from "msw-storybook-addon";
+import { reactRouterParameters } from "storybook-addon-remix-react-router";
 import { configure, sb } from "storybook/test";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
-import { withAllProviders } from "../src/mocks/decorators";
+import { withAllProviders, withRouter } from "../src/mocks/decorators";
 import { handlers } from "../src/mocks/handlers";
+import { testContext } from "../src/mocks/testContext";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
 // in the constrained iframe environment
@@ -30,6 +32,61 @@ configure({
 // Mock the useAuth module to avoid Firebase dependency
 sb.mock(import("../src/auth/useAuth.ts"));
 
+// Mock action that performs API calls and invalidates queries
+const mockAction = async ({ request }: { request: Request }) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  const token = "mock-token-12345";
+
+  try {
+    if (intent === "add") {
+      const activities = formData.get("activities") as string;
+      await fetch("/api/activities", {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: activities,
+      });
+    }
+
+    if (intent === "edit") {
+      const id = formData.get("id") as string;
+      const record = formData.get("record") as string;
+      await fetch(`/api/activities/${id}`, {
+        method: "PUT",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: record,
+      });
+    }
+
+    if (intent === "delete") {
+      const id = formData.get("id") as string;
+      await fetch(`/api/activities/${id}`, {
+        method: "DELETE",
+        headers: { "x-auth-token": token },
+      });
+    }
+
+    if (intent === "delete-all") {
+      await fetch("/api/activities", {
+        method: "DELETE",
+        headers: { "x-auth-token": token },
+      });
+    }
+
+    await testContext.invalidateActivities();
+
+    return { ok: true };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unknown error" };
+  }
+};
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -49,8 +106,34 @@ const preview: Preview = {
     msw: {
       handlers: handlers,
     },
+
+    reactRouter: reactRouterParameters({
+      routing: [
+        {
+          path: "/",
+          useStoryElement: true,
+          action: mockAction,
+        },
+        {
+          path: "/welcome",
+          action: mockAction,
+        },
+        {
+          path: "/activity-list",
+          action: mockAction,
+        },
+        {
+          path: "/profile",
+          action: mockAction,
+        },
+        {
+          path: "/charts",
+          action: mockAction,
+        },
+      ],
+    }),
   },
-  decorators: [withAllProviders],
+  decorators: [withRouter, withAllProviders],
   loaders: [mswLoader],
 };
 
