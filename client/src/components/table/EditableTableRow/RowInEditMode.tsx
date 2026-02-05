@@ -77,6 +77,7 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
                 label="Date"
                 style={hiddenLabelStyle}
                 size="small"
+                showDayOfWeek={false}
               />
             )}
           </form.Field>
