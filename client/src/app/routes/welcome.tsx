@@ -1,10 +1,15 @@
+import { RouteErrorBoundary } from "../../components";
 import { activitiesWithLimitQueryOptions } from "../../data/queryOptions";
 import { Welcome as WelcomePage } from "../../pages/Welcome";
 import { getLoadContext } from "../root";
 import type { Route } from "./+types/welcome";
 
+export { RouteErrorBoundary as ErrorBoundary };
+
 export async function clientLoader() {
-  const { queryClient, getAuthToken } = getLoadContext();
+  const { queryClient, getAuthToken, authService } = getLoadContext();
+  // Wait for auth to initialize (loaders run in parallel, so parent's waitForAuth may not have completed)
+  await authService.waitForAuth();
   await queryClient.ensureQueryData(
     activitiesWithLimitQueryOptions(getAuthToken)
   );

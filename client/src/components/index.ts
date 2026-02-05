@@ -13,6 +13,7 @@ export { FeedbackAlert } from "./states/FeedbackAlert";
 export { FeedbackAlertGroup } from "./states/FeedbackAlertGroup";
 export { Loading } from "./states/Loading";
 export { NoActivitiesPage } from "./states/NoActivitiesPage";
+export { RouteErrorBoundary } from "./states/RouteErrorBoundary";
 
 export { SummaryTable } from "./table/SummaryTable";
 

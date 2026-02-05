@@ -26,6 +26,7 @@ export const HydrateFallback = () => {
 
       <div className="animate-pulse">
         <svg
+          display="block"
           width="120"
           height="120"
           viewBox="0 0 512 512"
@@ -42,7 +43,7 @@ export const HydrateFallback = () => {
           {/* "AT" Text - Using system fonts to ensure it renders without MUI/Google Fonts */}
           <text
             x="50%"
-            y="52%"
+            y="54%"
             textAnchor="middle"
             dominantBaseline="middle"
             fill="white"

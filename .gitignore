@@ -12,3 +12,4 @@ storybook-static
 .fuse*
 chromatic.config.json
 client/.react-router
+.playwright-mcp

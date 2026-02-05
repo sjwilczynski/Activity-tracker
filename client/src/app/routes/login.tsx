@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { redirect, useNavigate, useSearchParams } from "react-router";
 import { authService } from "../../auth/authService";
 import { Login as LoginComponent } from "../../auth/Login";
-import { StylesProvider } from "../../components";
+import { RouteErrorBoundary, StylesProvider } from "../../components";
 import { getLoadContext } from "../root";
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 export async function clientLoader() {
   const { authService } = getLoadContext();
