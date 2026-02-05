@@ -1,7 +1,7 @@
 import { Button, styled, type TextFieldProps } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { addDays } from "date-fns";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
 import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
@@ -30,10 +30,39 @@ const emptyCategory: CategoryOption = {
   categoryName: "",
 };
 
+function useFormResetOnSuccess(
+  reset: () => void,
+  setFieldValue: (field: "date", value: Date) => void,
+  lastActivity: ActivityRecordWithId | undefined,
+  { isSuccess, isPending }: { isSuccess: boolean; isPending: boolean }
+) {
+  const [submitCount, setSubmitCount] = useState(0);
+  const prevIsSuccess = useRef(isSuccess);
+
+  useEffect(() => {
+    if (isPending) {
+      prevIsSuccess.current = false;
+    }
+  }, [isPending]);
+
+  useEffect(() => {
+    if (isSuccess && !prevIsSuccess.current) {
+      reset();
+      const nextDate = lastActivity
+        ? addDays(lastActivity.date, 1)
+        : new Date();
+      setFieldValue("date", nextDate);
+      setSubmitCount((c) => c + 1);
+    }
+    prevIsSuccess.current = isSuccess;
+  }, [isSuccess, lastActivity, reset, setFieldValue, setSubmitCount]);
+
+  return submitCount;
+}
+
 export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError, isPending } =
     useAddActivityFormSubmit();
-  const [submitCount, setSubmitCount] = useState(0);
 
   const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
 
@@ -44,12 +73,15 @@ export function AddActivityForm({ lastActivity }: Props) {
     },
     onSubmit: ({ value }) => {
       onSubmit(value);
-      form.reset();
-      form.setFieldValue("date", initialDate);
-      form.setFieldValue("category", emptyCategory);
-      setSubmitCount((c) => c + 1);
     },
   });
+
+  const submitCount = useFormResetOnSuccess(
+    form.reset,
+    form.setFieldValue,
+    lastActivity,
+    { isSuccess, isPending }
+  );
 
   return (
     <>
