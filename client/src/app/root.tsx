@@ -74,12 +74,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           content="Activity tracker is an app to track your sport related activities regularly."
         />
         <meta name="theme-color" content="#4479a2" />
-        <style
-          dangerouslySetInnerHTML={{
-            __html:
-              "html, body, #root { height: 100%; margin: 0; padding: 0; }",
-          }}
-        />
+        <style>
+          {"html, body, #root { height: 100%; margin: 0; padding: 0; }"}
+        </style>
         <Meta />
         <Links />
       </head>
