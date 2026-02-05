@@ -71,7 +71,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <title>Activity tracker</title>
         <meta
           name="description"
-          content="Activity tracker is an app to track your sport related activities regurarly."
+          content="Activity tracker is an app to track your sport related activities regularly."
         />
         <meta name="theme-color" content="#4479a2" />
         <style
