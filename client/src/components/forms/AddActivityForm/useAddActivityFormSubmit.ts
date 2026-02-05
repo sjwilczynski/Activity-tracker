@@ -6,8 +6,8 @@ import type { ActivityFormValues } from "../schemas";
 
 export const useAddActivityFormSubmit = () => {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isError = fetcher.data?.error !== undefined;
-  const isSuccess = fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
   const isPending = fetcher.state !== "idle";
 
   const onSubmit = useCallback(
@@ -25,7 +25,7 @@ export const useAddActivityFormSubmit = () => {
         { method: "post", action: "/welcome" }
       );
     },
-    [fetcher]
+    [fetcher.submit]
   );
 
   return { onSubmit, isError, isSuccess, isPending };

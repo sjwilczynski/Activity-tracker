@@ -6,8 +6,8 @@ import type { ActivityFormValues } from "../../forms/schemas";
 
 export const useEditActivityFormSubmit = (id: string) => {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isError = fetcher.data?.error !== undefined;
-  const isSuccess = fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
   const isPending = fetcher.state !== "idle";
 
   const onSubmit = useCallback(

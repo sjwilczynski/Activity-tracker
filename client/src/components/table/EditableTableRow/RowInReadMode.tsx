@@ -21,7 +21,7 @@ export const RowInReadMode = (props: Props) => {
   const { record, onEdit } = props;
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isDeleting = fetcher.state !== "idle";
-  const isError = fetcher.data?.error !== undefined;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
 
   const deleteActivity = useCallback(
     (e: React.MouseEvent) => {
@@ -34,7 +34,7 @@ export const RowInReadMode = (props: Props) => {
         { method: "post", action: "/activity-list" }
       );
     },
-    [record.id, fetcher]
+    [record.id, fetcher.submit]
   );
 
   return (

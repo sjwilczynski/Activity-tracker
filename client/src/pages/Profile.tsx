@@ -37,8 +37,8 @@ export const Profile = () => {
   const isFetchingActivities = useIsFetchingActivties();
 
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isSuccess = fetcher.data?.ok === true;
-  const isError = fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
 
   const deleteAllActivities = () => {
     fetcher.submit(

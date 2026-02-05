@@ -20,8 +20,8 @@ const ButtonSubmit = styled(Button)(({ theme }) => ({
 
 export function FileUploadForm() {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isError = fetcher.data?.error !== undefined;
-  const isSuccess = fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
 
   const form = useForm({
     defaultValues: {
