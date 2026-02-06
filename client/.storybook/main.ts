@@ -32,11 +32,16 @@ const config: StorybookConfig = {
     // Mock firebase/auth — sb.mock automocking doesn't support modules
     // using `export *` (like firebase/auth which re-exports @firebase/auth)
     config.resolve = config.resolve ?? {};
-    config.resolve.alias = {
-      ...config.resolve?.alias,
-      "firebase/auth": new URL("../__mocks__/firebase/auth.js", import.meta.url)
-        .pathname,
-    };
+    const firebaseAuthMockPath = fileURLToPath(
+      new URL("../__mocks__/firebase/auth.js", import.meta.url)
+    );
+    const existingAlias = config.resolve.alias ?? [];
+    config.resolve.alias = Array.isArray(existingAlias)
+      ? [
+          ...existingAlias,
+          { find: "firebase/auth", replacement: firebaseAuthMockPath },
+        ]
+      : { ...existingAlias, "firebase/auth": firebaseAuthMockPath };
 
     return config;
   },
