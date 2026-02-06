@@ -199,32 +199,16 @@ export const DateFilterInvalidRange: Story = {
     await canvas.findByRole("table");
 
     await step("Set end date before start date", async () => {
-      const startDate = within(
-        canvas.getByRole("group", { name: /start date/i })
+      // Use "Show current year" to reliably set dates without typing into spinbuttons
+      await userEvent.click(
+        canvas.getByRole("button", { name: /show current year/i })
       );
+
+      // Decrease end year by 1 to make end date (prev year Dec 31) before start date (current year Jan 1)
       const endDate = within(canvas.getByRole("group", { name: /end date/i }));
-
-      // Fill start date: 2024-12-31
-      const startYear = startDate.getByRole("spinbutton", { name: /year/i });
-      await userEvent.clear(startYear);
-      await userEvent.type(startYear, "2024");
-      const startMonth = startDate.getByRole("spinbutton", { name: /month/i });
-      await userEvent.clear(startMonth);
-      await userEvent.type(startMonth, "12");
-      const startDay = startDate.getByRole("spinbutton", { name: /day/i });
-      await userEvent.clear(startDay);
-      await userEvent.type(startDay, "31");
-
-      // Fill end date: 2024-01-01
       const endYear = endDate.getByRole("spinbutton", { name: /year/i });
-      await userEvent.clear(endYear);
-      await userEvent.type(endYear, "2024");
-      const endMonth = endDate.getByRole("spinbutton", { name: /month/i });
-      await userEvent.clear(endMonth);
-      await userEvent.type(endMonth, "01");
-      const endDay = endDate.getByRole("spinbutton", { name: /day/i });
-      await userEvent.clear(endDay);
-      await userEvent.type(endDay, "01");
+      await userEvent.click(endYear);
+      await userEvent.keyboard("{ArrowDown}");
     });
 
     await step("Submit and verify error message", async () => {
