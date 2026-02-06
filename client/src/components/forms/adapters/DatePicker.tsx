@@ -1,4 +1,4 @@
-import { TextField, type TextFieldProps } from "@mui/material";
+import type { TextFieldProps } from "@mui/material";
 import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers";
 import { format, isValid } from "date-fns";
 
@@ -35,19 +35,17 @@ export const DatePicker = ({
           onChange(date);
         }
       }}
-      inputFormat="yyyy-MM-dd"
-      mask="____-__-__"
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          sx={style}
-          size={size}
-          helperText={error ?? dayOfWeek}
-          error={!!error}
-          onBlur={onBlur}
-        />
-      )}
+      format="yyyy-MM-dd"
+      slotProps={{
+        textField: {
+          variant: "standard",
+          sx: style,
+          size,
+          helperText: error ?? dayOfWeek,
+          error: !!error,
+          onBlur,
+        },
+      }}
     />
   );
 };
@@ -83,19 +81,17 @@ export const NullableDatePicker = ({
       onChange={(date) => {
         onChange(date);
       }}
-      inputFormat="yyyy-MM-dd"
-      mask="____-__-__"
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          sx={style}
-          size={size}
-          helperText={error ?? dayOfWeek}
-          error={!!error}
-          onBlur={onBlur}
-        />
-      )}
+      format="yyyy-MM-dd"
+      slotProps={{
+        textField: {
+          variant: "standard",
+          sx: style,
+          size,
+          helperText: error ?? dayOfWeek,
+          error: !!error,
+          onBlur,
+        },
+      }}
     />
   );
 };

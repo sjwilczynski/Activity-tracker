@@ -18,8 +18,12 @@ export const Default: Story = {
     await canvas.findByRole("table");
 
     await step("Verify date filter is visible", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+      expect(
+        canvas.getByRole("group", { name: /start date/i })
+      ).toBeInTheDocument();
+      expect(
+        canvas.getByRole("group", { name: /end date/i })
+      ).toBeInTheDocument();
     });
 
     await step("Verify table has correct columns", async () => {
@@ -154,8 +158,12 @@ export const DateFilterInteraction: Story = {
     await canvas.findByRole("table");
 
     await step("Verify date filter is visible", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+      expect(
+        canvas.getByRole("group", { name: /start date/i })
+      ).toBeInTheDocument();
+      expect(
+        canvas.getByRole("group", { name: /end date/i })
+      ).toBeInTheDocument();
     });
 
     await step("Verify initial data is loaded", async () => {
@@ -191,16 +199,34 @@ export const DateFilterInvalidRange: Story = {
     await canvas.findByRole("table");
 
     await step("Set end date before start date", async () => {
-      const startDateInput = canvas.getByLabelText(/start date/i);
-      const endDateInput = canvas.getByLabelText(/end date/i);
+      const startDate = within(
+        canvas.getByRole("group", { name: /start date/i })
+      );
+      const endDate = within(canvas.getByRole("group", { name: /end date/i }));
 
-      // Clear and set start date to a later date
-      await userEvent.clear(startDateInput);
-      await userEvent.type(startDateInput, "2024-12-31");
+      // Fill start date: 2024-12-31
+      await userEvent.click(
+        startDate.getByRole("spinbutton", { name: /year/i })
+      );
+      await userEvent.keyboard("2024");
+      await userEvent.click(
+        startDate.getByRole("spinbutton", { name: /month/i })
+      );
+      await userEvent.keyboard("12");
+      await userEvent.click(
+        startDate.getByRole("spinbutton", { name: /day/i })
+      );
+      await userEvent.keyboard("31");
 
-      // Clear and set end date to an earlier date
-      await userEvent.clear(endDateInput);
-      await userEvent.type(endDateInput, "2024-01-01");
+      // Fill end date: 2024-01-01
+      await userEvent.click(endDate.getByRole("spinbutton", { name: /year/i }));
+      await userEvent.keyboard("2024");
+      await userEvent.click(
+        endDate.getByRole("spinbutton", { name: /month/i })
+      );
+      await userEvent.keyboard("01");
+      await userEvent.click(endDate.getByRole("spinbutton", { name: /day/i }));
+      await userEvent.keyboard("01");
     });
 
     await step("Submit and verify error message", async () => {

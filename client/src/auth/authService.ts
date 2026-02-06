@@ -1,18 +1,20 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+import { initializeApp } from "firebase/app";
+import {
+  type User as FirebaseUser,
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 import type { User } from "./AuthContext";
 import config from "./firebaseConfig.json";
 
-// Initialize Firebase (idempotent - won't reinitialize if already done)
-if (!firebase.apps.length) {
-  firebase.initializeApp(config);
-}
+const app = initializeApp(config);
 
 type AuthStateCallback = (user: User | null) => void;
 
 class AuthService {
-  private auth = firebase.auth();
-  private currentUser: firebase.User | null = null;
+  private auth = getAuth(app);
+  private currentUser: FirebaseUser | null = null;
   private authInitialized = false;
   private authInitPromise: Promise<void>;
   private authInitResolve!: () => void;
@@ -23,7 +25,7 @@ class AuthService {
       this.authInitResolve = resolve;
     });
 
-    this.auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(this.auth, (user) => {
       this.currentUser = user;
       if (!this.authInitialized) {
         this.authInitialized = true;
@@ -35,7 +37,7 @@ class AuthService {
     });
   }
 
-  private mapUser(user: firebase.User): User {
+  private mapUser(user: FirebaseUser): User {
     const { displayName, email, photoURL, uid } = user;
     return { displayName, email, photoURL, uid };
   }
@@ -60,7 +62,7 @@ class AuthService {
   }
 
   async signOut(): Promise<void> {
-    return this.auth.signOut();
+    return signOut(this.auth);
   }
 
   onAuthStateChanged(callback: AuthStateCallback): () => void {
