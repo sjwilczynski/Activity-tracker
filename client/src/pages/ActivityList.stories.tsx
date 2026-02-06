@@ -205,28 +205,26 @@ export const DateFilterInvalidRange: Story = {
       const endDate = within(canvas.getByRole("group", { name: /end date/i }));
 
       // Fill start date: 2024-12-31
-      await userEvent.click(
-        startDate.getByRole("spinbutton", { name: /year/i })
-      );
-      await userEvent.keyboard("2024");
-      await userEvent.click(
-        startDate.getByRole("spinbutton", { name: /month/i })
-      );
-      await userEvent.keyboard("12");
-      await userEvent.click(
-        startDate.getByRole("spinbutton", { name: /day/i })
-      );
-      await userEvent.keyboard("31");
+      const startYear = startDate.getByRole("spinbutton", { name: /year/i });
+      await userEvent.clear(startYear);
+      await userEvent.type(startYear, "2024");
+      const startMonth = startDate.getByRole("spinbutton", { name: /month/i });
+      await userEvent.clear(startMonth);
+      await userEvent.type(startMonth, "12");
+      const startDay = startDate.getByRole("spinbutton", { name: /day/i });
+      await userEvent.clear(startDay);
+      await userEvent.type(startDay, "31");
 
       // Fill end date: 2024-01-01
-      await userEvent.click(endDate.getByRole("spinbutton", { name: /year/i }));
-      await userEvent.keyboard("2024");
-      await userEvent.click(
-        endDate.getByRole("spinbutton", { name: /month/i })
-      );
-      await userEvent.keyboard("01");
-      await userEvent.click(endDate.getByRole("spinbutton", { name: /day/i }));
-      await userEvent.keyboard("01");
+      const endYear = endDate.getByRole("spinbutton", { name: /year/i });
+      await userEvent.clear(endYear);
+      await userEvent.type(endYear, "2024");
+      const endMonth = endDate.getByRole("spinbutton", { name: /month/i });
+      await userEvent.clear(endMonth);
+      await userEvent.type(endMonth, "01");
+      const endDay = endDate.getByRole("spinbutton", { name: /day/i });
+      await userEvent.clear(endDay);
+      await userEvent.type(endDay, "01");
     });
 
     await step("Submit and verify error message", async () => {

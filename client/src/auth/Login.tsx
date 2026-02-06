@@ -14,8 +14,26 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   signInWithPopup,
+  type AuthError,
 } from "firebase/auth";
 import { useState } from "react";
+
+const auth = getAuth();
+
+const firebaseErrorMessages: Record<string, string> = {
+  "auth/wrong-password": "Incorrect password. Please try again.",
+  "auth/user-not-found": "No account found with this email.",
+  "auth/email-already-in-use": "An account with this email already exists.",
+  "auth/weak-password": "Password should be at least 6 characters.",
+  "auth/invalid-email": "Please enter a valid email address.",
+  "auth/too-many-requests": "Too many failed attempts. Please try again later.",
+  "auth/invalid-credential": "Invalid email or password.",
+};
+
+const getFirebaseErrorMessage = (error: unknown): string => {
+  const code = (error as AuthError)?.code;
+  return firebaseErrorMessages[code] ?? (error as Error).message;
+};
 
 const Container = styled("div")({
   display: "flex",
@@ -61,14 +79,12 @@ export const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
 
-  const auth = getAuth();
-
   const handleGoogleSignIn = async () => {
     setError(null);
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (e) {
-      setError((e as Error).message);
+      setError(getFirebaseErrorMessage(e));
     }
   };
 
@@ -82,7 +98,7 @@ export const Login = () => {
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
-      setError((err as Error).message);
+      setError(getFirebaseErrorMessage(err));
     }
   };
 

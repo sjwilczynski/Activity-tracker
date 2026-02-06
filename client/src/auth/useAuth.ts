@@ -9,7 +9,7 @@ import type { User } from "./AuthContext";
 
 export const useAuth = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [currentUser, setCurentUser] = useState<FirebaseUser | undefined>(
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | undefined>(
     undefined
   );
   const auth = getAuth();
@@ -17,10 +17,10 @@ export const useAuth = () => {
   useEffect(() => {
     const unregisterAuthObserver = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurentUser(user);
+        setCurrentUser(user);
         setIsSignedIn(true);
       } else {
-        setCurentUser(undefined);
+        setCurrentUser(undefined);
         setIsSignedIn(false);
       }
     });
@@ -30,7 +30,7 @@ export const useAuth = () => {
   }, [auth, isSignedIn, currentUser]);
 
   const getIdTokenFun = currentUser
-    ? () => currentUser?.getIdToken()
+    ? () => currentUser.getIdToken()
     : undefined;
 
   const signOut = useCallback(() => {
