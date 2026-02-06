@@ -18,8 +18,6 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 
-const auth = getAuth();
-
 const firebaseErrorMessages: Record<string, string> = {
   "auth/wrong-password": "Incorrect password. Please try again.",
   "auth/user-not-found": "No account found with this email.",
@@ -78,6 +76,8 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
+
+  const auth = getAuth();
 
   const handleGoogleSignIn = async () => {
     setError(null);
