@@ -1,6 +1,54 @@
-import { TextField, type TextFieldProps } from "@mui/material";
-import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers";
+import type { TextFieldProps } from "@mui/material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isValid } from "date-fns";
+
+type BaseDatePickerProps = {
+  value: Date | null;
+  onChange: (value: Date | null) => void;
+  onBlur: () => void;
+  error?: string;
+  label: string;
+  style?: TextFieldProps["sx"];
+  size?: "small" | "medium";
+  showDayOfWeek?: boolean;
+};
+
+const BaseDatePicker = ({
+  value,
+  onChange,
+  onBlur,
+  error,
+  label,
+  style,
+  size,
+  showDayOfWeek,
+}: BaseDatePickerProps) => {
+  const dayOfWeek =
+    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <MuiDatePicker
+        label={label}
+        value={value}
+        onChange={onChange}
+        format="yyyy-MM-dd"
+        slotProps={{
+          textField: {
+            variant: "standard",
+            sx: style,
+            size,
+            helperText: error ?? dayOfWeek,
+            error: !!error,
+            onBlur,
+          },
+        }}
+      />
+    </LocalizationProvider>
+  );
+};
 
 type DatePickerProps = {
   value: Date;
@@ -14,43 +62,20 @@ type DatePickerProps = {
 };
 
 export const DatePicker = ({
-  value,
   onChange,
-  onBlur,
-  error,
-  label,
-  style,
-  size,
   showDayOfWeek = true,
-}: DatePickerProps) => {
-  const dayOfWeek =
-    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
-
-  return (
-    <MuiDatePicker
-      label={label}
-      value={value}
-      onChange={(date) => {
-        if (date) {
-          onChange(date);
-        }
-      }}
-      inputFormat="yyyy-MM-dd"
-      mask="____-__-__"
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          sx={style}
-          size={size}
-          helperText={error ?? dayOfWeek}
-          error={!!error}
-          onBlur={onBlur}
-        />
-      )}
-    />
-  );
-};
+  ...rest
+}: DatePickerProps) => (
+  <BaseDatePicker
+    {...rest}
+    showDayOfWeek={showDayOfWeek}
+    onChange={(date) => {
+      if (date) {
+        onChange(date);
+      }
+    }}
+  />
+);
 
 type NullableDatePickerProps = {
   value: Date | null;
@@ -64,38 +89,8 @@ type NullableDatePickerProps = {
 };
 
 export const NullableDatePicker = ({
-  value,
-  onChange,
-  onBlur,
-  error,
-  label,
-  style,
-  size,
   showDayOfWeek = false,
-}: NullableDatePickerProps) => {
-  const dayOfWeek =
-    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
-
-  return (
-    <MuiDatePicker
-      label={label}
-      value={value}
-      onChange={(date) => {
-        onChange(date);
-      }}
-      inputFormat="yyyy-MM-dd"
-      mask="____-__-__"
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          sx={style}
-          size={size}
-          helperText={error ?? dayOfWeek}
-          error={!!error}
-          onBlur={onBlur}
-        />
-      )}
-    />
-  );
-};
+  ...rest
+}: NullableDatePickerProps) => (
+  <BaseDatePicker {...rest} showDayOfWeek={showDayOfWeek} />
+);

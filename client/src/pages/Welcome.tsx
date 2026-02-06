@@ -1,7 +1,8 @@
 import { styled, Typography } from "@mui/material";
 import { format } from "date-fns";
 import { useAuth } from "../auth";
-import { AddActivityForm, Loading } from "../components";
+import { AddActivityForm } from "../components/forms/AddActivityForm/AddActivityForm";
+import { Loading } from "../components/states/Loading";
 import { sortDescendingByDate, useActivitiesWithLimit } from "../data";
 
 const Container = styled("div")({

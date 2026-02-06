@@ -1,4 +1,4 @@
-import { RouteErrorBoundary } from "../../components";
+import { RouteErrorBoundary } from "../../components/states/RouteErrorBoundary";
 import { activitiesQueryOptions } from "../../data/queryOptions";
 import { Charts as ChartsPage } from "../../pages/Charts";
 import { getLoadContext } from "../root";

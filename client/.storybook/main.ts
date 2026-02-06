@@ -28,6 +28,21 @@ const config: StorybookConfig = {
           "name" in plugin &&
           !plugin.name?.startsWith("vite-plugin-pwa"))
     );
+
+    // Mock firebase/auth — sb.mock automocking doesn't support modules
+    // using `export *` (like firebase/auth which re-exports @firebase/auth)
+    config.resolve = config.resolve ?? {};
+    const firebaseAuthMockPath = fileURLToPath(
+      new URL("../__mocks__/firebase/auth.js", import.meta.url)
+    );
+    const existingAlias = config.resolve.alias ?? [];
+    config.resolve.alias = Array.isArray(existingAlias)
+      ? [
+          ...existingAlias,
+          { find: "firebase/auth", replacement: firebaseAuthMockPath },
+        ]
+      : { ...existingAlias, "firebase/auth": firebaseAuthMockPath };
+
     return config;
   },
 };

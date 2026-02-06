@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "jotai";
 import { withRouter } from "storybook-addon-remix-react-router";
 import { AuthContext, type Auth, type User } from "../auth/AuthContext";
-import { PickersContextProvider } from "../components/PickersContextProvider";
 import { StylesProvider } from "../components/styles/StylesProvider";
 import { testContext } from "./testContext";
 
@@ -47,13 +46,11 @@ export const withAllProviders: Decorator = (Story, context) => {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
-        <PickersContextProvider>
-          <StylesProvider>
-            <AuthContext.Provider value={createMockAuthContext(user)}>
-              <Story />
-            </AuthContext.Provider>
-          </StylesProvider>
-        </PickersContextProvider>
+        <StylesProvider>
+          <AuthContext.Provider value={createMockAuthContext(user)}>
+            <Story />
+          </AuthContext.Provider>
+        </StylesProvider>
       </Provider>
     </QueryClientProvider>
   );

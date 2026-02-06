@@ -1,25 +1,26 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+import {
+  signOut as firebaseSignOut,
+  type User as FirebaseUser,
+  getAuth,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import type { User } from "./AuthContext";
-import config from "./firebaseConfig.json";
-
-firebase.initializeApp(config);
 
 export const useAuth = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [currentUser, setCurentUser] = useState<firebase.User | undefined>(
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | undefined>(
     undefined
   );
-  const auth = firebase.auth();
+  const auth = getAuth();
 
   useEffect(() => {
-    const unregisterAuthObserver = auth.onAuthStateChanged((user) => {
+    const unregisterAuthObserver = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurentUser(user);
+        setCurrentUser(user);
         setIsSignedIn(true);
       } else {
-        setCurentUser(undefined);
+        setCurrentUser(undefined);
         setIsSignedIn(false);
       }
     });
@@ -29,11 +30,11 @@ export const useAuth = () => {
   }, [auth, isSignedIn, currentUser]);
 
   const getIdTokenFun = currentUser
-    ? () => currentUser?.getIdToken()
+    ? () => currentUser.getIdToken()
     : undefined;
 
   const signOut = useCallback(() => {
-    return auth.signOut();
+    return firebaseSignOut(auth);
   }, [auth]);
 
   return {
@@ -44,7 +45,7 @@ export const useAuth = () => {
   };
 };
 
-const getUser = (user: firebase.User): User => {
+const getUser = (user: FirebaseUser): User => {
   const { displayName, email, photoURL, uid } = user;
   return { displayName, email, photoURL, uid };
 };
