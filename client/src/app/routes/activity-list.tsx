@@ -1,4 +1,4 @@
-import { RouteErrorBoundary } from "../../components";
+import { RouteErrorBoundary } from "../../components/states/RouteErrorBoundary";
 import { activitiesQueryOptions } from "../../data/queryOptions";
 import { ActivityList as ActivityListPage } from "../../pages/ActivityList";
 import { getLoadContext } from "../root";

@@ -6,12 +6,9 @@ import { useEffect, useState } from "react";
 import { Outlet, redirect, useNavigate } from "react-router";
 import { AuthContext, type User } from "../../auth/AuthContext";
 import { authService } from "../../auth/authService";
-import {
-  AppBar,
-  Navigation,
-  PickersContextProvider,
-  StylesProvider,
-} from "../../components";
+import { AppBar } from "../../components/appContainer/AppBar";
+import { Navigation } from "../../components/navigation/Navigation";
+import { StylesProvider } from "../../components/styles/StylesProvider";
 import { PagesContainer } from "../../pages/PagesContainer";
 import { getLoadContext } from "../root";
 
@@ -76,20 +73,18 @@ export default function Layout() {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
-        <PickersContextProvider>
-          <StylesProvider>
-            <AuthStateProvider>
-              <Container>
-                <Navigation />
-                <AppBar />
-                <PagesContainer>
-                  <Outlet />
-                </PagesContainer>
-              </Container>
-            </AuthStateProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </StylesProvider>
-        </PickersContextProvider>
+        <StylesProvider>
+          <AuthStateProvider>
+            <Container>
+              <Navigation />
+              <AppBar />
+              <PagesContainer>
+                <Outlet />
+              </PagesContainer>
+            </Container>
+          </AuthStateProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </StylesProvider>
       </Provider>
     </QueryClientProvider>
   );

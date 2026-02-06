@@ -1,11 +1,9 @@
-import {
-  DateFilterForm,
-  ErrorView,
-  Loading,
-  NoActivitiesPage,
-  SummaryTable,
-  useDateRange,
-} from "../components";
+import { DateFilterForm } from "../components/forms/DateFilterForm/DateFilterForm";
+import { useDateRange } from "../components/forms/DateFilterForm/shared";
+import { ErrorView } from "../components/states/ErrorView";
+import { Loading } from "../components/states/Loading";
+import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
+import { SummaryTable } from "../components/table/SummaryTable";
 import {
   filterByDateRange,
   sortDescendingByDate,

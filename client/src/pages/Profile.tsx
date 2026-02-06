@@ -1,12 +1,10 @@
 import { Button, styled, Typography } from "@mui/material";
 import { useFetcher } from "react-router";
 import { useAuthContext } from "../auth";
-import {
-  DownloadLink,
-  FeedbackAlertGroup,
-  FileUploadForm,
-  ModalDialog,
-} from "../components";
+import { DownloadLink } from "../components/DownloadLink";
+import { FileUploadForm } from "../components/forms/FileUploadForm";
+import { ModalDialog } from "../components/ModalDialog";
+import { FeedbackAlertGroup } from "../components/states/FeedbackAlertGroup";
 import {
   useActivities,
   useExportActivities,

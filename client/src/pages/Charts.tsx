@@ -12,17 +12,15 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import {
-  BarChart,
-  ChartWrapper,
-  DateFilterForm,
-  ErrorView,
-  Loading,
-  NoActivitiesPage,
-  SummaryBarChart,
-  SummaryPieChart,
-  useDateRange,
-} from "../components";
+import { DateFilterForm } from "../components/forms/DateFilterForm/DateFilterForm";
+import { useDateRange } from "../components/forms/DateFilterForm/shared";
+import { ErrorView } from "../components/states/ErrorView";
+import { Loading } from "../components/states/Loading";
+import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
+import { BarChart } from "../components/visualization/Charts/BarChart";
+import { ChartWrapper } from "../components/visualization/ChartWrapper";
+import { SummaryBarChart } from "../components/visualization/SummaryCharts/SummaryBarChart";
+import { SummaryPieChart } from "../components/visualization/SummaryCharts/SummaryPieChart";
 import {
   filterByDateRange,
   transformDataToSummaryMap,

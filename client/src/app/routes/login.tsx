@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { redirect, useNavigate, useSearchParams } from "react-router";
 import { authService } from "../../auth/authService";
 import { Login as LoginComponent } from "../../auth/Login";
-import { RouteErrorBoundary, StylesProvider } from "../../components";
+import { RouteErrorBoundary } from "../../components/states/RouteErrorBoundary";
+import { StylesProvider } from "../../components/styles/StylesProvider";
 import { getLoadContext } from "../root";
 
 export { RouteErrorBoundary as ErrorBoundary };

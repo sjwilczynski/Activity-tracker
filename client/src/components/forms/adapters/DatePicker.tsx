@@ -1,5 +1,7 @@
 import type { TextFieldProps } from "@mui/material";
-import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isValid } from "date-fns";
 
 type DatePickerProps = {
@@ -27,26 +29,28 @@ export const DatePicker = ({
     showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
 
   return (
-    <MuiDatePicker
-      label={label}
-      value={value}
-      onChange={(date) => {
-        if (date) {
-          onChange(date);
-        }
-      }}
-      format="yyyy-MM-dd"
-      slotProps={{
-        textField: {
-          variant: "standard",
-          sx: style,
-          size,
-          helperText: error ?? dayOfWeek,
-          error: !!error,
-          onBlur,
-        },
-      }}
-    />
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <MuiDatePicker
+        label={label}
+        value={value}
+        onChange={(date) => {
+          if (date) {
+            onChange(date);
+          }
+        }}
+        format="yyyy-MM-dd"
+        slotProps={{
+          textField: {
+            variant: "standard",
+            sx: style,
+            size,
+            helperText: error ?? dayOfWeek,
+            error: !!error,
+            onBlur,
+          },
+        }}
+      />
+    </LocalizationProvider>
   );
 };
 
@@ -75,23 +79,25 @@ export const NullableDatePicker = ({
     showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
 
   return (
-    <MuiDatePicker
-      label={label}
-      value={value}
-      onChange={(date) => {
-        onChange(date);
-      }}
-      format="yyyy-MM-dd"
-      slotProps={{
-        textField: {
-          variant: "standard",
-          sx: style,
-          size,
-          helperText: error ?? dayOfWeek,
-          error: !!error,
-          onBlur,
-        },
-      }}
-    />
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <MuiDatePicker
+        label={label}
+        value={value}
+        onChange={(date) => {
+          onChange(date);
+        }}
+        format="yyyy-MM-dd"
+        slotProps={{
+          textField: {
+            variant: "standard",
+            sx: style,
+            size,
+            helperText: error ?? dayOfWeek,
+            error: !!error,
+            onBlur,
+          },
+        }}
+      />
+    </LocalizationProvider>
   );
 };
