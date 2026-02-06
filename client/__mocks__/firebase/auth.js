@@ -16,6 +16,7 @@ export const createUserWithEmailAndPassword = fn()
 
 export const signOut = fn().mockName("signOut").mockResolvedValue(undefined);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const onAuthStateChanged = fn((_auth, _callback) => () => {}).mockName(
   "onAuthStateChanged"
 );
