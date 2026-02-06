@@ -16,9 +16,9 @@ export const createUserWithEmailAndPassword = fn()
 
 export const signOut = fn().mockName("signOut").mockResolvedValue(undefined);
 
-export const onAuthStateChanged = fn()
-  .mockName("onAuthStateChanged")
-  .mockReturnValue(() => {});
+export const onAuthStateChanged = fn((_auth, _callback) => () => {}).mockName(
+  "onAuthStateChanged"
+);
 
 export class GoogleAuthProvider {
   static PROVIDER_ID = "google.com";
