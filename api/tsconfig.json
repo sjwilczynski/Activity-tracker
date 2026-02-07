@@ -2,9 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "noEmit": true,
-    "rootDir": ".",
-    "sourceMap": true
+    "noEmit": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
