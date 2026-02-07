@@ -1,21 +1,4 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "verbatimModuleSyntax": true,
-    "module": "ES2022",
-    "target": "ES2022"
-  }
+  "files": [],
+  "references": [{ "path": "api" }, { "path": "client" }]
 }

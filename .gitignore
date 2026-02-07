@@ -13,3 +13,5 @@ storybook-static
 chromatic.config.json
 client/.react-router
 .playwright-mcp
+tsconfig.tsbuildinfo
+client/dev-dist

@@ -1,11 +1,9 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
-    "rootDir": ".",
-    "sourceMap": true,
-    "moduleResolution": "node",
-    "module": "CommonJS",
-    "verbatimModuleSyntax": false
-  }
+    "composite": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
