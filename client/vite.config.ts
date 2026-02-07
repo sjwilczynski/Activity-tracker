@@ -33,11 +33,6 @@ export default defineConfig(async (): Promise<UserConfig> => {
   const reactPlugin = await getReactPlugin();
   return {
     plugins: [
-      reactPlugin,
-      viteTsconfigPaths(),
-      checker({
-        typescript: true,
-      }),
       VitePWA({
         registerType: "autoUpdate",
         manifest: {
@@ -73,6 +68,14 @@ export default defineConfig(async (): Promise<UserConfig> => {
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         },
+        devOptions: {
+          enabled: true,
+        },
+      }),
+      reactPlugin,
+      viteTsconfigPaths(),
+      checker({
+        typescript: true,
       }),
     ],
     base: "/",

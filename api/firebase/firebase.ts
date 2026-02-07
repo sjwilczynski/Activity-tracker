@@ -17,4 +17,4 @@ admin.initializeApp({
 });
 
 export default admin;
-export const database = admin.database();
+export const database: admin.database.Database = admin.database();

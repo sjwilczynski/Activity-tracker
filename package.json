@@ -12,7 +12,7 @@
     "api"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules client/node_modules api/node_modules",
+    "clean": "rm -rf node_modules client/node_modules api/node_modules client/build api/dist",
     "dev": "bun run --filter '*' start",
     "knip": "knip",
     "lint": "eslint --max-warnings=0",
