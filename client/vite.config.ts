@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import path from "node:path";
@@ -73,6 +74,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
             }),
           ]
         : []),
+      tailwindcss(),
       reactPlugin,
       viteTsconfigPaths(),
       checker({

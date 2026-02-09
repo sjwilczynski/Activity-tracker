@@ -4,6 +4,7 @@ import MockDate from "mockdate";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { reactRouterParameters } from "storybook-addon-remix-react-router";
 import { configure, sb } from "storybook/test";
+import "../src/app/globals.css";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
 import { handlers } from "../src/mocks/handlers";

@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { atom, useAtom } from "jotai";
 import { useAtomValue } from "jotai/utils";
+import { useEffect } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -96,6 +97,17 @@ export const useThemeState = () => useAtom(themeAtom);
 export const StylesProvider = ({ children }: Props) => {
   const isLightTheme = useIsLightTheme();
   const theme = createTheme(isLightTheme ? lightTheme : darkTheme);
+
+  // Sync dark class on <html> for Tailwind dark mode
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isLightTheme) {
+      root.classList.remove("dark");
+    } else {
+      root.classList.add("dark");
+    }
+  }, [isLightTheme]);
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
