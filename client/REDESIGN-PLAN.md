@@ -32,17 +32,24 @@
 
 ### CP0: Foundation Setup
 
-- [ ] Install deps: `tailwindcss @tailwindcss/vite lucide-react recharts sonner class-variance-authority clsx tailwind-merge`
-- [ ] Add `@tailwindcss/vite` plugin to `client/vite.config.ts`
-- [ ] Create `client/src/app/globals.css` — `@import "tailwindcss"`, Bricolage Grotesque font, full CSS theme variables (light `:root` + `.dark`) per design guide, chart color vars, background gradient
-- [ ] Create `client/src/lib/utils.ts` — `cn()` utility (clsx + tailwind-merge)
-- [ ] Create `client/components.json` — shadcn/ui config (style: new-york, rsc: false, `@/*` aliases)
-- [ ] Add `@/*` path alias to `client/tsconfig.json`
-- [ ] Import `globals.css` in `src/app/root.tsx`, replace Roboto font link with Bricolage Grotesque
-- [ ] Import `globals.css` in `.storybook/preview.ts`, update `.storybook/preview-head.html` font
-- [ ] Bridge theme: modify `StylesProvider.tsx` to also toggle `document.documentElement.classList` `dark` class
-- [ ] Create `client/src/lib/colors.ts` — color utility: per-activity hash color generator, category-to-color mapping, lighter/darker variant functions using HSL. Seed palette from `--chart-1` through `--chart-5`.
-- [ ] Verify: app looks identical, Tailwind classes work, Storybook renders
+- [x] Install deps: `tailwindcss @tailwindcss/vite lucide-react recharts sonner class-variance-authority clsx tailwind-merge`
+- [x] Add `@tailwindcss/vite` plugin to `client/vite.config.ts`
+- [x] Create `client/src/app/globals.css` — `@import "tailwindcss"`, Bricolage Grotesque font, full CSS theme variables (light `:root` + `.dark`) per design guide, chart color vars, background gradient
+- [x] Create `client/src/utils/cn.ts` — `cn()` utility (clsx + tailwind-merge)
+- [x] Create `client/components.json` — shadcn/ui config (style: new-york, rsc: false, `@/*` aliases)
+- [x] Add `@/*` path alias to `client/tsconfig.json`
+- [x] Import `globals.css` in `src/app/root.tsx`, replace Roboto font link with Bricolage Grotesque
+- [x] Import `globals.css` in `.storybook/preview.ts`, update `.storybook/preview-head.html` font
+- [x] Bridge theme: modify `StylesProvider.tsx` to also toggle `document.documentElement.classList` `dark` class
+- [x] Create `client/src/utils/colors.ts` — color utility: per-activity hash color generator, category-to-color mapping, lighter/darker variant functions using HSL. Seed palette from `--chart-1` through `--chart-5`.
+- [x] Verify: app looks identical, Tailwind classes work, Storybook renders
+
+> **Knip exceptions added** in `knip.json` for unused CP0 deps/files. Remove from `ignoreDependencies`/`ignore` as each CP starts using them:
+>
+> - CP1: `lucide-react` (icons), `class-variance-authority` + `clsx` + `tailwind-merge` (shadcn components use `cn()` → also remove `src/utils/cn.ts` from ignore)
+> - CP3: `sonner` (toasts), `recharts` (if used early) — also remove `src/utils/colors.ts` from ignore when first imported
+> - CP5: `recharts` (charts)
+> - CP7: `tailwindcss` (no longer dev-only concern after MUI removal, but can stay in devDeps ignore)
 
 ### CP1: Login + Loading Screen
 
@@ -96,7 +103,7 @@
 - [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryPieChart.tsx`: → Recharts `PieChart` with dual `Pie` rings (inner: active/inactive, outer: by-type). Colors from color utility.
 - [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryBarChart.tsx`: → Recharts `ComposedChart` (Bar + ReferenceLine for thresholds)
 - [ ] Rewrite `src/components/visualization/ChartWrapper.tsx`: MUI styled → Tailwind
-- [ ] Rewrite `src/components/visualization/utils.ts`: Chart.js data format → Recharts format. Remove `@ctrl/tinycolor`. Use color utility from `lib/colors.ts`.
+- [ ] Rewrite `src/components/visualization/utils.ts`: Chart.js data format → Recharts format. Remove `@ctrl/tinycolor`. Use color utility from `utils/colors.ts`.
 - [ ] Rewrite `src/pages/Charts.tsx`: Remove Chart.js `register()`. Use DateRangePicker (from CP4). Summary stat cards with chart colors.
 - [ ] Update stories, remove `Chart.defaults.animation = false` from storybook config
 - [ ] Verify: all charts render with correct data, tooltips, responsive, stories pass
@@ -128,6 +135,7 @@
 - [ ] Verify: `bun run --filter '*' build` succeeds
 - [ ] Verify: `bun run size-limit` — bundle under 365 kB (expect ~240-265 kB)
 - [ ] Verify: `cd client && bun run test` — all stories pass
+- [ ] Clean up `knip.json`: remove all CP0 entries from `ignoreDependencies` and `ignore` in the client workspace. Run `bun run knip` to confirm no leftover exceptions.
 
 ### CP8: Backend Changes + Compare Page + Detail Fields
 

@@ -7,7 +7,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "types": ["vite/client", "node", "@react-router/node"],
-    "rootDirs": [".", ".react-router/types"]
+    "rootDirs": [".", ".react-router/types"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", ".react-router/types/**/*"],
   "exclude": ["node_modules", "build", "storybook-static"]

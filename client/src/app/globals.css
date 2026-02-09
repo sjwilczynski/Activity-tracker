@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #faf5ee;
+  --color-foreground: #1a1a2e;
+  --color-card: #fefdfb;
+  --color-card-foreground: #1a1a2e;
+  --color-popover: #fefdfb;
+  --color-popover-foreground: #1a1a2e;
+  --color-primary: #5085be;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #edf3fa;
+  --color-secondary-foreground: #1a1a2e;
+  --color-muted: #edf3fa;
+  --color-muted-foreground: #596168;
+  --color-accent: #edf3fa;
+  --color-accent-foreground: #1a1a2e;
+  --color-destructive: #d4183d;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #d8e4ee;
+  --color-input: #d8e4ee;
+  --color-ring: #5085be;
+  --color-sidebar-background: #f8fafc;
+  --color-sidebar-foreground: #1a1a2e;
+  --color-sidebar-primary: #5085be;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #edf3fa;
+  --color-sidebar-accent-foreground: #1a1a2e;
+  --color-sidebar-border: #e2ebf3;
+  --color-sidebar-ring: #5085be;
+  --color-chart-1: #d4764e;
+  --color-chart-2: #5085be;
+  --color-chart-3: #1e7a4e;
+  --color-chart-4: #d4a03c;
+  --color-chart-5: #cd6078;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+.dark {
+  --color-background: #1a1a2e;
+  --color-foreground: #f0f0f5;
+  --color-card: #1e2942;
+  --color-card-foreground: #f0f0f5;
+  --color-popover: #1e2942;
+  --color-popover-foreground: #f0f0f5;
+  --color-primary: #6b9fd4;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #253550;
+  --color-secondary-foreground: #f0f0f5;
+  --color-muted: #253550;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #253550;
+  --color-accent-foreground: #f0f0f5;
+  --color-destructive: oklch(0.55 0.2 27);
+  --color-destructive-foreground: #ffffff;
+  --color-border: #2d3f5e;
+  --color-input: #2d3f5e;
+  --color-ring: #6b9fd4;
+  --color-sidebar-background: #1a1a2e;
+  --color-sidebar-foreground: #f0f0f5;
+  --color-sidebar-primary: #6b9fd4;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #253550;
+  --color-sidebar-accent-foreground: #f0f0f5;
+  --color-sidebar-border: #2d3f5e;
+  --color-sidebar-ring: #6b9fd4;
+  --color-chart-1: #e8956b;
+  --color-chart-2: #6b9fd4;
+  --color-chart-3: #4dab6e;
+  --color-chart-4: #e8bf5a;
+  --color-chart-5: #e0839a;
+}
+
+/* Background gradient */
+html {
+  background: var(--color-background);
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    #faf5ee 0%,
+    #f5ede3 25%,
+    #f0ebe4 50%,
+    #eee8df 75%,
+    #faf5ee 100%
+  );
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+.dark body {
+  background: linear-gradient(
+    135deg,
+    #1a1a2e 0%,
+    #1e2540 25%,
+    #1a2238 50%,
+    #1e2540 75%,
+    #1a1a2e 100%
+  );
+}

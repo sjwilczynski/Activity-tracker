@@ -1,3 +1,5 @@
+import "./globals.css";
+
 import { QueryClient } from "@tanstack/react-query";
 import {
   Links,
@@ -67,6 +69,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
         />
         <title>Activity tracker</title>
         <meta
