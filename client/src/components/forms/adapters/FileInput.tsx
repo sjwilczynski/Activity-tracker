@@ -97,7 +97,7 @@ export const FileInput = ({
         </StyledLabel>
         <Tooltip title="Click to view a file in a format required for upload">
           <IconButton
-            href="https://github.com/sjwilczynski/Activity-tracker/blob/master/example-activities-file.json"
+            href="https://github.com/sjwilczynski/Activity-tracker/blob/main/example-activities-file.json"
             color="inherit"
             size="large"
           >

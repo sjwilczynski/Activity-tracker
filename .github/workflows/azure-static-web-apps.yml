@@ -3,7 +3,7 @@ name: Azure Static Web Apps - build & deploy
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
     # do not deploy PR branch that renovate created
