@@ -53,12 +53,12 @@
 
 ### CP1: Login + Loading Screen
 
-- [ ] Add shadcn components: `button`, `input`, `label`, `separator`, `card`
-- [ ] Rewrite `src/auth/Login.tsx`: MUI → shadcn Card/Button/Input/Separator + Tailwind. Google icon → inline SVG. Gradient heading per design guide. Toggle sign-in/sign-up mode.
-- [ ] Rewrite `src/components/states/Loading.tsx`: MUI `CircularProgress` → CSS-animated "AT" logo with breathing scale/opacity animation + bouncing dots. Keep `role="progressbar"` for test compat.
-- [ ] Update `src/components/states/HydrateFallback.tsx`: brand color `#5085BE`, background `#FAF5EE`
-- [ ] Update `src/auth/Login.stories.tsx`
-- [ ] Verify: Login stories pass, login page matches design screenshots (light + dark)
+- [x] Add shadcn components: `button`, `input`, `label`, `separator`, `card`
+- [x] Rewrite `src/auth/Login.tsx`: MUI → shadcn Card/Button/Input/Separator + Tailwind. Google icon → inline SVG. Gradient heading per design guide. Toggle sign-in/sign-up mode.
+- [x] Rewrite `src/components/states/Loading.tsx`: MUI `CircularProgress` → CSS-animated bouncing dots only. Keep `role="progressbar"` for test compat.
+- [x] Update `src/components/states/HydrateFallback.tsx`: brand color `#5085BE`, background `#FAF5EE`
+- [x] Update `src/auth/Login.stories.tsx`
+- [x] Verify: Login stories pass, login page matches design screenshots (light + dark)
 
 ### CP2: Background + Navigation
 

@@ -19,8 +19,8 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    expect(canvas.getByText("Team active")).toBeInTheDocument();
-    expect(canvas.getByText("Team lazy")).toBeInTheDocument();
+    expect(canvas.getByText("Activity Tracker")).toBeInTheDocument();
+    expect(canvas.getByText("Sign in to continue")).toBeInTheDocument();
     expect(
       canvas.getByRole("button", { name: /sign in with google/i })
     ).toBeInTheDocument();
