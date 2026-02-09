@@ -8,14 +8,10 @@
         "@vitest/coverage-v8",
         "chromatic",
         "tailwindcss",
-        "class-variance-authority",
-        "clsx",
-        "lucide-react",
         "recharts",
-        "sonner",
-        "tailwind-merge"
+        "sonner"
       ],
-      "ignore": ["src/utils/cn.ts", "src/utils/colors.ts"]
+      "ignore": ["src/utils/colors.ts", "src/components/ui/*.tsx"]
     },
     "api": {
       "entry": ["functions/*/index.ts"],
