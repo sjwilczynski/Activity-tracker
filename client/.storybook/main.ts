@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import tailwindcss from "@tailwindcss/postcss";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -20,6 +21,13 @@ const config: StorybookConfig = {
   ],
   framework: getAbsolutePath("@storybook/react-vite"),
   viteFinal: (config) => {
+    // Use PostCSS with @tailwindcss/postcss for Storybook
+    // (the @tailwindcss/vite plugin doesn't process CSS in Storybook's pipeline)
+    config.css = config.css ?? {};
+    config.css.postcss = {
+      plugins: [tailwindcss],
+    };
+
     // Remove VitePWA plugin for Storybook builds (it causes issues with large manager files)
     config.plugins = config.plugins?.filter(
       (plugin) =>
