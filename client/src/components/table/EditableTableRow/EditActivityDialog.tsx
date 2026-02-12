@@ -138,9 +138,11 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
 const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
   const successRef = useRef(isSuccess);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onCancelRef = useRef(onCancel);
+  onCancelRef.current = onCancel;
   useEffect(() => {
     if (isSuccess && !successRef.current) {
-      timeoutRef.current = setTimeout(onCancel, 1500);
+      timeoutRef.current = setTimeout(() => onCancelRef.current(), 1500);
     }
     successRef.current = isSuccess;
     return () => {
@@ -148,5 +150,5 @@ const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isSuccess, onCancel]);
+  }, [isSuccess]);
 };

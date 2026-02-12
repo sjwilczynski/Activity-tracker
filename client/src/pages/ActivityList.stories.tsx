@@ -30,6 +30,19 @@ export const Default: Story = {
   },
 };
 
+export const Mobile: Story = {
+  globals: {
+    viewport: {
+      value: "mobile2",
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("All Activities");
+    expect(canvas.getByText("Activity History")).toBeInTheDocument();
+  },
+};
+
 export const Loading: Story = {
   parameters: {
     msw: {

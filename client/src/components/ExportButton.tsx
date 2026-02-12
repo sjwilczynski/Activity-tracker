@@ -1,4 +1,5 @@
 import { Download } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 type Props = {
@@ -26,6 +27,7 @@ export const ExportButton = ({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);
+      toast.error(`Failed to export ${filename}`);
     }
   };
 

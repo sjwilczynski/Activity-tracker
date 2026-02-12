@@ -175,4 +175,10 @@ body {
   .btn-icon-shake:focus-visible svg {
     animation: icon-shake 0.4s ease-in-out;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-icon-shake:hover svg,
+    .btn-icon-shake:focus-visible svg {
+      animation: none;
+    }
+  }
 }

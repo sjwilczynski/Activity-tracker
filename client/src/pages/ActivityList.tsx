@@ -43,7 +43,7 @@ export const ActivityList = () => {
   }
 
   const filtered = sortDescendingByDate(
-    filterByDateRange(data || [], startDate, endDate)
+    filterByDateRange(data, startDate, endDate)
   );
 
   const searchFiltered = searchQuery
@@ -86,13 +86,13 @@ export const ActivityList = () => {
         </div>
         <div className="flex gap-2">
           <ExportButton
-            disabled={isFetchingActivities || !data?.length}
+            disabled={isFetchingActivities}
             exportFile={exportActivities}
           />
           <UploadButton />
           <DeleteAllButton
             totalCount={data.length}
-            disabled={isFetchingActivities || !data?.length}
+            disabled={isFetchingActivities}
           />
         </div>
       </div>
