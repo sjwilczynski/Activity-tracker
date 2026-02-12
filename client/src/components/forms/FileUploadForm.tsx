@@ -1,22 +1,11 @@
-import { Button, styled } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { areActivitiesValid } from "../../data";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
+import { Button } from "../ui/button";
 import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
-
-const StyledForm = styled("form")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  padding: `${theme.spacing(1)} 0`,
-}));
-
-const ButtonSubmit = styled(Button)(({ theme }) => ({
-  margin: `${theme.spacing(1)} 0`,
-}));
 
 export function FileUploadForm() {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
@@ -83,7 +72,8 @@ export function FileUploadForm() {
   }, [isSuccess, form]);
 
   return (
-    <StyledForm
+    <form
+      className="flex flex-col gap-4 pt-2"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -107,16 +97,15 @@ export function FileUploadForm() {
       </form.Field>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
         {([canSubmit, isDirty]) => (
-          <ButtonSubmit
+          <Button
+            variant="gradient"
             disabled={!canSubmit || !isDirty}
-            variant="contained"
-            color="primary"
             type="submit"
           >
             Upload
-          </ButtonSubmit>
+          </Button>
         )}
       </form.Subscribe>
-    </StyledForm>
+    </form>
   );
 }

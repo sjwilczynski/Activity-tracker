@@ -64,7 +64,7 @@ export const RowInReadMode = (props: Props) => {
           <p className="font-medium capitalize text-sm">{record.name}</p>
         </div>
 
-        <span className="text-sm text-muted-foreground shrink-0 hidden lg:block">
+        <span className="text-sm text-muted-foreground shrink-0">
           {formatDate(record.date)}
         </span>
 

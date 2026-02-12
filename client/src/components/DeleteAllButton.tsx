@@ -67,10 +67,7 @@ export const DeleteAllButton = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction variant="destructive" onClick={handleConfirm}>
               Delete All
             </AlertDialogAction>
           </AlertDialogFooter>

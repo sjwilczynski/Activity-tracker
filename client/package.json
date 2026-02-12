@@ -32,7 +32,6 @@
     "@emotion/styled": "11.10.0",
     "@mui/icons-material": "5.18.0",
     "@mui/material": "5.18.0",
-    "@mui/system": "5.18.0",
     "@react-router/dev": "^7.13.0",
     "@react-router/node": "^7.13.0",
     "@tanstack/react-form": "^1.28.0",

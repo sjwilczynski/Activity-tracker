@@ -180,7 +180,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
             </div>
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="gap-2">
           {(value.from || value.to) && (
             <Button
               variant="ghost"
@@ -193,7 +193,11 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={applyCustomRange} disabled={isInvalidRange}>
+          <Button
+            variant="gradient"
+            onClick={applyCustomRange}
+            disabled={isInvalidRange}
+          >
             Apply
           </Button>
         </DialogFooter>

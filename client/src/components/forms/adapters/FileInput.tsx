@@ -1,36 +1,7 @@
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import type { Theme } from "@mui/material";
-import {
-  Button,
-  FormHelperText,
-  IconButton,
-  styled,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import type { SxProps } from "@mui/system";
+import { FileUp, Info } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback } from "react";
-
-const SelectButtonContainer = styled("div")({
-  display: "flex",
-  alignItems: "center",
-});
-
-const StyledLabel = styled("label")({
-  display: "flex",
-  flex: "1 1 auto",
-});
-
-const StyledFormHelperText = styled(FormHelperText)({
-  textAlign: "center",
-});
-
-const submitButtonStyles: SxProps<Theme> = {
-  my: 1,
-  mx: 0,
-  flex: "1 1 auto",
-};
+import { Button } from "../../ui/button";
 
 type FileInputProps = {
   value: File | null;
@@ -65,7 +36,6 @@ export const FileInput = ({
       const files = input.files;
       if (files && files[0]) {
         onChange(makeFileEnumerable(files[0]));
-        // Reset the input value to allow selecting the same file again
         input.value = "";
       }
     },
@@ -75,46 +45,39 @@ export const FileInput = ({
   const fileName = value?.name;
 
   return (
-    <>
+    <div className="space-y-3">
       <input
         key={fileName ?? "empty"}
-        style={{ display: "none" }}
+        className="hidden"
         id="contained-button-file"
         type="file"
         onChange={onFileInputChange}
         onBlur={onBlur}
       />
-      <SelectButtonContainer>
-        <StyledLabel htmlFor="contained-button-file">
-          <Button
-            variant="contained"
-            color="primary"
-            component="div"
-            sx={submitButtonStyles}
-          >
-            Select file
+      <div className="flex items-center gap-2">
+        <label htmlFor="contained-button-file" className="flex-1">
+          <Button variant="outline" className="w-full cursor-pointer" asChild>
+            <div>
+              <FileUp className="size-4 mr-2" />
+              Select file
+            </div>
           </Button>
-        </StyledLabel>
-        <Tooltip title="Click to view a file in a format required for upload">
-          <IconButton
+        </label>
+        <Button variant="ghost" size="icon" className="size-9" asChild>
+          <a
             href="https://github.com/sjwilczynski/Activity-tracker/blob/main/example-activities-file.json"
-            color="inherit"
-            size="large"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View example file format"
           >
-            <InfoOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-      </SelectButtonContainer>
+            <Info className="size-4 text-muted-foreground" />
+          </a>
+        </Button>
+      </div>
       {fileName && (
-        <StyledFormHelperText>
-          <Typography variant="subtitle1">{fileName}</Typography>
-        </StyledFormHelperText>
+        <p className="text-sm text-center text-muted-foreground">{fileName}</p>
       )}
-      {error && (
-        <StyledFormHelperText error>
-          <Typography variant="subtitle1">{error}</Typography>
-        </StyledFormHelperText>
-      )}
-    </>
+      {error && <p className="text-sm text-center text-destructive">{error}</p>}
+    </div>
   );
 };

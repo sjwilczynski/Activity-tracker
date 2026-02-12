@@ -120,6 +120,7 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
                   Cancel
                 </Button>
                 <Button
+                  variant="gradient"
                   disabled={!canSubmit || !isDirty || isPending}
                   onClick={() => form.handleSubmit()}
                 >
