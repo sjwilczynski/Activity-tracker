@@ -84,15 +84,17 @@
 
 ### CP4: Activity List
 
-- [ ] Add shadcn components: `table`, `alert-dialog`, `badge`
-- [ ] Create new `DateRangePicker` component: shadcn Dialog with Quick Presets (Last Week/Month/Year) + Custom Range (from/to native date inputs) + Apply button. Replaces inline `DateFilterForm`. Reference: prototype's `date-range-picker.tsx`.
-- [ ] Rewrite `src/pages/ActivityList.tsx`: use new DateRangePicker, search input, "Delete All" button with AlertDialog confirmation
-- [ ] Rewrite `src/components/table/SummaryTable.tsx`: MUI Table → shadcn Table. Month-grouped rows with tinted header bars (uppercase, bold tracking). Custom pagination.
-- [ ] Rewrite `src/components/table/EditableTableRow/RowInReadMode.tsx`: Lucide `Trash2`/`Pencil`. Inline actions hidden by default (`opacity-0 group-hover:opacity-100`). Activity color icons. Intensity badges.
-- [ ] Rewrite `src/components/table/EditableTableRow/RowInEditMode.tsx`: MUI + Emotion → shadcn + Tailwind. Edit dialog with shadcn Dialog.
-- [ ] Rewrite `src/components/forms/DateFilterForm/` → replace with DateRangePicker or adapt
-- [ ] Update stories
-- [ ] Verify: CRUD works, month grouping, search, date range filtering, stories pass
+- [x] Add shadcn components: `alert-dialog` (table/badge not needed — design uses flex rows and styled spans)
+- [x] Create new `DateRangePicker` component: shadcn Dialog with Quick Presets (Last Week/Month/Year) + Custom Range (from/to native date inputs) + Apply button with invalid range validation. Replaces inline `DateFilterForm`. Used by both ActivityList and Charts.
+- [x] Create `utils/activity-icons.tsx`: `getActivityIcon()` + `formatDate()` helpers
+- [x] Rewrite `src/pages/ActivityList.tsx`: DateRangePicker, search input, Export/Upload/Delete All buttons (each extracted to self-contained components)
+- [x] Rewrite `src/components/table/SummaryTable.tsx`: MUI Table → card-based month-grouped flex rows with custom Tailwind pagination
+- [x] Rewrite `src/components/table/EditableTableRow/RowInReadMode.tsx`: Lucide `Trash2`/`Pencil`. Actions hidden by default (`opacity-0 group-hover:opacity-100`). Activity color icons. Extracted `MobileActivityCard` for mobile view.
+- [x] Rewrite `src/components/table/EditableTableRow/RowInEditMode.tsx` → renamed to `EditActivityDialog.tsx`: Dialog-based editing with TanStack form
+- [x] Delete `DateFilterForm.tsx`, `FormButtons.tsx`, `ModalDialog.tsx`, `DownloadLink.tsx`. Clean up unused exports.
+- [x] Simplify Profile page: removed upload/export/delete-all (moved to ActivityList)
+- [x] Update stories (45 tests pass)
+- [x] Verify: CRUD works, month grouping, search, date range filtering, build clean, knip clean
 
 ### CP5: Charts
 
@@ -102,7 +104,7 @@
 - [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryBarChart.tsx`: → Recharts `ComposedChart` (Bar + ReferenceLine for thresholds)
 - [ ] Rewrite `src/components/visualization/ChartWrapper.tsx`: MUI styled → Tailwind
 - [ ] Rewrite `src/components/visualization/utils.ts`: Chart.js data format → Recharts format. Remove `@ctrl/tinycolor`. Use color utility from `utils/colors.ts`.
-- [ ] Rewrite `src/pages/Charts.tsx`: Remove Chart.js `register()`. Use DateRangePicker (from CP4). Summary stat cards with chart colors.
+- [ ] Rewrite `src/pages/Charts.tsx`: Remove Chart.js `register()`. DateRangePicker already integrated (done in CP4). Summary stat cards with chart colors.
 - [ ] Update stories, remove `Chart.defaults.animation = false` from storybook config
 - [ ] Verify: all charts render with correct data, tooltips, responsive, stories pass
 
@@ -161,9 +163,9 @@
 - **CP1:** `auth/Login.tsx`, `states/Loading.tsx`, `states/HydrateFallback.tsx`
 - **CP2:** `routes/_layout.tsx`, `navigation/Navigation.tsx`, `navigation/NavigationDrawer.tsx`, `navigation/LinkList.tsx`, `appContainer/AppBar.tsx`, `appContainer/buttons/*.tsx` (6 files), `pages/PagesContainer.tsx`
 - **CP3:** `pages/Welcome.tsx`, `forms/AddActivityForm/AddActivityForm.tsx`, `forms/adapters/CategoryAutocomplete.tsx`, `forms/adapters/DatePicker.tsx`, `states/FeedbackAlert.tsx`, `states/FeedbackAlertGroup.tsx`
-- **CP4:** `pages/ActivityList.tsx`, `table/SummaryTable.tsx`, `table/EditableTableRow/RowInReadMode.tsx`, `table/EditableTableRow/RowInEditMode.tsx`, `forms/DateFilterForm/DateFilterForm.tsx`, `forms/DateFilterForm/FormButtons.tsx`
+- **CP4:** ~~`pages/ActivityList.tsx`~~, ~~`table/SummaryTable.tsx`~~, ~~`table/EditableTableRow/RowInReadMode.tsx`~~, ~~`table/EditableTableRow/RowInEditMode.tsx`~~, ~~`forms/DateFilterForm/DateFilterForm.tsx`~~, ~~`forms/DateFilterForm/FormButtons.tsx`~~ ✅ Done
 - **CP5:** `visualization/ChartWrapper.tsx`, `visualization/Charts/BarChart.tsx`, `visualization/SummaryCharts/*.tsx`, `visualization/utils.ts`
-- **CP6:** `pages/Profile.tsx`, `ModalDialog.tsx`, `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
+- **CP6:** `pages/Profile.tsx` (partially done — simplified in CP4), ~~`ModalDialog.tsx`~~ (deleted in CP4), `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
 - **CP7:** `styles/StylesProvider.tsx`
 
 ### CP9: Cleanup + Full-App Story
