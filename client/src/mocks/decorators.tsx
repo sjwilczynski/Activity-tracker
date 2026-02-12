@@ -4,6 +4,7 @@ import { Provider } from "jotai";
 import { withRouter } from "storybook-addon-remix-react-router";
 import { AuthContext, type Auth, type User } from "../auth/AuthContext";
 import { StylesProvider } from "../components/styles/StylesProvider";
+import { Toaster } from "../components/ui/sonner";
 import { testContext } from "./testContext";
 
 // Mock user for stories
@@ -49,6 +50,7 @@ export const withAllProviders: Decorator = (Story, context) => {
         <StylesProvider>
           <AuthContext.Provider value={createMockAuthContext(user)}>
             <Story />
+            <Toaster />
           </AuthContext.Provider>
         </StylesProvider>
       </Provider>

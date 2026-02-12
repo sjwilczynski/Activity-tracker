@@ -1,24 +1,12 @@
-import { Button, styled, type TextFieldProps } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
-import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
+import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
+import { Button } from "../../ui/button";
 import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
 import { categoryOptionSchema, dateSchema } from "../schemas";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
-
-const StyledForm = styled("form")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  padding: `${theme.spacing(1)} 0`,
-}));
-
-const fieldStyle: TextFieldProps["sx"] = {
-  my: 1,
-  mx: 0,
-};
 
 type Props = {
   lastActivity: ActivityRecordWithId | undefined;
@@ -64,6 +52,14 @@ export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError, isPending } =
     useAddActivityFormSubmit();
 
+  useFeedbackToast(
+    { isSuccess, isError },
+    {
+      successMessage: "Activity added successfully",
+      errorMessage: "Failed to add activity",
+    }
+  );
+
   const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
 
   const form = useForm({
@@ -84,69 +80,62 @@ export function AddActivityForm({ lastActivity }: Props) {
   );
 
   return (
-    <>
-      <StyledForm
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
+    <form
+      className="grid gap-4 sm:grid-cols-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="date"
+        validators={{
+          onChange: dateSchema,
         }}
       >
-        <form.Field
-          name="date"
-          validators={{
-            onChange: dateSchema,
-          }}
-        >
-          {(field) => (
-            <DatePicker
-              value={field.state.value}
-              onChange={field.handleChange}
-              onBlur={field.handleBlur}
-              error={getErrorMessage(field.state.meta.errors)}
-              label="Date"
-              style={fieldStyle}
-            />
-          )}
-        </form.Field>
-        <form.Field
-          name="category"
-          validators={{
-            onChange: categoryOptionSchema,
-          }}
-        >
-          {(field) => (
-            <CategoryAutocomplete
-              key={submitCount}
-              value={field.state.value}
-              onChange={field.handleChange}
-              onBlur={field.handleBlur}
-              error={getErrorMessage(field.state.meta.errors)}
-              label="Activity name"
-              style={fieldStyle}
-              autoFocus={submitCount > 0}
-            />
-          )}
-        </form.Field>
+        {(field) => (
+          <DatePicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="Date"
+          />
+        )}
+      </form.Field>
+      <form.Field
+        name="category"
+        validators={{
+          onChange: categoryOptionSchema,
+        }}
+      >
+        {(field) => (
+          <CategoryAutocomplete
+            key={submitCount}
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+            label="Activity name"
+            autoFocus={submitCount > 0}
+          />
+        )}
+      </form.Field>
+      <div className="sm:col-span-2 sm:text-right">
         <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
           {([canSubmit, isDirty]) => (
             <Button
               disabled={!canSubmit || !isDirty || isPending}
-              variant="contained"
-              color="primary"
+              variant="gradient"
               type="submit"
+              className="w-full sm:w-auto px-8"
             >
-              {isPending ? "Adding..." : "Add activity"}
+              {isPending ? "Logging..." : "Log Activity"}
             </Button>
           )}
         </form.Subscribe>
-      </StyledForm>
-      <FeedbackAlertGroup
-        successMessage="Activity added successfully"
-        errorMessage="Failed to add activity"
-        isRequestError={isError}
-        isRequestSuccess={isSuccess}
-      />
-    </>
+      </div>
+    </form>
   );
 }

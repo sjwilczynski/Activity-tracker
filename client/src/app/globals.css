@@ -82,19 +82,28 @@
   --color-chart-5: #e0839a;
 }
 
-/* Background gradient */
+:root {
+  --heading-gradient: linear-gradient(135deg, #1e293b 40%, #5085be);
+  --color-input-background: #ffffff;
+}
+
+.dark {
+  --heading-gradient: linear-gradient(135deg, #e2e8f0 40%, #6b9fd4);
+  --color-input-background: transparent;
+}
+
 html {
   background: var(--color-background);
 }
 
 body {
   background: linear-gradient(
-    135deg,
-    #faf5ee 0%,
-    #f5ede3 25%,
-    #f0ebe4 50%,
-    #eee8df 75%,
-    #faf5ee 100%
+    150deg,
+    #f1f3f6 0%,
+    #f4f1eb 28%,
+    #faf5ee 48%,
+    #eff5f0 68%,
+    #f5efea 100%
   );
   color: var(--color-foreground);
   font-family: var(--font-sans);
@@ -102,17 +111,45 @@ body {
 
 .dark body {
   background: linear-gradient(
-    135deg,
+    150deg,
     #1a1a2e 0%,
-    #1e2540 25%,
-    #1a2238 50%,
-    #1e2540 75%,
-    #1a1a2e 100%
+    #1e2240 28%,
+    #1a1a2e 48%,
+    #192030 68%,
+    #1e1e38 100%
   );
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+}
+
+@layer utilities {
+  .bloom-hover {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .bloom-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(80, 133, 190, 0.12);
+  }
+  .dark .bloom-hover:hover {
+    box-shadow:
+      0 8px 25px rgba(107, 159, 212, 0.08),
+      0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  .heading-gradient {
+    width: fit-content;
+    background: var(--heading-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
   }
 }

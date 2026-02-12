@@ -9,8 +9,7 @@
         "chromatic",
         "tailwindcss",
         "tw-animate-css",
-        "recharts",
-        "sonner"
+        "recharts"
       ],
       "ignore": ["src/utils/colors.ts", "src/components/ui/*.tsx"]
     },

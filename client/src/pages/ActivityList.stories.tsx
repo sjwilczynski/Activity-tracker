@@ -18,12 +18,8 @@ export const Default: Story = {
     await canvas.findByRole("table");
 
     await step("Verify date filter is visible", async () => {
-      expect(
-        canvas.getByRole("group", { name: /start date/i })
-      ).toBeInTheDocument();
-      expect(
-        canvas.getByRole("group", { name: /end date/i })
-      ).toBeInTheDocument();
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 
     await step("Verify table has correct columns", async () => {
@@ -158,12 +154,8 @@ export const DateFilterInteraction: Story = {
     await canvas.findByRole("table");
 
     await step("Verify date filter is visible", async () => {
-      expect(
-        canvas.getByRole("group", { name: /start date/i })
-      ).toBeInTheDocument();
-      expect(
-        canvas.getByRole("group", { name: /end date/i })
-      ).toBeInTheDocument();
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 
     await step("Verify initial data is loaded", async () => {
@@ -199,16 +191,18 @@ export const DateFilterInvalidRange: Story = {
     await canvas.findByRole("table");
 
     await step("Set end date before start date", async () => {
-      // Use "Show current year" to reliably set dates without typing into spinbuttons
-      await userEvent.click(
-        canvas.getByRole("button", { name: /show current year/i })
-      );
+      const startDateInput = canvas.getByLabelText(
+        /start date/i
+      ) as HTMLInputElement;
+      const endDateInput = canvas.getByLabelText(
+        /end date/i
+      ) as HTMLInputElement;
 
-      // Decrease end year by 1 to make end date (prev year Dec 31) before start date (current year Jan 1)
-      const endDate = within(canvas.getByRole("group", { name: /end date/i }));
-      const endYear = endDate.getByRole("spinbutton", { name: /year/i });
-      await userEvent.click(endYear);
-      await userEvent.keyboard("{ArrowDown}");
+      // Set start date after end date to create an invalid range
+      await userEvent.clear(startDateInput);
+      await userEvent.type(startDateInput, "2024-12-31");
+      await userEvent.clear(endDateInput);
+      await userEvent.type(endDateInput, "2024-01-01");
     });
 
     await step("Submit and verify error message", async () => {

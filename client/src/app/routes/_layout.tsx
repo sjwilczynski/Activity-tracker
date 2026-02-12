@@ -9,6 +9,7 @@ import { AppSidebar } from "../../components/navigation/AppSidebar";
 import { MobileHeader } from "../../components/navigation/MobileHeader";
 import { StylesProvider } from "../../components/styles/StylesProvider";
 import { SidebarInset, SidebarProvider } from "../../components/ui/sidebar";
+import { Toaster } from "../../components/ui/sonner";
 import { PagesContainer } from "../../pages/PagesContainer";
 import { getLoadContext } from "../root";
 
@@ -62,7 +63,7 @@ export default function Layout() {
           <AuthStateProvider>
             <SidebarProvider>
               <AppSidebar />
-              <SidebarInset>
+              <SidebarInset className="bg-transparent">
                 <MobileHeader />
                 <PagesContainer>
                   <Outlet />
@@ -70,6 +71,7 @@ export default function Layout() {
               </SidebarInset>
             </SidebarProvider>
           </AuthStateProvider>
+          <Toaster />
           <ReactQueryDevtools initialIsOpen={false} />
         </StylesProvider>
       </Provider>

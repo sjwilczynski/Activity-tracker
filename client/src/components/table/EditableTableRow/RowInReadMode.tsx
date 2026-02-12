@@ -10,7 +10,7 @@ import {
 import { useCallback } from "react";
 import { useFetcher } from "react-router";
 import type { ActivityRecordWithId } from "../../../data";
-import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
+import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 
 type Props = {
   record: ActivityRecordWithId;
@@ -22,6 +22,14 @@ export const RowInReadMode = (props: Props) => {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isDeleting = fetcher.state !== "idle";
   const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+
+  useFeedbackToast(
+    { isSuccess: false, isError },
+    {
+      successMessage: "Successfully deleted the activity",
+      errorMessage: "Failed to delete the activity",
+    }
+  );
 
   const deleteActivity = useCallback(
     (e: React.MouseEvent) => {
@@ -38,47 +46,35 @@ export const RowInReadMode = (props: Props) => {
   );
 
   return (
-    <>
-      <TableRow
-        onClick={isDeleting ? undefined : onEdit}
-        sx={
-          isDeleting
-            ? {
-                opacity: 0.5,
-                backgroundColor: (theme) =>
-                  alpha(theme.palette.action.disabled, 0.1),
-                pointerEvents: "none",
-              }
-            : undefined
-        }
-      >
-        <TableCell>{record.date.toLocaleDateString("en-CA")}</TableCell>
-        <TableCell>{record.name}</TableCell>
-        <TableCell>
-          <Button
-            startIcon={<EditIcon />}
-            onClick={onEdit}
-            disabled={isDeleting}
-          >
-            Edit
-          </Button>
-          <Button
-            startIcon={
-              isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />
+    <TableRow
+      onClick={isDeleting ? undefined : onEdit}
+      sx={
+        isDeleting
+          ? {
+              opacity: 0.5,
+              backgroundColor: (theme) =>
+                alpha(theme.palette.action.disabled, 0.1),
+              pointerEvents: "none",
             }
-            onClick={deleteActivity}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
-          </Button>
-        </TableCell>
-      </TableRow>
-      <FeedbackAlertGroup
-        isRequestError={isError}
-        isRequestSuccess={false}
-        successMessage="Successfully deleted the activity"
-        errorMessage="Failed to delete the activity"
-      />
-    </>
+          : undefined
+      }
+    >
+      <TableCell>{record.date.toLocaleDateString("en-CA")}</TableCell>
+      <TableCell>{record.name}</TableCell>
+      <TableCell>
+        <Button startIcon={<EditIcon />} onClick={onEdit} disabled={isDeleting}>
+          Edit
+        </Button>
+        <Button
+          startIcon={
+            isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />
+          }
+          onClick={deleteActivity}
+          disabled={isDeleting}
+        >
+          {isDeleting ? "Deleting..." : "Delete"}
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 };

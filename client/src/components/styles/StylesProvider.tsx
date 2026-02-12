@@ -14,6 +14,9 @@ type Props = {
 };
 
 const themeOverrides = {
+  typography: {
+    fontFamily: "'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif",
+  },
   overrides: {
     MuiTooltip: {
       tooltip: {
