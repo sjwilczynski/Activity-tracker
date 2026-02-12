@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { handlers as defaultHandlers } from "../mocks/handlers";
 import { Welcome } from "./Welcome";
 
 const meta: Meta<typeof Welcome> = {
@@ -153,10 +154,12 @@ export const SubmitServerError: Story = {
   parameters: {
     msw: {
       handlers: [
+        // Override POST to return 500, keep default GET handlers for activities + categories
         http.post("*/api/activities", async () => {
           await delay(100);
           return new HttpResponse(null, { status: 500 });
         }),
+        ...defaultHandlers,
       ],
     },
   },
