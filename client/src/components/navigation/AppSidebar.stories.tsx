@@ -12,6 +12,10 @@ const meta = {
     (Story) => (
       <SidebarProvider>
         <Story />
+        <SidebarInset>
+          <MobileHeader />
+          <div className="p-4">Page content</div>
+        </SidebarInset>
       </SidebarProvider>
     ),
   ],
@@ -51,19 +55,6 @@ export const Mobile: Story = {
       value: "mobile2",
     },
   },
-  decorators: [
-    (Story) => (
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <MobileHeader />
-          <div className="p-4">
-            Page content <Story />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    ),
-  ],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -84,7 +75,10 @@ export const MobileDrawerOpen: Story = {
     });
     await userEvent.click(toggleButton);
 
-    const sidebar = await screen.findByText("Activity Tracker");
+    const sidebar = await screen.findByRole("heading", {
+      name: "Activity Tracker",
+      level: 2,
+    });
     expect(sidebar).toBeInTheDocument();
     expect(screen.getByText("Charts")).toBeInTheDocument();
     expect(screen.getByText("Activity List")).toBeInTheDocument();
