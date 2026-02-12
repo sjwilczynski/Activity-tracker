@@ -12,8 +12,11 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { DateFilterForm } from "../components/forms/DateFilterForm/DateFilterForm";
-import { useDateRange } from "../components/forms/DateFilterForm/shared";
+import { DateRangePicker } from "../components/DateRangePicker";
+import {
+  useDateRange,
+  useDateRangeState,
+} from "../components/forms/DateFilterForm/shared";
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
 import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
@@ -44,6 +47,7 @@ Chart.register(
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
   const { startDate, endDate } = useDateRange();
+  const [dateRange, setDateRange] = useDateRangeState();
 
   if (isLoading) {
     return <Loading />;
@@ -57,7 +61,14 @@ export const Charts = () => {
   );
   return data?.length ? (
     <>
-      <DateFilterForm />
+      <div className="flex justify-end mb-4">
+        <DateRangePicker
+          value={{ from: dateRange.startDate, to: dateRange.endDate }}
+          onChange={(range) =>
+            setDateRange({ startDate: range.from, endDate: range.to })
+          }
+        />
+      </div>
       <ChartWrapper>
         <BarChart activitySummaries={activitySummaries} />
       </ChartWrapper>

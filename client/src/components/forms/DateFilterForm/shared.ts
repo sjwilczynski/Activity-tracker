@@ -82,8 +82,3 @@ export const useDateRangeState = (): [
 
   return [dateRange, setDateRange];
 };
-
-export const useSetDateRange = (): ((values: FormValues) => void) => {
-  const [, setDateRange] = useDateRangeState();
-  return setDateRange;
-};

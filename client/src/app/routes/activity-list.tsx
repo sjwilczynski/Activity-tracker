@@ -47,6 +47,15 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
+  } else if (intent === "delete-all") {
+    const response = await fetch("/api/activities", {
+      method: "DELETE",
+      headers: { "x-auth-token": token },
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
   } else {
     return { error: "Unknown intent" };
   }
