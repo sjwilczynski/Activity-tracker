@@ -3,7 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { areActivitiesValid } from "../../data";
-import { FeedbackAlertGroup } from "../states/FeedbackAlertGroup";
+import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
 
@@ -58,6 +58,14 @@ export function FileUploadForm() {
     },
   });
 
+  useFeedbackToast(
+    { isSuccess, isError },
+    {
+      successMessage: "Successfully uploaded the file",
+      errorMessage: "Failed to upload the file",
+    }
+  );
+
   const isPending = fetcher.state !== "idle";
   const prevIsSuccess = useRef(isSuccess);
 
@@ -75,48 +83,40 @@ export function FileUploadForm() {
   }, [isSuccess, form]);
 
   return (
-    <>
-      <StyledForm
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
+    <StyledForm
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="file"
+        validators={{
+          onChange: fileSchema,
         }}
       >
-        <form.Field
-          name="file"
-          validators={{
-            onChange: fileSchema,
-          }}
-        >
-          {(field) => (
-            <FileInput
-              value={field.state.value}
-              onChange={field.handleChange}
-              onBlur={field.handleBlur}
-              error={getErrorMessage(field.state.meta.errors)}
-            />
-          )}
-        </form.Field>
-        <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
-          {([canSubmit, isDirty]) => (
-            <ButtonSubmit
-              disabled={!canSubmit || !isDirty}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Upload
-            </ButtonSubmit>
-          )}
-        </form.Subscribe>
-      </StyledForm>
-      <FeedbackAlertGroup
-        isRequestError={isError}
-        isRequestSuccess={isSuccess}
-        successMessage="Successfully uploaded the file"
-        errorMessage="Failed to upload the file"
-      />
-    </>
+        {(field) => (
+          <FileInput
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+            error={getErrorMessage(field.state.meta.errors)}
+          />
+        )}
+      </form.Field>
+      <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
+        {([canSubmit, isDirty]) => (
+          <ButtonSubmit
+            disabled={!canSubmit || !isDirty}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Upload
+          </ButtonSubmit>
+        )}
+      </form.Subscribe>
+    </StyledForm>
   );
 }

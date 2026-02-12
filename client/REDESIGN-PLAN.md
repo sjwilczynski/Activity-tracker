@@ -73,14 +73,14 @@
 
 ### CP3: Dashboard (Welcome)
 
-- [ ] Add shadcn components: `sonner`, `command`, `popover`, `select`
-- [ ] Replace feedback system: delete `FeedbackAlert.tsx` + `FeedbackAlertGroup.tsx`, add `<Toaster />` in root layout, create `useFeedbackToast` hook. Update all consumers (AddActivityForm, Profile, RowInReadMode, RowInEditMode, FileUploadForm).
-- [ ] Rewrite `src/pages/Welcome.tsx`: MUI → Tailwind. Add stat cards (Total Activities, This Week, This Month, Last Activity) with `--chart-N` colored left borders + bloom-hover. Date stamp with uppercase tracking. Recent activities list with activity-color icons.
-- [ ] Rewrite `src/components/forms/AddActivityForm/AddActivityForm.tsx`: MUI → shadcn Button + Tailwind. Quick-add form only (date + activity select + log button). No "Add with Details" button yet (deferred to CP8).
-- [ ] Rewrite `src/components/forms/adapters/CategoryAutocomplete.tsx`: MUI Autocomplete → shadcn `Command` + `Popover` combobox. Same prop interface for @tanstack/react-form compat. Group options by category.
-- [ ] Rewrite `src/components/forms/adapters/DatePicker.tsx`: MUI DatePicker → native `<input type="date">` with Tailwind + Lucide Calendar icon + day-of-week helper text
-- [ ] Update `src/pages/Welcome.stories.tsx` (toast instead of Snackbar)
-- [ ] Verify: quick-add works end-to-end, stories pass, toasts appear
+- [x] Add shadcn components: `sonner`, `command`, `popover`, `dialog`
+- [x] Replace feedback system: delete `FeedbackAlert.tsx` + `FeedbackAlertGroup.tsx`, add `<Toaster />` in root layout, create `useFeedbackToast` hook. Update all consumers (AddActivityForm, Profile, RowInReadMode, RowInEditMode, FileUploadForm).
+- [x] Rewrite `src/pages/Welcome.tsx`: MUI → Tailwind. Add stat cards (Total Activities, Last 7 Days, Last 30 Days, Last Activity) with `--chart-N` colored left borders + bloom-hover. Date stamp with uppercase tracking. Recent activities list with activity-color icons.
+- [x] Rewrite `src/components/forms/AddActivityForm/AddActivityForm.tsx`: MUI → shadcn Button + Tailwind. Quick-add form only (date + activity select + log button). No "Add with Details" button yet (deferred to CP8).
+- [x] Rewrite `src/components/forms/adapters/CategoryAutocomplete.tsx`: MUI Autocomplete → shadcn `Command` + `Popover` combobox. Same prop interface for @tanstack/react-form compat. Group options by category.
+- [x] Rewrite `src/components/forms/adapters/DatePicker.tsx`: MUI DatePicker → native `<input type="date">` with Tailwind + Lucide Calendar icon + day-of-week helper text
+- [x] Update `src/pages/Welcome.stories.tsx` (toast instead of Snackbar)
+- [x] Verify: quick-add works end-to-end, stories pass, toasts appear
 
 ### CP4: Activity List
 

@@ -25,12 +25,8 @@ export const Default: Story = {
       expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
-      canvas.getByRole("group", { name: /start date/i })
-    ).toBeInTheDocument();
-    expect(
-      canvas.getByRole("group", { name: /end date/i })
-    ).toBeInTheDocument();
+    expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+    expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
 
     const chartElements = canvasElement.querySelectorAll("canvas");
     expect(chartElements.length).toBe(3);
@@ -100,12 +96,8 @@ export const DateFilterInteraction: Story = {
     });
 
     await step("Verify date filter is visible", async () => {
-      expect(
-        canvas.getByRole("group", { name: /start date/i })
-      ).toBeInTheDocument();
-      expect(
-        canvas.getByRole("group", { name: /end date/i })
-      ).toBeInTheDocument();
+      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
+      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 
     await step("Verify initial charts are rendered with data", async () => {

@@ -4,12 +4,12 @@ import { useAuthContext } from "../auth";
 import { DownloadLink } from "../components/DownloadLink";
 import { FileUploadForm } from "../components/forms/FileUploadForm";
 import { ModalDialog } from "../components/ModalDialog";
-import { FeedbackAlertGroup } from "../components/states/FeedbackAlertGroup";
 import {
   useActivities,
   useExportActivities,
   useIsFetchingActivties,
 } from "../data";
+import { useFeedbackToast } from "../hooks/useFeedbackToast";
 
 const Container = styled("div")({
   display: "flex",
@@ -38,6 +38,14 @@ export const Profile = () => {
   const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
   const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
 
+  useFeedbackToast(
+    { isSuccess, isError },
+    {
+      successMessage: "Successfully deleted all activity data",
+      errorMessage: "Failed to delete the activity data",
+    }
+  );
+
   const deleteAllActivities = () => {
     fetcher.submit(
       { intent: "delete-all" },
@@ -46,57 +54,49 @@ export const Profile = () => {
   };
 
   return (
-    <>
-      <Container>
-        <Typography variant="h5">User name: {user?.displayName}</Typography>
-        <ButtonsContainer>
-          <ModalDialog
-            openButtonText="Upload activities"
-            title="Activties upload"
-            description="Select a json file containg activities in a complaint format"
-            content={<FileUploadForm />}
-          />
-          <ModalDialog
-            openButtonText="Delete your activites"
-            title="Delete confirmation"
-            description="Are you sure you want to delete all your activities?"
-            disabled={isFetchingActivities || !data?.length}
-            content={
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={deleteAllActivities}
-              >
-                Confirm
-              </Button>
-            }
-          />
-          <DownloadLink
-            filename="activities.json"
-            tagName="div"
-            style={{ display: "flex" }}
-            label={
-              <ButtonGrow
-                variant="contained"
-                color="primary"
-                disabled={isFetchingActivities || !data?.length}
-              >
-                Export activities
-              </ButtonGrow>
-            }
-            exportFile={exportActivities}
-          />
-          <Button variant="contained" color="primary" onClick={signOut}>
-            Sign out
-          </Button>
-        </ButtonsContainer>
-      </Container>
-      <FeedbackAlertGroup
-        isRequestError={isError}
-        isRequestSuccess={isSuccess}
-        successMessage="Successfully deleted all activity data"
-        errorMessage="Failed to delete the activity data"
-      />
-    </>
+    <Container>
+      <Typography variant="h5">User name: {user?.displayName}</Typography>
+      <ButtonsContainer>
+        <ModalDialog
+          openButtonText="Upload activities"
+          title="Activities upload"
+          description="Select a JSON file containing activities in a compliant format"
+          content={<FileUploadForm />}
+        />
+        <ModalDialog
+          openButtonText="Delete your activities"
+          title="Delete confirmation"
+          description="Are you sure you want to delete all your activities?"
+          disabled={isFetchingActivities || !data?.length}
+          content={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={deleteAllActivities}
+            >
+              Confirm
+            </Button>
+          }
+        />
+        <DownloadLink
+          filename="activities.json"
+          tagName="div"
+          style={{ display: "flex" }}
+          label={
+            <ButtonGrow
+              variant="contained"
+              color="primary"
+              disabled={isFetchingActivities || !data?.length}
+            >
+              Export activities
+            </ButtonGrow>
+          }
+          exportFile={exportActivities}
+        />
+        <Button variant="contained" color="primary" onClick={signOut}>
+          Sign out
+        </Button>
+      </ButtonsContainer>
+    </Container>
   );
 };

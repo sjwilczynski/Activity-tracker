@@ -6,6 +6,7 @@ import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef } from "react";
 import type { ActivityRecordWithId, CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
+import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import {
   CategoryAutocomplete,
   DatePicker,
@@ -16,21 +17,11 @@ import {
   dateSchema,
   type ActivityFormValues,
 } from "../../forms/schemas";
-import { FeedbackAlertGroup } from "../../states/FeedbackAlertGroup";
 import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
 
 type Props = {
   record: ActivityRecordWithId;
   onCancel: () => void;
-};
-
-const hiddenLabelStyle = {
-  "& > label": {
-    display: "none",
-  },
-  "& > .MuiInput-root": {
-    marginTop: 0,
-  },
 };
 
 export const RowInEditMode = ({ record, onCancel }: Props) => {
@@ -39,6 +30,14 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
   );
   const { availableCategories } = useAvailableCategories();
   useCancelOnSuccess(isSuccess, onCancel);
+
+  useFeedbackToast(
+    { isSuccess, isError },
+    {
+      successMessage: "Successfully edited activity",
+      errorMessage: "Failed to edit activity",
+    }
+  );
 
   const initialCategory: CategoryOption = {
     name: record.name,
@@ -59,82 +58,70 @@ export const RowInEditMode = ({ record, onCancel }: Props) => {
   });
 
   return (
-    <>
-      <TableRow>
-        <TableCell>
-          <form.Field
-            name="date"
-            validators={{
-              onChange: dateSchema,
-            }}
-          >
-            {(field) => (
-              <DatePicker
-                value={field.state.value}
-                onChange={field.handleChange}
-                onBlur={field.handleBlur}
-                error={getErrorMessage(field.state.meta.errors)}
-                label="Date"
-                style={hiddenLabelStyle}
-                size="small"
-                showDayOfWeek={false}
-              />
-            )}
-          </form.Field>
-        </TableCell>
-        <TableCell>
-          <form.Field
-            name="category"
-            validators={{
-              onChange: categoryOptionSchema,
-            }}
-          >
-            {(field) => (
-              <CategoryAutocomplete
-                value={field.state.value}
-                onChange={field.handleChange}
-                onBlur={field.handleBlur}
-                error={getErrorMessage(field.state.meta.errors)}
-                label="Activity name"
-                style={hiddenLabelStyle}
-                size="small"
-              />
-            )}
-          </form.Field>
-        </TableCell>
-        <TableCell>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isDirty]}
-          >
-            {([canSubmit, isDirty]) => (
-              <Actions>
-                <Button
-                  disabled={!canSubmit || !isDirty || isPending}
-                  onClick={() => form.handleSubmit()}
-                  startIcon={<SaveIcon />}
-                >
-                  Save
-                </Button>
-                <Button
-                  startIcon={<CancelIcon />}
-                  onClick={onCancel}
-                  disabled={isPending}
-                >
-                  Cancel
-                </Button>
-                {isPending && <CircularProgress size={20} />}
-              </Actions>
-            )}
-          </form.Subscribe>
-        </TableCell>
-      </TableRow>
-      <FeedbackAlertGroup
-        successMessage="Successfully edited activity"
-        errorMessage="Failed to edit activity"
-        isRequestError={isError}
-        isRequestSuccess={isSuccess}
-      />
-    </>
+    <TableRow>
+      <TableCell>
+        <form.Field
+          name="date"
+          validators={{
+            onChange: dateSchema,
+          }}
+        >
+          {(field) => (
+            <DatePicker
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
+              label="Date"
+              hideLabel
+              showDayOfWeek={false}
+            />
+          )}
+        </form.Field>
+      </TableCell>
+      <TableCell>
+        <form.Field
+          name="category"
+          validators={{
+            onChange: categoryOptionSchema,
+          }}
+        >
+          {(field) => (
+            <CategoryAutocomplete
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
+              label="Activity name"
+              hideLabel
+            />
+          )}
+        </form.Field>
+      </TableCell>
+      <TableCell>
+        <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
+          {([canSubmit, isDirty]) => (
+            <Actions>
+              <Button
+                disabled={!canSubmit || !isDirty || isPending}
+                onClick={() => form.handleSubmit()}
+                startIcon={<SaveIcon />}
+              >
+                Save
+              </Button>
+              <Button
+                startIcon={<CancelIcon />}
+                onClick={onCancel}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+              {isPending && <CircularProgress size={20} />}
+            </Actions>
+          )}
+        </form.Subscribe>
+      </TableCell>
+    </TableRow>
   );
 };
 
@@ -144,8 +131,8 @@ const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
   useEffect(() => {
     if (isSuccess && !successRef.current) {
       timeoutRef.current = setTimeout(onCancel, 1500);
-      successRef.current = isSuccess;
     }
+    successRef.current = isSuccess;
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

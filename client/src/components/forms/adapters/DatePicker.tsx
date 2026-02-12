@@ -1,54 +1,8 @@
-import type { TextFieldProps } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isValid } from "date-fns";
-
-type BaseDatePickerProps = {
-  value: Date | null;
-  onChange: (value: Date | null) => void;
-  onBlur: () => void;
-  error?: string;
-  label: string;
-  style?: TextFieldProps["sx"];
-  size?: "small" | "medium";
-  showDayOfWeek?: boolean;
-};
-
-const BaseDatePicker = ({
-  value,
-  onChange,
-  onBlur,
-  error,
-  label,
-  style,
-  size,
-  showDayOfWeek,
-}: BaseDatePickerProps) => {
-  const dayOfWeek =
-    showDayOfWeek && value && isValid(value) ? format(value, "EEE") : "";
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <MuiDatePicker
-        label={label}
-        value={value}
-        onChange={onChange}
-        format="yyyy-MM-dd"
-        slotProps={{
-          textField: {
-            variant: "standard",
-            sx: style,
-            size,
-            helperText: error ?? dayOfWeek,
-            error: !!error,
-            onBlur,
-          },
-        }}
-      />
-    </LocalizationProvider>
-  );
-};
+import { CalendarIcon } from "lucide-react";
+import { useId } from "react";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 
 type DatePickerProps = {
   value: Date;
@@ -56,26 +10,63 @@ type DatePickerProps = {
   onBlur: () => void;
   error?: string;
   label: string;
-  style?: TextFieldProps["sx"];
-  size?: "small" | "medium";
   showDayOfWeek?: boolean;
+  hideLabel?: boolean;
 };
 
 export const DatePicker = ({
+  value,
   onChange,
+  onBlur,
+  error,
+  label,
   showDayOfWeek = true,
-  ...rest
-}: DatePickerProps) => (
-  <BaseDatePicker
-    {...rest}
-    showDayOfWeek={showDayOfWeek}
-    onChange={(date) => {
-      if (date) {
-        onChange(date);
-      }
-    }}
-  />
-);
+  hideLabel = false,
+}: DatePickerProps) => {
+  const id = useId();
+  const errorId = `${id}-error`;
+  const helperId = `${id}-helper`;
+  const dayOfWeek =
+    showDayOfWeek && value && isValid(value) ? format(value, "EEEE") : "";
+
+  const stringValue =
+    value && isValid(value) ? format(value, "yyyy-MM-dd") : "";
+
+  return (
+    <div className="space-y-1.5">
+      {!hideLabel && <Label htmlFor={id}>{label}</Label>}
+      <div className="relative">
+        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+        <Input
+          id={id}
+          type="date"
+          value={stringValue}
+          onChange={(e) => {
+            const date = new Date(e.target.value + "T00:00:00");
+            if (isValid(date)) {
+              onChange(date);
+            }
+          }}
+          onBlur={onBlur}
+          aria-label={hideLabel ? label : undefined}
+          className="pl-9 bg-[var(--color-input-background)]"
+          aria-invalid={!!error}
+          aria-errormessage={error ? errorId : undefined}
+          aria-describedby={dayOfWeek ? helperId : undefined}
+        />
+      </div>
+      {error ? (
+        <p id={errorId} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      ) : dayOfWeek ? (
+        <p id={helperId} className="text-xs text-muted-foreground">
+          {dayOfWeek}
+        </p>
+      ) : null}
+    </div>
+  );
+};
 
 type NullableDatePickerProps = {
   value: Date | null;
@@ -83,14 +74,64 @@ type NullableDatePickerProps = {
   onBlur: () => void;
   error?: string;
   label: string;
-  style?: TextFieldProps["sx"];
-  size?: "small" | "medium";
   showDayOfWeek?: boolean;
+  hideLabel?: boolean;
 };
 
 export const NullableDatePicker = ({
+  value,
+  onChange,
+  onBlur,
+  error,
+  label,
   showDayOfWeek = false,
-  ...rest
-}: NullableDatePickerProps) => (
-  <BaseDatePicker {...rest} showDayOfWeek={showDayOfWeek} />
-);
+  hideLabel = false,
+}: NullableDatePickerProps) => {
+  const id = useId();
+  const errorId = `${id}-error`;
+  const helperId = `${id}-helper`;
+  const dayOfWeek =
+    showDayOfWeek && value && isValid(value) ? format(value, "EEEE") : "";
+
+  const stringValue =
+    value && isValid(value) ? format(value, "yyyy-MM-dd") : "";
+
+  return (
+    <div className="space-y-1.5">
+      {!hideLabel && <Label htmlFor={id}>{label}</Label>}
+      <div className="relative">
+        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+        <Input
+          id={id}
+          type="date"
+          value={stringValue}
+          onChange={(e) => {
+            if (e.target.value === "") {
+              onChange(null);
+            } else {
+              const date = new Date(e.target.value + "T00:00:00");
+              if (isValid(date)) {
+                onChange(date);
+              }
+            }
+          }}
+          onBlur={onBlur}
+          aria-label={hideLabel ? label : undefined}
+          className="pl-9 bg-[var(--color-input-background)]"
+          aria-invalid={!!error}
+          aria-errormessage={error ? errorId : undefined}
+          aria-describedby={dayOfWeek ? helperId : undefined}
+        />
+      </div>
+      {error ? (
+        <p id={errorId} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      ) : dayOfWeek ? (
+        <p id={helperId} className="text-xs text-muted-foreground">
+          {dayOfWeek}
+        </p>
+      ) : null}
+    </div>
+  );
+};

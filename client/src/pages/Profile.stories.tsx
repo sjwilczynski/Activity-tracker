@@ -21,7 +21,7 @@ export const Default: Story = {
       canvas.getByRole("button", { name: /upload activities/i })
     ).toBeInTheDocument();
     expect(
-      canvas.getByRole("button", { name: /delete your activites/i })
+      canvas.getByRole("button", { name: /delete your activities/i })
     ).toBeInTheDocument();
     expect(
       canvas.getByRole("button", { name: /export activities/i })
@@ -49,7 +49,7 @@ export const DeleteAllModalInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const deleteButton = canvas.getByRole("button", {
-      name: /delete your activites/i,
+      name: /delete your activities/i,
     });
 
     await waitFor(() => {
@@ -81,6 +81,37 @@ export const DeleteAllModalInteraction: Story = {
   },
 };
 
+export const DeleteAllConfirmation: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const deleteButton = canvas.getByRole("button", {
+      name: /delete your activities/i,
+    });
+
+    await waitFor(() => {
+      expect(deleteButton).toBeEnabled();
+    });
+
+    await step("Open delete modal", async () => {
+      await userEvent.click(deleteButton);
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
+      });
+    });
+
+    await step("Click confirm and verify success toast", async () => {
+      const confirmBtn = screen.getByRole("button", { name: /confirm/i });
+      await userEvent.click(confirmBtn);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/successfully deleted all activity data/i)
+        ).toBeInTheDocument();
+      });
+    });
+  },
+};
+
 export const FileUploadInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
@@ -93,7 +124,7 @@ export const FileUploadInteraction: Story = {
 
       const dialog = await screen.findByRole("dialog");
       expect(dialog).toBeInTheDocument();
-      expect(screen.getByText(/activties upload/i)).toBeInTheDocument();
+      expect(screen.getByText(/activities upload/i)).toBeInTheDocument();
 
       await userEvent.click(screen.getByRole("button", { name: /close/i }));
     });

@@ -1,6 +1,18 @@
-import { Autocomplete, TextField, type TextFieldProps } from "@mui/material";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
+import { cn } from "../../../utils/cn";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../ui/command";
+import { Label } from "../../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
 type CategoryAutocompleteProps = {
   value: CategoryOption;
@@ -8,9 +20,8 @@ type CategoryAutocompleteProps = {
   onBlur: () => void;
   error?: string;
   label: string;
-  style?: TextFieldProps["sx"];
-  size?: "small" | "medium";
   autoFocus?: boolean;
+  hideLabel?: boolean;
 };
 
 export const CategoryAutocomplete = ({
@@ -19,44 +30,110 @@ export const CategoryAutocomplete = ({
   onBlur,
   error,
   label,
-  style,
-  size,
   autoFocus,
+  hideLabel = false,
 }: CategoryAutocompleteProps) => {
   const { availableCategories, isLoading } = useAvailableCategories();
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (autoFocus) {
+      const timer = setTimeout(() => triggerRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [autoFocus]);
+
+  // Group options by categoryName
+  const grouped = availableCategories.reduce<Record<string, CategoryOption[]>>(
+    (acc, option) => {
+      const group = option.categoryName || "Other";
+      if (!acc[group]) acc[group] = [];
+      acc[group].push(option);
+      return acc;
+    },
+    {}
+  );
 
   return (
-    <Autocomplete
-      id="name-autocomplete"
-      size={size}
-      options={availableCategories}
-      value={value.name ? value : null}
-      getOptionLabel={(category: CategoryOption) => category.name}
-      isOptionEqualToValue={(option: CategoryOption, val: CategoryOption) =>
-        option.name === val.name
-      }
-      includeInputInList
-      loading={isLoading}
-      groupBy={(option: CategoryOption) => option.categoryName}
-      onChange={(_, newValue) => {
-        if (newValue) {
-          onChange(newValue);
-        }
-      }}
-      onBlur={onBlur}
-      onOpen={onBlur}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={label}
-          placeholder="name of the activity"
-          sx={style}
-          variant="standard"
-          error={!!error}
-          helperText={error}
-          autoFocus={autoFocus}
-        />
-      )}
-    />
+    <div className="space-y-1.5">
+      {!hideLabel && <Label htmlFor={id}>{label}</Label>}
+      <Popover
+        open={open}
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) onBlur();
+        }}
+      >
+        <PopoverTrigger asChild>
+          <button
+            ref={triggerRef}
+            id={id}
+            type="button"
+            role="combobox"
+            aria-expanded={open}
+            aria-label={hideLabel ? label : undefined}
+            aria-invalid={!!error}
+            className={cn(
+              "flex h-9 w-full items-center justify-between rounded-md border border-input bg-[var(--color-input-background)] px-3 py-2 text-sm shadow-xs",
+              "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring",
+              "disabled:cursor-not-allowed disabled:opacity-50",
+              !value.name && "text-muted-foreground"
+            )}
+          >
+            <span className="truncate">
+              {value.name || "Search activities..."}
+            </span>
+            <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[--radix-popover-trigger-width] p-0"
+          align="start"
+          sideOffset={4}
+        >
+          <Command>
+            <CommandInput placeholder="Search activities..." />
+            <CommandList>
+              {isLoading ? (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  Loading...
+                </div>
+              ) : (
+                <>
+                  <CommandEmpty>No activity found.</CommandEmpty>
+                  {Object.entries(grouped).map(([groupName, options]) => (
+                    <CommandGroup key={groupName} heading={groupName}>
+                      {options.map((option) => (
+                        <CommandItem
+                          key={option.name}
+                          value={option.name}
+                          onSelect={() => {
+                            onChange(option);
+                            setOpen(false);
+                          }}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 size-4",
+                              value.name === option.name
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  ))}
+                </>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
   );
 };

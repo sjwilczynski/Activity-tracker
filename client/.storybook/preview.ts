@@ -7,7 +7,7 @@ import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
-import { handlers } from "../src/mocks/handlers";
+import { handlers, resetActivities } from "../src/mocks/handlers";
 import { testContext } from "../src/mocks/testContext";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
@@ -40,9 +40,11 @@ const mockAction = async ({ request }: { request: Request }) => {
   const token = "mock-token-12345";
 
   try {
+    let response: Response | undefined;
+
     if (intent === "add") {
       const activities = formData.get("activities") as string;
-      await fetch("/api/activities", {
+      response = await fetch("/api/activities", {
         method: "POST",
         headers: {
           "x-auth-token": token,
@@ -55,7 +57,7 @@ const mockAction = async ({ request }: { request: Request }) => {
     if (intent === "edit") {
       const id = formData.get("id") as string;
       const record = formData.get("record") as string;
-      await fetch(`/api/activities/${id}`, {
+      response = await fetch(`/api/activities/${id}`, {
         method: "PUT",
         headers: {
           "x-auth-token": token,
@@ -67,17 +69,21 @@ const mockAction = async ({ request }: { request: Request }) => {
 
     if (intent === "delete") {
       const id = formData.get("id") as string;
-      await fetch(`/api/activities/${id}`, {
+      response = await fetch(`/api/activities/${id}`, {
         method: "DELETE",
         headers: { "x-auth-token": token },
       });
     }
 
     if (intent === "delete-all") {
-      await fetch("/api/activities", {
+      response = await fetch("/api/activities", {
         method: "DELETE",
         headers: { "x-auth-token": token },
       });
+    }
+
+    if (response && !response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
     }
 
     await testContext.invalidateActivities();
@@ -89,6 +95,11 @@ const mockAction = async ({ request }: { request: Request }) => {
 };
 
 const preview: Preview = {
+  beforeEach: () => {
+    // Reset mutable MSW handler state between stories to prevent leaks
+    // (e.g. DeleteAllConfirmation emptying activities for subsequent stories)
+    resetActivities();
+  },
   parameters: {
     a11y: {
       // 'todo' - show a11y violations in the test UI only
