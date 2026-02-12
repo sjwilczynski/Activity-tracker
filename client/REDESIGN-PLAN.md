@@ -166,14 +166,11 @@
 - **CP6:** `pages/Profile.tsx`, `ModalDialog.tsx`, `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
 - **CP7:** `styles/StylesProvider.tsx`
 
----
-
-### CP-Cleanup: shadcn Component Audit
-
-After all CPs are complete (or periodically during migration), review shadcn-generated UI components and remove unused subcomponents/exports:
+### CP9: Cleanup + Full-App Story
 
 - [ ] Audit `src/components/ui/sidebar.tsx`: remove unused subcomponents (e.g. `SidebarMenuSub`, `SidebarMenuSkeleton`, `SidebarRail`, `SidebarGroupAction`, etc.) that aren't imported anywhere
 - [ ] Audit `src/components/ui/sheet.tsx`: remove unused exports if only `SheetContent` is used internally by sidebar
 - [ ] Audit other shadcn components (`tooltip.tsx`, `skeleton.tsx`, etc.) for unused exports
 - [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
 - [ ] Remove any knip exceptions that are no longer needed
+- [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
