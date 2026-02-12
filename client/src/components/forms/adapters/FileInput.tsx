@@ -57,10 +57,10 @@ export const FileInput = ({
       <div className="flex items-center gap-2">
         <label htmlFor="contained-button-file" className="flex-1">
           <Button variant="outline" className="w-full cursor-pointer" asChild>
-            <div>
+            <span>
               <FileUp className="size-4 mr-2" />
               Select file
-            </div>
+            </span>
           </Button>
         </label>
         <Button variant="ghost" size="icon" className="size-9" asChild>

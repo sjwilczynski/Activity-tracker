@@ -72,7 +72,13 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
             Make changes to your activity details
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <form
+          className="space-y-4 py-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
           <form.Field
             name="date"
             validators={{
@@ -105,7 +111,7 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
               />
             )}
           </form.Field>
-        </div>
+        </form>
         <DialogFooter>
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isDirty]}

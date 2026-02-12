@@ -97,7 +97,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const isInvalidRange =
     localFrom !== "" &&
     localTo !== "" &&
-    fromDateString(localFrom)! > fromDateString(localTo)!;
+    fromDateString(localFrom)!.getTime() > fromDateString(localTo)!.getTime();
 
   const clearRange = () => {
     onChange({ from: null, to: null });
