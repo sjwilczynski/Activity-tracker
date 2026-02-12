@@ -12,6 +12,17 @@ const meta: Meta<typeof Welcome> = {
 export default meta;
 type Story = StoryObj<typeof Welcome>;
 
+async function selectActivity(canvas: ReturnType<typeof within>, name: string) {
+  const combobox = canvas.getByRole("combobox", { name: /activity name/i });
+  await userEvent.click(combobox);
+  const searchInput = await screen.findByPlaceholderText(/search activities/i);
+  await userEvent.type(searchInput, name);
+  const option = await screen.findByRole("option", {
+    name: new RegExp(name, "i"),
+  });
+  await userEvent.click(option);
+}
+
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -88,20 +99,7 @@ export const SubmitNewActivity: Story = {
     });
 
     await step("Fill and submit activity form", async () => {
-      // Click the combobox trigger to open the dropdown
-      const combobox = canvas.getByRole("combobox", {
-        name: /activity name/i,
-      });
-      await userEvent.click(combobox);
-
-      // Type in the search input inside the popover
-      const searchInput =
-        await screen.findByPlaceholderText(/search activities/i);
-      await userEvent.type(searchInput, "Running");
-
-      // Select the option from the dropdown
-      const option = await screen.findByRole("option", { name: /running/i });
-      await userEvent.click(option);
+      await selectActivity(canvas, "Running");
 
       const submitBtn = canvas.getByRole("button", { name: /log activity/i });
       await waitFor(() => {
@@ -171,17 +169,7 @@ export const SubmitServerError: Story = {
     });
 
     await step("Fill and submit activity form", async () => {
-      const combobox = canvas.getByRole("combobox", {
-        name: /activity name/i,
-      });
-      await userEvent.click(combobox);
-
-      const searchInput =
-        await screen.findByPlaceholderText(/search activities/i);
-      await userEvent.type(searchInput, "Running");
-
-      const option = await screen.findByRole("option", { name: /running/i });
-      await userEvent.click(option);
+      await selectActivity(canvas, "Running");
 
       const submitBtn = canvas.getByRole("button", { name: /log activity/i });
       await waitFor(() => {
@@ -207,17 +195,7 @@ export const FormResetAfterSubmit: Story = {
     });
 
     await step("Fill the form with activity data", async () => {
-      const combobox = canvas.getByRole("combobox", {
-        name: /activity name/i,
-      });
-      await userEvent.click(combobox);
-
-      const searchInput =
-        await screen.findByPlaceholderText(/search activities/i);
-      await userEvent.type(searchInput, "Running");
-
-      const option = await screen.findByRole("option", { name: /running/i });
-      await userEvent.click(option);
+      await selectActivity(canvas, "Running");
     });
 
     await step("Verify form is filled", async () => {
