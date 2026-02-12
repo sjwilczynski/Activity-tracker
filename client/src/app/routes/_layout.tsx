@@ -1,4 +1,3 @@
-import { styled } from "@mui/material";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Provider } from "jotai";
@@ -6,26 +5,12 @@ import { useEffect, useState } from "react";
 import { Outlet, redirect, useNavigate } from "react-router";
 import { AuthContext, type User } from "../../auth/AuthContext";
 import { authService } from "../../auth/authService";
-import { AppBar } from "../../components/appContainer/AppBar";
-import { Navigation } from "../../components/navigation/Navigation";
+import { AppSidebar } from "../../components/navigation/AppSidebar";
+import { MobileHeader } from "../../components/navigation/MobileHeader";
 import { StylesProvider } from "../../components/styles/StylesProvider";
+import { SidebarInset, SidebarProvider } from "../../components/ui/sidebar";
 import { PagesContainer } from "../../pages/PagesContainer";
 import { getLoadContext } from "../root";
-
-const Container = styled("div")(({ theme }) => ({
-  height: "100%",
-  display: "grid",
-  gridTemplateColumns: "minmax(200px, 17rem) 1fr",
-  gridTemplateRows: "auto 1fr",
-  gridTemplateAreas: `"navigation header"
-                      "navigation content"`,
-  [theme.breakpoints.down("md")]: {
-    gridTemplateColumns: "1fr",
-    gridTemplateRows: "minmax(min-content, auto) 1fr",
-    gridTemplateAreas: `"header"
-                        "content"`,
-  },
-}));
 
 export async function clientLoader() {
   const { authService } = getLoadContext();
@@ -75,13 +60,15 @@ export default function Layout() {
       <Provider>
         <StylesProvider>
           <AuthStateProvider>
-            <Container>
-              <Navigation />
-              <AppBar />
-              <PagesContainer>
-                <Outlet />
-              </PagesContainer>
-            </Container>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <MobileHeader />
+                <PagesContainer>
+                  <Outlet />
+                </PagesContainer>
+              </SidebarInset>
+            </SidebarProvider>
           </AuthStateProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </StylesProvider>

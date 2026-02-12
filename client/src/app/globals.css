@@ -1,5 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
@@ -15,7 +18,7 @@
   --color-secondary: #edf3fa;
   --color-secondary-foreground: #1a1a2e;
   --color-muted: #edf3fa;
-  --color-muted-foreground: #596168;
+  --color-muted-foreground: #94a3b8;
   --color-accent: #edf3fa;
   --color-accent-foreground: #1a1a2e;
   --color-destructive: #d4183d;
@@ -23,7 +26,7 @@
   --color-border: #d8e4ee;
   --color-input: #d8e4ee;
   --color-ring: #5085be;
-  --color-sidebar-background: #f8fafc;
+  --color-sidebar: #f8fafc;
   --color-sidebar-foreground: #1a1a2e;
   --color-sidebar-primary: #5085be;
   --color-sidebar-primary-foreground: #ffffff;
@@ -64,7 +67,7 @@
   --color-border: #2d3f5e;
   --color-input: #2d3f5e;
   --color-ring: #6b9fd4;
-  --color-sidebar-background: #1a1a2e;
+  --color-sidebar: #1a1a2e;
   --color-sidebar-foreground: #f0f0f5;
   --color-sidebar-primary: #6b9fd4;
   --color-sidebar-primary-foreground: #ffffff;
@@ -106,4 +109,10 @@ body {
     #1e2540 75%,
     #1a1a2e 100%
   );
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 }

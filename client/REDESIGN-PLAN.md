@@ -62,16 +62,14 @@
 
 ### CP2: Background + Navigation
 
-- [ ] Add shadcn components: `sidebar`, `avatar`, `tooltip`, `sheet`, `dropdown-menu`
-- [ ] Rewrite `src/app/routes/_layout.tsx`: MUI `styled` grid → shadcn `SidebarProvider` + `SidebarInset`
-- [ ] Rewrite `src/components/navigation/Navigation.tsx`: MUI Drawer → shadcn `Sidebar` with header (AT logo, title, "Track your progress" subtitle, theme toggle), menu items with Lucide icons (Home, BarChart3, ListChecks, GitCompare, Settings), user footer (avatar, name, sign-out)
-- [ ] Delete `src/components/navigation/NavigationDrawer.tsx` (shadcn Sidebar handles mobile via Sheet)
-- [ ] Rewrite `src/components/navigation/LinkList.tsx`: MUI List → `SidebarMenuItem`/`SidebarMenuButton`. Active item: primary gradient bg, white text, rounded-xl, blue-tint shadow.
-- [ ] Rewrite `src/components/appContainer/AppBar.tsx`: MUI AppBar → Tailwind sticky header (mobile only). Gradient title text.
-- [ ] Rewrite all `src/components/appContainer/buttons/*.tsx`: MUI icons → Lucide, MUI IconButton/Tooltip/Menu → shadcn Button/Tooltip/DropdownMenu
-- [ ] Rewrite `src/pages/PagesContainer.tsx`: MUI `styled` → Tailwind
-- [ ] Update stories
-- [ ] Verify: sidebar renders on desktop, mobile header on mobile, theme toggle works, all pages still render
+- [x] Add shadcn components: `sidebar`, `tooltip`, `sheet`, `skeleton` (+ `use-mobile` hook, `tw-animate-css`)
+- [x] Rewrite `src/app/routes/_layout.tsx`: MUI `styled` grid → shadcn `SidebarProvider` + `SidebarInset`
+- [x] Create `src/components/navigation/AppSidebar.tsx`: shadcn `Sidebar` with header (AT logo, title, "Track your progress" subtitle, theme toggle), nav items with Lucide icons (Home, BarChart3, ListChecks, Settings), user footer (initials avatar, name, sign-out). Active item: inline gradient bg, white text, rounded-xl, blue-tint shadow.
+- [x] Create `src/components/navigation/MobileHeader.tsx`: Tailwind sticky header (mobile only) with `SidebarTrigger` + page title.
+- [x] Delete old navigation: `Navigation.tsx`, `NavigationDrawer.tsx`, `LinkList.tsx`, `useNavigationState.ts`, `AppBar.tsx`, all `appContainer/buttons/*.tsx` (6 files)
+- [x] Rewrite `src/pages/PagesContainer.tsx`: MUI `styled` → Tailwind
+- [x] Update stories (`AppSidebar.stories.tsx`)
+- [x] Verify: sidebar renders on desktop, mobile header on mobile, theme toggle works, all pages still render
 
 ### CP3: Dashboard (Welcome)
 
@@ -167,3 +165,15 @@
 - **CP5:** `visualization/ChartWrapper.tsx`, `visualization/Charts/BarChart.tsx`, `visualization/SummaryCharts/*.tsx`, `visualization/utils.ts`
 - **CP6:** `pages/Profile.tsx`, `ModalDialog.tsx`, `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
 - **CP7:** `styles/StylesProvider.tsx`
+
+---
+
+### CP-Cleanup: shadcn Component Audit
+
+After all CPs are complete (or periodically during migration), review shadcn-generated UI components and remove unused subcomponents/exports:
+
+- [ ] Audit `src/components/ui/sidebar.tsx`: remove unused subcomponents (e.g. `SidebarMenuSub`, `SidebarMenuSkeleton`, `SidebarRail`, `SidebarGroupAction`, etc.) that aren't imported anywhere
+- [ ] Audit `src/components/ui/sheet.tsx`: remove unused exports if only `SheetContent` is used internally by sidebar
+- [ ] Audit other shadcn components (`tooltip.tsx`, `skeleton.tsx`, etc.) for unused exports
+- [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
+- [ ] Remove any knip exceptions that are no longer needed

@@ -8,6 +8,7 @@
         "@vitest/coverage-v8",
         "chromatic",
         "tailwindcss",
+        "tw-animate-css",
         "recharts",
         "sonner"
       ],
