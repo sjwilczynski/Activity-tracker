@@ -7,7 +7,7 @@ import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
-import { handlers } from "../src/mocks/handlers";
+import { handlers, resetActivities } from "../src/mocks/handlers";
 import { testContext } from "../src/mocks/testContext";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
@@ -95,6 +95,11 @@ const mockAction = async ({ request }: { request: Request }) => {
 };
 
 const preview: Preview = {
+  beforeEach: () => {
+    // Reset mutable MSW handler state between stories to prevent leaks
+    // (e.g. DeleteAllConfirmation emptying activities for subsequent stories)
+    resetActivities();
+  },
   parameters: {
     a11y: {
       // 'todo' - show a11y violations in the test UI only
