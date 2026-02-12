@@ -149,6 +149,52 @@ export const WithLastActivity: Story = {
   },
 };
 
+export const SubmitServerError: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.post("*/api/activities", async () => {
+          await delay(100);
+          return new HttpResponse(null, { status: 500 });
+        }),
+      ],
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    await step("Fill and submit activity form", async () => {
+      const combobox = canvas.getByRole("combobox", {
+        name: /activity name/i,
+      });
+      await userEvent.click(combobox);
+
+      const searchInput =
+        await screen.findByPlaceholderText(/search activities/i);
+      await userEvent.type(searchInput, "Running");
+
+      const option = await screen.findByRole("option", { name: /running/i });
+      await userEvent.click(option);
+
+      const submitBtn = canvas.getByRole("button", { name: /log activity/i });
+      await waitFor(() => {
+        expect(submitBtn).toBeEnabled();
+      });
+      await userEvent.click(submitBtn);
+    });
+
+    await step("Verify error toast appears", async () => {
+      await waitFor(() => {
+        expect(screen.getByText(/failed to add activity/i)).toBeInTheDocument();
+      });
+    });
+  },
+};
+
 export const FormResetAfterSubmit: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);

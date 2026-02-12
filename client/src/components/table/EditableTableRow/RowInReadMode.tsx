@@ -23,8 +23,10 @@ export const RowInReadMode = (props: Props) => {
   const isDeleting = fetcher.state !== "idle";
   const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
 
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+
   useFeedbackToast(
-    { isSuccess: false, isError },
+    { isSuccess, isError },
     {
       successMessage: "Successfully deleted the activity",
       errorMessage: "Failed to delete the activity",

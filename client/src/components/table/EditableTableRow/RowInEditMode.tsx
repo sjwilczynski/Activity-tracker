@@ -131,8 +131,8 @@ const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
   useEffect(() => {
     if (isSuccess && !successRef.current) {
       timeoutRef.current = setTimeout(onCancel, 1500);
-      successRef.current = isSuccess;
     }
+    successRef.current = isSuccess;
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

@@ -24,6 +24,8 @@ export const DatePicker = ({
   hideLabel = false,
 }: DatePickerProps) => {
   const id = useId();
+  const errorId = `${id}-error`;
+  const helperId = `${id}-helper`;
   const dayOfWeek =
     showDayOfWeek && value && isValid(value) ? format(value, "EEEE") : "";
 
@@ -49,12 +51,18 @@ export const DatePicker = ({
           aria-label={hideLabel ? label : undefined}
           className="pl-9 bg-[var(--color-input-background)]"
           aria-invalid={!!error}
+          aria-errormessage={error ? errorId : undefined}
+          aria-describedby={dayOfWeek ? helperId : undefined}
         />
       </div>
       {error ? (
-        <p className="text-xs text-destructive">{error}</p>
+        <p id={errorId} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
       ) : dayOfWeek ? (
-        <p className="text-xs text-muted-foreground">{dayOfWeek}</p>
+        <p id={helperId} className="text-xs text-muted-foreground">
+          {dayOfWeek}
+        </p>
       ) : null}
     </div>
   );
@@ -80,6 +88,8 @@ export const NullableDatePicker = ({
   hideLabel = false,
 }: NullableDatePickerProps) => {
   const id = useId();
+  const errorId = `${id}-error`;
+  const helperId = `${id}-helper`;
   const dayOfWeek =
     showDayOfWeek && value && isValid(value) ? format(value, "EEEE") : "";
 
@@ -109,12 +119,18 @@ export const NullableDatePicker = ({
           aria-label={hideLabel ? label : undefined}
           className="pl-9 bg-[var(--color-input-background)]"
           aria-invalid={!!error}
+          aria-errormessage={error ? errorId : undefined}
+          aria-describedby={dayOfWeek ? helperId : undefined}
         />
       </div>
       {error ? (
-        <p className="text-xs text-destructive">{error}</p>
+        <p id={errorId} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
       ) : dayOfWeek ? (
-        <p className="text-xs text-muted-foreground">{dayOfWeek}</p>
+        <p id={helperId} className="text-xs text-muted-foreground">
+          {dayOfWeek}
+        </p>
       ) : null}
     </div>
   );

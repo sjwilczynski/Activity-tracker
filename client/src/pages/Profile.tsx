@@ -59,12 +59,12 @@ export const Profile = () => {
       <ButtonsContainer>
         <ModalDialog
           openButtonText="Upload activities"
-          title="Activties upload"
-          description="Select a json file containg activities in a complaint format"
+          title="Activities upload"
+          description="Select a JSON file containing activities in a compliant format"
           content={<FileUploadForm />}
         />
         <ModalDialog
-          openButtonText="Delete your activites"
+          openButtonText="Delete your activities"
           title="Delete confirmation"
           description="Are you sure you want to delete all your activities?"
           disabled={isFetchingActivities || !data?.length}

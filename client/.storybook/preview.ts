@@ -40,9 +40,11 @@ const mockAction = async ({ request }: { request: Request }) => {
   const token = "mock-token-12345";
 
   try {
+    let response: Response | undefined;
+
     if (intent === "add") {
       const activities = formData.get("activities") as string;
-      await fetch("/api/activities", {
+      response = await fetch("/api/activities", {
         method: "POST",
         headers: {
           "x-auth-token": token,
@@ -55,7 +57,7 @@ const mockAction = async ({ request }: { request: Request }) => {
     if (intent === "edit") {
       const id = formData.get("id") as string;
       const record = formData.get("record") as string;
-      await fetch(`/api/activities/${id}`, {
+      response = await fetch(`/api/activities/${id}`, {
         method: "PUT",
         headers: {
           "x-auth-token": token,
@@ -67,17 +69,21 @@ const mockAction = async ({ request }: { request: Request }) => {
 
     if (intent === "delete") {
       const id = formData.get("id") as string;
-      await fetch(`/api/activities/${id}`, {
+      response = await fetch(`/api/activities/${id}`, {
         method: "DELETE",
         headers: { "x-auth-token": token },
       });
     }
 
     if (intent === "delete-all") {
-      await fetch("/api/activities", {
+      response = await fetch("/api/activities", {
         method: "DELETE",
         headers: { "x-auth-token": token },
       });
+    }
+
+    if (response && !response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
     }
 
     await testContext.invalidateActivities();
