@@ -4,7 +4,7 @@
 
 **Current:** React 18 + React Router v7 (framework mode) + MUI 5/Emotion + Chart.js + Firebase Auth + React Query + Jotai + @tanstack/react-form. Bundle limit: 365 kB. Monorepo: `/client` (Vite frontend) + `/api` (Azure Functions + Firebase RTDB).
 
-**Target:** Same architecture, replacing UI layer: Tailwind CSS v4 + shadcn/ui (Radix primitives) + Recharts + Lucide icons + Sonner toasts. CSS-only animations. Native `<input type="date">` replaces MUI date pickers. Font: Bricolage Grotesque.
+**Target:** Same architecture, replacing UI layer: Tailwind CSS v4 + shadcn/ui (Radix primitives) + Chart.js v4 + Lucide icons + Sonner toasts. CSS-only animations. Native `<input type="date">` replaces MUI date pickers. Font: Bricolage Grotesque.
 
 **Data model (current):** `Activity { name, active: boolean, date }`, `Category { name, active: boolean, description, subcategories? }`. New fields (description, intensity, timeSpent, category reference) added only in checkpoint 8 with backend work.
 
@@ -47,8 +47,8 @@
 > **Knip exceptions added** in `knip.json` for unused CP0 deps/files. Remove from `ignoreDependencies`/`ignore` as each CP starts using them:
 >
 > - CP1: `lucide-react` (icons), `class-variance-authority` + `clsx` + `tailwind-merge` (shadcn components use `cn()` → also remove `src/utils/cn.ts` from ignore)
-> - CP3: `sonner` (toasts), `recharts` (if used early) — also remove `src/utils/colors.ts` from ignore when first imported
-> - CP5: `recharts` (charts)
+> - CP3: `sonner` (toasts)
+> - CP5: ~~`recharts`~~ (decided to keep Chart.js instead — removed from ignoreDependencies)
 > - CP7: `tailwindcss` (no longer dev-only concern after MUI removal, but can stay in devDeps ignore)
 
 ### CP1: Login + Loading Screen
@@ -98,15 +98,18 @@
 
 ### CP5: Charts
 
-- [ ] Add shadcn component: `chart` (Recharts wrapper)
-- [ ] Rewrite `src/components/visualization/Charts/BarChart.tsx`: Chart.js → Recharts `BarChart`. Activity-specific colors from color utility. Rounded top corners.
-- [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryPieChart.tsx`: → Recharts `PieChart` with dual `Pie` rings (inner: active/inactive, outer: by-type). Colors from color utility.
-- [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryBarChart.tsx`: → Recharts `ComposedChart` (Bar + ReferenceLine for thresholds)
-- [x] Rewrite `src/components/visualization/ChartWrapper.tsx`: MUI styled → Tailwind
-- [ ] Rewrite `src/components/visualization/utils.ts`: Chart.js data format → Recharts format. Remove `@ctrl/tinycolor`. Use color utility from `utils/colors.ts`.
-- [ ] Rewrite `src/pages/Charts.tsx`: Remove Chart.js `register()`. DateRangePicker already integrated (done in CP4). Summary stat cards with chart colors.
-- [ ] Update stories, remove `Chart.defaults.animation = false` from storybook config
-- [ ] Verify: all charts render with correct data, tooltips, responsive, stories pass
+> **Decision:** Kept Chart.js (bumped v3.9→v4.5) + react-chartjs-2 (v4.3→v5.3) + @ctrl/tinycolor (v3.4→v4.2) instead of migrating to Recharts. Recharts added ~30kb gzipped — not worth the bundle cost. Chart.js v4 migration was seamless with no breaking changes for our usage.
+
+- [x] Bump chart.js 3.9→4.5, react-chartjs-2 4.3→5.3, @ctrl/tinycolor 3.4→4.2
+- [x] Rewrite `src/components/visualization/Charts/BarChart.tsx`: category-grouped stacked bars. One bar per category, activities stacked within. Custom tooltip shows activity name. Rounded top corners (`borderRadius: 6`).
+- [x] Rewrite `src/components/visualization/SummaryCharts/SummaryPieChart.tsx`: 3-ring pie chart (inner: active/inactive, middle: per-category, outer: per-activity). Custom tooltip title/label callbacks for correct per-ring labels. Legend hidden on mobile.
+- [x] Delete `src/components/visualization/SummaryCharts/SummaryBarChart.tsx` (not in prototype design)
+- [x] Delete `src/components/visualization/ChartWrapper.tsx` (replaced by Card wrappers)
+- [x] Rewrite `src/components/visualization/utils.ts`: `buildCategoryColorInfo()` shared helper, `getActivityColor()`, `getStackedBarChartData()`, `getPieChartData()`. 10-color active palette + red inactive + grey "other". Colors stable across filtering (computed from all data, not filtered).
+- [x] Rewrite `src/pages/Charts.tsx`: gradient heading, Card wrappers, 3 summary stat cards (Total/Unique/Most Popular active-only) with bloom-hover + primary-colored borders, DateRangePicker, empty-filtered-state card.
+- [x] Clean up `src/utils/colors.ts`: removed hardcoded activity-color map, getCategoryColor, lightenColor, darkenColor, withOpacity, HSL functions. Now only exports hash-based `getActivityColor()` with 10-color palette.
+- [x] Update stories (7 tests pass), knip clean
+- [x] Verify: all charts render with correct data, tooltips, responsive, build clean
 
 ### CP6: Settings (Profile) — expanded with new features
 
@@ -114,6 +117,7 @@
 - [ ] Rewrite `src/pages/Profile.tsx` as **Settings page** with Tabs interface (max-w-4xl):
   - **Categories tab**: table of categories (name, type badge, edit/delete actions). "Add Category" button → Dialog (name input + active/inactive Select). Edit category → Dialog (rename + change type). Delete → AlertDialog confirmation.
   - **Activity Names tab**: table of unique activity names (name, count, category Select for assignment, edit action). Edit → Dialog to rename all activities with that name.
+  - **Charts tab**: "Group by category" toggle (Jotai atom in `StylesProvider.tsx`). When enabled, charts show category-grouped stacked bars and 3-ring pie (current behavior). When disabled, each activity shown as individual bar/pie segment without category grouping — for users who don't define categories. Requires adding flat (non-grouped) variants of `getStackedBarChartData` and `getPieChartData` in `visualization/utils.ts`.
   - Existing features preserved: export/import JSON, theme toggle
 - [x] Rewrite `src/components/ModalDialog.tsx`: MUI Dialog → shadcn `Dialog`. Lucide `X` close. _(deleted — no longer needed)_
 - [x] Rewrite `src/components/forms/FileUploadForm.tsx`: MUI → shadcn + Tailwind _(done in CP4)_
@@ -126,7 +130,7 @@
 
 ### CP7: MUI Removal + Cleanup
 
-- [x] Remove deps: `@mui/material @mui/system @mui/icons-material @mui/x-date-pickers @emotion/react @emotion/styled chart.js react-chartjs-2 @ctrl/tinycolor` _(MUI + Emotion removed; chart.js/tinycolor remain until CP5)_
+- [x] Remove deps: `@mui/material @mui/system @mui/icons-material @mui/x-date-pickers @emotion/react @emotion/styled` _(MUI + Emotion removed; chart.js + react-chartjs-2 + @ctrl/tinycolor kept and bumped in CP5)_
 - [x] Delete `src/components/styles/StylesProvider.tsx`. Replace with simple ThemeProvider that toggles `dark` class + exposes Jotai atoms. _(stripped MUI, kept dark class toggle + jotai atoms)_
 - [ ] Remove `StylesProvider` from `_layout.tsx`, `login.tsx`, `mocks/decorators.tsx`
 - [ ] Remove Roboto font from `root.tsx` and `index.html`
@@ -146,12 +150,12 @@
 - [ ] **Dashboard**: Add "Add with Details" button → Dialog with date, activity name, intensity Select, time spent input, description Textarea (as shown in design screenshots)
 - [ ] **Activity List**: Show description/intensity/timeSpent in detail columns, intensity badges
 - [ ] **Edit dialog**: Include all new fields
-- [ ] **Color system**: Now that categories are properly linked to activities, switch from hash fallback to category-based colors with per-activity variants
+- [ ] **Color system**: Category-based chart colors already implemented in CP5 via `buildCategoryColorInfo()`. Verify colors remain correct after backend category linking.
 - [ ] **Compare page**: New `src/app/routes/compare.tsx` with:
   - Comparison type toggle (Month vs Year)
   - Multi-period selection (up to 7 periods with color coding)
   - Metric cards (total activities, most active day/month, most common activity)
-  - Recharts `LineChart` for comparison over time
+  - Chart.js line chart for comparison over time
 - [ ] Add "Compare" nav item with Lucide `GitCompare` icon
 - [ ] Storybook stories for Compare page and updated Dashboard/ActivityList
 - [ ] Verify: new fields persist through API, Compare page renders, all tests pass
@@ -164,7 +168,7 @@
 - **CP2:** `routes/_layout.tsx`, `navigation/Navigation.tsx`, `navigation/NavigationDrawer.tsx`, `navigation/LinkList.tsx`, `appContainer/AppBar.tsx`, `appContainer/buttons/*.tsx` (6 files), `pages/PagesContainer.tsx`
 - **CP3:** `pages/Welcome.tsx`, `forms/AddActivityForm/AddActivityForm.tsx`, `forms/adapters/CategoryAutocomplete.tsx`, `forms/adapters/DatePicker.tsx`, `states/FeedbackAlert.tsx`, `states/FeedbackAlertGroup.tsx`
 - **CP4:** ~~`pages/ActivityList.tsx`~~, ~~`table/SummaryTable.tsx`~~, ~~`table/EditableTableRow/RowInReadMode.tsx`~~, ~~`table/EditableTableRow/RowInEditMode.tsx`~~, ~~`forms/DateFilterForm/DateFilterForm.tsx`~~, ~~`forms/DateFilterForm/FormButtons.tsx`~~ ✅ Done
-- **CP5:** `visualization/ChartWrapper.tsx`, `visualization/Charts/BarChart.tsx`, `visualization/SummaryCharts/*.tsx`, `visualization/utils.ts`
+- **CP5:** ~~`visualization/ChartWrapper.tsx`~~, ~~`visualization/Charts/BarChart.tsx`~~, ~~`visualization/SummaryCharts/*.tsx`~~, ~~`visualization/utils.ts`~~ ✅ Done (kept Chart.js v4, removed SummaryBarChart)
 - **CP6:** `pages/Profile.tsx` (partially done — simplified in CP4), ~~`ModalDialog.tsx`~~ (deleted in CP4), `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
 - **CP7:** `styles/StylesProvider.tsx`
 
@@ -176,3 +180,4 @@
 - [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
 - [ ] Remove any knip exceptions that are no longer needed
 - [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
+- [ ] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)

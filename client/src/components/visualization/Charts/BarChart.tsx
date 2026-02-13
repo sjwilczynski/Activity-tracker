@@ -1,19 +1,24 @@
-import type { ChartData, ChartOptions } from "chart.js";
+import type { ChartOptions } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import type { ActivitySummaries } from "../../../data";
-import { useIsLightTheme } from "../../styles/StylesProvider";
-import { getDataInChartJsFormat } from "../utils";
+import type { ActivitySummaries, CategoryOption } from "../../../data";
+import { getStackedBarChartData } from "../utils";
 
 type Props = {
   activitySummaries: ActivitySummaries;
+  allSummaries: ActivitySummaries;
+  categoryOptions: CategoryOption[];
 };
 
-export function BarChart(props: Props) {
-  const isLightTheme = useIsLightTheme();
-  const data = getDataInChartJsFormat(
-    props.activitySummaries,
-    isLightTheme
-  ) as ChartData<"bar", number[], string>;
+export function BarChart({
+  activitySummaries,
+  allSummaries,
+  categoryOptions,
+}: Props) {
+  const data = getStackedBarChartData(
+    activitySummaries,
+    allSummaries,
+    categoryOptions
+  );
   return (
     <Bar aria-label="Activities bar chart" data={data} options={chartOptions} />
   );
@@ -24,11 +29,13 @@ const chartOptions: ChartOptions<"bar"> = {
   responsive: true,
   scales: {
     x: {
+      stacked: true,
       grid: {
         display: false,
       },
     },
     y: {
+      stacked: true,
       grid: {
         display: false,
       },
@@ -37,6 +44,19 @@ const chartOptions: ChartOptions<"bar"> = {
   plugins: {
     legend: {
       display: false,
+    },
+    tooltip: {
+      callbacks: {
+        title: (items) => {
+          const item = items[0];
+          return item?.dataset.label || item?.label || "";
+        },
+      },
+    },
+  },
+  elements: {
+    bar: {
+      borderRadius: 6,
     },
   },
 };

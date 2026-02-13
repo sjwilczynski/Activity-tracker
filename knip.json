@@ -8,10 +8,9 @@
         "@vitest/coverage-v8",
         "chromatic",
         "tailwindcss",
-        "tw-animate-css",
-        "recharts"
+        "tw-animate-css"
       ],
-      "ignore": ["src/utils/colors.ts", "src/components/ui/*.tsx"]
+      "ignore": ["src/components/ui/*.tsx"]
     },
     "api": {
       "entry": ["functions/*/index.ts"],
