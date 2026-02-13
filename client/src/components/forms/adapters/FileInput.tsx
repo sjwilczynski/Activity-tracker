@@ -53,6 +53,7 @@ export const FileInput = ({
         key={fileName ?? "empty"}
         className="hidden"
         type="file"
+        aria-label="Select file"
         onChange={onFileInputChange}
         onBlur={onBlur}
       />

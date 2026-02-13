@@ -111,31 +111,32 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
               />
             )}
           </form.Field>
+          <DialogFooter>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isDirty]}
+            >
+              {([canSubmit, isDirty]) => (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onClose}
+                    disabled={isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="gradient"
+                    disabled={!canSubmit || !isDirty || isPending}
+                  >
+                    {isPending ? "Saving..." : "Save Changes"}
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
+          </DialogFooter>
         </form>
-        <DialogFooter>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isDirty]}
-          >
-            {([canSubmit, isDirty]) => (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={isPending}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="gradient"
-                  disabled={!canSubmit || !isDirty || isPending}
-                  onClick={() => form.handleSubmit()}
-                >
-                  {isPending ? "Saving..." : "Save Changes"}
-                </Button>
-              </>
-            )}
-          </form.Subscribe>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
