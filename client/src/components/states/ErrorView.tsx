@@ -1,44 +1,19 @@
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { Button, styled } from "@mui/material";
+import { AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-
-const ErrorContainer = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-});
-
-const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)({
-  marginRight: "0.5rem",
-});
-
-const ErrorInfo = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  margin: "1rem 0",
-});
-
-const ErrorMessage = styled("span")({
-  fontWeight: 500,
-  marginLeft: "0.5rem",
-});
+import { Button } from "../ui/button";
 
 export const ErrorView = (props: { error: Error }) => {
   const navigate = useNavigate();
   return (
-    <ErrorContainer>
-      <ErrorInfo>
-        <StyledErrorOutlineIcon color="error" fontSize="large" />
+    <div className="flex flex-col">
+      <div className="flex items-center my-4">
+        <AlertCircle className="mr-2 size-7 text-destructive" />
         An error has occurred:
-        <ErrorMessage>{props.error.message}</ErrorMessage>
-      </ErrorInfo>
-      <Button
-        type="button"
-        variant="contained"
-        color="primary"
-        onClick={() => navigate("/welcome")}
-      >
+        <span className="font-medium ml-2">{props.error.message}</span>
+      </div>
+      <Button variant="gradient" onClick={() => navigate("/welcome")}>
         Back to homepage
       </Button>
-    </ErrorContainer>
+    </div>
   );
 };

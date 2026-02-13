@@ -1,37 +1,26 @@
-import { styled } from "@mui/material";
 import { Link } from "react-router";
-
-const StyledLink = styled(Link)(({ theme }) => ({
-  color: theme.palette.primary.main,
-  textDecoration: "none",
-  fontWeight: 500,
-}));
-
-const TextContainer = styled("div")({
-  fontSize: 16,
-  lineHeight: "32px",
-});
-
-const Highlight = styled("span")({
-  fontWeight: 600,
-});
 
 export const NoActivitiesPage = () => {
   return (
-    <TextContainer>
+    <div className="text-base leading-8">
       <div>
         You haven't added any activities yet, so there is no data to display 😟
       </div>
       <div>
         To start your journey go to{" "}
-        <StyledLink to="/welcome">homepage</StyledLink> add use{" "}
-        <Highlight>Quick add</Highlight> button 😎
+        <Link to="/welcome" className="font-medium text-primary no-underline">
+          homepage
+        </Link>{" "}
+        and use the <span className="font-semibold">Quick add</span> button 😎
       </div>
       <div>
-        You can also go to <StyledLink to="/profile">profile page</StyledLink>{" "}
-        and use <Highlight>Upload activities</Highlight> button and add them by
-        selecting a file in a proper format 😲
+        You can also go to{" "}
+        <Link to="/profile" className="font-medium text-primary no-underline">
+          profile page
+        </Link>{" "}
+        and use <span className="font-semibold">Upload activities</span> button
+        and add them by selecting a file in a proper format 😲
       </div>
-    </TextContainer>
+    </div>
   );
 };

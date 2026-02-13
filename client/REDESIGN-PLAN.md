@@ -102,7 +102,7 @@
 - [ ] Rewrite `src/components/visualization/Charts/BarChart.tsx`: Chart.js → Recharts `BarChart`. Activity-specific colors from color utility. Rounded top corners.
 - [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryPieChart.tsx`: → Recharts `PieChart` with dual `Pie` rings (inner: active/inactive, outer: by-type). Colors from color utility.
 - [ ] Rewrite `src/components/visualization/SummaryCharts/SummaryBarChart.tsx`: → Recharts `ComposedChart` (Bar + ReferenceLine for thresholds)
-- [ ] Rewrite `src/components/visualization/ChartWrapper.tsx`: MUI styled → Tailwind
+- [x] Rewrite `src/components/visualization/ChartWrapper.tsx`: MUI styled → Tailwind
 - [ ] Rewrite `src/components/visualization/utils.ts`: Chart.js data format → Recharts format. Remove `@ctrl/tinycolor`. Use color utility from `utils/colors.ts`.
 - [ ] Rewrite `src/pages/Charts.tsx`: Remove Chart.js `register()`. DateRangePicker already integrated (done in CP4). Summary stat cards with chart colors.
 - [ ] Update stories, remove `Chart.defaults.animation = false` from storybook config
@@ -115,19 +115,19 @@
   - **Categories tab**: table of categories (name, type badge, edit/delete actions). "Add Category" button → Dialog (name input + active/inactive Select). Edit category → Dialog (rename + change type). Delete → AlertDialog confirmation.
   - **Activity Names tab**: table of unique activity names (name, count, category Select for assignment, edit action). Edit → Dialog to rename all activities with that name.
   - Existing features preserved: export/import JSON, theme toggle
-- [ ] Rewrite `src/components/ModalDialog.tsx`: MUI Dialog → shadcn `Dialog`. Lucide `X` close.
-- [ ] Rewrite `src/components/forms/FileUploadForm.tsx`: MUI → shadcn + Tailwind
-- [ ] Rewrite `src/components/forms/adapters/FileInput.tsx`: MUI → shadcn + Lucide `Info`
-- [ ] Rewrite `src/components/states/ErrorView.tsx`: Lucide `AlertCircle` + Tailwind
-- [ ] Rewrite `src/components/states/NoActivitiesPage.tsx`: MUI styled → Tailwind
-- [ ] Rewrite `src/components/states/RouteErrorBoundary.tsx`: MUI → shadcn Button + Tailwind
+- [x] Rewrite `src/components/ModalDialog.tsx`: MUI Dialog → shadcn `Dialog`. Lucide `X` close. _(deleted — no longer needed)_
+- [x] Rewrite `src/components/forms/FileUploadForm.tsx`: MUI → shadcn + Tailwind _(done in CP4)_
+- [x] Rewrite `src/components/forms/adapters/FileInput.tsx`: MUI → shadcn + Lucide `Info` _(done in CP4)_
+- [x] Rewrite `src/components/states/ErrorView.tsx`: Lucide `AlertCircle` + Tailwind
+- [x] Rewrite `src/components/states/NoActivitiesPage.tsx`: MUI styled → Tailwind
+- [x] Rewrite `src/components/states/RouteErrorBoundary.tsx`: MUI → shadcn Button + Tailwind
 - [ ] Update stories
 - [ ] Verify: category CRUD works (add/edit/delete), activity rename works, category assignment works, export/import works
 
 ### CP7: MUI Removal + Cleanup
 
-- [ ] Remove deps: `@mui/material @mui/system @mui/icons-material @mui/x-date-pickers @emotion/react @emotion/styled chart.js react-chartjs-2 @ctrl/tinycolor`
-- [ ] Delete `src/components/styles/StylesProvider.tsx`. Replace with simple ThemeProvider that toggles `dark` class + exposes Jotai atoms.
+- [x] Remove deps: `@mui/material @mui/system @mui/icons-material @mui/x-date-pickers @emotion/react @emotion/styled chart.js react-chartjs-2 @ctrl/tinycolor` _(MUI + Emotion removed; chart.js/tinycolor remain until CP5)_
+- [x] Delete `src/components/styles/StylesProvider.tsx`. Replace with simple ThemeProvider that toggles `dark` class + exposes Jotai atoms. _(stripped MUI, kept dark class toggle + jotai atoms)_
 - [ ] Remove `StylesProvider` from `_layout.tsx`, `login.tsx`, `mocks/decorators.tsx`
 - [ ] Remove Roboto font from `root.tsx` and `index.html`
 - [ ] Remove Chart.js config from `.storybook/preview.ts`
