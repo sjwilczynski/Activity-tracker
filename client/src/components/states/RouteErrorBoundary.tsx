@@ -1,16 +1,5 @@
-import { Button, Typography, styled } from "@mui/material";
 import { Link, isRouteErrorResponse, useRouteError } from "react-router";
-
-const Container = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "50vh",
-  gap: "1rem",
-  textAlign: "center",
-  padding: "2rem",
-});
+import { Button } from "../ui/button";
 
 export function RouteErrorBoundary() {
   const error = useRouteError();
@@ -21,37 +10,43 @@ export function RouteErrorBoundary() {
     (error.status === 401 || error.status === 403)
   ) {
     return (
-      <Container>
-        <Typography variant="h4">Session Expired</Typography>
-        <Typography>Please sign in again to continue</Typography>
-        <Button component={Link} to="/login" variant="contained">
-          Sign In
+      <div className="flex flex-col items-center justify-center h-[50vh] gap-4 text-center p-8">
+        <h2 className="text-2xl font-bold">Session Expired</h2>
+        <p className="text-muted-foreground">
+          Please sign in again to continue
+        </p>
+        <Button variant="gradient" asChild>
+          <Link to="/login">Sign In</Link>
         </Button>
-      </Container>
+      </div>
     );
   }
 
   // Not Found (404)
   if (isRouteErrorResponse(error) && error.status === 404) {
     return (
-      <Container>
-        <Typography variant="h4">Page Not Found</Typography>
-        <Typography>The page you're looking for doesn't exist</Typography>
-        <Button component={Link} to="/welcome" variant="contained">
-          Go Home
+      <div className="flex flex-col items-center justify-center h-[50vh] gap-4 text-center p-8">
+        <h2 className="text-2xl font-bold">Page Not Found</h2>
+        <p className="text-muted-foreground">
+          The page you're looking for doesn't exist
+        </p>
+        <Button variant="gradient" asChild>
+          <Link to="/welcome">Go Home</Link>
         </Button>
-      </Container>
+      </div>
     );
   }
 
   // General Error (500, network, etc.)
   return (
-    <Container>
-      <Typography variant="h4">Something Went Wrong</Typography>
-      <Typography>We couldn't load this page. Please try again.</Typography>
-      <Button variant="contained" onClick={() => window.location.reload()}>
+    <div className="flex flex-col items-center justify-center h-[50vh] gap-4 text-center p-8">
+      <h2 className="text-2xl font-bold">Something Went Wrong</h2>
+      <p className="text-muted-foreground">
+        We couldn't load this page. Please try again.
+      </p>
+      <Button variant="gradient" onClick={() => window.location.reload()}>
         Try Again
       </Button>
-    </Container>
+    </div>
   );
 }

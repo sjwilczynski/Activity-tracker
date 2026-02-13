@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { Pencil } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { ActivityRecordWithId, CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
@@ -16,26 +17,28 @@ import {
 import { Button } from "../../ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "../../ui/dialog";
 import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
 
 type Props = {
   record: ActivityRecordWithId;
-  isOpen: boolean;
-  onClose: () => void;
+  disabled?: boolean;
 };
 
-export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
+export const EditActivityButton = ({ record, disabled }: Props) => {
   const { onSubmit, isSuccess, isError, isPending } = useEditActivityFormSubmit(
     record.id
   );
   const { availableCategories } = useAvailableCategories();
-  useCancelOnSuccess(isSuccess, onClose);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useCloseOnSuccess(isSuccess, closeRef);
 
   useFeedbackToast(
     { isSuccess, isError },
@@ -64,7 +67,18 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
   });
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:!bg-primary/10 hover:!text-primary hover:scale-110 active:scale-95 transition-all duration-150"
+          disabled={disabled}
+        >
+          <Pencil />
+          <span className="sr-only">Edit</span>
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Activity</DialogTitle>
@@ -117,14 +131,16 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
             >
               {([canSubmit, isDirty]) => (
                 <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onClose}
-                    disabled={isPending}
-                  >
-                    Cancel
-                  </Button>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={isPending}
+                      ref={closeRef}
+                    >
+                      Cancel
+                    </Button>
+                  </DialogClose>
                   <Button
                     type="submit"
                     variant="gradient"
@@ -142,20 +158,17 @@ export const EditActivityDialog = ({ record, isOpen, onClose }: Props) => {
   );
 };
 
-const useCancelOnSuccess = (isSuccess: boolean, onCancel: () => void) => {
-  const successRef = useRef(isSuccess);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const onCancelRef = useRef(onCancel);
-  onCancelRef.current = onCancel;
+/** Programmatically close the dialog after a successful save */
+const useCloseOnSuccess = (
+  isSuccess: boolean,
+  closeRef: React.RefObject<HTMLButtonElement | null>
+) => {
+  const prevRef = useRef(isSuccess);
   useEffect(() => {
-    if (isSuccess && !successRef.current) {
-      timeoutRef.current = setTimeout(() => onCancelRef.current(), 1500);
+    if (isSuccess && !prevRef.current) {
+      const timer = setTimeout(() => closeRef.current?.click(), 1500);
+      return () => clearTimeout(timer);
     }
-    successRef.current = isSuccess;
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [isSuccess]);
+    prevRef.current = isSuccess;
+  }, [isSuccess, closeRef]);
 };

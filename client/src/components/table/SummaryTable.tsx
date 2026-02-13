@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { EditableTableRow } from "./EditableTableRow/EditableTableRow";
+import { RowInReadMode } from "./EditableTableRow/RowInReadMode";
 
 type Props = {
   records: ActivityRecordWithId[];
@@ -115,7 +115,7 @@ export function SummaryTable(props: Props) {
                     </span>
                   </div>
                   {monthGroups[monthKey].map((record) => (
-                    <EditableTableRow key={record.id} record={record} />
+                    <RowInReadMode key={record.id} record={record} />
                   ))}
                 </div>
               ))}
@@ -124,7 +124,7 @@ export function SummaryTable(props: Props) {
             {/* Mobile: Card list */}
             <div className="md:hidden space-y-3">
               {pageRecords.map((record) => (
-                <EditableTableRow key={record.id} record={record} />
+                <RowInReadMode key={record.id} record={record} />
               ))}
             </div>
 

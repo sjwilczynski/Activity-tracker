@@ -356,3 +356,98 @@ export const DeleteAllInteraction: Story = {
     });
   },
 };
+
+export const KeyboardFocusRestoration: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step(
+      "Upload dialog: Tab to button, open, close with Escape, focus returns to trigger",
+      async () => {
+        // Tab order: All time, search input, Export, Upload
+        await userEvent.tab();
+        await userEvent.tab();
+        await userEvent.tab();
+        await userEvent.tab();
+
+        const uploadButton = canvas.getByRole("button", { name: /upload/i });
+        expect(uploadButton).toHaveFocus();
+
+        await userEvent.keyboard("{Enter}");
+        await screen.findByText(/activities upload/i);
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => {
+          expect(
+            screen.queryByText(/activities upload/i)
+          ).not.toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+          expect(uploadButton).toHaveFocus();
+        });
+      }
+    );
+
+    await step(
+      "Delete All dialog: Tab to button, open, close with Escape, focus returns to trigger",
+      async () => {
+        // One more Tab from Upload → Delete All
+        await userEvent.tab();
+
+        const deleteAllButton = canvas.getByRole("button", {
+          name: /delete all/i,
+        });
+        expect(deleteAllButton).toHaveFocus();
+
+        await userEvent.keyboard("{Enter}");
+        await waitFor(() => {
+          expect(
+            screen.getByText(/delete all activities\?/i)
+          ).toBeInTheDocument();
+        });
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => {
+          expect(
+            screen.queryByText(/delete all activities\?/i)
+          ).not.toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+          expect(deleteAllButton).toHaveFocus();
+        });
+      }
+    );
+
+    await step(
+      "Edit dialog: Tab to Edit button, open, close with Escape, focus returns to Edit button",
+      async () => {
+        // Tab from Delete All → first Edit button
+        await userEvent.tab();
+
+        const editButtons = canvas.getAllByRole("button", { name: /edit/i });
+        const firstEditButton = editButtons[0];
+        expect(firstEditButton).toHaveFocus();
+
+        await userEvent.keyboard("{Enter}");
+        await screen.findByText(/edit activity/i);
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => {
+          expect(screen.queryByText(/edit activity/i)).not.toBeInTheDocument();
+        });
+
+        // Re-query after dialog close since DOM may have re-rendered
+        await waitFor(() => {
+          const currentEditButtons = canvas.getAllByRole("button", {
+            name: /edit/i,
+          });
+          expect(currentEditButtons[0]).toHaveFocus();
+        });
+      }
+    );
+  },
+};
