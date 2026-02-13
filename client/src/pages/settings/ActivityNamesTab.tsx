@@ -1,6 +1,6 @@
 import { Pencil } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Link, useFetcher } from "react-router";
+import { Link } from "react-router";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -37,7 +37,6 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import type { ActivityRecordWithId, Category } from "../../data";
-import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 type ActivityNameInfo = {
   name: string;
@@ -106,33 +105,107 @@ export function ActivityNamesTab({
             </p>
           </div>
         ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Activity Name</TableHead>
-                  <TableHead>Count</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {activityNames.map(({ name, count, categoryId }) => (
-                  <ActivityNameRow
-                    key={name}
-                    name={name}
-                    count={count}
-                    categoryId={categoryId}
-                    categories={categories}
-                    activities={activities}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <>
+            {/* Desktop table */}
+            <div className="hidden sm:block rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Activity Name</TableHead>
+                    <TableHead>Count</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {activityNames.map(({ name, count, categoryId }) => (
+                    <ActivityNameRow
+                      key={name}
+                      name={name}
+                      count={count}
+                      categoryId={categoryId}
+                      categories={categories}
+                      activities={activities}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            {/* Mobile cards */}
+            <div className="sm:hidden space-y-2">
+              {activityNames.map(({ name, count, categoryId }) => (
+                <ActivityNameCard
+                  key={name}
+                  name={name}
+                  count={count}
+                  categoryId={categoryId}
+                  categories={categories}
+                  activities={activities}
+                />
+              ))}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
+  );
+}
+
+type ActivityNameRowProps = {
+  name: string;
+  count: number;
+  categoryId: string | undefined;
+  categories: Category[];
+  activities: ActivityRecordWithId[];
+};
+
+function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
+  // TODO: CP8 — needs a bulk assign endpoint (POST /api/activities/assign-category)
+  // Currently disabled: multiple fetcher.submit() calls cancel each other
+  const handleAssignCategory = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_newCategoryId: string) => {
+      console.warn(
+        `Category assignment for "${name}" requires bulk API — coming in CP8`
+      );
+    },
+    [name]
+  );
+
+  return handleAssignCategory;
+}
+
+function CategorySelect({
+  categoryId,
+  categories,
+  onValueChange,
+  className,
+  disabled,
+}: {
+  categoryId: string | undefined;
+  categories: Category[];
+  onValueChange: (value: string) => void;
+  className?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <Select
+      value={categoryId ?? "none"}
+      onValueChange={onValueChange}
+      disabled={disabled}
+    >
+      <SelectTrigger className={className}>
+        <SelectValue placeholder="No category" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">No category</SelectItem>
+        {categories.map((cat) => (
+          <SelectItem key={cat.id} value={cat.id}>
+            {cat.name} ({cat.active ? "active" : "inactive"})
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -141,78 +214,54 @@ function ActivityNameRow({
   count,
   categoryId,
   categories,
-  activities,
-}: {
-  name: string;
-  count: number;
-  categoryId: string | undefined;
-  categories: Category[];
-  activities: ActivityRecordWithId[];
-}) {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: `Category assigned for "${name}"`,
-      errorMessage: "Failed to assign category",
-    }
-  );
-
-  const handleAssignCategory = useCallback(
-    (newCategoryId: string) => {
-      if (newCategoryId === "none") return;
-      const category = categories.find((c) => c.id === newCategoryId);
-      if (!category) return;
-
-      const matching = activities.filter((a) => a.name === name);
-      for (const activity of matching) {
-        fetcher.submit(
-          {
-            intent: "edit-activity",
-            id: activity.id,
-            record: JSON.stringify({
-              name: activity.name,
-              date: activity.date.toLocaleDateString("en-CA"),
-              active: category.active,
-            }),
-          },
-          { method: "POST" }
-        );
-      }
-    },
-    [name, categories, activities, fetcher]
-  );
+}: ActivityNameRowProps) {
+  const handleAssignCategory = useAssignCategory({ name });
 
   return (
     <TableRow>
       <TableCell className="font-medium capitalize">{name}</TableCell>
       <TableCell>{count}</TableCell>
       <TableCell>
-        <Select
-          value={categoryId ?? "none"}
+        <CategorySelect
+          categoryId={categoryId}
+          categories={categories}
           onValueChange={handleAssignCategory}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="No category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No category</SelectItem>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.name} ({cat.active ? "active" : "inactive"})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          className="w-[180px]"
+          disabled
+        />
       </TableCell>
       <TableCell className="text-right">
         <EditActivityNameButton activityName={name} />
       </TableCell>
     </TableRow>
+  );
+}
+
+function ActivityNameCard({
+  name,
+  count,
+  categoryId,
+  categories,
+}: ActivityNameRowProps) {
+  const handleAssignCategory = useAssignCategory({ name });
+
+  return (
+    <div className="rounded-md border p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="font-medium capitalize">{name}</span>
+        <div className="flex items-center gap-1">
+          <span className="text-sm text-muted-foreground">{count}×</span>
+          <EditActivityNameButton activityName={name} />
+        </div>
+      </div>
+      <CategorySelect
+        categoryId={categoryId}
+        categories={categories}
+        onValueChange={handleAssignCategory}
+        className="w-full"
+        disabled
+      />
+    </div>
   );
 }
 

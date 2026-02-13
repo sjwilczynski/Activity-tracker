@@ -155,7 +155,7 @@
   - When a category is renamed, update the subcategory references (activities link by subcategory name)
   - When a category is deleted, clear `categoryId` on linked activities
 - [ ] **API**: Persist `groupByCategory` user preference in Firebase (currently Jotai-only, resets on reload). Add GET/PUT `/api/user-preferences` endpoint.
-- [ ] **API**: Add bulk rename endpoint `POST /api/activities/rename` (`{ oldName, newName }`) — needed by Settings Activity Names tab (UI exists, button disabled until endpoint ready)
+- [ ] **API**: Add bulk rename endpoint `POST /api/activities/rename` (`{ oldName, newName }`) and bulk category assign endpoint `POST /api/activities/assign-category` (`{ activityName, categoryId }`) — needed by Settings Activity Names tab (UI exists, both disabled until endpoints ready)
 - [ ] **API**: Add optional fields to Activity type in `api/utils/types.ts`: `description?: string`, `intensity?: "low" | "medium" | "high"`, `timeSpent?: number`
 - [ ] **API**: Update validation in `api/validation/validators.ts` for new fields
 - [ ] **API**: Update `client/src/data/types.ts` to match

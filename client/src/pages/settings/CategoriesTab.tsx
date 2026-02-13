@@ -75,25 +75,51 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
             </p>
           </div>
         ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
-                  <CategoryRow key={category.id} category={category} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <>
+            {/* Desktop table */}
+            <div className="hidden sm:block rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {categories.map((category) => (
+                    <CategoryRow key={category.id} category={category} />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            {/* Mobile cards */}
+            <div className="sm:hidden space-y-2">
+              {categories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function CategoryCard({ category }: { category: Category }) {
+  return (
+    <div className="rounded-md border p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="font-medium truncate">{category.name}</span>
+        <div className="flex shrink-0 gap-1">
+          <EditCategoryButton category={category} />
+          <DeleteCategoryButton category={category} />
+        </div>
+      </div>
+      <Badge variant={category.active ? "default" : "secondary"}>
+        {category.active ? "active" : "inactive"}
+      </Badge>
+    </div>
   );
 }
 
