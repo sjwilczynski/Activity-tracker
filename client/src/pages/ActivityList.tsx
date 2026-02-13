@@ -10,7 +10,6 @@ import {
 } from "../components/forms/DateFilterForm/shared";
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
-import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
 import { SummaryTable } from "../components/table/SummaryTable";
 import { Input } from "../components/ui/input";
 import {
@@ -38,13 +37,11 @@ export const ActivityList = () => {
     return <ErrorView error={error} />;
   }
 
-  if (!data?.length) {
-    return <NoActivitiesPage />;
-  }
+  const hasData = !!data?.length;
 
-  const filtered = sortDescendingByDate(
-    filterByDateRange(data, startDate, endDate)
-  );
+  const filtered = hasData
+    ? sortDescendingByDate(filterByDateRange(data, startDate, endDate))
+    : [];
 
   const searchFiltered = searchQuery
     ? filtered.filter((record) =>
@@ -64,41 +61,61 @@ export const ActivityList = () => {
             View and manage all your logged activities
           </p>
         </div>
-        <DateRangePicker
-          value={{ from: dateRange.startDate, to: dateRange.endDate }}
-          onChange={(range) =>
-            setDateRange({ startDate: range.from, endDate: range.to })
-          }
-        />
+        {hasData && (
+          <DateRangePicker
+            value={{ from: dateRange.startDate, to: dateRange.endDate }}
+            onChange={(range) =>
+              setDateRange({ startDate: range.from, endDate: range.to })
+            }
+          />
+        )}
       </div>
 
       {/* Actions Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            placeholder="Search activities by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-            aria-label="Search activities"
-          />
-        </div>
+        {hasData && (
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Search activities by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+              aria-label="Search activities"
+            />
+          </div>
+        )}
         <div className="flex gap-2">
-          <ExportButton
-            disabled={isFetchingActivities}
-            exportFile={exportActivities}
-          />
+          {hasData && (
+            <ExportButton
+              disabled={isFetchingActivities}
+              exportFile={exportActivities}
+            />
+          )}
           <UploadButton />
-          <DeleteAllButton
-            totalCount={data.length}
-            disabled={isFetchingActivities}
-          />
+          {hasData && (
+            <DeleteAllButton
+              totalCount={data.length}
+              disabled={isFetchingActivities}
+            />
+          )}
         </div>
       </div>
 
-      {/* Table */}
-      <SummaryTable records={searchFiltered} totalCount={data.length} />
+      {/* Table or Empty State */}
+      {hasData ? (
+        <SummaryTable records={searchFiltered} totalCount={data.length} />
+      ) : (
+        <div className="text-center py-12 text-muted-foreground">
+          <p className="text-lg font-medium text-foreground">
+            No activities yet
+          </p>
+          <p className="mt-1">
+            Upload a JSON file above or use Quick add on the homepage to get
+            started 🚀
+          </p>
+        </div>
+      )}
     </div>
   );
 };

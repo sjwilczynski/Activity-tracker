@@ -27,7 +27,7 @@ const navItems = [
   { title: "Dashboard", path: "/welcome", icon: Home },
   { title: "Charts", path: "/charts", icon: BarChart3 },
   { title: "Activity List", path: "/activity-list", icon: ListChecks },
-  { title: "Settings", path: "/profile", icon: Settings },
+  { title: "Settings", path: "/settings", icon: Settings },
 ] as const;
 
 function getPageTitle(pathname: string) {

@@ -66,10 +66,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           color="#4479a2"
         />
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

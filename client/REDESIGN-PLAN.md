@@ -113,36 +113,49 @@
 
 ### CP6: Settings (Profile) — expanded with new features
 
-- [ ] Add shadcn components: `tabs` (dialog/alert-dialog already added)
-- [ ] Rewrite `src/pages/Profile.tsx` as **Settings page** with Tabs interface (max-w-4xl):
-  - **Categories tab**: table of categories (name, type badge, edit/delete actions). "Add Category" button → Dialog (name input + active/inactive Select). Edit category → Dialog (rename + change type). Delete → AlertDialog confirmation.
-  - **Activity Names tab**: table of unique activity names (name, count, category Select for assignment, edit action). Edit → Dialog to rename all activities with that name.
-  - **Charts tab**: "Group by category" toggle (Jotai atom in `StylesProvider.tsx`). When enabled, charts show category-grouped stacked bars and 3-ring pie (current behavior). When disabled, each activity shown as individual bar/pie segment without category grouping — for users who don't define categories. Requires adding flat (non-grouped) variants of `getStackedBarChartData` and `getPieChartData` in `visualization/utils.ts`.
-  - Existing features preserved: export/import JSON, theme toggle
+- [x] Add shadcn components: `tabs`, `table`, `select`, `badge` (dialog/alert-dialog already added)
+- [x] Rewrite `src/pages/Profile.tsx` → `src/pages/Settings.tsx` as **Settings page** with Tabs interface (max-w-4xl):
+  - **Categories tab**: table of categories (name, type badge, edit/delete actions). "Add Category" button → Dialog (name input + active/inactive Select). Edit category → Dialog (rename + change type). Delete → AlertDialog confirmation. All dialogs use self-contained DialogTrigger for proper focus restoration.
+  - **Activity Names tab**: table of unique activity names (name, count, category Select for assignment, edit action). Edit → Dialog to rename all activities with that name. Category Select correctly shows current category by matching activity name to category/subcategory names.
+  - **Charts tab**: "Group by category" toggle (Jotai atom in `StylesProvider.tsx`). When enabled, charts show category-grouped stacked bars and 3-ring pie (current behavior). When disabled, each activity shown as individual bar/pie segment without category grouping — flat variants `getFlatBarChartData` and `getFlatPieChartData` added to `visualization/utils.ts`.
+  - Existing features preserved: export/import JSON (on ActivityList page), theme toggle (in sidebar)
+- [x] Route renamed: `profile` → `settings` (route file, routes.ts, sidebar nav, NoActivitiesPage link)
+- [x] File split: `Settings.tsx` (orchestrator) + `settings/CategoriesTab.tsx` + `settings/ActivityNamesTab.tsx` + `settings/ChartsTab.tsx`
+- [x] Client `Category` type updated to include `id` field (returned by API via `mapToList`)
 - [x] Rewrite `src/components/ModalDialog.tsx`: MUI Dialog → shadcn `Dialog`. Lucide `X` close. _(deleted — no longer needed)_
 - [x] Rewrite `src/components/forms/FileUploadForm.tsx`: MUI → shadcn + Tailwind _(done in CP4)_
 - [x] Rewrite `src/components/forms/adapters/FileInput.tsx`: MUI → shadcn + Lucide `Info` _(done in CP4)_
 - [x] Rewrite `src/components/states/ErrorView.tsx`: Lucide `AlertCircle` + Tailwind
 - [x] Rewrite `src/components/states/NoActivitiesPage.tsx`: MUI styled → Tailwind
 - [x] Rewrite `src/components/states/RouteErrorBoundary.tsx`: MUI → shadcn Button + Tailwind
-- [ ] Update stories
-- [ ] Verify: category CRUD works (add/edit/delete), activity rename works, category assignment works, export/import works
+- [x] Update stories (3 stories: Default, ActivityNamesTab, ChartsTab — 49 total tests pass)
+- [x] Verify: build clean, knip clean, all 49 tests pass
 
 ### CP7: MUI Removal + Cleanup
 
 - [x] Remove deps: `@mui/material @mui/system @mui/icons-material @mui/x-date-pickers @emotion/react @emotion/styled` _(MUI + Emotion removed; chart.js + react-chartjs-2 + @ctrl/tinycolor kept and bumped in CP5)_
-- [x] Delete `src/components/styles/StylesProvider.tsx`. Replace with simple ThemeProvider that toggles `dark` class + exposes Jotai atoms. _(stripped MUI, kept dark class toggle + jotai atoms)_
-- [ ] Remove `StylesProvider` from `_layout.tsx`, `login.tsx`, `mocks/decorators.tsx`
-- [ ] Remove Roboto font from `root.tsx` and `index.html`
-- [ ] Remove Chart.js config from `.storybook/preview.ts`
-- [ ] `bun install` clean
-- [ ] Verify: `bun run --filter '*' build` succeeds
-- [ ] Verify: `bun run size-limit` — bundle under 365 kB (expect ~240-265 kB)
-- [ ] Verify: `cd client && bun run test` — all stories pass
-- [ ] Clean up `knip.json`: remove all CP0 entries from `ignoreDependencies` and `ignore` in the client workspace. Run `bun run knip` to confirm no leftover exceptions.
+- [x] Delete `src/components/styles/StylesProvider.tsx`. Replace with simple ThemeProvider that toggles `dark` class + exposes Jotai atoms. _(stripped MUI, kept dark class toggle + jotai atoms — StylesProvider is still needed, not removed)_
+- [x] Remove `StylesProvider` from `_layout.tsx`, `login.tsx`, `mocks/decorators.tsx` _(N/A — StylesProvider still needed for dark mode + groupByCategory atom)_
+- [x] Remove Roboto font from `root.tsx`, `index.html`, and `.storybook/preview-head.html`
+- [x] Keep Chart.js config in `.storybook/preview.ts` _(needed for test stability — `Chart.defaults.animation = false`)_
+- [x] Fix storybook `/profile` → `/settings` mock route in `preview.ts`
+- [x] Fix `NoActivitiesPage` links (upload → `/activity-list`, quick add → `/welcome`)
+- [x] Fix `ActivityNamesTab` empty state with proper links
+- [x] `bun install` clean
+- [x] Verify: `bun run --filter '*' build` succeeds
+- [x] Verify: `bun run size-limit` — bundle under 365 kB (expect ~240-265 kB)
+- [x] Verify: `cd client && bun run test` — all stories pass
+- [x] Clean up `knip.json`: remove all CP0 entries from `ignoreDependencies` and `ignore` in the client workspace. Run `bun run knip` to confirm no leftover exceptions.
 
 ### CP8: Backend Changes + Compare Page + Detail Fields
 
+- [ ] **API**: **Link activities to categories properly.** Currently activities have no `categoryId` — the link is inferred client-side by name matching (`findCategoryForActivity`). This means renaming/deleting a category silently breaks associations, and toggling `active` on a category doesn't cascade to activities. Options:
+  - Add `categoryId?: string` to the Activity type and store it in Firebase
+  - When a category's `active` flag changes, cascade-update all linked activities
+  - When a category is renamed, update the subcategory references (activities link by subcategory name)
+  - When a category is deleted, clear `categoryId` on linked activities
+- [ ] **API**: Persist `groupByCategory` user preference in Firebase (currently Jotai-only, resets on reload). Add GET/PUT `/api/user-preferences` endpoint.
+- [ ] **API**: Add bulk rename endpoint `POST /api/activities/rename` (`{ oldName, newName }`) — needed by Settings Activity Names tab (UI exists, button disabled until endpoint ready)
 - [ ] **API**: Add optional fields to Activity type in `api/utils/types.ts`: `description?: string`, `intensity?: "low" | "medium" | "high"`, `timeSpent?: number`
 - [ ] **API**: Update validation in `api/validation/validators.ts` for new fields
 - [ ] **API**: Update `client/src/data/types.ts` to match
@@ -169,7 +182,7 @@
 - **CP3:** `pages/Welcome.tsx`, `forms/AddActivityForm/AddActivityForm.tsx`, `forms/adapters/CategoryAutocomplete.tsx`, `forms/adapters/DatePicker.tsx`, `states/FeedbackAlert.tsx`, `states/FeedbackAlertGroup.tsx`
 - **CP4:** ~~`pages/ActivityList.tsx`~~, ~~`table/SummaryTable.tsx`~~, ~~`table/EditableTableRow/RowInReadMode.tsx`~~, ~~`table/EditableTableRow/RowInEditMode.tsx`~~, ~~`forms/DateFilterForm/DateFilterForm.tsx`~~, ~~`forms/DateFilterForm/FormButtons.tsx`~~ ✅ Done
 - **CP5:** ~~`visualization/ChartWrapper.tsx`~~, ~~`visualization/Charts/BarChart.tsx`~~, ~~`visualization/SummaryCharts/*.tsx`~~, ~~`visualization/utils.ts`~~ ✅ Done (kept Chart.js v4, removed SummaryBarChart)
-- **CP6:** `pages/Profile.tsx` (partially done — simplified in CP4), ~~`ModalDialog.tsx`~~ (deleted in CP4), `forms/FileUploadForm.tsx`, `forms/adapters/FileInput.tsx`, `states/ErrorView.tsx`, `states/NoActivitiesPage.tsx`, `states/RouteErrorBoundary.tsx`
+- **CP6:** ~~`pages/Profile.tsx`~~ → `pages/Settings.tsx`, ~~`ModalDialog.tsx`~~ (deleted in CP4), ~~`forms/FileUploadForm.tsx`~~, ~~`forms/adapters/FileInput.tsx`~~, ~~`states/ErrorView.tsx`~~, ~~`states/NoActivitiesPage.tsx`~~, ~~`states/RouteErrorBoundary.tsx`~~ ✅ Done
 - **CP7:** `styles/StylesProvider.tsx`
 
 ### CP9: Cleanup + Full-App Story

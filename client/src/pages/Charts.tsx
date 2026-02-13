@@ -18,6 +18,7 @@ import {
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
 import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
+import { useGroupByCategory } from "../components/styles/StylesProvider";
 import {
   Card,
   CardContent,
@@ -51,6 +52,7 @@ export const Charts = () => {
   const { availableCategories } = useAvailableCategories();
   const { startDate, endDate } = useDateRange();
   const [dateRange, setDateRange] = useDateRangeState();
+  const [groupByCategory] = useGroupByCategory();
 
   if (isLoading) {
     return <Loading />;
@@ -197,6 +199,7 @@ export const Charts = () => {
                   activitySummaries={activitySummaries}
                   allSummaries={allSummaries}
                   categoryOptions={availableCategories}
+                  groupByCategory={groupByCategory}
                 />
               </div>
             </CardContent>
@@ -216,6 +219,7 @@ export const Charts = () => {
                   activitySummaries={activitySummaries}
                   allSummaries={allSummaries}
                   categoryOptions={availableCategories}
+                  groupByCategory={groupByCategory}
                 />
               </div>
             </CardContent>

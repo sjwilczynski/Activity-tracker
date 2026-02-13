@@ -13,6 +13,9 @@ const themeAtom = atom(
 export const useIsLightTheme = () => useAtomValue(themeAtom);
 export const useThemeState = () => useAtom(themeAtom);
 
+const groupByCategoryAtom = atom(true);
+export const useGroupByCategory = () => useAtom(groupByCategoryAtom);
+
 export const StylesProvider = ({ children }: Props) => {
   const isLightTheme = useIsLightTheme();
 
