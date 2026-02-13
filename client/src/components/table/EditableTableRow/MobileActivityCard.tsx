@@ -42,7 +42,7 @@ export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
           <Button
             variant="ghost"
             size="icon"
-            className="hover:!bg-destructive/10 dark:hover:!bg-red-500/15 hover:scale-110 active:scale-95 transition-all duration-150"
+            className="hover:bg-destructive/10! dark:hover:bg-red-500/15! hover:scale-110 active:scale-95 transition-all duration-150"
             onClick={onDelete}
             disabled={isDeleting}
           >

@@ -72,7 +72,7 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:!bg-primary/10 hover:!text-primary hover:scale-110 active:scale-95 transition-all duration-150"
+          className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
           disabled={disabled}
         >
           <Pencil />

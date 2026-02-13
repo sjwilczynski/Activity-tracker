@@ -67,12 +67,12 @@ export const RowInReadMode = ({ record }: Props) => {
           {formatDate(record.date)}
         </span>
 
-        <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 [&_button]:size-8 [&_svg]:!size-3.5">
+        <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 [&_button]:size-8 [&_svg]:size-3.5!">
           <EditActivityButton record={record} disabled={isDeleting} />
           <Button
             variant="ghost"
             size="icon"
-            className="hover:!bg-destructive/10 dark:hover:!bg-red-500/15 hover:scale-110 active:scale-95 transition-all duration-150"
+            className="hover:bg-destructive/10! dark:hover:bg-red-500/15! hover:scale-110 active:scale-95 transition-all duration-150"
             onClick={deleteActivity}
             disabled={isDeleting}
           >

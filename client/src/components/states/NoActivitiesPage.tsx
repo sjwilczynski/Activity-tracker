@@ -11,7 +11,7 @@ export const NoActivitiesPage = () => {
         <Link to="/welcome" className="font-medium text-primary no-underline">
           homepage
         </Link>{" "}
-        add use <span className="font-semibold">Quick add</span> button 😎
+        and use the <span className="font-semibold">Quick add</span> button 😎
       </div>
       <div>
         You can also go to{" "}

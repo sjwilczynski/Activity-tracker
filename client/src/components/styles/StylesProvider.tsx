@@ -1,9 +1,9 @@
 import { atom, useAtom } from "jotai";
 import { useAtomValue } from "jotai/utils";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const isLightThemeAtom = atom(true);
