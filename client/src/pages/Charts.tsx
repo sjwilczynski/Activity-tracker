@@ -32,6 +32,7 @@ import {
   filterByDateRange,
   transformDataToSummaryMap,
   useActivities,
+  useAvailableCategories,
 } from "../data";
 
 Chart.register(
@@ -47,6 +48,7 @@ Chart.register(
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
+  const { availableCategories } = useAvailableCategories();
   const { startDate, endDate } = useDateRange();
   const [dateRange, setDateRange] = useDateRangeState();
 
@@ -63,6 +65,7 @@ export const Charts = () => {
   }
 
   const filtered = filterByDateRange(data, startDate, endDate);
+  const allSummaries = transformDataToSummaryMap(data);
   const activitySummaries = transformDataToSummaryMap(filtered);
   const keys = sortKeys(activitySummaries);
   const uniqueCount = keys.length;
@@ -190,7 +193,11 @@ export const Charts = () => {
             </CardHeader>
             <CardContent>
               <div className="relative min-h-[50vh]">
-                <BarChart activitySummaries={activitySummaries} />
+                <BarChart
+                  activitySummaries={activitySummaries}
+                  allSummaries={allSummaries}
+                  categoryOptions={availableCategories}
+                />
               </div>
             </CardContent>
           </Card>
@@ -205,7 +212,11 @@ export const Charts = () => {
             </CardHeader>
             <CardContent>
               <div className="relative min-h-[50vh]">
-                <SummaryPieChart activitySummaries={activitySummaries} />
+                <SummaryPieChart
+                  activitySummaries={activitySummaries}
+                  allSummaries={allSummaries}
+                  categoryOptions={availableCategories}
+                />
               </div>
             </CardContent>
           </Card>

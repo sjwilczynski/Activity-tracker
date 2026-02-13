@@ -1,37 +1,24 @@
-import type {
-  ChartData,
-  ChartOptions,
-  TooltipCallbacks,
-  TooltipItem,
-} from "chart.js";
+import type { ChartOptions, TooltipCallbacks, TooltipItem } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import type { ActivitySummaries } from "../../../data";
-import { useIsLightTheme } from "../../styles/StylesProvider";
-import {
-  activeBaseColor,
-  getDataInChartJsFormat,
-  getTotalActiveAndInactiveCount,
-  inactiveBaseColor,
-} from "../utils";
+import type { ActivitySummaries, CategoryOption } from "../../../data";
+import { getPieChartData } from "../utils";
 
 type Props = {
   activitySummaries: ActivitySummaries;
+  allSummaries: ActivitySummaries;
+  categoryOptions: CategoryOption[];
 };
 
-export function SummaryPieChart({ activitySummaries }: Props) {
-  const isLightTheme = useIsLightTheme();
-  const chartJsData = getDataInChartJsFormat(
+export function SummaryPieChart({
+  activitySummaries,
+  allSummaries,
+  categoryOptions,
+}: Props) {
+  const data = getPieChartData(
     activitySummaries,
-    isLightTheme
-  ) as ChartData<"pie", number[], string>;
-  const summaryDataset = getAdditionalSummaryDataset(
-    activitySummaries,
-    isLightTheme
+    allSummaries,
+    categoryOptions
   );
-  const data = {
-    labels: chartJsData.labels,
-    datasets: [chartJsData.datasets[0], summaryDataset],
-  };
   return (
     <Pie
       aria-label="Activities summary pie chart"
@@ -42,20 +29,39 @@ export function SummaryPieChart({ activitySummaries }: Props) {
 }
 
 const tooltipCallback: Partial<TooltipCallbacks<"pie">> = {
+  title: (items: TooltipItem<"pie">[]) => {
+    if (!items.length) return "";
+    const { datasetIndex, dataIndex, dataset } = items[0];
+    if (datasetIndex === 2) {
+      const labels = (dataset as unknown as Record<string, string[]>)
+        .innerLabels;
+      return labels?.[dataIndex] ?? "";
+    }
+    if (datasetIndex === 1) {
+      const labels = (dataset as unknown as Record<string, string[]>)
+        .categoryLabels;
+      return labels?.[dataIndex] ?? "";
+    }
+    return items[0].label ?? "";
+  },
   label: (context: TooltipItem<"pie">) => {
-    const { datasetIndex, dataIndex, label, dataset } = context;
+    const { datasetIndex, dataIndex, dataset } = context;
     const chartData = dataset.data as number[];
-    const totalCount = chartData.reduce(
-      (counts, singleCount) => counts + singleCount,
-      0
-    );
+    const totalCount = chartData.reduce((sum, n) => sum + n, 0);
     const count = chartData[dataIndex];
     const percentage = (count / totalCount) * 100;
-    // Hack alert: if it's additional summary dataset don't add a label to prevent activity appearing for summary
-    const newLabel = datasetIndex === 0 ? label + ":" : "";
-    return ` ${newLabel} Count: ${count}, percentage: ${percentage.toFixed(
-      2
-    )}%`;
+
+    if (datasetIndex === 2) {
+      const labels = (dataset as unknown as Record<string, string[]>)
+        .innerLabels;
+      return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
+    }
+    if (datasetIndex === 1) {
+      const labels = (dataset as unknown as Record<string, string[]>)
+        .categoryLabels;
+      return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
+    }
+    return ` ${context.label ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
   },
 };
 
@@ -68,27 +74,4 @@ const chartOptions: ChartOptions<"pie"> = {
       position: "right",
     },
   },
-};
-
-const getAdditionalSummaryDataset = (
-  activitySummaries: ActivitySummaries,
-  isLightTheme: boolean
-) => {
-  const { activeCount, inactiveCount } =
-    getTotalActiveAndInactiveCount(activitySummaries);
-  const activeBaseColorThemed = isLightTheme
-    ? activeBaseColor
-    : activeBaseColor.darken(15);
-  const inactiveBaseColorThemed = isLightTheme
-    ? inactiveBaseColor
-    : inactiveBaseColor.darken(15);
-  return {
-    backgroundColor: [
-      activeBaseColorThemed.toHexString(),
-      inactiveBaseColorThemed.toHexString(),
-    ],
-    data: [activeCount, inactiveCount],
-    weight: 0.35,
-    label: "activeVsInactive",
-  };
 };
