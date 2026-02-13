@@ -66,7 +66,7 @@ const tooltipCallback: Partial<TooltipCallbacks<"pie">> = {
     const chartData = dataset.data as number[];
     const totalCount = chartData.reduce((sum, n) => sum + n, 0);
     const count = chartData[dataIndex];
-    const percentage = (count / totalCount) * 100;
+    const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
 
     if (datasetIndex === 2) {
       const labels = (dataset as unknown as Record<string, string[]>)
