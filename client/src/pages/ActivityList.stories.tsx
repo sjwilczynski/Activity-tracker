@@ -181,10 +181,8 @@ export const DateFilterInteraction: Story = {
       });
     });
 
-    await step("Apply Last Month preset", async () => {
-      await userEvent.click(
-        screen.getByRole("button", { name: /last month/i })
-      );
+    await step("Apply Last Week preset", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /last week/i }));
 
       await waitFor(() => {
         expect(screen.queryByText("Select Date Range")).not.toBeInTheDocument();
