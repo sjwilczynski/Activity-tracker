@@ -8,7 +8,7 @@ export const categoryOptionSchema = z.object({
 });
 
 export const activityFormSchema = z.object({
-  date: z.date({ required_error: "Date is required" }),
+  date: z.date({ error: "Date is required" }),
   category: categoryOptionSchema,
 });
 
@@ -24,4 +24,4 @@ export const fileSchema = z
   .nullable()
   .refine((file): file is File => file !== null, "File is required");
 
-export const dateSchema = z.date({ required_error: "Date is required" });
+export const dateSchema = z.date({ error: "Date is required" });

@@ -1,4 +1,4 @@
-import admin from "../firebase/firebase";
+import { auth } from "../firebase/firebase";
 
 export const getUserId = async (
   token: string | null | undefined
@@ -7,7 +7,7 @@ export const getUserId = async (
     throw new Error("Received no id token");
   }
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await auth.verifyIdToken(token);
     return decodedToken.uid;
   } catch {
     throw new Error(`Unable to identify the user using token: ${token}`);
