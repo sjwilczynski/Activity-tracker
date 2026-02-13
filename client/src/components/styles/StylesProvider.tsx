@@ -1,5 +1,4 @@
-import { atom, useAtom } from "jotai";
-import { useAtomValue } from "jotai/utils";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { useEffect, type ReactNode } from "react";
 
 type Props = {

@@ -1,10 +1,10 @@
-import { TinyColor } from "@ctrl/tinycolor";
 import type { ChartData } from "chart.js";
 import type {
   ActivitySummaries,
   ActivitySummary,
   CategoryOption,
 } from "../../data";
+import { darken, lighten } from "./color";
 
 // 10 well-spaced hues for active categories
 const ACTIVE_PALETTE = [
@@ -20,15 +20,15 @@ const ACTIVE_PALETTE = [
   "#fd79a8", // coral
 ];
 
-export const activeBaseColor = new TinyColor("#2ecc40");
-export const inactiveBaseColor = new TinyColor("#ff4136");
+export const activeBaseColor = "#2ecc40";
+export const inactiveBaseColor = "#ff4136";
 
 type CategoryColorInfo = {
   activityToCategory: Map<string, string>;
   inactiveCategories: Set<string>;
   categoryActivities: Map<string, string[]>;
   categoryNames: string[];
-  categoryBaseColor: Map<string, TinyColor>;
+  categoryBaseColor: Map<string, string>;
 };
 
 /** Shared logic: map activities to categories and assign base colors */
@@ -64,19 +64,16 @@ function buildCategoryColorInfo(
   });
 
   let activeIdx = 0;
-  const categoryBaseColor = new Map<string, TinyColor>();
+  const categoryBaseColor = new Map<string, string>();
   for (const cat of categoryNames) {
     if (cat === "other") {
-      categoryBaseColor.set(cat, new TinyColor("#94a3b8"));
+      categoryBaseColor.set(cat, "#94a3b8");
     } else if (inactiveCategories.has(cat)) {
-      categoryBaseColor.set(
-        cat,
-        new TinyColor(inactiveBaseColor.toHexString())
-      );
+      categoryBaseColor.set(cat, inactiveBaseColor);
     } else {
       categoryBaseColor.set(
         cat,
-        new TinyColor(ACTIVE_PALETTE[activeIdx % ACTIVE_PALETTE.length])
+        ACTIVE_PALETTE[activeIdx % ACTIVE_PALETTE.length]
       );
       activeIdx++;
     }
@@ -103,9 +100,7 @@ function getActivityColor(
   const actIdx = siblings.indexOf(activityName);
   const step =
     siblings.length > 1 ? (actIdx / (siblings.length - 1)) * 50 - 25 : 0;
-  const color =
-    step > 0 ? base.clone().lighten(step) : base.clone().darken(-step);
-  return color.toHexString();
+  return step > 0 ? lighten(base, step) : darken(base, -step);
 }
 
 /** Build stacked bar chart data: one bar per category, stacked by activity.
@@ -151,10 +146,8 @@ export function getPieChartData(
   const innerDataset = {
     data: [activeCount, ...(inactiveCount > 0 ? [inactiveCount] : [])],
     backgroundColor: [
-      activeBaseColor.clone().darken(10).toHexString(),
-      ...(inactiveCount > 0
-        ? [inactiveBaseColor.clone().darken(10).toHexString()]
-        : []),
+      darken(activeBaseColor, 10),
+      ...(inactiveCount > 0 ? [darken(inactiveBaseColor, 10)] : []),
     ],
     label: "Active vs Inactive",
     weight: 0.3,
@@ -173,7 +166,7 @@ export function getPieChartData(
     );
   });
   const categoryColors = visibleCategories.map((cat) =>
-    info.categoryBaseColor.get(cat)!.clone().darken(5).toHexString()
+    darken(info.categoryBaseColor.get(cat)!, 5)
   );
   const middleDataset = {
     data: categoryData,
