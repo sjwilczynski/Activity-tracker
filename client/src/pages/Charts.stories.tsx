@@ -30,7 +30,11 @@ export const Default: Story = {
     ).toBeInTheDocument();
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(3);
+    expect(chartElements.length).toBe(2);
+
+    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    expect(canvas.getByText("Unique Activities")).toBeInTheDocument();
+    expect(canvas.getByText("Most Popular")).toBeInTheDocument();
   },
 };
 
@@ -104,7 +108,7 @@ export const DateFilterInteraction: Story = {
 
     await step("Verify initial charts are rendered with data", async () => {
       const chartElements = canvasElement.querySelectorAll("canvas");
-      expect(chartElements.length).toBe(3);
+      expect(chartElements.length).toBe(2);
       expect(
         canvas.queryByText(/haven't added any activities/i)
       ).not.toBeInTheDocument();
@@ -133,7 +137,7 @@ export const DateFilterInteraction: Story = {
 
         await waitFor(() => {
           const chartElements = canvasElement.querySelectorAll("canvas");
-          expect(chartElements.length).toBe(3);
+          expect(chartElements.length).toBe(2);
         });
 
         expect(
@@ -168,7 +172,11 @@ export const SingleActivityType: Story = {
     });
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(3);
+    expect(chartElements.length).toBe(2);
+
+    expect(canvas.getByText("5")).toBeInTheDocument();
+    expect(canvas.getByText("1")).toBeInTheDocument();
+    expect(canvas.getByText("Running")).toBeInTheDocument();
   },
 };
 
@@ -211,6 +219,9 @@ export const ManyActivityTypes: Story = {
     });
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(3);
+    expect(chartElements.length).toBe(2);
+
+    expect(canvas.getByText("36")).toBeInTheDocument();
+    expect(canvas.getByText("12")).toBeInTheDocument();
   },
 };

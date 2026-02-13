@@ -39,4 +39,9 @@ const chartOptions: ChartOptions<"bar"> = {
       display: false,
     },
   },
+  elements: {
+    bar: {
+      borderRadius: 6,
+    },
+  },
 };
