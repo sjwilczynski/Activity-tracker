@@ -117,6 +117,7 @@
 - [ ] Rewrite `src/pages/Profile.tsx` as **Settings page** with Tabs interface (max-w-4xl):
   - **Categories tab**: table of categories (name, type badge, edit/delete actions). "Add Category" button → Dialog (name input + active/inactive Select). Edit category → Dialog (rename + change type). Delete → AlertDialog confirmation.
   - **Activity Names tab**: table of unique activity names (name, count, category Select for assignment, edit action). Edit → Dialog to rename all activities with that name.
+  - **Charts tab**: "Group by category" toggle (Jotai atom in `StylesProvider.tsx`). When enabled, charts show category-grouped stacked bars and 3-ring pie (current behavior). When disabled, each activity shown as individual bar/pie segment without category grouping — for users who don't define categories. Requires adding flat (non-grouped) variants of `getStackedBarChartData` and `getPieChartData` in `visualization/utils.ts`.
   - Existing features preserved: export/import JSON, theme toggle
 - [x] Rewrite `src/components/ModalDialog.tsx`: MUI Dialog → shadcn `Dialog`. Lucide `X` close. _(deleted — no longer needed)_
 - [x] Rewrite `src/components/forms/FileUploadForm.tsx`: MUI → shadcn + Tailwind _(done in CP4)_
