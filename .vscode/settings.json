@@ -1,4 +1,5 @@
 {
+  "files.associations": { "*.css": "tailwindcss" },
   "azureFunctions.deploySubpath": "api",
   "azureFunctions.postDeployTask": "bun",
   "azureFunctions.projectLanguage": "TypeScript",
