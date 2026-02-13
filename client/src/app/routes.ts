@@ -12,7 +12,7 @@ export default [
   layout("routes/_layout.tsx", [
     index("routes/_index.tsx"),
     route("welcome", "routes/welcome.tsx"),
-    route("profile", "routes/profile.tsx"),
+    route("settings", "routes/settings.tsx"),
     route("charts", "routes/charts.tsx"),
     route("activity-list", "routes/activity-list.tsx"),
   ]),

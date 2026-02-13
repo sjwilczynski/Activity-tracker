@@ -4,6 +4,7 @@ export type Activity = {
 };
 
 export type Category = {
+  id: string;
   name: string;
   active: boolean;
   description: string;

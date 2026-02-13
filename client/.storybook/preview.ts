@@ -128,7 +128,7 @@ const preview: Preview = {
           action: mockAction,
         },
         {
-          path: "/profile",
+          path: "/settings",
           action: mockAction,
         },
         {

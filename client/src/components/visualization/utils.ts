@@ -209,6 +209,93 @@ export function getPieChartData(
   };
 }
 
+/** Build flat bar chart data: one bar per activity, no category grouping.
+ *  Uses allSummaries for stable colors, filteredSummaries for counts. */
+export function getFlatBarChartData(
+  filteredSummaries: ActivitySummaries,
+  allSummaries: ActivitySummaries
+): ChartData<"bar", number[], string> {
+  const sortedNames = Object.keys(allSummaries)
+    .filter((name) => (filteredSummaries[name]?.count ?? 0) > 0)
+    .sort((a, b) => {
+      const countDiff =
+        (filteredSummaries[b]?.count ?? 0) - (filteredSummaries[a]?.count ?? 0);
+      return countDiff || a.localeCompare(b);
+    });
+
+  return {
+    labels: sortedNames,
+    datasets: [
+      {
+        label: "Count",
+        data: sortedNames.map((name) => filteredSummaries[name]?.count ?? 0),
+        backgroundColor: sortedNames.map((name) => hashActivityColor(name)),
+      },
+    ],
+  };
+}
+
+/** Build flat pie chart data: 2 rings — inner (active/inactive), outer (per-activity). */
+export function getFlatPieChartData(
+  activitySummaries: ActivitySummaries
+): ChartData<"pie", number[], string> {
+  // --- Inner ring: Active vs Inactive ---
+  const { activeCount, inactiveCount } =
+    getTotalActiveAndInactiveCount(activitySummaries);
+  const innerLabels = ["Active", ...(inactiveCount > 0 ? ["Inactive"] : [])];
+  const innerDataset = {
+    data: [activeCount, ...(inactiveCount > 0 ? [inactiveCount] : [])],
+    backgroundColor: [
+      darken(activeBaseColor, 10),
+      ...(inactiveCount > 0 ? [darken(inactiveBaseColor, 10)] : []),
+    ],
+    label: "Active vs Inactive",
+    weight: 0.3,
+    innerLabels,
+  };
+
+  // --- Outer ring: Per-activity ---
+  const entries = Object.entries(activitySummaries)
+    .filter(([, s]) => s.count > 0)
+    .sort(([, a], [, b]) => b.count - a.count);
+
+  const outerDataset = {
+    data: entries.map(([, s]) => s.count),
+    backgroundColor: entries.map(([name]) => hashActivityColor(name)),
+    label: "Activities",
+    weight: 1,
+  };
+
+  return {
+    labels: entries.map(([name]) => name),
+    datasets: [outerDataset, innerDataset],
+  };
+}
+
+/** Hash-based color for flat mode (same palette as utils/colors.ts) */
+const FLAT_PALETTE = [
+  "#D4764E",
+  "#5085BE",
+  "#1E7A4E",
+  "#D4A03C",
+  "#CD6078",
+  "#8b5cf6",
+  "#06b6d4",
+  "#e84393",
+  "#2ecc40",
+  "#fd79a8",
+];
+
+function hashActivityColor(name: string): string {
+  let hash = 0;
+  const lower = name.toLowerCase().trim();
+  for (let i = 0; i < lower.length; i++) {
+    hash = (hash << 5) - hash + lower.charCodeAt(i);
+    hash |= 0;
+  }
+  return FLAT_PALETTE[Math.abs(hash) % FLAT_PALETTE.length];
+}
+
 export const sortKeys = (activitySummaries: ActivitySummaries) =>
   Object.keys(activitySummaries).sort((key1, key2) => {
     const orderByActive =

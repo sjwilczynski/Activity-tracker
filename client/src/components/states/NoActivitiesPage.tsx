@@ -15,11 +15,14 @@ export const NoActivitiesPage = () => {
       </div>
       <div>
         You can also go to{" "}
-        <Link to="/profile" className="font-medium text-primary no-underline">
-          profile page
+        <Link
+          to="/activity-list"
+          className="font-medium text-primary no-underline"
+        >
+          activity list
         </Link>{" "}
-        and use <span className="font-semibold">Upload activities</span> button
-        and add them by selecting a file in a proper format 😲
+        and use the <span className="font-semibold">Upload</span> button to
+        import activities from a JSON file 😲
       </div>
     </div>
   );
