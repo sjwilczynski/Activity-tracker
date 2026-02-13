@@ -106,60 +106,72 @@ export const Charts = () => {
           {/* Summary Stats */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card
-              className="border-l-[3px]"
-              style={{ borderLeftColor: "var(--chart-2)" }}
+              className="bloom-hover border-l-[3px] py-4 gap-2"
+              style={{
+                borderLeftColor: "var(--color-chart-2, var(--color-primary))",
+              }}
             >
               <CardHeader>
-                <CardTitle>Total Activities</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Activities
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
-                  className="text-3xl font-bold tabular-nums"
-                  style={{ color: "var(--chart-2)" }}
+                  className="text-2xl font-bold tabular-nums"
+                  style={{ color: "var(--color-chart-2)" }}
                 >
                   {filtered.length}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground">
                   In selected date range
                 </p>
               </CardContent>
             </Card>
 
             <Card
-              className="border-l-[3px]"
-              style={{ borderLeftColor: "var(--chart-3)" }}
+              className="bloom-hover border-l-[3px] py-4 gap-2"
+              style={{
+                borderLeftColor: "var(--color-chart-3, var(--color-primary))",
+              }}
             >
               <CardHeader>
-                <CardTitle>Unique Activities</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Unique Activities
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
-                  className="text-3xl font-bold tabular-nums"
-                  style={{ color: "var(--chart-3)" }}
+                  className="text-2xl font-bold tabular-nums"
+                  style={{ color: "var(--color-chart-3)" }}
                 >
                   {uniqueCount}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground">
                   Different activity types
                 </p>
               </CardContent>
             </Card>
 
             <Card
-              className="border-l-[3px]"
-              style={{ borderLeftColor: "var(--chart-1)" }}
+              className="bloom-hover border-l-[3px] py-4 gap-2"
+              style={{
+                borderLeftColor: "var(--color-chart-1, var(--color-primary))",
+              }}
             >
               <CardHeader>
-                <CardTitle>Most Popular</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Most Popular
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
-                  className="text-3xl font-bold capitalize"
-                  style={{ color: "var(--chart-1)" }}
+                  className="text-2xl font-bold capitalize"
+                  style={{ color: "var(--color-chart-1)" }}
                 >
                   {mostPopular || "None"}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground">
                   {mostPopular
                     ? `${activitySummaries[mostPopular].count} times`
                     : "No active activities"}
