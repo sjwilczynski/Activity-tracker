@@ -1,6 +1,6 @@
 import { FileUp, Info } from "lucide-react";
 import type { ChangeEvent } from "react";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { Button } from "../../ui/button";
 
 type FileInputProps = {
@@ -30,6 +30,8 @@ export const FileInput = ({
   onBlur,
   error,
 }: FileInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const onFileInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target;
@@ -47,22 +49,23 @@ export const FileInput = ({
   return (
     <div className="space-y-3">
       <input
+        ref={inputRef}
         key={fileName ?? "empty"}
         className="hidden"
-        id="contained-button-file"
         type="file"
         onChange={onFileInputChange}
         onBlur={onBlur}
       />
       <div className="flex items-center gap-2">
-        <label htmlFor="contained-button-file" className="flex-1">
-          <Button variant="outline" className="w-full cursor-pointer" asChild>
-            <span>
-              <FileUp className="size-4 mr-2" />
-              Select file
-            </span>
-          </Button>
-        </label>
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1 cursor-pointer"
+          onClick={() => inputRef.current?.click()}
+        >
+          <FileUp className="size-4 mr-2" />
+          Select file
+        </Button>
         <Button variant="ghost" size="icon" className="size-9" asChild>
           <a
             href="https://github.com/sjwilczynski/Activity-tracker/blob/main/example-activities-file.json"
