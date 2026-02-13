@@ -1,5 +1,8 @@
 import { RouteErrorBoundary } from "../../components/states/RouteErrorBoundary";
-import { activitiesQueryOptions } from "../../data/queryOptions";
+import {
+  activitiesQueryOptions,
+  categoriesQueryOptions,
+} from "../../data/queryOptions";
 import { ActivityList as ActivityListPage } from "../../pages/ActivityList";
 import { getLoadContext } from "../root";
 import type { Route } from "./+types/activity-list";
@@ -10,7 +13,10 @@ export async function clientLoader() {
   const { queryClient, getAuthToken, authService } = getLoadContext();
   // Wait for auth to initialize (loaders run in parallel, so parent's waitForAuth may not have completed)
   await authService.waitForAuth();
-  await queryClient.ensureQueryData(activitiesQueryOptions(getAuthToken));
+  await Promise.all([
+    queryClient.ensureQueryData(activitiesQueryOptions(getAuthToken)),
+    queryClient.ensureQueryData(categoriesQueryOptions(getAuthToken)),
+  ]);
   return null;
 }
 
@@ -40,6 +46,15 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     const id = formData.get("id") as string;
 
     const response = await fetch(`/api/activities/${id}`, {
+      method: "DELETE",
+      headers: { "x-auth-token": token },
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
+  } else if (intent === "delete-all") {
+    const response = await fetch("/api/activities", {
       method: "DELETE",
       headers: { "x-auth-token": token },
     });

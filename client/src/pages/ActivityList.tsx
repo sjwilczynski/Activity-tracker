@@ -1,18 +1,34 @@
-import { DateFilterForm } from "../components/forms/DateFilterForm/DateFilterForm";
-import { useDateRange } from "../components/forms/DateFilterForm/shared";
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { DateRangePicker } from "../components/DateRangePicker";
+import { DeleteAllButton } from "../components/DeleteAllButton";
+import { ExportButton } from "../components/ExportButton";
+import { UploadButton } from "../components/UploadButton";
+import {
+  useDateRange,
+  useDateRangeState,
+} from "../components/forms/DateFilterForm/shared";
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
 import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
 import { SummaryTable } from "../components/table/SummaryTable";
+import { Input } from "../components/ui/input";
 import {
   filterByDateRange,
   sortDescendingByDate,
   useActivities,
+  useExportActivities,
+  useIsFetchingActivties,
 } from "../data";
 
 export const ActivityList = () => {
   const { isLoading, error, data } = useActivities();
   const { startDate, endDate } = useDateRange();
+  const [dateRange, setDateRange] = useDateRangeState();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const exportActivities = useExportActivities();
+  const isFetchingActivities = useIsFetchingActivties();
 
   if (isLoading) {
     return <Loading />;
@@ -22,16 +38,67 @@ export const ActivityList = () => {
     return <ErrorView error={error} />;
   }
 
-  const filteredData = sortDescendingByDate(
-    filterByDateRange(data || [], startDate, endDate)
+  if (!data?.length) {
+    return <NoActivitiesPage />;
+  }
+
+  const filtered = sortDescendingByDate(
+    filterByDateRange(data, startDate, endDate)
   );
 
-  return data?.length ? (
-    <>
-      <DateFilterForm />
-      <SummaryTable records={filteredData} />
-    </>
-  ) : (
-    <NoActivitiesPage />
+  const searchFiltered = searchQuery
+    ? filtered.filter((record) =>
+        record.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : filtered;
+
+  return (
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold heading-gradient">
+            Activity History
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            View and manage all your logged activities
+          </p>
+        </div>
+        <DateRangePicker
+          value={{ from: dateRange.startDate, to: dateRange.endDate }}
+          onChange={(range) =>
+            setDateRange({ startDate: range.from, endDate: range.to })
+          }
+        />
+      </div>
+
+      {/* Actions Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Search activities by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+            aria-label="Search activities"
+          />
+        </div>
+        <div className="flex gap-2">
+          <ExportButton
+            disabled={isFetchingActivities}
+            exportFile={exportActivities}
+          />
+          <UploadButton />
+          <DeleteAllButton
+            totalCount={data.length}
+            disabled={isFetchingActivities}
+          />
+        </div>
+      </div>
+
+      {/* Table */}
+      <SummaryTable records={searchFiltered} totalCount={data.length} />
+    </div>
   );
 };

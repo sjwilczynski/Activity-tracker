@@ -1,4 +1,3 @@
-import { isBefore } from "date-fns";
 import { z } from "zod";
 
 export const categoryOptionSchema = z.object({
@@ -26,13 +25,3 @@ export const fileSchema = z
   .refine((file): file is File => file !== null, "File is required");
 
 export const dateSchema = z.date({ required_error: "Date is required" });
-
-export const dateFilterSchema = z
-  .object({
-    startDate: z.date({ required_error: "Start date is required" }),
-    endDate: z.date({ required_error: "End date is required" }),
-  })
-  .refine((data) => !isBefore(data.endDate, data.startDate), {
-    message: "Start date must be before end date",
-    path: ["form"],
-  });

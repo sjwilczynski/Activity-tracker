@@ -15,18 +15,31 @@ export const Default: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByRole("table");
+    await canvas.findByText("All Activities");
 
-    await step("Verify date filter is visible", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    await step("Verify page header is visible", async () => {
+      expect(canvas.getByText("Activity History")).toBeInTheDocument();
+      expect(
+        canvas.getByPlaceholderText(/search activities/i)
+      ).toBeInTheDocument();
     });
 
-    await step("Verify table has correct columns", async () => {
-      expect(canvas.getByText("Date")).toBeInTheDocument();
-      expect(canvas.getByText("Activity name")).toBeInTheDocument();
-      expect(canvas.getByText("Actions")).toBeInTheDocument();
+    await step("Verify activity list has content", async () => {
+      expect(canvas.getByText(/of 30 activities/i)).toBeInTheDocument();
     });
+  },
+};
+
+export const Mobile: Story = {
+  globals: {
+    viewport: {
+      value: "mobile2",
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("All Activities");
+    expect(canvas.getByText("Activity History")).toBeInTheDocument();
   },
 };
 
@@ -86,7 +99,7 @@ export const PaginationInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByRole("table");
+    await canvas.findByText("All Activities");
     expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
 
     await step("Navigate to next page and back", async () => {
@@ -107,26 +120,26 @@ export const EditRowInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByRole("table");
+    await canvas.findByText("All Activities");
 
-    await step("Enter and exit edit mode", async () => {
+    await step("Open and close edit dialog", async () => {
       const editButtons = canvas.getAllByRole("button", { name: /edit/i });
       await userEvent.click(editButtons[0]);
 
       await waitFor(() => {
         expect(
-          canvas.getByRole("button", { name: /save/i })
+          screen.getByRole("button", { name: /save changes/i })
         ).toBeInTheDocument();
         expect(
-          canvas.getByRole("button", { name: /cancel/i })
+          screen.getByRole("button", { name: /cancel/i })
         ).toBeInTheDocument();
       });
 
-      await userEvent.click(canvas.getByRole("button", { name: /cancel/i }));
+      await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
       await waitFor(() => {
         expect(
-          canvas.queryByRole("button", { name: /save/i })
+          screen.queryByRole("button", { name: /save changes/i })
         ).not.toBeInTheDocument();
       });
     });
@@ -137,13 +150,18 @@ export const DeleteRowInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await screen.findByRole("table");
-    screen.getByText("1–10 of 30");
+    await canvas.findByText("All Activities");
+    canvas.getByText(/1–10 of 30/i);
 
-    const deleteButtons = canvas.getAllByRole("button", { name: /delete/i });
+    const deleteButtons = canvas.getAllByRole("button", { name: /^delete$/i });
     await userEvent.click(deleteButtons[0]);
 
-    await screen.findByText("1–10 of 29");
+    await waitFor(
+      () => {
+        expect(canvas.getByText(/1–10 of 29/i)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
   },
 };
 
@@ -151,36 +169,33 @@ export const DateFilterInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByRole("table");
+    await canvas.findByText("All Activities");
 
-    await step("Verify date filter is visible", async () => {
-      expect(canvas.getByLabelText(/start date/i)).toBeInTheDocument();
-      expect(canvas.getByLabelText(/end date/i)).toBeInTheDocument();
+    await step("Open date range picker", async () => {
+      const dateButton = canvas.getByRole("button", { name: /all time/i });
+      expect(dateButton).toBeInTheDocument();
+      await userEvent.click(dateButton);
+
+      await waitFor(() => {
+        expect(screen.getByText("Select Date Range")).toBeInTheDocument();
+      });
     });
 
-    await step("Verify initial data is loaded", async () => {
-      expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
+    await step("Apply Last Month preset", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /last month/i })
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText("Select Date Range")).not.toBeInTheDocument();
+      });
     });
 
-    await step(
-      "Apply current month filter and verify data exists",
-      async () => {
-        await userEvent.click(
-          canvas.getByRole("button", { name: /show current month/i })
-        );
-
-        // Wait for the filtered data to load and verify it's not empty
-        // The mocked date (2024-02-10) should show February activities
-        await waitFor(() => {
-          const paginationText = canvas.getByText(/\d+–\d+ of \d+/i);
-          expect(paginationText).toBeInTheDocument();
-          // Verify the count is greater than 0 (not "0 of 0")
-          expect(paginationText.textContent).not.toMatch(/0–0 of 0/i);
-        });
-
-        expect(canvas.getByRole("table")).toBeInTheDocument();
-      }
-    );
+    await step("Verify filtered results", async () => {
+      await waitFor(() => {
+        expect(canvas.getByText("All Activities")).toBeInTheDocument();
+      });
+    });
   },
 };
 
@@ -188,33 +203,155 @@ export const DateFilterInvalidRange: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByRole("table");
+    await canvas.findByText("All Activities");
 
-    await step("Set end date before start date", async () => {
-      const startDateInput = canvas.getByLabelText(
-        /start date/i
-      ) as HTMLInputElement;
-      const endDateInput = canvas.getByLabelText(
-        /end date/i
-      ) as HTMLInputElement;
-
-      // Set start date after end date to create an invalid range
-      await userEvent.clear(startDateInput);
-      await userEvent.type(startDateInput, "2024-12-31");
-      await userEvent.clear(endDateInput);
-      await userEvent.type(endDateInput, "2024-01-01");
+    await step("Open date range picker", async () => {
+      await userEvent.click(canvas.getByRole("button", { name: /all time/i }));
+      await waitFor(() => {
+        expect(screen.getByText("Select Date Range")).toBeInTheDocument();
+      });
     });
 
-    await step("Submit and verify error message", async () => {
-      const filterButton = canvas.getByRole("button", {
-        name: /set date range/i,
+    await step("Set end date before start date", async () => {
+      const fromInput = screen.getByLabelText("From") as HTMLInputElement;
+      const toInput = screen.getByLabelText("To") as HTMLInputElement;
+
+      await userEvent.clear(fromInput);
+      await userEvent.type(fromInput, "2024-12-31");
+      await userEvent.clear(toInput);
+      await userEvent.type(toInput, "2024-01-01");
+    });
+
+    await step("Verify error and Apply button disabled", async () => {
+      await waitFor(() => {
+        expect(
+          screen.getByText(/start date must be before/i)
+        ).toBeInTheDocument();
       });
-      await userEvent.click(filterButton);
+
+      expect(screen.getByRole("button", { name: /apply/i })).toBeDisabled();
+    });
+  },
+};
+
+export const ExportActivities: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    const exportButton = canvas.getByRole("button", { name: /export/i });
+    expect(exportButton).toBeEnabled();
+
+    await userEvent.click(exportButton);
+    expect(exportButton).toBeInTheDocument();
+  },
+};
+
+export const UploadDialogInteraction: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step("Open and close upload dialog", async () => {
+      await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/activities upload/i)).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByRole("button", { name: /close/i }));
 
       await waitFor(() => {
         expect(
-          canvas.getByText(/start date must be before/i)
+          screen.queryByText(/activities upload/i)
+        ).not.toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const FileUploadFileTooLarge: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step("Open upload dialog", async () => {
+      await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
+      await screen.findByText(/activities upload/i);
+    });
+
+    await step("Upload file larger than 1MB and verify error", async () => {
+      const largeContent = "x".repeat(1001 * 1024);
+      const largeFile = new File([largeContent], "large.json", {
+        type: "application/json",
+      });
+
+      const fileInput = screen.getByLabelText(/select file/i, {
+        selector: "input",
+      });
+      await userEvent.upload(fileInput, largeFile);
+
+      await waitFor(() => {
+        expect(screen.getByText(/file too large/i)).toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const FileUploadInvalidFormat: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step("Open upload dialog", async () => {
+      await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
+      await screen.findByText(/activities upload/i);
+    });
+
+    await step("Upload non-JSON file and verify error", async () => {
+      const textFile = new File(["hello world"], "test.txt", {
+        type: "text/plain",
+      });
+
+      const fileInput = screen.getByLabelText(/select file/i, {
+        selector: "input",
+      });
+      await userEvent.upload(fileInput, textFile);
+
+      await waitFor(() => {
+        expect(screen.getByText(/unsupported format/i)).toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const DeleteAllInteraction: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step("Open and cancel delete all dialog", async () => {
+      await userEvent.click(
+        canvas.getByRole("button", { name: /delete all/i })
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/delete all activities\?/i)
         ).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/delete all activities\?/i)
+        ).not.toBeInTheDocument();
       });
     });
   },

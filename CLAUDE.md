@@ -14,7 +14,7 @@ bun run --filter '*' build  # Build both frontend and API
 
 ## Structure
 
-- `/client` - React frontend (Vite, MUI, React Query)
+- `/client` - React frontend (Vite, shadcn/ui + Tailwind CSS, React Query)
 - `/api` - Azure Functions backend
 
 ## Architecture
@@ -23,6 +23,7 @@ bun run --filter '*' build  # Build both frontend and API
 - Firebase handles auth (client) and database (API via Admin SDK)
 - React Query manages server state and caching
 - API functions: CRUD for activities and categories
+- UI components live in `client/src/components/ui/` (shadcn primitives — no separate Storybook stories or tests needed for these)
 
 ### Testing
 

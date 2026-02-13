@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import type { ActivityRecordWithId } from "../../../data";
-import { RowInEditMode } from "./RowInEditMode";
+import { EditActivityDialog } from "./EditActivityDialog";
 import { RowInReadMode } from "./RowInReadMode";
 
 type Props = {
@@ -14,13 +14,20 @@ export function EditableTableRow(props: Props) {
     setIsEditMode(true);
   }, []);
 
-  const handleCancelClick = useCallback(() => {
+  const handleClose = useCallback(() => {
     setIsEditMode(false);
   }, []);
 
-  return isEditMode ? (
-    <RowInEditMode record={props.record} onCancel={handleCancelClick} />
-  ) : (
-    <RowInReadMode record={props.record} onEdit={handleEditClick} />
+  return (
+    <>
+      <RowInReadMode record={props.record} onEdit={handleEditClick} />
+      {isEditMode && (
+        <EditActivityDialog
+          record={props.record}
+          isOpen={isEditMode}
+          onClose={handleClose}
+        />
+      )}
+    </>
   );
 }
