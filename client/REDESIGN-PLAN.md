@@ -180,3 +180,4 @@
 - [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
 - [ ] Remove any knip exceptions that are no longer needed
 - [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
+- [ ] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)
