@@ -1,6 +1,8 @@
 import type { ChartOptions, TooltipCallbacks, TooltipItem } from "chart.js";
+import { useMemo } from "react";
 import { Pie } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
+import { useIsMobile } from "../../../hooks/use-mobile";
 import { getPieChartData } from "../utils";
 
 type Props = {
@@ -19,11 +21,26 @@ export function SummaryPieChart({
     allSummaries,
     categoryOptions
   );
+  const isMobile = useIsMobile();
+  const options = useMemo<ChartOptions<"pie">>(
+    () => ({
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+        tooltip: { callbacks: tooltipCallback },
+        legend: {
+          display: !isMobile,
+          position: "right",
+        },
+      },
+    }),
+    [isMobile]
+  );
   return (
     <Pie
       aria-label="Activities summary pie chart"
       data={data}
-      options={chartOptions}
+      options={options}
     />
   );
 }
@@ -62,16 +79,5 @@ const tooltipCallback: Partial<TooltipCallbacks<"pie">> = {
       return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
     }
     return ` ${context.label ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-  },
-};
-
-const chartOptions: ChartOptions<"pie"> = {
-  maintainAspectRatio: false,
-  responsive: true,
-  plugins: {
-    tooltip: { callbacks: tooltipCallback },
-    legend: {
-      position: "right",
-    },
   },
 };
