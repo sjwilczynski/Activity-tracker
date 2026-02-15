@@ -11,7 +11,6 @@ const themeAtom = atom(
   (get, set) => set(isLightThemeAtom, !get(isLightThemeAtom))
 );
 export const useIsLightTheme = () => useAtomValue(themeAtom);
-export const useThemeState = () => useAtom(themeAtom);
 
 const groupByCategoryAtom = atom(true);
 export const useGroupByCategory = () => useAtom(groupByCategoryAtom);
