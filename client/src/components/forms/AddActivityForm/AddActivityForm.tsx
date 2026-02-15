@@ -3,6 +3,8 @@ import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
+import { cn } from "../../../utils/cn";
+import { useFunAnimations } from "../../styles/StylesProvider";
 import { Button } from "../../ui/button";
 import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
 import { categoryOptionSchema, dateSchema } from "../schemas";
@@ -52,6 +54,9 @@ export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError, isPending } =
     useAddActivityFormSubmit();
 
+  const [funAnimations] = useFunAnimations();
+  const [isAnimating, setIsAnimating] = useState(false);
+
   useFeedbackToast(
     { isSuccess, isError },
     {
@@ -59,6 +64,21 @@ export function AddActivityForm({ lastActivity }: Props) {
       errorMessage: "Failed to add activity",
     }
   );
+
+  const prevIsSuccessForAnim = useRef(isSuccess);
+  useEffect(() => {
+    if (isPending) {
+      prevIsSuccessForAnim.current = false;
+    }
+  }, [isPending]);
+  useEffect(() => {
+    if (isSuccess && !prevIsSuccessForAnim.current && funAnimations) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 600);
+      return () => clearTimeout(timer);
+    }
+    prevIsSuccessForAnim.current = isSuccess;
+  }, [isSuccess, funAnimations]);
 
   const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
 
@@ -129,7 +149,10 @@ export function AddActivityForm({ lastActivity }: Props) {
               disabled={!canSubmit || !isDirty || isPending}
               variant="gradient"
               type="submit"
-              className="w-full sm:w-auto px-8"
+              className={cn(
+                "w-full sm:w-auto px-8",
+                isAnimating && "animate-success-burst"
+              )}
             >
               {isPending ? "Logging..." : "Log Activity"}
             </Button>

@@ -181,4 +181,81 @@ body {
       animation: none;
     }
   }
+
+  /* Success burst animation for Log Activity button */
+  @keyframes success-burst {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 4px 14px rgba(80, 133, 190, 0.3);
+    }
+    30% {
+      transform: scale(1.06);
+      box-shadow:
+        0 4px 20px rgba(80, 133, 190, 0.5),
+        0 0 0 4px rgba(80, 133, 190, 0.15);
+    }
+    60% {
+      transform: scale(0.98);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 4px 14px rgba(80, 133, 190, 0.3);
+    }
+  }
+  .animate-success-burst {
+    animation: success-burst 0.5s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-success-burst {
+      animation: none;
+    }
+  }
+}
+
+/* Page navigation view transitions */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: page-fade-out 150ms ease-in;
+  }
+  ::view-transition-new(root) {
+    animation: page-fade-in 200ms ease-out;
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Theme toggle radial spread transition */
+html.theme-transitioning::view-transition-old(root),
+html.theme-transitioning::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-transitioning::view-transition-new(root) {
+  animation: theme-spread 500ms ease-in-out;
+}
+
+@keyframes theme-spread {
+  from {
+    clip-path: circle(0% at var(--sidebar-width, 16rem) 2.5rem);
+  }
+  to {
+    clip-path: circle(150vmax at var(--sidebar-width, 16rem) 2.5rem);
+  }
 }

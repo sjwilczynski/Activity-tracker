@@ -9,7 +9,7 @@ import { useCategories } from "../data/hooks/categories/useCategories";
 import { useIsMobile } from "../hooks/use-mobile";
 import { ActivityNamesTab } from "./settings/ActivityNamesTab";
 import { CategoriesTab } from "./settings/CategoriesTab";
-import { ChartsTab } from "./settings/ChartsTab";
+import { AppearanceTab } from "./settings/AppearanceTab";
 
 export const Settings = () => {
   const { data: categories = [] } = useCategories();
@@ -17,7 +17,7 @@ export const Settings = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold heading-gradient">
           Settings
@@ -32,10 +32,10 @@ export const Settings = () => {
         className="space-y-4 max-w-4xl flex-col"
         orientation={isMobile ? "vertical" : "horizontal"}
       >
-        <TabsList>
+        <TabsList variant="line">
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="activities">Activity Names</TabsTrigger>
-          <TabsTrigger value="charts">Charts</TabsTrigger>
+          <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories">
@@ -46,8 +46,8 @@ export const Settings = () => {
           <ActivityNamesTab activities={activities} categories={categories} />
         </TabsContent>
 
-        <TabsContent value="charts">
-          <ChartsTab />
+        <TabsContent value="appearance">
+          <AppearanceTab />
         </TabsContent>
       </Tabs>
     </div>
