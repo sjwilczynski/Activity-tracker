@@ -32,7 +32,7 @@ export const Settings = () => {
         className="space-y-4 max-w-4xl flex-col"
         orientation={isMobile ? "vertical" : "horizontal"}
       >
-        <TabsList variant="line">
+        <TabsList>
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="activities">Activity Names</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>

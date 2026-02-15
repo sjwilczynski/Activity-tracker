@@ -212,6 +212,16 @@ body {
   }
 }
 
+/* Exclude sidebar from page view transitions (but include it in theme transitions) */
+html:not(.theme-transitioning) [data-slot="sidebar"] {
+  view-transition-name: sidebar;
+}
+
+::view-transition-old(sidebar),
+::view-transition-new(sidebar) {
+  animation: none;
+}
+
 /* Page navigation view transitions */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root) {
@@ -248,7 +258,7 @@ html.theme-transitioning::view-transition-new(root) {
 }
 
 html.theme-transitioning::view-transition-new(root) {
-  animation: theme-spread 500ms ease-in-out;
+  animation: theme-spread 1s ease-in-out;
 }
 
 @keyframes theme-spread {

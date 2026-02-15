@@ -76,8 +76,9 @@ export const AppearanceTab: Story = {
       canvas.getByRole("tab", { name: /appearance/i })
     );
 
-    // Appearance tab content should appear
-    expect(await canvas.findByText("Appearance")).toBeInTheDocument();
+    // Appearance tab content should appear (tab trigger + card title both contain "Appearance")
+    const appearanceTexts = await canvas.findAllByText("Appearance");
+    expect(appearanceTexts).toHaveLength(2);
     expect(canvas.getByText("Group by category")).toBeInTheDocument();
     expect(canvas.getByText("Fun animations")).toBeInTheDocument();
 
