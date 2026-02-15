@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   Tabs,
   TabsContent,
@@ -39,7 +40,9 @@ export const Settings = () => {
         };
       }
     ).startViewTransition(() => {
-      setActiveTab(value);
+      flushSync(() => {
+        setActiveTab(value);
+      });
     });
 
     transition.finished.finally(() => {
