@@ -30,12 +30,20 @@ export const Settings = () => {
       return;
     }
 
-    (
+    document.documentElement.classList.add("tab-transitioning");
+
+    const transition = (
       document as unknown as {
-        startViewTransition: (cb: () => void) => void;
+        startViewTransition: (cb: () => void) => {
+          finished: Promise<void>;
+        };
       }
     ).startViewTransition(() => {
       setActiveTab(value);
+    });
+
+    transition.finished.finally(() => {
+      document.documentElement.classList.remove("tab-transitioning");
     });
   }, []);
 
@@ -62,17 +70,19 @@ export const Settings = () => {
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="categories">
-          <CategoriesTab categories={categories} />
-        </TabsContent>
+        <div style={{ viewTransitionName: "tab-content" }}>
+          <TabsContent value="categories">
+            <CategoriesTab categories={categories} />
+          </TabsContent>
 
-        <TabsContent value="activities">
-          <ActivityNamesTab activities={activities} categories={categories} />
-        </TabsContent>
+          <TabsContent value="activities">
+            <ActivityNamesTab activities={activities} categories={categories} />
+          </TabsContent>
 
-        <TabsContent value="appearance">
-          <AppearanceTab />
-        </TabsContent>
+          <TabsContent value="appearance">
+            <AppearanceTab />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

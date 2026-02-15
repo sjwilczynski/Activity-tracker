@@ -250,6 +250,12 @@ html:not(.theme-transitioning) [data-slot="sidebar"] {
   }
 }
 
+/* Settings tab content scoped transition */
+html.tab-transitioning::view-transition-old(root),
+html.tab-transitioning::view-transition-new(root) {
+  animation: none;
+}
+
 /* Theme toggle radial spread transition */
 html.theme-transitioning::view-transition-old(root),
 html.theme-transitioning::view-transition-new(root) {
