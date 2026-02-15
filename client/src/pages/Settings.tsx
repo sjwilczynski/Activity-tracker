@@ -38,15 +38,15 @@ export const Settings = () => {
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="categories">
+        <TabsContent value="categories" className="animate-in fade-in-0 duration-200">
           <CategoriesTab categories={categories} />
         </TabsContent>
 
-        <TabsContent value="activities">
+        <TabsContent value="activities" className="animate-in fade-in-0 duration-200">
           <ActivityNamesTab activities={activities} categories={categories} />
         </TabsContent>
 
-        <TabsContent value="appearance">
+        <TabsContent value="appearance" className="animate-in fade-in-0 duration-200">
           <AppearanceTab />
         </TabsContent>
       </Tabs>
