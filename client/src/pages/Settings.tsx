@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Tabs,
   TabsContent,
@@ -15,6 +16,28 @@ export const Settings = () => {
   const { data: categories = [] } = useCategories();
   const { data: activities = [] } = useActivities();
   const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("categories");
+
+  const handleTabChange = useCallback((value: string) => {
+    const supportsViewTransition =
+      typeof document !== "undefined" && "startViewTransition" in document;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (!supportsViewTransition || prefersReducedMotion) {
+      setActiveTab(value);
+      return;
+    }
+
+    (
+      document as unknown as {
+        startViewTransition: (cb: () => void) => void;
+      }
+    ).startViewTransition(() => {
+      setActiveTab(value);
+    });
+  }, []);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -28,7 +51,8 @@ export const Settings = () => {
       </div>
 
       <Tabs
-        defaultValue="categories"
+        value={activeTab}
+        onValueChange={handleTabChange}
         className="space-y-4 max-w-4xl flex-col"
         orientation={isMobile ? "vertical" : "horizontal"}
       >
@@ -38,15 +62,15 @@ export const Settings = () => {
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="categories" className="animate-in fade-in-0 duration-200">
+        <TabsContent value="categories">
           <CategoriesTab categories={categories} />
         </TabsContent>
 
-        <TabsContent value="activities" className="animate-in fade-in-0 duration-200">
+        <TabsContent value="activities">
           <ActivityNamesTab activities={activities} categories={categories} />
         </TabsContent>
 
-        <TabsContent value="appearance" className="animate-in fade-in-0 duration-200">
+        <TabsContent value="appearance">
           <AppearanceTab />
         </TabsContent>
       </Tabs>
