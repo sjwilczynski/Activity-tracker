@@ -122,8 +122,11 @@ export const Welcome = () => {
           return (
             <Card
               key={stat.title}
-              className="bloom-hover border-l-[3px] py-4 gap-2"
-              style={{ borderLeftColor: colorVar }}
+              className="bloom-hover border-l-[3px] py-4 gap-2 animate-fade-slide-up"
+              style={{
+                borderLeftColor: colorVar,
+                animationDelay: `${i * 75}ms`,
+              }}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -185,12 +188,13 @@ export const Welcome = () => {
               </p>
             ) : (
               <div className="space-y-2">
-                {recentActivities.map((activity) => {
+                {recentActivities.map((activity, i) => {
                   const color = getActivityColor(activity.name);
                   return (
                     <div
                       key={activity.id}
-                      className="flex items-center justify-between p-3 rounded-lg border"
+                      className="flex items-center justify-between p-3 rounded-lg border animate-fade-slide-up"
+                      style={{ animationDelay: `${i * 60}ms` }}
                     >
                       <div className="flex items-center gap-3 flex-1">
                         <div

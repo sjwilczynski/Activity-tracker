@@ -18,8 +18,8 @@ export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
   return (
     <div
       className={cn(
-        "md:hidden rounded-lg border p-4 space-y-3",
-        isDeleting && "opacity-50 pointer-events-none"
+        "md:hidden rounded-lg border p-4 space-y-3 transition-all duration-500",
+        isDeleting && "opacity-0 scale-95 pointer-events-none"
       )}
     >
       <div className="flex items-start justify-between">

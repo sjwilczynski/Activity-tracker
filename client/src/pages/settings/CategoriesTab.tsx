@@ -67,8 +67,8 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
       </CardHeader>
       <CardContent>
         {categories.length === 0 ? (
-          <div className="text-center py-12">
-            <Folder className="size-12 text-muted-foreground mx-auto mb-4" />
+          <div className="text-center py-12 animate-fade-slide-up">
+            <Folder className="size-12 text-muted-foreground mx-auto mb-4 animate-empty-bounce" />
             <p className="text-lg font-medium">No categories yet</p>
             <p className="text-sm text-muted-foreground mt-1">
               Create your first category to get started

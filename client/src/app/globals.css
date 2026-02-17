@@ -181,4 +181,168 @@ body {
       animation: none;
     }
   }
+
+  /* Staggered fade-slide-up entrance */
+  @keyframes fade-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-slide-up {
+    animation: fade-slide-up 0.4s ease-out backwards;
+  }
+
+  /* Simple fade-in for pagination */
+  @keyframes content-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .animate-content-fade-in {
+    animation: content-fade-in 0.2s ease-out;
+  }
+
+  /* Empty state icon bounce */
+  @keyframes empty-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  .animate-empty-bounce {
+    animation: empty-bounce 1.5s ease-in-out infinite;
+  }
+
+  /* Field error shake */
+  @keyframes field-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    15% {
+      transform: translateX(-6px);
+    }
+    30% {
+      transform: translateX(5px);
+    }
+    45% {
+      transform: translateX(-4px);
+    }
+    60% {
+      transform: translateX(3px);
+    }
+    75% {
+      transform: translateX(-2px);
+    }
+  }
+  .animate-field-shake {
+    animation: field-shake 0.5s ease-in-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-slide-up,
+    .animate-content-fade-in,
+    .animate-empty-bounce,
+    .animate-field-shake {
+      animation: none;
+    }
+  }
+
+  /* Success burst animation for Log Activity button */
+  @keyframes success-burst {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 4px 14px rgba(80, 133, 190, 0.3);
+    }
+    30% {
+      transform: scale(1.06);
+      box-shadow:
+        0 4px 20px rgba(80, 133, 190, 0.5),
+        0 0 0 4px rgba(80, 133, 190, 0.15);
+    }
+    60% {
+      transform: scale(0.98);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 4px 14px rgba(80, 133, 190, 0.3);
+    }
+  }
+  .animate-success-burst {
+    animation: success-burst 0.5s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-success-burst {
+      animation: none;
+    }
+  }
+}
+
+/* Exclude sidebar from page view transitions (but include it in theme transitions) */
+html:not(.theme-transitioning) [data-slot="sidebar"] {
+  view-transition-name: sidebar;
+}
+
+::view-transition-old(sidebar),
+::view-transition-new(sidebar) {
+  animation: none;
+}
+
+/* Page navigation view transitions */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: page-fade-out 150ms ease-in;
+  }
+  ::view-transition-new(root) {
+    animation: page-fade-in 200ms ease-out;
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Theme toggle radial spread transition */
+html.theme-transitioning::view-transition-old(root),
+html.theme-transitioning::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-transitioning::view-transition-new(root) {
+  animation: theme-spread 1s ease-in-out;
+}
+
+@keyframes theme-spread {
+  from {
+    clip-path: circle(0% at var(--sidebar-width, 16rem) 2.5rem);
+  }
+  to {
+    clip-path: circle(150vmax at var(--sidebar-width, 16rem) 2.5rem);
+  }
 }

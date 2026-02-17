@@ -3,10 +3,12 @@ import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../ui/button";
 import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
 import { categoryOptionSchema, dateSchema } from "../schemas";
 import { useAddActivityFormSubmit } from "./useAddActivityFormSubmit";
+import { useIsAnimating } from "./useIsAnimating";
 
 type Props = {
   lastActivity: ActivityRecordWithId | undefined;
@@ -51,6 +53,8 @@ function useFormResetOnSuccess(
 export function AddActivityForm({ lastActivity }: Props) {
   const { onSubmit, isSuccess, isError, isPending } =
     useAddActivityFormSubmit();
+
+  const isAnimating = useIsAnimating(isPending, isSuccess);
 
   useFeedbackToast(
     { isSuccess, isError },
@@ -129,7 +133,10 @@ export function AddActivityForm({ lastActivity }: Props) {
               disabled={!canSubmit || !isDirty || isPending}
               variant="gradient"
               type="submit"
-              className="w-full sm:w-auto px-8"
+              className={cn(
+                "w-full sm:w-auto px-8",
+                isAnimating && "animate-success-burst"
+              )}
             >
               {isPending ? "Logging..." : "Log Activity"}
             </Button>

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 import { useAuthContext } from "../../auth/AuthContext";
-import { useThemeState } from "../styles/StylesProvider";
+import { useThemeToggleWithTransition } from "../styles/StylesProvider";
 import { Button } from "../ui/button";
 import {
   Sidebar,
@@ -39,7 +39,7 @@ export { getPageTitle };
 
 export function AppSidebar() {
   const { user, signOut } = useAuthContext();
-  const [isLightTheme, toggleTheme] = useThemeState();
+  const [isLightTheme, toggleTheme] = useThemeToggleWithTransition();
   const location = useLocation();
   const { setOpenMobile, isMobile } = useSidebar();
 
@@ -96,15 +96,15 @@ export function AppSidebar() {
               <NavLink
                 key={item.title}
                 to={{ pathname: item.path, search: location.search }}
+                viewTransition
                 onClick={() => {
                   if (isMobile) setOpenMobile(false);
                 }}
-                className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all ${
+                className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-300 ${
                   isActive
-                    ? "text-white shadow-[0_2px_12px_rgba(80,133,190,0.35)]"
+                    ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(80,133,190,0.35)]"
                     : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
                 }`}
-                style={isActive ? primaryGradient : undefined}
               >
                 <item.icon className="size-4" />
                 <span>{item.title}</span>

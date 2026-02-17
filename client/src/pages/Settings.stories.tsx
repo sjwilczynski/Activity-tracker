@@ -27,7 +27,9 @@ export const Default: Story = {
     expect(
       canvas.getByRole("tab", { name: /activity names/i })
     ).toBeInTheDocument();
-    expect(canvas.getByRole("tab", { name: /charts/i })).toBeInTheDocument();
+    expect(
+      canvas.getByRole("tab", { name: /appearance/i })
+    ).toBeInTheDocument();
 
     // Categories tab content loads asynchronously
     // Both mobile cards and desktop table are in DOM (CSS toggles visibility)
@@ -62,19 +64,25 @@ export const ActivityNamesTab: Story = {
   },
 };
 
-export const ChartsTab: Story = {
+export const AppearanceTab: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Wait for page to load
     await canvas.findByText("Settings");
 
-    // Switch to Charts tab
-    await userEvent.click(canvas.getByRole("tab", { name: /charts/i }));
+    // Switch to Appearance tab
+    await userEvent.click(
+      canvas.getByRole("tab", { name: /appearance/i })
+    );
 
-    // Charts tab content should appear
-    expect(await canvas.findByText("Chart Settings")).toBeInTheDocument();
+    // Appearance tab content should appear (tab trigger + card title both contain "Appearance")
+    const appearanceTexts = await canvas.findAllByText("Appearance");
+    expect(appearanceTexts).toHaveLength(2);
     expect(canvas.getByText("Group by category")).toBeInTheDocument();
-    expect(canvas.getByRole("switch")).toBeInTheDocument();
+    expect(canvas.getByText("Fun animations")).toBeInTheDocument();
+
+    const switches = canvas.getAllByRole("switch");
+    expect(switches).toHaveLength(2);
   },
 };
