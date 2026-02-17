@@ -250,11 +250,6 @@ html:not(.theme-transitioning) [data-slot="sidebar"] {
   }
 }
 
-/* Settings tab content scoped transition — disable root capture */
-html.tab-transitioning {
-  view-transition-name: none;
-}
-
 /* Theme toggle radial spread transition */
 html.theme-transitioning::view-transition-old(root),
 html.theme-transitioning::view-transition-new(root) {
