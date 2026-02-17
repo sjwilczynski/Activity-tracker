@@ -91,8 +91,8 @@ export function SummaryTable(props: Props) {
       </CardHeader>
       <CardContent>
         {records.length === 0 ? (
-          <div className="flex flex-col items-center text-center py-16">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary mb-4">
+          <div className="flex flex-col items-center text-center py-16 animate-fade-slide-up">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary mb-4 animate-empty-bounce">
               <ListChecks className="size-7 text-primary" />
             </div>
             <p className="text-lg font-medium">No activities found</p>
@@ -103,7 +103,10 @@ export function SummaryTable(props: Props) {
         ) : (
           <>
             {/* Desktop: Month-grouped rows */}
-            <div className="hidden md:block space-y-1">
+            <div
+              key={`desktop-${page}`}
+              className="hidden md:block space-y-1 animate-content-fade-in"
+            >
               {sortedMonthKeys.map((monthKey) => (
                 <div key={monthKey}>
                   <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#EDF3FA] dark:bg-[#253550] mb-1">
@@ -122,7 +125,10 @@ export function SummaryTable(props: Props) {
             </div>
 
             {/* Mobile: Card list */}
-            <div className="md:hidden space-y-3">
+            <div
+              key={`mobile-${page}`}
+              className="md:hidden space-y-3 animate-content-fade-in"
+            >
               {pageRecords.map((record) => (
                 <RowInReadMode key={record.id} record={record} />
               ))}

@@ -81,7 +81,11 @@ export const FileInput = ({
       {fileName && (
         <p className="text-sm text-center text-muted-foreground">{fileName}</p>
       )}
-      {error && <p className="text-sm text-center text-destructive">{error}</p>}
+      {error && (
+        <p className="text-sm text-center text-destructive animate-field-shake">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

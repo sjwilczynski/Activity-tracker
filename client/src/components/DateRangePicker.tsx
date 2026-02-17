@@ -179,7 +179,10 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                 />
               </div>
               {isInvalidRange && (
-                <p className="text-xs text-destructive" role="alert">
+                <p
+                  className="text-xs text-destructive animate-field-shake"
+                  role="alert"
+                >
                   Start date must be before end date
                 </p>
               )}

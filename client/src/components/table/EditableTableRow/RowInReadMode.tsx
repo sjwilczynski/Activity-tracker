@@ -48,8 +48,8 @@ export const RowInReadMode = ({ record }: Props) => {
       {/* Desktop row */}
       <div
         className={cn(
-          "hidden md:flex items-center gap-4 px-4 py-3 rounded-lg transition-colors hover:bg-secondary dark:hover:bg-[#253550]/50 group",
-          isDeleting && "opacity-50 pointer-events-none"
+          "hidden md:flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-500 hover:bg-secondary dark:hover:bg-[#253550]/50 group",
+          isDeleting && "opacity-0 scale-95 pointer-events-none"
         )}
       >
         <div

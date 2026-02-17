@@ -96,8 +96,8 @@ export const Charts = () => {
 
       {filtered.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary mb-4">
+          <CardContent className="flex flex-col items-center justify-center py-16 animate-fade-slide-up">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary mb-4 animate-empty-bounce">
               <BarChart3 className="size-7 text-primary" />
             </div>
             <p className="text-lg font-medium">No activities found</p>
@@ -111,7 +111,7 @@ export const Charts = () => {
           {/* Summary Stats */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card
-              className="bloom-hover border-l-[3px] py-4 gap-2"
+              className="bloom-hover border-l-[3px] py-4 gap-2 animate-fade-slide-up"
               style={{
                 borderLeftColor: "var(--color-chart-2, var(--color-primary))",
               }}
@@ -135,9 +135,10 @@ export const Charts = () => {
             </Card>
 
             <Card
-              className="bloom-hover border-l-[3px] py-4 gap-2"
+              className="bloom-hover border-l-[3px] py-4 gap-2 animate-fade-slide-up"
               style={{
                 borderLeftColor: "var(--color-chart-3, var(--color-primary))",
+                animationDelay: "75ms",
               }}
             >
               <CardHeader>
@@ -159,9 +160,10 @@ export const Charts = () => {
             </Card>
 
             <Card
-              className="bloom-hover border-l-[3px] py-4 gap-2"
+              className="bloom-hover border-l-[3px] py-4 gap-2 animate-fade-slide-up"
               style={{
                 borderLeftColor: "var(--color-chart-1, var(--color-primary))",
+                animationDelay: "150ms",
               }}
             >
               <CardHeader>
