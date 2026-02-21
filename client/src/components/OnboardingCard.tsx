@@ -47,7 +47,7 @@ function CategoryRow({
   onToggleActivity: (categoryName: string, activityName: string) => void;
 }) {
   return (
-    <Collapsible>
+    <Collapsible className="group">
       <div className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50">
         <Checkbox
           id={`cat-${toSafeId(category.name)}`}
@@ -64,10 +64,10 @@ function CategoryRow({
               {category.name}
             </label>
             <p className="text-xs text-muted-foreground">
-              {category.description}
+              {category.description} · {category.activityNames.length} activities
             </p>
           </div>
-          <ChevronDown className="size-4 text-muted-foreground transition-transform [[data-state=open]_&]:rotate-180" />
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent>
