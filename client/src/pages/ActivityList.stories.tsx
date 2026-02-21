@@ -146,6 +146,64 @@ export const EditRowInteraction: Story = {
   },
 };
 
+export const EditRowSavesAndUpdates: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step(
+      "Edit first activity from Running to Cycling and verify table updates",
+      async () => {
+        // The first row (most recent activity) is "Running"
+        // Verify it's there before editing
+        const rows = canvas.getAllByTestId("activity-row");
+        expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
+
+        // Click the edit button for the first row
+        const editButtons = canvas.getAllByRole("button", { name: /edit/i });
+        await userEvent.click(editButtons[0]);
+
+        // Wait for dialog to open
+        await screen.findByRole("button", { name: /save changes/i });
+
+        // Open the activity name combobox and select "Cycling"
+        const combobox = screen.getByRole("combobox", {
+          name: /activity name/i,
+        });
+        await userEvent.click(combobox);
+
+        await screen.findByText("Sports");
+
+        const cyclingOption = screen.getByRole("option", {
+          name: /cycling/i,
+        });
+        await userEvent.click(cyclingOption);
+
+        // Save changes
+        await userEvent.click(
+          screen.getByRole("button", { name: /save changes/i })
+        );
+
+        // Dialog should close
+        await waitFor(() => {
+          expect(
+            screen.queryByRole("heading", { level: 2, name: /edit activity/i })
+          ).not.toBeInTheDocument();
+        });
+
+        // The first row should now show "Cycling" instead of "Running"
+        await waitFor(() => {
+          const updatedRows = canvas.getAllByTestId("activity-row");
+          expect(
+            within(updatedRows[0]).getByText("Cycling")
+          ).toBeInTheDocument();
+        });
+      }
+    );
+  },
+};
+
 export const DeleteRowInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

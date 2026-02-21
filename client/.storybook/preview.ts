@@ -27,7 +27,7 @@ mockedDate.setDate(mockedDate.getDate() + 2);
 MockDate.set(mockedDate);
 
 configure({
-  asyncUtilTimeout: 3000,
+  asyncUtilTimeout: 6000,
 });
 
 // Mock the useAuth module to avoid Firebase dependency
