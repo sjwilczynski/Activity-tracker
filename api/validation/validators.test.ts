@@ -169,7 +169,6 @@ describe("validateActivityRecord", () => {
   const validActivity = {
     name: "Running",
     date: "2024-01-15",
-    categoryId: "cat-sports",
   };
 
   it("accepts valid activity", () => {
@@ -188,6 +187,16 @@ describe("validateActivityRecord", () => {
     const result = validateActivityRecord(full);
     expect(result.valid).toBe(true);
     expect(result.data).toEqual(full);
+  });
+
+  it("accepts activity with categoryId (ignored in output)", () => {
+    const result = validateActivityRecord({
+      ...validActivity,
+      categoryId: "cat-sports",
+    });
+    expect(result.valid).toBe(true);
+    // categoryId is not stored — stripped from output
+    expect(result.data).toEqual(validActivity);
   });
 
   it("rejects null", () => {
@@ -219,15 +228,6 @@ describe("validateActivityRecord", () => {
     ).toEqual({
       valid: false,
       error: "Activity date must be in YYYY-MM-DD format",
-    });
-  });
-
-  it("rejects missing categoryId", () => {
-    expect(
-      validateActivityRecord({ name: "Running", date: "2024-01-15" })
-    ).toEqual({
-      valid: false,
-      error: "Category ID must be a string",
     });
   });
 
@@ -276,7 +276,6 @@ describe("validateActivityBatch", () => {
   const validActivity = {
     name: "Running",
     date: "2024-01-15",
-    categoryId: "cat-sports",
   };
 
   it("accepts valid batch", () => {
@@ -710,7 +709,6 @@ describe("validateImportData", () => {
   const validActivity = {
     date: "2024-01-15",
     name: "Running",
-    categoryId: "cat-1",
   };
   const validCategory = {
     name: "Sports",

@@ -180,6 +180,25 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
+  } else if (intent === "add-activity-name") {
+    const activityName = formData.get("activityName") as string;
+    const categoryId = formData.get("categoryId") as string;
+
+    const response = await fetch(
+      `/api/categories/${categoryId}/activity-names`,
+      {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activityName }),
+      }
+    );
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
   } else {
     return { error: "Unknown intent" };
   }

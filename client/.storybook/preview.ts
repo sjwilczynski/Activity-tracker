@@ -7,7 +7,7 @@ import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
-import { handlers, resetActivities } from "../src/mocks/handlers";
+import { handlers, resetActivities, resetCategories } from "../src/mocks/handlers";
 import { testContext } from "../src/mocks/testContext";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
@@ -82,11 +82,51 @@ const mockAction = async ({ request }: { request: Request }) => {
       });
     }
 
+    if (intent === "rename-activity") {
+      const oldName = formData.get("oldName") as string;
+      const newName = formData.get("newName") as string;
+      response = await fetch("/api/activities/rename", {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ oldName, newName }),
+      });
+    }
+
+    if (intent === "assign-category") {
+      const activityName = formData.get("activityName") as string;
+      const categoryId = formData.get("categoryId") as string;
+      response = await fetch("/api/activities/assign-category", {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activityName, categoryId }),
+      });
+    }
+
+    if (intent === "add-activity-name") {
+      const activityName = formData.get("activityName") as string;
+      const categoryId = formData.get("categoryId") as string;
+      response = await fetch(`/api/categories/${categoryId}/activity-names`, {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activityName }),
+      });
+    }
+
     if (response && !response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
 
     await testContext.invalidateActivities();
+    await testContext.invalidateCategories();
 
     return { ok: true };
   } catch (error) {
@@ -99,6 +139,7 @@ const preview: Preview = {
     // Reset mutable MSW handler state between stories to prevent leaks
     // (e.g. DeleteAllConfirmation emptying activities for subsequent stories)
     resetActivities();
+    resetCategories();
   },
   parameters: {
     a11y: {

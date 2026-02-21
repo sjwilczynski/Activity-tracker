@@ -154,11 +154,11 @@ export const SingleActivityType: Story = {
       handlers: [
         http.get("*/api/activities", () => {
           return HttpResponse.json([
-            { id: "1", date: generateDate(0), name: "Running", categoryId: "cat-sports" },
-            { id: "2", date: generateDate(1), name: "Running", categoryId: "cat-sports" },
-            { id: "3", date: generateDate(2), name: "Running", categoryId: "cat-sports" },
-            { id: "4", date: generateDate(3), name: "Running", categoryId: "cat-sports" },
-            { id: "5", date: generateDate(4), name: "Running", categoryId: "cat-sports" },
+            { id: "1", date: generateDate(0), name: "Running", categoryId: "cat-sports", active: true },
+            { id: "2", date: generateDate(1), name: "Running", categoryId: "cat-sports", active: true },
+            { id: "3", date: generateDate(2), name: "Running", categoryId: "cat-sports", active: true },
+            { id: "4", date: generateDate(3), name: "Running", categoryId: "cat-sports", active: true },
+            { id: "5", date: generateDate(4), name: "Running", categoryId: "cat-sports", active: true },
           ]);
         }),
       ],
@@ -210,6 +210,7 @@ export const ManyActivityTypes: Story = {
               date: generateDate(i),
               name,
               categoryId: categoryMap[name],
+              active: true,
             }))
           );
           return HttpResponse.json(activities);

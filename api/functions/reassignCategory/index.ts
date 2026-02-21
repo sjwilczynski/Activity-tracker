@@ -40,12 +40,12 @@ async function reassignCategory(
   }
 
   try {
-    const count = await database.bulkReassignCategory(
+    await database.bulkReassignCategory(
       userId,
       validation.data.fromCategoryId,
       validation.data.toCategoryId
     );
-    return { status: 200, jsonBody: { updated: count } };
+    return { status: 200, jsonBody: { ok: true } };
   } catch (err) {
     console.error("reassignCategory error:", err);
     return { status: 500, body: "Internal server error" };

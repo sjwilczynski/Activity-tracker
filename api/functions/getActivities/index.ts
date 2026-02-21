@@ -15,8 +15,9 @@ async function getActivities(request: HttpRequest): Promise<HttpResponseInit> {
   const limitQuery = request.query.get("limit");
   const limit = limitQuery ? parseInt(limitQuery) : undefined;
 
-  const activityMap = (await database.getActivities(userId, limit)) ?? {};
-  const activities = mapToList(activityMap);
+  const enrichedActivityMap =
+    (await database.getActivities(userId, limit)) ?? {};
+  const activities = mapToList(enrichedActivityMap);
 
   return {
     status: 200,

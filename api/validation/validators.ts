@@ -76,7 +76,7 @@ export const validateActivityRecord = (
     return { valid: false, error: "Activity cannot be null or undefined" };
   }
 
-  const castedActivity = activity as ActivityRecord;
+  const castedActivity = activity as Record<string, unknown>;
 
   if (
     typeof castedActivity.date !== "string" ||
@@ -91,11 +91,6 @@ export const validateActivityRecord = (
   const nameValidation = validateActivityName(castedActivity.name);
   if (!nameValidation.valid) {
     return nameValidation;
-  }
-
-  const categoryIdValidation = validateCategoryId(castedActivity.categoryId);
-  if (!categoryIdValidation.valid) {
-    return categoryIdValidation;
   }
 
   if (castedActivity.description !== undefined) {
@@ -122,19 +117,19 @@ export const validateActivityRecord = (
     }
   }
 
+  // Build storage record — categoryId is NOT stored (derived from categories)
   const data: ActivityRecord = {
-    date: castedActivity.date,
-    name: castedActivity.name,
-    categoryId: castedActivity.categoryId,
+    date: castedActivity.date as string,
+    name: castedActivity.name as string,
   };
   if (castedActivity.description !== undefined) {
-    data.description = castedActivity.description;
+    data.description = castedActivity.description as string;
   }
   if (castedActivity.intensity !== undefined) {
-    data.intensity = castedActivity.intensity;
+    data.intensity = castedActivity.intensity as ActivityRecord["intensity"];
   }
   if (castedActivity.timeSpent !== undefined) {
-    data.timeSpent = castedActivity.timeSpent;
+    data.timeSpent = castedActivity.timeSpent as number;
   }
 
   return { valid: true, data };
@@ -391,6 +386,25 @@ export const validateDeleteByCategoryBody = (
   return {
     valid: true,
     data: { categoryId: (casted.categoryId as string).trim() },
+  };
+};
+
+export const validateAddActivityNameBody = (
+  body: unknown
+): ValidationResultWithData<{ activityName: string }> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const nameResult = validateActivityName(casted.activityName);
+  if (!nameResult.valid) {
+    return { valid: false, error: `activityName: ${nameResult.error}` };
+  }
+
+  return {
+    valid: true,
+    data: { activityName: (casted.activityName as string).trim() },
   };
 };
 

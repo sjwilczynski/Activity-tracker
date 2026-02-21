@@ -9,7 +9,7 @@ import {
   preferencesApiPath,
 } from "./react-query-config/query-constants";
 import type {
-  ActivityRecordFromQuery,
+  ActivityRecordWithId,
   ActivityRecordWithIdServer,
   Category,
   UserPreferences,
@@ -20,7 +20,7 @@ type GetAuthToken = () => Promise<string>;
 const fetchActivities = async (
   getAuthToken: GetAuthToken,
   limit?: number
-): Promise<ActivityRecordFromQuery[]> => {
+): Promise<ActivityRecordWithId[]> => {
   const token = await getAuthToken();
 
   const url = new URL(activitiesApiPath, window.location.origin);

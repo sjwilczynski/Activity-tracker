@@ -3,7 +3,11 @@ export {
   activityHandlers,
   resetActivities,
 } from "./activities";
-export { categoryErrorHandlers, categoryHandlers } from "./categories";
+export {
+  categoryErrorHandlers,
+  categoryHandlers,
+  resetCategories,
+} from "./categories";
 export { preferencesHandlers } from "./preferences";
 
 import { activityHandlers } from "./activities";

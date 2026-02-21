@@ -154,14 +154,21 @@
 - `active` removed from `ActivityRecord` — derived from `category.active` at read time
 - `subcategories` replaced by `activityNames: string[]` on Category
 - Categories stored as map (push keys) instead of array (fixes null holes on deletion)
-- Activities get `categoryId` linking to category push key (replaces client-side name matching)
+- **`Category.activityNames` is the single source of truth** — `categoryId` is NOT stored on activity records. Server computes `categoryId` + `active` when returning activities by joining with categories' `activityNames`
 - New optional fields on activities: `description`, `intensity`, `timeSpent`
+
+**Key architectural decision: single source of truth for category mapping**
+
+The name→category mapping lives exclusively in `Category.activityNames`. This eliminates the sync bug where deleting a category and reassigning would lose `activityNames` on the target, causing charts to show "other". Consequences:
+- Bulk operations (assign/reassign) only touch `activityNames` on categories — no activity record updates needed
+- Server enriches activities with computed `categoryId` + `active` before returning to client
+- Client `useActivities` no longer depends on `useCategories` — no client-side `enrichWithActive`
 
 **Target Firebase structure:**
 
 ```
 /users/{userId}/
-  activity/      → { [pushKey]: { name, date, categoryId, description?, intensity?, timeSpent? } }
+  activity/      → { [pushKey]: { name, date, description?, intensity?, timeSpent? } }
   categories/    → { [pushKey]: { name, active, description, activityNames: string[] } }
   preferences/   → { groupByCategory: boolean }
 ```
@@ -169,14 +176,18 @@
 **Target TypeScript types:**
 
 ```ts
-// API
+// API — stored in Firebase (no categoryId)
 type ActivityRecord = {
   date: string;
   name: string;
-  categoryId: string;
   description?: string;
   intensity?: "low" | "medium" | "high";
   timeSpent?: number;
+};
+// API — returned by getActivities (enriched with computed fields)
+type EnrichedActivityRecord = ActivityRecord & {
+  categoryId: string;
+  active: boolean;
 };
 type Category = {
   name: string;
@@ -184,7 +195,7 @@ type Category = {
   description: string;
   activityNames: string[];
 };
-// Client adds: ActivityRecordWithId = ActivityRecord & { id: string; active: boolean } (active derived from category)
+// Client: ActivityRecordWithId = EnrichedActivityRecord & { id: string } (server provides categoryId + active)
 ```
 
 #### PR 1: Database restructuring + types + migration
@@ -198,32 +209,38 @@ type Category = {
   - [x] Remove `active` field from activity records
   - [x] Write back atomically
   - [x] Local test script (`migrate-local-test.ts`) shares logic with Firebase runner
-- [x] **Update API types** (`api/utils/types.ts`): `ActivityRecord` (remove `active`, add `categoryId`, `description?`, `intensity?`, `timeSpent?`), `Category` (`activityNames` instead of `subcategories`), remove `Subcategory` type
-- [x] **Update validators** (`api/validation/validators.ts`): new `validateIntensity`, `validateTimeSpent`, `validateCategoryId`. Update `validateActivityRecord` (no `active`, add optional fields). Update `validateCategory` (`activityNames` array of strings)
-- [x] **Update existing endpoints**: `addActivities`/`editActivity` accept new fields without `active`. `addCategory`/`editCategory` accept `activityNames`
+- [x] **Update API types** (`api/utils/types.ts`): `ActivityRecord` (remove `active` and `categoryId` — stored type), add `EnrichedActivityRecord` (computed `categoryId` + `active`), `Category` (`activityNames` instead of `subcategories`), remove `Subcategory` type
+- [x] **Update validators** (`api/validation/validators.ts`): new `validateIntensity`, `validateTimeSpent`, `validateCategoryId`. Update `validateActivityRecord` (no `active`, no `categoryId` in storage output, add optional fields). Update `validateCategory` (`activityNames` array of strings). Add `validateAddActivityNameBody`
+- [x] **Update existing endpoints**: `addActivities`/`editActivity` accept new fields without `active`. `addCategory`/`editCategory` accept `activityNames`. `getActivities` enriches with computed `categoryId` + `active` from categories
+- [x] **Simplify bulk operations**: `bulkReassignCategory`/`bulkAssignCategory` operate only on `Category.activityNames` (no activity record updates). `bulkRenameActivities` also updates `activityNames`. `deleteActivitiesByCategory` looks up names from category
+- [x] **New endpoint**: `POST /api/categories/{categoryId}/activity-names` — adds an activity name to a category
 - [x] **Default categories constant** (`api/utils/defaultCategories.ts`): English, generic, Garmin-like list (Running, Cycling, Swimming, Gym, Team Sports, Other, Rest/Recovery). Used for new user initialization
 - [x] **New user initialization**: moved to onboarding PR (PR 4)
-- [x] **Client type updates** (`client/src/data/types.ts`): match API types. `ActivityRecordWithId` derives `active` from category
-- [x] **Client: derive `active`** in `useActivities()` — enrich activities with `active` from linked category
+- [x] **Client type updates** (`client/src/data/types.ts`): match API types. `ActivityRecordWithIdServer` includes `active` from server. `useActivities` no longer enriches — server provides everything
+- [x] **Client: remove `enrichWithActive`** from `useActivities()` — server now provides `categoryId` + `active` directly. `useActivities` no longer depends on `useCategories`
 - [x] **Client: update `useAvailableCategories()`** — build options from `category.activityNames` instead of subcategories
-- [x] **Remove `findCategoryForActivity`** name-matching — use `categoryId` directly
-- [x] **Tests**: validator tests for new fields (61 tests), migration tested locally on real data export
-- [x] **Verify**: `cd api && bun run test`, `cd client && bun run test`, `bun run --filter '*' build`
+- [x] **Remove `findCategoryForActivity`** name-matching — server handles mapping
+- [x] **Client: Settings UI** — `CategoriesTab` shows activity names per category as badges. `ActivityNamesTab` has "Add Activity Name" button + dialog to create names and assign to categories
+- [x] **Tests**: validator tests for new fields (92 tests), firebaseDB tests (12 tests — reassign, assign, rename, addActivityNameToCategory, deleteActivitiesByCategory, getActivities enrichment), migration tested locally on real data export. Settings stories (54 client tests)
+- [x] **Verify**: `cd api && bun run test` (114 pass), `cd client && bun run test` (54 pass), `bun run --filter '*' build`
 
 #### PR 2: New endpoints (export/import, bulk ops, preferences)
 
-- [ ] **Export endpoint** (`GET /api/export`): returns `{ activities, categories, preferences }` (full user data from Firebase)
-- [ ] **Import endpoint** (`POST /api/import`): accepts `{ activities, categories, preferences? }`, **replaces** entire user data. Handles old format (array categories, `active` on activities) by converting on import
-- [ ] **Bulk rename** (`POST /api/activities/rename`): `{ oldName, newName }` — updates all matching activities
-- [ ] **Bulk assign category** (`POST /api/activities/assign-category`): `{ activityName, categoryId }` — sets `categoryId` on all matching
-- [ ] **User preferences** (`GET/PUT /api/user-preferences`): `{ groupByCategory: boolean }`. Persists to `/users/{userId}/preferences`
-- [ ] **Client: export** — `useExportUserData` calls `GET /api/export`, downloads full JSON
-- [ ] **Client: import** — `FileUploadForm` accepts full user data format (backward compat with activities-only)
-- [ ] **Category deletion handling**: when deleting a category, show dialog asking user to either (A) delete all activities linked to that category, or (B) reassign them to a different category. Needs API endpoint for bulk reassign (`POST /api/activities/reassign-category`: `{ fromCategoryId, toCategoryId }`)
-- [ ] **Client: bulk ops** — enable rename button + category select in `ActivityNamesTab.tsx`, wire to new intents in `settings.tsx`
-- [ ] **Client: preferences** — `StylesProvider.tsx` loads `groupByCategory` from API, persists via PUT. New `useUserPreferences` hook
-- [ ] **Tests**: endpoint tests, update existing stories
-- [ ] **Verify**: export → import round-trip, bulk rename, category assign, preferences persist across reload
+- [x] **Export endpoint** (`GET /api/export`): returns `{ activities, categories, preferences }` (full user data from Firebase)
+- [x] **Import endpoint** (`POST /api/import`): accepts `{ activities, categories, preferences? }`, **replaces** entire user data. Handles old format (array categories, `active` on activities) by converting on import
+- [x] **Bulk rename** (`POST /api/activities/rename`): `{ oldName, newName }` — updates all matching activity records AND `Category.activityNames`
+- [x] **Bulk assign category** (`POST /api/activities/assign-category`): `{ activityName, categoryId }` — moves name between categories' `activityNames` (no activity record changes)
+- [x] **Bulk reassign category** (`POST /api/activities/reassign-category`): `{ fromCategoryId, toCategoryId }` — moves ALL names from source to target category's `activityNames`
+- [x] **Delete by category** (`POST /api/activities/delete-by-category`): `{ categoryId }` — deletes activity records whose name is in the category's `activityNames`
+- [x] **Add activity name to category** (`POST /api/categories/{categoryId}/activity-names`): `{ activityName }` — validates uniqueness across categories
+- [x] **User preferences** (`GET/PUT /api/preferences`): `{ groupByCategory, funAnimations, isLightTheme }`. Persists to `/users/{userId}/preferences`
+- [x] **Client: export** — `useExportUserData` calls `GET /api/export`, downloads full JSON
+- [x] **Client: import** — `FileUploadForm` accepts full user data format (backward compat with activities-only)
+- [x] **Category deletion handling**: delete dialog with (A) delete all activities or (B) reassign to another category
+- [x] **Client: bulk ops** — rename button + category select in `ActivityNamesTab.tsx`, "Add Activity Name" button + dialog, wired to intents in `settings.tsx`
+- [x] **Client: preferences** — `StylesProvider.tsx` loads `groupByCategory` from API, persists via PUT. `useUserPreferences` hook
+- [x] **Tests**: firebaseDB tests (12), validator tests (92), Settings stories with interactions (54 client tests)
+- [x] **Verify**: `cd api && bun run test` (114 pass), `cd client && bun run test` (54 pass), `bun run --filter '*' build`
 
 #### PR 3: Frontend features (detail fields, Compare page)
 

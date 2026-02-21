@@ -73,6 +73,7 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Activity Names</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -108,6 +109,29 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
   );
 }
 
+function ActivityNamesBadges({
+  activityNames,
+}: {
+  activityNames: string[];
+}) {
+  if (activityNames.length === 0) {
+    return (
+      <span className="text-xs text-muted-foreground italic">
+        No activities
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {activityNames.map((name) => (
+        <Badge key={name} variant="outline" className="text-xs capitalize">
+          {name}
+        </Badge>
+      ))}
+    </div>
+  );
+}
+
 function CategoryCard({
   category,
   otherCategories,
@@ -127,9 +151,12 @@ function CategoryCard({
           />
         </div>
       </div>
-      <Badge variant={category.active ? "default" : "secondary"}>
-        {category.active ? "active" : "inactive"}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge variant={category.active ? "default" : "secondary"}>
+          {category.active ? "active" : "inactive"}
+        </Badge>
+      </div>
+      <ActivityNamesBadges activityNames={category.activityNames ?? []} />
     </div>
   );
 }
@@ -148,6 +175,9 @@ function CategoryRow({
         <Badge variant={category.active ? "default" : "secondary"}>
           {category.active ? "active" : "inactive"}
         </Badge>
+      </TableCell>
+      <TableCell>
+        <ActivityNamesBadges activityNames={category.activityNames ?? []} />
       </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">

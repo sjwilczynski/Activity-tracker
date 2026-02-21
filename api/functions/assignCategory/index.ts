@@ -38,12 +38,12 @@ async function assignCategory(request: HttpRequest): Promise<HttpResponseInit> {
   }
 
   try {
-    const count = await database.bulkAssignCategory(
+    await database.bulkAssignCategory(
       userId,
       validation.data.activityName,
       validation.data.categoryId
     );
-    return { status: 200, jsonBody: { updated: count } };
+    return { status: 200, jsonBody: { ok: true } };
   } catch (err) {
     console.error("assignCategory error:", err);
     return { status: 500, body: "Internal server error" };

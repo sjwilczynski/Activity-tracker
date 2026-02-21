@@ -1,5 +1,5 @@
 import { useIsFetching, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
@@ -8,62 +8,18 @@ import {
   exportApiPath,
   getActivitiesQueryId,
 } from "../../react-query-config/query-constants";
-import type {
-  ActivityRecordFromQuery,
-  ActivityRecordWithId,
-  Category,
-} from "../../types";
-import { useCategories } from "../categories/useCategories";
 import { useRequestConfig } from "../useRequestConfig";
-
-function enrichWithActive(
-  activities: ActivityRecordFromQuery[],
-  categories: Category[]
-): ActivityRecordWithId[] {
-  const categoryMap = new Map(categories.map((c) => [c.id, c]));
-  return activities.map((activity) => {
-    const category = categoryMap.get(activity.categoryId);
-    return {
-      ...activity,
-      active: category?.active ?? true,
-    };
-  });
-}
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
   const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  const activitiesQuery = useQuery(activitiesQueryOptions(getAuthToken));
-  const { data: categories } = useCategories();
-
-  const data = useMemo(() => {
-    if (!activitiesQuery.data) return undefined;
-    return enrichWithActive(activitiesQuery.data, categories ?? []);
-  }, [activitiesQuery.data, categories]);
-
-  return {
-    ...activitiesQuery,
-    data,
-  };
+  return useQuery(activitiesQueryOptions(getAuthToken));
 };
 
 export const useActivitiesWithLimit = () => {
   const getConfig = useRequestConfig();
   const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  const activitiesQuery = useQuery(
-    activitiesWithLimitQueryOptions(getAuthToken)
-  );
-  const { data: categories } = useCategories();
-
-  const data = useMemo(() => {
-    if (!activitiesQuery.data) return undefined;
-    return enrichWithActive(activitiesQuery.data, categories ?? []);
-  }, [activitiesQuery.data, categories]);
-
-  return {
-    ...activitiesQuery,
-    data,
-  };
+  return useQuery(activitiesWithLimitQueryOptions(getAuthToken));
 };
 
 export const useExportUserData = () => {
