@@ -6,7 +6,6 @@ import {
   getRateLimitHeaders,
 } from "../../rateLimit/rateLimiter";
 import { DEFAULT_PREFERENCES } from "../../utils/types";
-import type { ActivityMap, CategoryMap, UserPreferences } from "../../utils/types";
 import { LIMITS } from "../../validation/constants";
 import { validateImportData } from "../../validation/validators";
 
@@ -19,13 +18,6 @@ async function importData(request: HttpRequest): Promise<HttpResponseInit> {
     return { status: 401, body: "Unauthorized" };
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return { status: 400, body: "Invalid JSON body" };
-  }
-
   const rateLimitResult = await checkRateLimit(userId);
   if (!rateLimitResult.allowed) {
     return {
@@ -35,19 +27,22 @@ async function importData(request: HttpRequest): Promise<HttpResponseInit> {
     };
   }
 
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return { status: 400, body: "Invalid JSON body" };
+  }
+
   const validation = validateImportData(body);
   if (!validation.valid) {
     return { status: 400, body: validation.error };
   }
 
-  const casted = body as {
-    activities: ActivityMap;
-    categories: CategoryMap;
-    preferences?: UserPreferences;
-  };
+  const { activities, categories, preferences } = validation.data;
 
-  const activityCount = Object.keys(casted.activities).length;
-  const categoryCount = Object.keys(casted.categories).length;
+  const activityCount = Object.keys(activities).length;
+  const categoryCount = Object.keys(categories).length;
   if (activityCount > LIMITS.MAX_ACTIVITIES_PER_USER) {
     return {
       status: 400,
@@ -63,9 +58,9 @@ async function importData(request: HttpRequest): Promise<HttpResponseInit> {
 
   try {
     await database.setUserData(userId, {
-      activities: casted.activities,
-      categories: casted.categories,
-      preferences: casted.preferences ?? DEFAULT_PREFERENCES,
+      activities,
+      categories,
+      preferences: preferences ?? DEFAULT_PREFERENCES,
     });
     return { status: 200, body: "Successfully imported" };
   } catch (err) {

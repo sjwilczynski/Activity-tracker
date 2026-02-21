@@ -4,8 +4,15 @@ import {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
 } from "../../queryOptions";
-import { getActivitiesQueryId } from "../../react-query-config/query-constants";
-import type { ActivityRecordFromQuery, ActivityRecordWithId, Category } from "../../types";
+import {
+  exportApiPath,
+  getActivitiesQueryId,
+} from "../../react-query-config/query-constants";
+import type {
+  ActivityRecordFromQuery,
+  ActivityRecordWithId,
+  Category,
+} from "../../types";
 import { useCategories } from "../categories/useCategories";
 import { useRequestConfig } from "../useRequestConfig";
 
@@ -64,7 +71,7 @@ export const useExportUserData = () => {
 
   return useCallback(async (): Promise<string> => {
     const config = await getConfig();
-    const response = await fetch("/api/export", {
+    const response = await fetch(exportApiPath, {
       method: "GET",
       headers: { "x-auth-token": config["x-auth-token"] },
     });

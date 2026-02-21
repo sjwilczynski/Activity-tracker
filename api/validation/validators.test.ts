@@ -512,9 +512,14 @@ describe("validateCategory", () => {
 
 describe("validateRenameBody", () => {
   it("accepts valid rename", () => {
-    const result = validateRenameBody({ oldName: "Running", newName: "Jogging" });
+    const result = validateRenameBody({
+      oldName: "Running",
+      newName: "Jogging",
+    });
     expect(result.valid).toBe(true);
-    expect(result.data).toEqual({ oldName: "Running", newName: "Jogging" });
+    if (result.valid) {
+      expect(result.data).toEqual({ oldName: "Running", newName: "Jogging" });
+    }
   });
 
   it("rejects non-object", () => {
@@ -525,7 +530,9 @@ describe("validateRenameBody", () => {
   });
 
   it("rejects same names", () => {
-    expect(validateRenameBody({ oldName: "Running", newName: "Running" })).toEqual({
+    expect(
+      validateRenameBody({ oldName: "Running", newName: "Running" })
+    ).toEqual({
       valid: false,
       error: "oldName and newName must be different",
     });
@@ -534,6 +541,15 @@ describe("validateRenameBody", () => {
   it("rejects empty oldName", () => {
     const result = validateRenameBody({ oldName: "", newName: "Jogging" });
     expect(result.valid).toBe(false);
+  });
+
+  it("rejects names that differ only by whitespace", () => {
+    expect(
+      validateRenameBody({ oldName: "Running", newName: "  Running  " })
+    ).toEqual({
+      valid: false,
+      error: "oldName and newName must be different",
+    });
   });
 });
 
@@ -544,7 +560,12 @@ describe("validateAssignCategoryBody", () => {
       categoryId: "cat-1",
     });
     expect(result.valid).toBe(true);
-    expect(result.data).toEqual({ activityName: "Running", categoryId: "cat-1" });
+    if (result.valid) {
+      expect(result.data).toEqual({
+        activityName: "Running",
+        categoryId: "cat-1",
+      });
+    }
   });
 
   it("rejects missing activityName", () => {
@@ -560,6 +581,15 @@ describe("validateAssignCategoryBody", () => {
       error: "categoryId: Category ID must be a string",
     });
   });
+
+  it("rejects empty categoryId", () => {
+    expect(
+      validateAssignCategoryBody({ activityName: "Running", categoryId: "" })
+    ).toEqual({
+      valid: false,
+      error: "categoryId: Category ID cannot be empty",
+    });
+  });
 });
 
 describe("validateReassignCategoryBody", () => {
@@ -569,15 +599,44 @@ describe("validateReassignCategoryBody", () => {
       toCategoryId: "cat-2",
     });
     expect(result.valid).toBe(true);
-    expect(result.data).toEqual({ fromCategoryId: "cat-1", toCategoryId: "cat-2" });
+    if (result.valid) {
+      expect(result.data).toEqual({
+        fromCategoryId: "cat-1",
+        toCategoryId: "cat-2",
+      });
+    }
   });
 
   it("rejects same IDs", () => {
     expect(
-      validateReassignCategoryBody({ fromCategoryId: "cat-1", toCategoryId: "cat-1" })
+      validateReassignCategoryBody({
+        fromCategoryId: "cat-1",
+        toCategoryId: "cat-1",
+      })
     ).toEqual({
       valid: false,
       error: "fromCategoryId and toCategoryId must be different",
+    });
+  });
+
+  it("rejects non-object input", () => {
+    expect(validateReassignCategoryBody(null)).toEqual({
+      valid: false,
+      error: "Request body must be an object",
+    });
+  });
+
+  it("rejects missing fromCategoryId", () => {
+    expect(validateReassignCategoryBody({ toCategoryId: "cat-2" })).toEqual({
+      valid: false,
+      error: "fromCategoryId: Category ID must be a string",
+    });
+  });
+
+  it("rejects missing toCategoryId", () => {
+    expect(validateReassignCategoryBody({ fromCategoryId: "cat-1" })).toEqual({
+      valid: false,
+      error: "toCategoryId: Category ID must be a string",
     });
   });
 });
@@ -586,7 +645,16 @@ describe("validateDeleteByCategoryBody", () => {
   it("accepts valid body", () => {
     const result = validateDeleteByCategoryBody({ categoryId: "cat-1" });
     expect(result.valid).toBe(true);
-    expect(result.data).toEqual({ categoryId: "cat-1" });
+    if (result.valid) {
+      expect(result.data).toEqual({ categoryId: "cat-1" });
+    }
+  });
+
+  it("rejects non-object input", () => {
+    expect(validateDeleteByCategoryBody("string")).toEqual({
+      valid: false,
+      error: "Request body must be an object",
+    });
   });
 
   it("rejects missing categoryId", () => {
@@ -605,16 +673,22 @@ describe("validatePreferences", () => {
       isLightTheme: true,
     });
     expect(result.valid).toBe(true);
-    expect(result.data).toEqual({
-      groupByCategory: true,
-      funAnimations: false,
-      isLightTheme: true,
-    });
+    if (result.valid) {
+      expect(result.data).toEqual({
+        groupByCategory: true,
+        funAnimations: false,
+        isLightTheme: true,
+      });
+    }
   });
 
   it("rejects non-boolean groupByCategory", () => {
     expect(
-      validatePreferences({ groupByCategory: "yes", funAnimations: true, isLightTheme: true })
+      validatePreferences({
+        groupByCategory: "yes",
+        funAnimations: true,
+        isLightTheme: true,
+      })
     ).toEqual({ valid: false, error: "groupByCategory must be a boolean" });
   });
 
@@ -645,21 +719,43 @@ describe("validateImportData", () => {
     activityNames: ["Running"],
   };
 
-  it("accepts valid import data", () => {
+  it("accepts valid import data with sanitized output", () => {
     const result = validateImportData({
       activities: { a1: validActivity },
       categories: { c1: validCategory },
     });
     expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.activities).toEqual({ a1: validActivity });
+      expect(result.data.categories).toEqual({ c1: validCategory });
+      expect(result.data.preferences).toBeUndefined();
+    }
   });
 
-  it("accepts import with preferences", () => {
+  it("accepts import with preferences and returns sanitized data", () => {
+    const prefs = {
+      groupByCategory: true,
+      funAnimations: true,
+      isLightTheme: false,
+    };
     const result = validateImportData({
       activities: { a1: validActivity },
       categories: { c1: validCategory },
-      preferences: { groupByCategory: true, funAnimations: true, isLightTheme: false },
+      preferences: prefs,
     });
     expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data.preferences).toEqual(prefs);
+    }
+  });
+
+  // Server validator accepts empty objects (client-side isImportDataValid rejects them)
+  it("accepts empty activities and categories objects", () => {
+    const result = validateImportData({ activities: {}, categories: {} });
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.data).toEqual({ activities: {}, categories: {} });
+    }
   });
 
   it("rejects missing activities", () => {
@@ -678,7 +774,9 @@ describe("validateImportData", () => {
 
   it("rejects invalid activity in data", () => {
     const result = validateImportData({
-      activities: { a1: { name: "Running", date: "bad-date", categoryId: "c1" } },
+      activities: {
+        a1: { name: "Running", date: "bad-date", categoryId: "c1" },
+      },
       categories: { c1: validCategory },
     });
     expect(result.valid).toBe(false);

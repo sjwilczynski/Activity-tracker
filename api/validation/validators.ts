@@ -13,6 +13,10 @@ export type ValidationResult =
   | { valid: true }
   | { valid: false; error: string };
 
+export type ValidationResultWithData<T> =
+  | { valid: true; data: T }
+  | { valid: false; error: string };
+
 export const validateActivityName = (name: unknown): ValidationResult => {
   if (typeof name !== "string") {
     return { valid: false, error: "Activity name must be a string" };
@@ -280,7 +284,7 @@ export const validateCategory = (
 
 export const validateRenameBody = (
   body: unknown
-): ValidationResult & { data?: { oldName: string; newName: string } } => {
+): ValidationResultWithData<{ oldName: string; newName: string }> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -309,9 +313,7 @@ export const validateRenameBody = (
 
 export const validateAssignCategoryBody = (
   body: unknown
-): ValidationResult & {
-  data?: { activityName: string; categoryId: string };
-} => {
+): ValidationResultWithData<{ activityName: string; categoryId: string }> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -337,9 +339,10 @@ export const validateAssignCategoryBody = (
 
 export const validateReassignCategoryBody = (
   body: unknown
-): ValidationResult & {
-  data?: { fromCategoryId: string; toCategoryId: string };
-} => {
+): ValidationResultWithData<{
+  fromCategoryId: string;
+  toCategoryId: string;
+}> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -374,7 +377,7 @@ export const validateReassignCategoryBody = (
 
 export const validateDeleteByCategoryBody = (
   body: unknown
-): ValidationResult & { data?: { categoryId: string } } => {
+): ValidationResultWithData<{ categoryId: string }> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -393,7 +396,7 @@ export const validateDeleteByCategoryBody = (
 
 export const validatePreferences = (
   body: unknown
-): ValidationResult & { data?: UserPreferences } => {
+): ValidationResultWithData<UserPreferences> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -421,7 +424,11 @@ export const validatePreferences = (
 
 export const validateImportData = (
   body: unknown
-): ValidationResult => {
+): ValidationResultWithData<{
+  activities: Record<string, ActivityRecord>;
+  categories: Record<string, Category>;
+  preferences?: UserPreferences;
+}> => {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
@@ -442,35 +449,50 @@ export const validateImportData = (
     return { valid: false, error: "categories must be a non-array object" };
   }
 
-  // Validate each activity
+  // Validate and sanitize each activity
   const activityEntries = Object.entries(
     casted.activities as Record<string, unknown>
   );
+  const sanitizedActivities: Record<string, ActivityRecord> = {};
   for (const [key, activity] of activityEntries) {
     const result = validateActivityRecord(activity);
     if (!result.valid) {
       return { valid: false, error: `Activity "${key}": ${result.error}` };
     }
+    sanitizedActivities[key] = result.data!;
   }
 
-  // Validate each category
+  // Validate and sanitize each category
   const categoryEntries = Object.entries(
     casted.categories as Record<string, unknown>
   );
+  const sanitizedCategories: Record<string, Category> = {};
   for (const [key, category] of categoryEntries) {
     const result = validateCategory(category);
     if (!result.valid) {
       return { valid: false, error: `Category "${key}": ${result.error}` };
     }
+    sanitizedCategories[key] = result.data!;
   }
 
   // Validate preferences if present
+  let sanitizedPreferences: UserPreferences | undefined;
   if (casted.preferences !== undefined) {
     const prefsResult = validatePreferences(casted.preferences);
     if (!prefsResult.valid) {
       return { valid: false, error: `Preferences: ${prefsResult.error}` };
     }
+    sanitizedPreferences = prefsResult.data;
   }
 
-  return { valid: true };
+  return {
+    valid: true,
+    data: {
+      activities: sanitizedActivities,
+      categories: sanitizedCategories,
+      ...(sanitizedPreferences !== undefined && {
+        preferences: sanitizedPreferences,
+      }),
+    },
+  };
 };

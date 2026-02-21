@@ -56,17 +56,6 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
-  } else if (intent === "delete-category") {
-    const id = formData.get("id") as string;
-
-    const response = await fetch(`/api/categories/${id}`, {
-      method: "DELETE",
-      headers: { "x-auth-token": token },
-    });
-
-    if (!response.ok) {
-      return { error: `HTTP error! status: ${response.status}` };
-    }
   } else if (intent === "delete-category-with-activities") {
     const id = formData.get("id") as string;
 
@@ -102,20 +91,17 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     const targetCategoryId = formData.get("targetCategoryId") as string;
 
     // First reassign activities to target category
-    const reassignResponse = await fetch(
-      "/api/activities/reassign-category",
-      {
-        method: "POST",
-        headers: {
-          "x-auth-token": token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fromCategoryId: id,
-          toCategoryId: targetCategoryId,
-        }),
+    const reassignResponse = await fetch("/api/activities/reassign-category", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        fromCategoryId: id,
+        toCategoryId: targetCategoryId,
+      }),
+    });
 
     if (!reassignResponse.ok) {
       return {

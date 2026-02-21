@@ -159,9 +159,9 @@ function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
       {
         intent: "assign-category",
         activityName: name,
-        categoryId: newCategoryId === "none" ? "" : newCategoryId,
+        categoryId: newCategoryId,
       },
-      { method: "post" },
+      { method: "post" }
     );
   };
 
@@ -173,7 +173,7 @@ function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
     {
       successMessage: `Category updated for "${name}"`,
       errorMessage: `Failed to assign category for "${name}"`,
-    },
+    }
   );
 
   return { handleAssignCategory, isPending: fetcher.state !== "idle" };
@@ -194,15 +194,14 @@ function CategorySelect({
 }) {
   return (
     <Select
-      value={categoryId ?? "none"}
+      value={categoryId ?? ""}
       onValueChange={onValueChange}
       disabled={disabled}
     >
       <SelectTrigger className={className}>
-        <SelectValue placeholder="No category" />
+        <SelectValue placeholder="Select category" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="none">No category</SelectItem>
         {categories.map((cat) => (
           <SelectItem key={cat.id} value={cat.id}>
             {cat.name} ({cat.active ? "active" : "inactive"})
@@ -286,7 +285,7 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
       successMessage: `Renamed "${activityName}" successfully`,
       errorMessage: `Failed to rename "${activityName}"`,
       onSuccess: () => closeRef.current?.click(),
-    },
+    }
   );
 
   const handleSubmit = () => {
@@ -296,7 +295,7 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
         oldName: activityName,
         newName: newName.trim(),
       },
-      { method: "post" },
+      { method: "post" }
     );
   };
 
@@ -334,7 +333,7 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && isValid) handleSubmit();
+                if (e.key === "Enter" && !isPending && isValid) handleSubmit();
               }}
             />
           </div>

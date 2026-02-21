@@ -42,8 +42,8 @@ async function reassignCategory(
   try {
     const count = await database.bulkReassignCategory(
       userId,
-      validation.data!.fromCategoryId,
-      validation.data!.toCategoryId
+      validation.data.fromCategoryId,
+      validation.data.toCategoryId
     );
     return { status: 200, jsonBody: { updated: count } };
   } catch (err) {

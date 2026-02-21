@@ -42,7 +42,7 @@ async function deleteActivitiesByCategory(
   try {
     const count = await database.deleteActivitiesByCategory(
       userId,
-      validation.data!.categoryId
+      validation.data.categoryId
     );
     return { status: 200, jsonBody: { deleted: count } };
   } catch (err) {

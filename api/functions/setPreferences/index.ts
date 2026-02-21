@@ -7,9 +7,7 @@ import {
 } from "../../rateLimit/rateLimiter";
 import { validatePreferences } from "../../validation/validators";
 
-async function setPreferences(
-  request: HttpRequest
-): Promise<HttpResponseInit> {
+async function setPreferences(request: HttpRequest): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
@@ -40,7 +38,7 @@ async function setPreferences(
   }
 
   try {
-    await database.setPreferences(userId, validation.data!);
+    await database.setPreferences(userId, validation.data);
     return { status: 200, body: "Preferences saved" };
   } catch (err) {
     console.error("setPreferences error:", err);

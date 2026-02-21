@@ -22,6 +22,7 @@ import {
 } from "../../components/ui/dialog";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -81,7 +82,7 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
                       key={category.id}
                       category={category}
                       otherCategories={categories.filter(
-                        (c) => c.id !== category.id,
+                        (c) => c.id !== category.id
                       )}
                     />
                   ))}
@@ -95,7 +96,7 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
                   key={category.id}
                   category={category}
                   otherCategories={categories.filter(
-                    (c) => c.id !== category.id,
+                    (c) => c.id !== category.id
                   )}
                 />
               ))}
@@ -378,7 +379,7 @@ function DeleteCategoryButton({
 }) {
   const [action, setAction] = useState<"delete" | "reassign">("delete");
   const [targetCategoryId, setTargetCategoryId] = useState<string>(
-    otherCategories[0]?.id ?? "",
+    otherCategories[0]?.id ?? ""
   );
   const closeRef = useRef<HTMLButtonElement>(null);
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
@@ -400,7 +401,7 @@ function DeleteCategoryButton({
       successMessage: "Category deleted successfully!",
       errorMessage: "Failed to delete category",
       onSuccess: () => closeRef.current?.click(),
-    },
+    }
   );
 
   const handleDelete = () => {
@@ -411,7 +412,7 @@ function DeleteCategoryButton({
           id: category.id,
           targetCategoryId,
         },
-        { method: "POST" },
+        { method: "POST" }
       );
     } else {
       fetcher.submit(
@@ -419,7 +420,7 @@ function DeleteCategoryButton({
           intent: "delete-category-with-activities",
           id: category.id,
         },
-        { method: "POST" },
+        { method: "POST" }
       );
     }
   };
@@ -445,16 +446,13 @@ function DeleteCategoryButton({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="space-y-3">
+          <RadioGroup
+            value={action}
+            onValueChange={(value) => setAction(value as "delete" | "reassign")}
+            className="space-y-3"
+          >
             <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="radio"
-                name="delete-action"
-                value="delete"
-                checked={action === "delete"}
-                onChange={() => setAction("delete")}
-                className="mt-1"
-              />
+              <RadioGroupItem value="delete" className="mt-0.5" />
               <div>
                 <p className="font-medium text-sm">
                   Delete all activities in this category
@@ -468,14 +466,10 @@ function DeleteCategoryButton({
             <label
               className={`flex items-start gap-3 ${otherCategories.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
             >
-              <input
-                type="radio"
-                name="delete-action"
+              <RadioGroupItem
                 value="reassign"
-                checked={action === "reassign"}
-                onChange={() => setAction("reassign")}
                 disabled={otherCategories.length === 0}
-                className="mt-1"
+                className="mt-0.5"
               />
               <div>
                 <p className="font-medium text-sm">
@@ -486,7 +480,7 @@ function DeleteCategoryButton({
                 </p>
               </div>
             </label>
-          </div>
+          </RadioGroup>
           {action === "reassign" && otherCategories.length > 0 && (
             <div className="space-y-2 pl-6">
               <Label>Target category</Label>
@@ -517,10 +511,7 @@ function DeleteCategoryButton({
           <Button
             variant="destructive"
             onClick={handleDelete}
-            disabled={
-              isPending ||
-              (action === "reassign" && !targetCategoryId)
-            }
+            disabled={isPending || (action === "reassign" && !targetCategoryId)}
           >
             {isPending ? "Deleting..." : "Delete Category"}
           </Button>

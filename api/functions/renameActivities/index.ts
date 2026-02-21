@@ -42,8 +42,8 @@ async function renameActivities(
   try {
     const count = await database.bulkRenameActivities(
       userId,
-      validation.data!.oldName,
-      validation.data!.newName
+      validation.data.oldName,
+      validation.data.newName
     );
     return { status: 200, jsonBody: { updated: count } };
   } catch (err) {

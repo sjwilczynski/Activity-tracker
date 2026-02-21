@@ -4,10 +4,46 @@ import type {
   ActivityRecordWithIdServer,
 } from "../../data/types";
 import { createMockActivity, mockActivities } from "../data/activities";
+import { mockCategories } from "../data/categories";
 
 let activities = [...mockActivities];
 
 export const activityHandlers = [
+  // GET */api/export
+  http.get("*/api/export", async ({ request }) => {
+    await delay(100);
+
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) {
+      return new HttpResponse(null, { status: 401 });
+    }
+
+    const activitiesMap: Record<string, ActivityRecordServer> = {};
+    for (const activity of activities) {
+      const { id, ...rest } = activity;
+      activitiesMap[id] = rest;
+    }
+
+    const categoriesMap: Record<
+      string,
+      Omit<(typeof mockCategories)[0], "id">
+    > = {};
+    for (const category of mockCategories) {
+      const { id, ...rest } = category;
+      categoriesMap[id] = rest;
+    }
+
+    return HttpResponse.json({
+      activities: activitiesMap,
+      categories: categoriesMap,
+      preferences: {
+        groupByCategory: true,
+        funAnimations: true,
+        isLightTheme: true,
+      },
+    });
+  }),
+
   // GET */api/activities
   http.get("*/api/activities", async ({ request }) => {
     await delay(100);

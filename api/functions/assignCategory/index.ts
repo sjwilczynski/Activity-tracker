@@ -7,9 +7,7 @@ import {
 } from "../../rateLimit/rateLimiter";
 import { validateAssignCategoryBody } from "../../validation/validators";
 
-async function assignCategory(
-  request: HttpRequest
-): Promise<HttpResponseInit> {
+async function assignCategory(request: HttpRequest): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
@@ -42,8 +40,8 @@ async function assignCategory(
   try {
     const count = await database.bulkAssignCategory(
       userId,
-      validation.data!.activityName,
-      validation.data!.categoryId
+      validation.data.activityName,
+      validation.data.categoryId
     );
     return { status: 200, jsonBody: { updated: count } };
   } catch (err) {

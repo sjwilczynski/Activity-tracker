@@ -81,10 +81,19 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     return { error: "Unknown intent" };
   }
 
-  await queryClient.invalidateQueries({ queryKey: ["activities"] });
-  await queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] });
-  await queryClient.invalidateQueries({ queryKey: ["categories"] });
-  await queryClient.invalidateQueries({ queryKey: ["preferences"] });
+  const invalidations = [
+    queryClient.invalidateQueries({ queryKey: ["activities"] }),
+    queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] }),
+  ];
+
+  if (intent === "import" || intent === "delete-all") {
+    invalidations.push(
+      queryClient.invalidateQueries({ queryKey: ["categories"] }),
+      queryClient.invalidateQueries({ queryKey: ["preferences"] })
+    );
+  }
+
+  await Promise.all(invalidations);
 
   return { ok: true };
 }

@@ -9,17 +9,21 @@ import { MobileHeader } from "../../components/navigation/MobileHeader";
 import { StylesProvider } from "../../components/styles/StylesProvider";
 import { SidebarInset, SidebarProvider } from "../../components/ui/sidebar";
 import { Toaster } from "../../components/ui/sonner";
+import { preferencesQueryOptions } from "../../data/queryOptions";
 import { PagesContainer } from "../../pages/PagesContainer";
 import { getLoadContext } from "../root";
 
 export async function clientLoader() {
-  const { authService } = getLoadContext();
+  const { queryClient, getAuthToken, authService } = getLoadContext();
   await authService.waitForAuth();
 
   if (!authService.isSignedIn()) {
     const returnTo = window.location.pathname;
     throw redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }
+
+  // Pre-fetch preferences so StylesProvider has theme data immediately
+  queryClient.ensureQueryData(preferencesQueryOptions(getAuthToken));
 
   return null;
 }

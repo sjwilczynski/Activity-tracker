@@ -45,11 +45,13 @@ export const useUpdatePreferences = () => {
     },
     onError: (_err, _newPrefs, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(
-          [...getPreferencesQueryId],
-          context.previous
-        );
+        queryClient.setQueryData([...getPreferencesQueryId], context.previous);
       }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...getPreferencesQueryId],
+      });
     },
   });
 };
