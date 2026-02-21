@@ -1,7 +1,6 @@
 import { Pencil } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useFetcher } from "react-router";
-import { toast } from "sonner";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -38,6 +37,7 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import type { ActivityRecordWithId, Category } from "../../data";
+import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 type ActivityNameInfo = {
   name: string;
@@ -120,7 +120,6 @@ export function ActivityNamesTab({
                       count={count}
                       categoryId={categoryId}
                       categories={categories}
-                      activities={activities}
                     />
                   ))}
                 </TableBody>
@@ -135,7 +134,6 @@ export function ActivityNamesTab({
                   count={count}
                   categoryId={categoryId}
                   categories={categories}
-                  activities={activities}
                 />
               ))}
             </div>
@@ -151,7 +149,6 @@ type ActivityNameRowProps = {
   count: number;
   categoryId: string | undefined;
   categories: Category[];
-  activities: ActivityRecordWithId[];
 };
 
 function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
@@ -168,9 +165,16 @@ function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
     );
   };
 
-  if (fetcher.state === "idle" && fetcher.data?.error) {
-    toast.error(`Failed to assign category for "${name}"`);
-  }
+  useFeedbackToast(
+    {
+      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
+      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
+    },
+    {
+      successMessage: `Category updated for "${name}"`,
+      errorMessage: `Failed to assign category for "${name}"`,
+    },
+  );
 
   return { handleAssignCategory, isPending: fetcher.state !== "idle" };
 }
@@ -267,11 +271,23 @@ function ActivityNameCard({
 
 function EditActivityNameButton({ activityName }: { activityName: string }) {
   const [newName, setNewName] = useState(activityName);
-  const [open, setOpen] = useState(false);
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isPending = fetcher.state !== "idle";
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   const isValid = newName.trim().length > 0 && newName.trim() !== activityName;
+
+  useFeedbackToast(
+    {
+      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
+      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
+    },
+    {
+      successMessage: `Renamed "${activityName}" successfully`,
+      errorMessage: `Failed to rename "${activityName}"`,
+      onSuccess: () => closeRef.current?.click(),
+    },
+  );
 
   const handleSubmit = () => {
     fetcher.submit(
@@ -282,14 +298,11 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
       },
       { method: "post" },
     );
-    setOpen(false);
   };
 
   return (
     <Dialog
-      open={open}
       onOpenChange={(isOpen) => {
-        setOpen(isOpen);
         if (isOpen) setNewName(activityName);
       }}
     >
@@ -328,7 +341,9 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" ref={closeRef}>
+              Cancel
+            </Button>
           </DialogClose>
           <Button disabled={!isValid || isPending} onClick={handleSubmit}>
             {isPending ? "Updating..." : "Update Name"}

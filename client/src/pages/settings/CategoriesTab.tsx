@@ -1,5 +1,5 @@
 import { Folder, Pencil, Plus, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -380,8 +380,16 @@ function DeleteCategoryButton({
   const [targetCategoryId, setTargetCategoryId] = useState<string>(
     otherCategories[0]?.id ?? "",
   );
+  const closeRef = useRef<HTMLButtonElement>(null);
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isPending = fetcher.state !== "idle";
+
+  // Sync targetCategoryId when otherCategories changes
+  useEffect(() => {
+    if (!otherCategories.some((c) => c.id === targetCategoryId)) {
+      setTargetCategoryId(otherCategories[0]?.id ?? "");
+    }
+  }, [otherCategories, targetCategoryId]);
 
   useFeedbackToast(
     {
@@ -391,6 +399,7 @@ function DeleteCategoryButton({
     {
       successMessage: "Category deleted successfully!",
       errorMessage: "Failed to delete category",
+      onSuccess: () => closeRef.current?.click(),
     },
   );
 
@@ -501,7 +510,9 @@ function DeleteCategoryButton({
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" ref={closeRef}>
+              Cancel
+            </Button>
           </DialogClose>
           <Button
             variant="destructive"

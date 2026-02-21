@@ -592,7 +592,7 @@ describe("validateDeleteByCategoryBody", () => {
   it("rejects missing categoryId", () => {
     expect(validateDeleteByCategoryBody({})).toEqual({
       valid: false,
-      error: "Category ID must be a string",
+      error: "categoryId: Category ID must be a string",
     });
   });
 });
@@ -665,14 +665,14 @@ describe("validateImportData", () => {
   it("rejects missing activities", () => {
     expect(validateImportData({ categories: {} })).toEqual({
       valid: false,
-      error: "activities must be an object",
+      error: "activities must be a non-array object",
     });
   });
 
   it("rejects missing categories", () => {
     expect(validateImportData({ activities: {} })).toEqual({
       valid: false,
-      error: "categories must be an object",
+      error: "categories must be a non-array object",
     });
   });
 

@@ -10,19 +10,19 @@ import { validateAssignCategoryBody } from "../../validation/validators";
 async function assignCategory(
   request: HttpRequest
 ): Promise<HttpResponseInit> {
+  const idToken = request.headers.get("x-auth-token");
+  let userId: string;
+  try {
+    userId = await getUserId(idToken);
+  } catch {
+    return { status: 401, body: "Unauthorized" };
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return { status: 400, body: "Invalid JSON body" };
-  }
-
-  const idToken = request.headers.get("x-auth-token");
-  let userId: string;
-  try {
-    userId = await getUserId(idToken);
-  } catch (err) {
-    return { status: 401, body: (err as Error).message };
   }
 
   const rateLimitResult = await checkRateLimit(userId);
@@ -47,7 +47,8 @@ async function assignCategory(
     );
     return { status: 200, jsonBody: { updated: count } };
   } catch (err) {
-    return { status: 500, body: (err as Error).message };
+    console.error("assignCategory error:", err);
+    return { status: 500, body: "Internal server error" };
   }
 }
 

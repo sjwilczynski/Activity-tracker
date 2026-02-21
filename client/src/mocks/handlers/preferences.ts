@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from "msw";
+import type { UserPreferences } from "../../data/types";
 
-const defaultPreferences = {
+const defaultPreferences: UserPreferences = {
   groupByCategory: true,
   funAnimations: true,
   isLightTheme: true,

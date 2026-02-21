@@ -1,9 +1,16 @@
 import { isMatch } from "date-fns";
-import type { ActivityRecordServer, Category, UserPreferences } from "../types";
+import type { ActivityRecordServer, UserPreferences } from "../types";
+
+type ImportCategory = {
+  name: string;
+  active: boolean;
+  description: string;
+  activityNames: string[];
+};
 
 type ImportData = {
   activities: Record<string, ActivityRecordServer>;
-  categories: Record<string, Category>;
+  categories: Record<string, ImportCategory>;
   preferences?: UserPreferences;
 };
 
@@ -75,13 +82,14 @@ const isValidName = (name: string): boolean => {
   return Boolean(name);
 };
 
-const isCategoryValid = (category: unknown): category is Category => {
+const isCategoryValid = (category: unknown): category is ImportCategory => {
   if (category == null) return false;
-  const c = category as Category;
+  const c = category as ImportCategory;
   return (
     typeof c.name === "string" &&
     isValidName(c.name) &&
     typeof c.active === "boolean" &&
+    typeof c.description === "string" &&
     Array.isArray(c.activityNames) &&
     c.activityNames.every((n) => typeof n === "string")
   );

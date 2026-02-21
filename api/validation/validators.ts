@@ -382,7 +382,7 @@ export const validateDeleteByCategoryBody = (
 
   const result = validateCategoryId(casted.categoryId);
   if (!result.valid) {
-    return result;
+    return { valid: false, error: `categoryId: ${result.error}` };
   }
 
   return {
@@ -427,11 +427,19 @@ export const validateImportData = (
   }
   const casted = body as Record<string, unknown>;
 
-  if (!casted.activities || typeof casted.activities !== "object") {
-    return { valid: false, error: "activities must be an object" };
+  if (
+    !casted.activities ||
+    typeof casted.activities !== "object" ||
+    Array.isArray(casted.activities)
+  ) {
+    return { valid: false, error: "activities must be a non-array object" };
   }
-  if (!casted.categories || typeof casted.categories !== "object") {
-    return { valid: false, error: "categories must be an object" };
+  if (
+    !casted.categories ||
+    typeof casted.categories !== "object" ||
+    Array.isArray(casted.categories)
+  ) {
+    return { valid: false, error: "categories must be a non-array object" };
   }
 
   // Validate each activity

@@ -7,22 +7,23 @@ import {
 } from "../../rateLimit/rateLimiter";
 import { DEFAULT_PREFERENCES } from "../../utils/types";
 import type { ActivityMap, CategoryMap, UserPreferences } from "../../utils/types";
+import { LIMITS } from "../../validation/constants";
 import { validateImportData } from "../../validation/validators";
 
 async function importData(request: HttpRequest): Promise<HttpResponseInit> {
+  const idToken = request.headers.get("x-auth-token");
+  let userId: string;
+  try {
+    userId = await getUserId(idToken);
+  } catch {
+    return { status: 401, body: "Unauthorized" };
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return { status: 400, body: "Invalid JSON body" };
-  }
-
-  const idToken = request.headers.get("x-auth-token");
-  let userId: string;
-  try {
-    userId = await getUserId(idToken);
-  } catch (err) {
-    return { status: 401, body: (err as Error).message };
   }
 
   const rateLimitResult = await checkRateLimit(userId);
@@ -45,6 +46,21 @@ async function importData(request: HttpRequest): Promise<HttpResponseInit> {
     preferences?: UserPreferences;
   };
 
+  const activityCount = Object.keys(casted.activities).length;
+  const categoryCount = Object.keys(casted.categories).length;
+  if (activityCount > LIMITS.MAX_ACTIVITIES_PER_USER) {
+    return {
+      status: 400,
+      body: `Too many activities: ${activityCount} exceeds limit of ${LIMITS.MAX_ACTIVITIES_PER_USER}`,
+    };
+  }
+  if (categoryCount > LIMITS.MAX_CATEGORIES_PER_USER) {
+    return {
+      status: 400,
+      body: `Too many categories: ${categoryCount} exceeds limit of ${LIMITS.MAX_CATEGORIES_PER_USER}`,
+    };
+  }
+
   try {
     await database.setUserData(userId, {
       activities: casted.activities,
@@ -53,7 +69,8 @@ async function importData(request: HttpRequest): Promise<HttpResponseInit> {
     });
     return { status: 200, body: "Successfully imported" };
   } catch (err) {
-    return { status: 500, body: (err as Error).message };
+    console.error("importData error:", err);
+    return { status: 500, body: "Internal server error" };
   }
 }
 

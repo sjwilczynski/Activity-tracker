@@ -24,7 +24,18 @@ export function FileUploadForm() {
       reader.onloadend = () => {
         const { result } = reader;
         if (typeof result === "string") {
-          const data = JSON.parse(result);
+          let data: unknown;
+          try {
+            data = JSON.parse(result);
+          } catch (error) {
+            form.setFieldMeta("file", (meta) => ({
+              ...meta,
+              errors: [
+                `Invalid JSON: ${error instanceof Error ? error.message : "parse error"}`,
+              ],
+            }));
+            return;
+          }
           if (isImportDataValid(data)) {
             fetcher.submit(
               {

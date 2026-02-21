@@ -10,19 +10,19 @@ import { validateDeleteByCategoryBody } from "../../validation/validators";
 async function deleteActivitiesByCategory(
   request: HttpRequest
 ): Promise<HttpResponseInit> {
+  const idToken = request.headers.get("x-auth-token");
+  let userId: string;
+  try {
+    userId = await getUserId(idToken);
+  } catch {
+    return { status: 401, body: "Unauthorized" };
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return { status: 400, body: "Invalid JSON body" };
-  }
-
-  const idToken = request.headers.get("x-auth-token");
-  let userId: string;
-  try {
-    userId = await getUserId(idToken);
-  } catch (err) {
-    return { status: 401, body: (err as Error).message };
   }
 
   const rateLimitResult = await checkRateLimit(userId);
@@ -46,7 +46,8 @@ async function deleteActivitiesByCategory(
     );
     return { status: 200, jsonBody: { deleted: count } };
   } catch (err) {
-    return { status: 500, body: (err as Error).message };
+    console.error("deleteActivitiesByCategory error:", err);
+    return { status: 500, body: "Internal server error" };
   }
 }
 

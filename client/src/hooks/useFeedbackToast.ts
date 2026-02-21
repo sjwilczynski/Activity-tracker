@@ -6,7 +6,8 @@ export function useFeedbackToast(
   {
     successMessage,
     errorMessage,
-  }: { successMessage: string; errorMessage: string }
+    onSuccess,
+  }: { successMessage: string; errorMessage: string; onSuccess?: () => void }
 ) {
   const prevSuccess = useRef(false);
   const prevError = useRef(false);
@@ -14,9 +15,10 @@ export function useFeedbackToast(
   useEffect(() => {
     if (isSuccess && !prevSuccess.current) {
       toast.success(successMessage);
+      onSuccess?.();
     }
     prevSuccess.current = isSuccess;
-  }, [isSuccess, successMessage]);
+  }, [isSuccess, successMessage, onSuccess]);
 
   useEffect(() => {
     if (isError && !prevError.current) {

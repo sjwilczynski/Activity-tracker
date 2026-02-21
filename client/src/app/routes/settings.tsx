@@ -81,7 +81,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     });
 
     if (!deleteResponse.ok) {
-      return { error: `HTTP error! status: ${deleteResponse.status}` };
+      return {
+        error: `Failed to delete activities (status: ${deleteResponse.status})`,
+      };
     }
 
     // Then delete the category itself
@@ -91,7 +93,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     });
 
     if (!catResponse.ok) {
-      return { error: `HTTP error! status: ${catResponse.status}` };
+      return {
+        error: `Activities deleted but failed to delete category (status: ${catResponse.status})`,
+      };
     }
   } else if (intent === "delete-category-reassign") {
     const id = formData.get("id") as string;
@@ -114,7 +118,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     );
 
     if (!reassignResponse.ok) {
-      return { error: `HTTP error! status: ${reassignResponse.status}` };
+      return {
+        error: `Failed to reassign activities (status: ${reassignResponse.status})`,
+      };
     }
 
     // Then delete the category itself
@@ -124,7 +130,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     });
 
     if (!catResponse.ok) {
-      return { error: `HTTP error! status: ${catResponse.status}` };
+      return {
+        error: `Activities reassigned but failed to delete category (status: ${catResponse.status})`,
+      };
     }
   } else if (intent === "edit-activity") {
     const id = formData.get("id") as string;

@@ -10,19 +10,19 @@ import { validatePreferences } from "../../validation/validators";
 async function setPreferences(
   request: HttpRequest
 ): Promise<HttpResponseInit> {
+  const idToken = request.headers.get("x-auth-token");
+  let userId: string;
+  try {
+    userId = await getUserId(idToken);
+  } catch {
+    return { status: 401, body: "Unauthorized" };
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
     return { status: 400, body: "Invalid JSON body" };
-  }
-
-  const idToken = request.headers.get("x-auth-token");
-  let userId: string;
-  try {
-    userId = await getUserId(idToken);
-  } catch (err) {
-    return { status: 401, body: (err as Error).message };
   }
 
   const rateLimitResult = await checkRateLimit(userId);
@@ -43,7 +43,8 @@ async function setPreferences(
     await database.setPreferences(userId, validation.data!);
     return { status: 200, body: "Preferences saved" };
   } catch (err) {
-    return { status: 500, body: (err as Error).message };
+    console.error("setPreferences error:", err);
+    return { status: 500, body: "Internal server error" };
   }
 }
 
