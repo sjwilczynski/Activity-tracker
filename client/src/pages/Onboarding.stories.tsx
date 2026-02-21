@@ -14,8 +14,8 @@ const meta: Meta<typeof Welcome> = {
         http.get("*/api/categories", () => HttpResponse.json([])),
         // Return empty activities
         http.get("*/api/activities", () => HttpResponse.json([])),
-        // Handle category creation
-        http.post("*/api/categories", () => {
+        // Handle import for onboarding submission
+        http.post("*/api/import", () => {
           return new HttpResponse(null, { status: 200 });
         }),
       ],
@@ -143,8 +143,8 @@ export const SubmitCategories: Story = {
         // Empty categories initially
         http.get("*/api/categories", () => HttpResponse.json([])),
         http.get("*/api/activities", () => HttpResponse.json([])),
-        // Category creation succeeds
-        http.post("*/api/categories", () => {
+        // Import succeeds
+        http.post("*/api/import", () => {
           return new HttpResponse(null, { status: 200 });
         }),
         ...defaultHandlers,

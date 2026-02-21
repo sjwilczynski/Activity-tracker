@@ -1,13 +1,11 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Sparkles } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFetcher } from "react-router";
 import { toast } from "sonner";
-import { useAuth } from "../auth";
 import {
   defaultCategories,
   type DefaultCategory,
 } from "../data/defaultCategories";
-import { getCategoriesQueryId } from "../data/react-query-config/query-constants";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Checkbox } from "./ui/checkbox";
@@ -96,10 +94,21 @@ function CategoryRow({
 }
 
 export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
-  const { getIdToken } = useAuth();
-  const queryClient = useQueryClient();
+  const { state, data, submit } = useFetcher<{
+    ok?: boolean;
+    error?: string;
+  }>();
   const [selections, setSelections] = useState(buildInitialSelection);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isPending = state !== "idle";
+
+  useEffect(() => {
+    if (state === "idle" && data?.error) {
+      toast.error("Failed to set up categories. You can add them manually in Settings.");
+    }
+    if (state === "idle" && data?.ok) {
+      toast.success("Categories set up successfully!");
+    }
+  }, [state, data]);
 
   const toggleCategory = useCallback((name: string) => {
     setSelections((prev) => {
@@ -140,52 +149,36 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
     (s) => s.selected && s.activityNames.size > 0
   ).length;
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const token = await getIdToken?.();
-      const categoriesToCreate = defaultCategories.filter((cat) => {
-        const sel = selections.get(cat.name);
-        return sel?.selected && sel.activityNames.size > 0;
-      });
+  const handleSubmit = () => {
+    const categoriesToCreate = defaultCategories.filter((cat) => {
+      const sel = selections.get(cat.name);
+      return sel?.selected && sel.activityNames.size > 0;
+    });
 
-      const results = await Promise.allSettled(
-        categoriesToCreate.map((cat) => {
-          const sel = selections.get(cat.name)!;
-          return fetch("/api/categories", {
-            method: "POST",
-            headers: {
-              "x-auth-token": token ?? "",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: cat.name,
-              active: cat.active,
-              description: cat.description,
-              activityNames: [...sel.activityNames],
-            }),
-          });
-        })
-      );
-
-      const failed = results.filter(
-        (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok)
-      ).length;
-
-      if (failed > 0) {
-        toast.error(
-          `Failed to create ${failed} ${failed === 1 ? "category" : "categories"}. You can add them manually in Settings.`
-        );
-      } else {
-        toast.success("Categories set up successfully!");
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: [...getCategoriesQueryId],
-      });
-    } finally {
-      setIsSubmitting(false);
+    const categoriesMap: Record<
+      string,
+      { name: string; active: boolean; description: string; activityNames: string[] }
+    > = {};
+    for (const cat of categoriesToCreate) {
+      const sel = selections.get(cat.name)!;
+      categoriesMap[crypto.randomUUID()] = {
+        name: cat.name,
+        active: cat.active,
+        description: cat.description,
+        activityNames: [...sel.activityNames],
+      };
     }
+
+    submit(
+      {
+        intent: "import",
+        importData: JSON.stringify({
+          activities: {},
+          categories: categoriesMap,
+        }),
+      },
+      { method: "post", action: "/welcome" }
+    );
   };
 
   return (
@@ -225,14 +218,14 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
             selected
           </p>
           <div className="flex gap-2">
-            <Button variant="ghost" onClick={onSkip} disabled={isSubmitting}>
+            <Button variant="ghost" onClick={onSkip} disabled={isPending}>
               Skip for now
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={selectedCount === 0 || isSubmitting}
+              disabled={selectedCount === 0 || isPending}
             >
-              {isSubmitting ? (
+              {isPending ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
                   Setting up...
