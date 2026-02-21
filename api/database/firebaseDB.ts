@@ -91,7 +91,7 @@ export const firebaseDB: Database = {
     if (!category.exists()) {
       throw new Error(`Unable to find category with id ${categoryId}`);
     }
-    await categoryRef.update(newCategory);
+    await categoryRef.set(newCategory);
   },
   deleteCategory: async (userId, categoryId) => {
     const categoryRef = database.ref(

@@ -78,6 +78,6 @@ export const useExportActivities = (): (() => string) => {
   }, [client]);
 };
 
-export const useIsFetchingActivties = () => {
+export const useIsFetchingActivities = () => {
   return useIsFetching({ queryKey: [...getActivitiesQueryId] }) > 0;
 };

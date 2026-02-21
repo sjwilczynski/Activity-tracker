@@ -57,6 +57,7 @@ console.log(`Found ${userIds.length} user(s) to migrate\n`);
 
 let totalActivities = 0;
 let totalCategories = 0;
+const failedUserIds: string[] = [];
 
 for (const userId of userIds) {
   console.log(`Migrating user: ${userId}`);
@@ -72,39 +73,50 @@ for (const userId of userIds) {
   // Use Firebase push keys
   const generateKey = () => userRef.child("categories").push().key!;
 
-  const result = migrateUserData(userData, generateKey);
+  try {
+    const result = migrateUserData(userData, generateKey);
 
-  // Delete old array-based categories first, then write new map-based data
-  if (Array.isArray(userData.categories)) {
-    await userRef.child("categories").set(null);
-  }
+    // Build a single atomic update: null old array indices + write new map entries
+    const updates: Record<string, unknown> = {};
+    if (Array.isArray(userData.categories)) {
+      for (let i = 0; i < userData.categories.length; i++) {
+        updates[`categories/${i}`] = null;
+      }
+    }
+    for (const [key, cat] of Object.entries(result.categories)) {
+      updates[`categories/${key}`] = cat;
+    }
+    for (const [key, act] of Object.entries(result.activities)) {
+      updates[`activity/${key}`] = act;
+    }
 
-  const updates: Record<string, unknown> = {};
-  for (const [key, cat] of Object.entries(result.categories)) {
-    updates[`categories/${key}`] = cat;
-  }
-  for (const [key, act] of Object.entries(result.activities)) {
-    updates[`activity/${key}`] = act;
-  }
+    if (Object.keys(updates).length > 0) {
+      await userRef.update(updates);
+    }
 
-  if (Object.keys(updates).length > 0) {
-    await userRef.update(updates);
-  }
+    totalActivities += result.stats.activitiesMigrated;
+    totalCategories += result.stats.categoriesMigrated;
 
-  totalActivities += result.stats.activitiesMigrated;
-  totalCategories += result.stats.categoriesMigrated;
-
-  console.log(
-    `  Categories: ${result.stats.categoriesMigrated}, Activities: ${result.stats.activitiesMigrated}`
-  );
-  if (result.stats.unmatchedActivityNames.length > 0) {
     console.log(
-      `  Unmatched: ${result.stats.unmatchedActivityNames.join(", ")}`
+      `  Categories: ${result.stats.categoriesMigrated}, Activities: ${result.stats.activitiesMigrated}`
     );
+    if (result.stats.unmatchedActivityNames.length > 0) {
+      console.log(
+        `  ⚠ Unmatched: ${result.stats.unmatchedActivityNames.join(", ")}`
+      );
+    }
+  } catch (error) {
+    console.error(`  ✗ Failed to migrate user ${userId}:`, error);
+    failedUserIds.push(userId);
   }
 }
 
 console.log(
   `\nMigration complete. Total: ${totalCategories} categories, ${totalActivities} activities`
 );
+if (failedUserIds.length > 0) {
+  console.error(
+    `\n⚠ Failed users (${failedUserIds.length}): ${failedUserIds.join(", ")}`
+  );
+}
 process.exit(0);

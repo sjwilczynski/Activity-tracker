@@ -21,8 +21,12 @@ activities_list = [
     ("Running", "cat-sports"),
     ("Badminton", "cat-team"),
     ("Squash", "cat-team"),
+    ("Cycling", "cat-cycling"),
+    ("Mountain Biking", "cat-cycling"),
+    ("Trail Running", "cat-sports"),
+    ("Weight Training", "cat-gym"),
 ]
-probabilities = [0.3, 0.05, 0.15, 0.1, 0.2, 0.13, 0.07]
+probabilities = [0.2, 0.03, 0.1, 0.08, 0.15, 0.08, 0.05, 0.1, 0.05, 0.06, 0.1]
 
 date = datetime.datetime(2019, 1, 1)
 end_date = datetime.datetime.now()

@@ -5,7 +5,7 @@
  * Usage:
  *   node --experimental-strip-types api/scripts/migrate-local-test.ts [input.json]
  */
-
+  
 import { randomBytes } from "crypto";
 import { readFileSync, writeFileSync } from "fs";
 import { migrateUserData } from "./migration-logic.ts";
@@ -14,8 +14,13 @@ function generateLocalKey(): string {
   return "-" + randomBytes(10).toString("base64url").slice(0, 19);
 }
 
-const inputPath =
-  process.argv[2] || "/home/stachu/Pobrane/activity-tracker-7c548-export.json";
+const inputPath = process.argv[2];
+if (!inputPath) {
+  console.error(
+    "Usage: node api/scripts/migrate-local-test.ts <export.json>"
+  );
+  process.exit(1);
+}
 const outputPath = inputPath.replace(".json", "-migrated.json");
 
 console.log(`Reading: ${inputPath}\n`);

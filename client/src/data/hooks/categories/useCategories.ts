@@ -13,7 +13,7 @@ export const useAvailableCategories = () => {
   const { data: categories, isLoading } = useCategories();
   const availableCategories = (categories ?? []).reduce<CategoryOption[]>(
     (acc, category) => {
-      for (const activityName of category.activityNames) {
+      for (const activityName of category.activityNames ?? []) {
         acc.push({
           name: activityName,
           categoryName: category.name,

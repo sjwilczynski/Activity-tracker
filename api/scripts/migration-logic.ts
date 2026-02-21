@@ -114,7 +114,7 @@ export function migrateActivities(
     activities[key] = {
       name: act.name,
       date: act.date,
-      categoryId: categoryId || "",
+      categoryId: categoryId || "UNMATCHED",
     };
   }
 

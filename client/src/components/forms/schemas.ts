@@ -3,7 +3,7 @@ import { z } from "zod";
 export const categoryOptionSchema = z.object({
   name: z.string().min(1, "Category is required"),
   categoryName: z.string(),
-  categoryId: z.string(),
+  categoryId: z.string().min(1, "Category ID is required"),
   active: z.boolean(),
 });
 
