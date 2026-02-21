@@ -1,11 +1,13 @@
-export type Activity = {
-  name: string;
-  active: boolean;
-};
+export type Intensity = "low" | "medium" | "high";
 
 export type ActivityRecord = {
   date: string;
-} & Activity;
+  name: string;
+  categoryId: string;
+  description?: string;
+  intensity?: Intensity;
+  timeSpent?: number;
+};
 
 export type ActivityMap = Record<string, ActivityRecord>;
 
@@ -13,12 +15,7 @@ export type Category = {
   name: string;
   active: boolean;
   description: string;
-  subcategories: Subcategory[];
+  activityNames: string[];
 };
 
 export type CategoryMap = Record<string, Category>;
-
-export type Subcategory = {
-  name: string;
-  description: string;
-};

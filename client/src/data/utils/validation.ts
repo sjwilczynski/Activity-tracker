@@ -27,11 +27,12 @@ const isActivityValid = (
     return false;
   }
 
-  const { name, active } = castedActivity;
+  const { name, categoryId } = castedActivity;
   if (
     typeof name !== "string" ||
     !isValidName(name) ||
-    typeof active !== "boolean"
+    typeof categoryId !== "string" ||
+    !categoryId
   ) {
     return false;
   }

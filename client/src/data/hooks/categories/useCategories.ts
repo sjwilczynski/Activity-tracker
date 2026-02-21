@@ -13,18 +13,11 @@ export const useAvailableCategories = () => {
   const { data: categories, isLoading } = useCategories();
   const availableCategories = (categories ?? []).reduce<CategoryOption[]>(
     (acc, category) => {
-      if (category.subcategories?.length) {
-        category.subcategories.forEach((subcategory) =>
-          acc.push({
-            name: subcategory.name,
-            categoryName: category.name,
-            active: category.active,
-          })
-        );
-      } else {
+      for (const activityName of category.activityNames) {
         acc.push({
-          name: category.name,
+          name: activityName,
           categoryName: category.name,
+          categoryId: category.id,
           active: category.active,
         });
       }

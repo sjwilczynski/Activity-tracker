@@ -1,7 +1,8 @@
-import type { ActivityRecord, Category, Subcategory } from "../utils/types";
+import type { ActivityRecord, Category, Intensity } from "../utils/types";
 import { LIMITS } from "./constants";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const VALID_INTENSITIES: Intensity[] = ["low", "medium", "high"];
 
 export type ValidationResult =
   | { valid: true }
@@ -18,6 +19,42 @@ export const validateActivityName = (name: unknown): ValidationResult => {
     return {
       valid: false,
       error: `Activity name exceeds ${LIMITS.ACTIVITY_NAME_MAX} characters`,
+    };
+  }
+  return { valid: true };
+};
+
+export const validateCategoryId = (categoryId: unknown): ValidationResult => {
+  if (typeof categoryId !== "string") {
+    return { valid: false, error: "Category ID must be a string" };
+  }
+  if (!categoryId.trim()) {
+    return { valid: false, error: "Category ID cannot be empty" };
+  }
+  return { valid: true };
+};
+
+export const validateIntensity = (intensity: unknown): ValidationResult => {
+  if (!VALID_INTENSITIES.includes(intensity as Intensity)) {
+    return {
+      valid: false,
+      error: `Intensity must be one of: ${VALID_INTENSITIES.join(", ")}`,
+    };
+  }
+  return { valid: true };
+};
+
+export const validateTimeSpent = (timeSpent: unknown): ValidationResult => {
+  if (typeof timeSpent !== "number") {
+    return { valid: false, error: "Time spent must be a number" };
+  }
+  if (!Number.isFinite(timeSpent) || timeSpent < 0) {
+    return { valid: false, error: "Time spent must be a non-negative number" };
+  }
+  if (timeSpent > LIMITS.MAX_TIME_SPENT) {
+    return {
+      valid: false,
+      error: `Time spent exceeds ${LIMITS.MAX_TIME_SPENT} minutes`,
     };
   }
   return { valid: true };
@@ -47,11 +84,51 @@ export const validateActivityRecord = (
     return nameValidation;
   }
 
-  if (typeof castedActivity.active !== "boolean") {
-    return { valid: false, error: "Activity active must be a boolean" };
+  const categoryIdValidation = validateCategoryId(castedActivity.categoryId);
+  if (!categoryIdValidation.valid) {
+    return categoryIdValidation;
   }
 
-  return { valid: true, data: castedActivity };
+  if (castedActivity.description !== undefined) {
+    const descResult = validateDescription(
+      castedActivity.description,
+      "Activity description"
+    );
+    if (!descResult.valid) {
+      return descResult;
+    }
+  }
+
+  if (castedActivity.intensity !== undefined) {
+    const intensityResult = validateIntensity(castedActivity.intensity);
+    if (!intensityResult.valid) {
+      return intensityResult;
+    }
+  }
+
+  if (castedActivity.timeSpent !== undefined) {
+    const timeSpentResult = validateTimeSpent(castedActivity.timeSpent);
+    if (!timeSpentResult.valid) {
+      return timeSpentResult;
+    }
+  }
+
+  const data: ActivityRecord = {
+    date: castedActivity.date,
+    name: castedActivity.name,
+    categoryId: castedActivity.categoryId,
+  };
+  if (castedActivity.description !== undefined) {
+    data.description = castedActivity.description;
+  }
+  if (castedActivity.intensity !== undefined) {
+    data.intensity = castedActivity.intensity;
+  }
+  if (castedActivity.timeSpent !== undefined) {
+    data.timeSpent = castedActivity.timeSpent;
+  }
+
+  return { valid: true, data };
 };
 
 export const validateActivityBatch = (
@@ -109,37 +186,22 @@ export const validateDescription = (
   return { valid: true };
 };
 
-export const validateSubcategory = (
-  subcategory: unknown
-): ValidationResult & { data?: Subcategory } => {
-  if (subcategory === null || subcategory === undefined) {
-    return { valid: false, error: "Subcategory cannot be null or undefined" };
+export const validateActivityNameInCategory = (
+  name: unknown
+): ValidationResult => {
+  if (typeof name !== "string") {
+    return { valid: false, error: "Activity name must be a string" };
   }
-
-  const casted = subcategory as Subcategory;
-
-  if (typeof casted.name !== "string") {
-    return { valid: false, error: "Subcategory name must be a string" };
+  if (!name.trim()) {
+    return { valid: false, error: "Activity name cannot be empty" };
   }
-  if (!casted.name.trim()) {
-    return { valid: false, error: "Subcategory name cannot be empty" };
-  }
-  if (casted.name.length > LIMITS.SUBCATEGORY_NAME_MAX) {
+  if (name.length > LIMITS.ACTIVITY_NAME_IN_CATEGORY_MAX) {
     return {
       valid: false,
-      error: `Subcategory name exceeds ${LIMITS.SUBCATEGORY_NAME_MAX} characters`,
+      error: `Activity name exceeds ${LIMITS.ACTIVITY_NAME_IN_CATEGORY_MAX} characters`,
     };
   }
-
-  const descResult = validateDescription(
-    casted.description,
-    "Subcategory description"
-  );
-  if (!descResult.valid) {
-    return descResult;
-  }
-
-  return { valid: true, data: casted };
+  return { valid: true };
 };
 
 export const validateCategory = (
@@ -168,27 +230,27 @@ export const validateCategory = (
     return { valid: false, error: "Category active must be a boolean" };
   }
 
-  if (!Array.isArray(casted.subcategories)) {
-    return { valid: false, error: "Subcategories must be an array" };
+  if (!Array.isArray(casted.activityNames)) {
+    return { valid: false, error: "Activity names must be an array" };
   }
 
-  if (casted.subcategories.length > LIMITS.MAX_SUBCATEGORIES_PER_CATEGORY) {
+  if (casted.activityNames.length > LIMITS.MAX_ACTIVITY_NAMES_PER_CATEGORY) {
     return {
       valid: false,
-      error: `Subcategories exceed limit of ${LIMITS.MAX_SUBCATEGORIES_PER_CATEGORY}`,
+      error: `Activity names exceed limit of ${LIMITS.MAX_ACTIVITY_NAMES_PER_CATEGORY}`,
     };
   }
 
-  const validatedSubcategories: Subcategory[] = [];
-  for (let i = 0; i < casted.subcategories.length; i++) {
-    const result = validateSubcategory(casted.subcategories[i]);
+  const validatedNames: string[] = [];
+  for (let i = 0; i < casted.activityNames.length; i++) {
+    const result = validateActivityNameInCategory(casted.activityNames[i]);
     if (!result.valid) {
       return {
         valid: false,
-        error: `Subcategory at index ${i}: ${result.error}`,
+        error: `Activity name at index ${i}: ${result.error}`,
       };
     }
-    validatedSubcategories.push(result.data!);
+    validatedNames.push(casted.activityNames[i]);
   }
 
   return {
@@ -197,7 +259,7 @@ export const validateCategory = (
       name: casted.name,
       description: casted.description,
       active: casted.active,
-      subcategories: validatedSubcategories,
+      activityNames: validatedNames,
     },
   };
 };

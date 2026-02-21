@@ -22,7 +22,6 @@ export default defineConfig([
     "api/dist",
     "client/build",
     "**/node_modules/",
-    "**/scripts/",
     "**/storybook-static/",
     "**/mockServiceWorker.js",
     "client/.react-router",

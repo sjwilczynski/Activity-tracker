@@ -147,31 +147,97 @@
 - [x] Verify: `cd client && bun run test` — all stories pass
 - [x] Clean up `knip.json`: remove all CP0 entries from `ignoreDependencies` and `ignore` in the client workspace. Run `bun run knip` to confirm no leftover exceptions.
 
-### CP8: Backend Changes + Compare Page + Detail Fields
+### CP8: Backend Restructuring + New Features
 
-- [ ] **API**: **Link activities to categories properly.** Currently activities have no `categoryId` — the link is inferred client-side by name matching (`findCategoryForActivity`). This means renaming/deleting a category silently breaks associations, and toggling `active` on a category doesn't cascade to activities. Options:
-  - Add `categoryId?: string` to the Activity type and store it in Firebase
-  - When a category's `active` flag changes, cascade-update all linked activities
-  - When a category is renamed, update the subcategory references (activities link by subcategory name)
-  - When a category is deleted, clear `categoryId` on linked activities
-- [ ] **API**: Persist `groupByCategory` user preference in Firebase (currently Jotai-only, resets on reload). Add GET/PUT `/api/user-preferences` endpoint.
-- [ ] **API**: Add bulk rename endpoint `POST /api/activities/rename` (`{ oldName, newName }`) and bulk category assign endpoint `POST /api/activities/assign-category` (`{ activityName, categoryId }`) — needed by Settings Activity Names tab (UI exists, both disabled until endpoints ready)
-- [ ] **API**: Add optional fields to Activity type in `api/utils/types.ts`: `description?: string`, `intensity?: "low" | "medium" | "high"`, `timeSpent?: number`
-- [ ] **API**: Update validation in `api/validation/validators.ts` for new fields
-- [ ] **API**: Update `client/src/data/types.ts` to match
-- [ ] **API**: API tests for new fields
-- [ ] **Dashboard**: Add "Add with Details" button → Dialog with date, activity name, intensity Select, time spent input, description Textarea (as shown in design screenshots)
-- [ ] **Activity List**: Show description/intensity/timeSpent in detail columns, intensity badges
-- [ ] **Edit dialog**: Include all new fields
-- [ ] **Color system**: Category-based chart colors already implemented in CP5 via `buildCategoryColorInfo()`. Verify colors remain correct after backend category linking.
-- [ ] **Compare page**: New `src/app/routes/compare.tsx` with:
-  - Comparison type toggle (Month vs Year)
-  - Multi-period selection (up to 7 periods with color coding)
-  - Metric cards (total activities, most active day/month, most common activity)
-  - Chart.js line chart for comparison over time
-- [ ] Add "Compare" nav item with Lucide `GitCompare` icon
-- [ ] Storybook stories for Compare page and updated Dashboard/ActivityList
-- [ ] Verify: new fields persist through API, Compare page renders, all tests pass
+**Data model changes:**
+
+- `active` removed from `ActivityRecord` — derived from `category.active` at read time
+- `subcategories` replaced by `activityNames: string[]` on Category
+- Categories stored as map (push keys) instead of array (fixes null holes on deletion)
+- Activities get `categoryId` linking to category push key (replaces client-side name matching)
+- New optional fields on activities: `description`, `intensity`, `timeSpent`
+
+**Target Firebase structure:**
+
+```
+/users/{userId}/
+  activity/      → { [pushKey]: { name, date, categoryId, description?, intensity?, timeSpent? } }
+  categories/    → { [pushKey]: { name, active, description, activityNames: string[] } }
+  preferences/   → { groupByCategory: boolean }
+```
+
+**Target TypeScript types:**
+
+```ts
+// API
+type ActivityRecord = {
+  date: string;
+  name: string;
+  categoryId: string;
+  description?: string;
+  intensity?: "low" | "medium" | "high";
+  timeSpent?: number;
+};
+type Category = {
+  name: string;
+  active: boolean;
+  description: string;
+  activityNames: string[];
+};
+// Client adds: ActivityRecordWithId = ActivityRecord & { id: string; active: boolean } (active derived from category)
+```
+
+#### PR 1: Database restructuring + types + migration
+
+- [x] **Migration script** (`api/scripts/migrate.ts` + `migration-logic.ts`): one-off script for all users
+  - [x] Convert categories array → push-key map (skip nulls)
+  - [x] Convert `subcategories: [{name, description}]` → `activityNames: string[]`
+  - [x] Categories without subcategories get `activityNames: [category.name]`
+  - [x] Remove old numeric `id` field from categories
+  - [x] For each activity, name-match to find category → set `categoryId`
+  - [x] Remove `active` field from activity records
+  - [x] Write back atomically
+  - [x] Local test script (`migrate-local-test.ts`) shares logic with Firebase runner
+- [x] **Update API types** (`api/utils/types.ts`): `ActivityRecord` (remove `active`, add `categoryId`, `description?`, `intensity?`, `timeSpent?`), `Category` (`activityNames` instead of `subcategories`), remove `Subcategory` type
+- [x] **Update validators** (`api/validation/validators.ts`): new `validateIntensity`, `validateTimeSpent`, `validateCategoryId`. Update `validateActivityRecord` (no `active`, add optional fields). Update `validateCategory` (`activityNames` array of strings)
+- [x] **Update existing endpoints**: `addActivities`/`editActivity` accept new fields without `active`. `addCategory`/`editCategory` accept `activityNames`
+- [x] **Default categories constant** (`api/utils/defaultCategories.ts`): English, generic, Garmin-like list (Running, Cycling, Swimming, Gym, Team Sports, Other, Rest/Recovery). Used for new user initialization
+- [x] **New user initialization**: moved to onboarding PR (PR 4)
+- [x] **Client type updates** (`client/src/data/types.ts`): match API types. `ActivityRecordWithId` derives `active` from category
+- [x] **Client: derive `active`** in `useActivities()` — enrich activities with `active` from linked category
+- [x] **Client: update `useAvailableCategories()`** — build options from `category.activityNames` instead of subcategories
+- [x] **Remove `findCategoryForActivity`** name-matching — use `categoryId` directly
+- [x] **Tests**: validator tests for new fields (61 tests), migration tested locally on real data export
+- [x] **Verify**: `cd api && bun run test`, `cd client && bun run test`, `bun run --filter '*' build`
+
+#### PR 2: New endpoints (export/import, bulk ops, preferences)
+
+- [ ] **Export endpoint** (`GET /api/export`): returns `{ activities, categories, preferences }` (full user data from Firebase)
+- [ ] **Import endpoint** (`POST /api/import`): accepts `{ activities, categories, preferences? }`, **replaces** entire user data. Handles old format (array categories, `active` on activities) by converting on import
+- [ ] **Bulk rename** (`POST /api/activities/rename`): `{ oldName, newName }` — updates all matching activities
+- [ ] **Bulk assign category** (`POST /api/activities/assign-category`): `{ activityName, categoryId }` — sets `categoryId` on all matching
+- [ ] **User preferences** (`GET/PUT /api/user-preferences`): `{ groupByCategory: boolean }`. Persists to `/users/{userId}/preferences`
+- [ ] **Client: export** — `useExportUserData` calls `GET /api/export`, downloads full JSON
+- [ ] **Client: import** — `FileUploadForm` accepts full user data format (backward compat with activities-only)
+- [ ] **Client: bulk ops** — enable rename button + category select in `ActivityNamesTab.tsx`, wire to new intents in `settings.tsx`
+- [ ] **Client: preferences** — `StylesProvider.tsx` loads `groupByCategory` from API, persists via PUT. New `useUserPreferences` hook
+- [ ] **Tests**: endpoint tests, update existing stories
+- [ ] **Verify**: export → import round-trip, bulk rename, category assign, preferences persist across reload
+
+#### PR 3: Frontend features (detail fields, Compare page)
+
+- [ ] **Add Activity with Details dialog**: "Add with Details" button on Dashboard → Dialog (date, activity name combobox, category, description textarea, intensity select, time spent input)
+- [ ] **Activity List detail columns**: show description/intensity/timeSpent in rows. Intensity as colored badge
+- [ ] **Edit dialog**: include all new fields in `EditActivityDialog.tsx`
+- [ ] **Color system**: verify category-based chart colors (`buildCategoryColorInfo()`) remain correct after backend linking
+- [ ] **Compare page** (`client/src/pages/Compare.tsx` + route): Month vs Year toggle, period selectors, metric cards, Chart.js line chart. "Compare" nav item with `GitCompare` icon in sidebar
+- [ ] **Stories**: Compare page, AddActivityForm with details, ActivityList with detail columns
+- [ ] **Verify**: `cd client && bun run test`, build clean, `bun run knip`
+
+#### Separate follow-up PR: Onboarding flow
+
+- [ ] **Onboarding screen**: shown on first login when user has no categories. Displays default category/activity list with checkboxes. User picks their categories → seeds their account
+- [ ] This is a purely frontend feature using the `POST /api/user/init` or category creation endpoints from PR 1
 
 ---
 

@@ -169,7 +169,7 @@ function AddCategoryButton() {
           name: name.trim(),
           active: active === "active",
           description: "",
-          subcategories: [],
+          activityNames: [],
         }),
       },
       { method: "POST" }
@@ -274,7 +274,7 @@ function EditCategoryButton({ category }: { category: Category }) {
           name: name.trim(),
           active: active === "active",
           description: category.description,
-          subcategories: category.subcategories ?? [],
+          activityNames: category.activityNames ?? [],
         }),
       },
       { method: "POST" }

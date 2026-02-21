@@ -15,7 +15,7 @@ export const useEditActivityFormSubmit = (id: string) => {
       const activityRecord: ActivityRecordServer = {
         date: format(values.date, "yyyy-MM-dd"),
         name: values.category.name,
-        active: values.category.active,
+        categoryId: values.category.categoryId,
       };
       fetcher.submit(
         {

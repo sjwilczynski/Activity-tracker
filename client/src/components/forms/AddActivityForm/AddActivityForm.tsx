@@ -18,6 +18,7 @@ const emptyCategory: CategoryOption = {
   name: "",
   active: false,
   categoryName: "",
+  categoryId: "",
 };
 
 function useFormResetOnSuccess(
