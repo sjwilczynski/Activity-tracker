@@ -1,11 +1,11 @@
 import { ChevronDown, Loader2, Sparkles } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useFetcher } from "react-router";
-import { toast } from "sonner";
 import {
   defaultCategories,
   type DefaultCategory,
 } from "../data/defaultCategories";
+import { useFeedbackToast } from "../hooks/useFeedbackToast";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Checkbox } from "./ui/checkbox";
@@ -99,16 +99,18 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
     error?: string;
   }>();
   const [selections, setSelections] = useState(buildInitialSelection);
+  const isError = state === "idle" && data?.error !== undefined;
+  const isSuccess = state === "idle" && data?.ok === true;
   const isPending = state !== "idle";
 
-  useEffect(() => {
-    if (state === "idle" && data?.error) {
-      toast.error("Failed to set up categories. You can add them manually in Settings.");
+  useFeedbackToast(
+    { isSuccess, isError },
+    {
+      successMessage: "Categories set up successfully!",
+      errorMessage:
+        "Failed to set up categories. You can add them manually in Settings.",
     }
-    if (state === "idle" && data?.ok) {
-      toast.success("Categories set up successfully!");
-    }
-  }, [state, data]);
+  );
 
   const toggleCategory = useCallback((name: string) => {
     setSelections((prev) => {
