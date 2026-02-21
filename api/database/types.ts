@@ -3,6 +3,8 @@ import type {
   ActivityRecord,
   Category,
   CategoryMap,
+  UserData,
+  UserPreferences,
 } from "../utils/types";
 
 export type Database = {
@@ -33,4 +35,36 @@ export type Database = {
   ) => Promise<void>;
   deleteCategory: (userId: string, categoryId: string) => Promise<void>;
   deleteAllCategories: (userId: string) => Promise<void>;
+
+  // Bulk operations
+  bulkRenameActivities: (
+    userId: string,
+    oldName: string,
+    newName: string
+  ) => Promise<number>;
+  bulkAssignCategory: (
+    userId: string,
+    activityName: string,
+    categoryId: string
+  ) => Promise<number>;
+  bulkReassignCategory: (
+    userId: string,
+    fromCategoryId: string,
+    toCategoryId: string
+  ) => Promise<number>;
+  deleteActivitiesByCategory: (
+    userId: string,
+    categoryId: string
+  ) => Promise<number>;
+
+  // User data (export/import)
+  getUserData: (userId: string) => Promise<UserData>;
+  setUserData: (userId: string, data: UserData) => Promise<void>;
+
+  // Preferences
+  getPreferences: (userId: string) => Promise<UserPreferences>;
+  setPreferences: (
+    userId: string,
+    preferences: UserPreferences
+  ) => Promise<void>;
 };

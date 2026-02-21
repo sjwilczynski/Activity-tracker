@@ -19,3 +19,21 @@ export type Category = {
 };
 
 export type CategoryMap = Record<string, Category>;
+
+export type UserPreferences = {
+  groupByCategory: boolean;
+  funAnimations: boolean;
+  isLightTheme: boolean;
+};
+
+export const DEFAULT_PREFERENCES: UserPreferences = {
+  groupByCategory: true,
+  funAnimations: true,
+  isLightTheme: true,
+};
+
+export type UserData = {
+  activities: ActivityMap;
+  categories: CategoryMap;
+  preferences: UserPreferences;
+};

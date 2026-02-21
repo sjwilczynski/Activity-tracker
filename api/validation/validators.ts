@@ -1,4 +1,9 @@
-import type { ActivityRecord, Category, Intensity } from "../utils/types";
+import type {
+  ActivityRecord,
+  Category,
+  Intensity,
+  UserPreferences,
+} from "../utils/types";
 import { LIMITS } from "./constants";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -271,4 +276,193 @@ export const validateCategory = (
       activityNames: validatedNames,
     },
   };
+};
+
+export const validateRenameBody = (
+  body: unknown
+): ValidationResult & { data?: { oldName: string; newName: string } } => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const oldNameResult = validateActivityName(casted.oldName);
+  if (!oldNameResult.valid) {
+    return { valid: false, error: `oldName: ${oldNameResult.error}` };
+  }
+  const newNameResult = validateActivityName(casted.newName);
+  if (!newNameResult.valid) {
+    return { valid: false, error: `newName: ${newNameResult.error}` };
+  }
+  if ((casted.oldName as string).trim() === (casted.newName as string).trim()) {
+    return { valid: false, error: "oldName and newName must be different" };
+  }
+
+  return {
+    valid: true,
+    data: {
+      oldName: (casted.oldName as string).trim(),
+      newName: (casted.newName as string).trim(),
+    },
+  };
+};
+
+export const validateAssignCategoryBody = (
+  body: unknown
+): ValidationResult & {
+  data?: { activityName: string; categoryId: string };
+} => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const nameResult = validateActivityName(casted.activityName);
+  if (!nameResult.valid) {
+    return { valid: false, error: `activityName: ${nameResult.error}` };
+  }
+  const categoryIdResult = validateCategoryId(casted.categoryId);
+  if (!categoryIdResult.valid) {
+    return { valid: false, error: `categoryId: ${categoryIdResult.error}` };
+  }
+
+  return {
+    valid: true,
+    data: {
+      activityName: (casted.activityName as string).trim(),
+      categoryId: (casted.categoryId as string).trim(),
+    },
+  };
+};
+
+export const validateReassignCategoryBody = (
+  body: unknown
+): ValidationResult & {
+  data?: { fromCategoryId: string; toCategoryId: string };
+} => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const fromResult = validateCategoryId(casted.fromCategoryId);
+  if (!fromResult.valid) {
+    return { valid: false, error: `fromCategoryId: ${fromResult.error}` };
+  }
+  const toResult = validateCategoryId(casted.toCategoryId);
+  if (!toResult.valid) {
+    return { valid: false, error: `toCategoryId: ${toResult.error}` };
+  }
+  if (
+    (casted.fromCategoryId as string).trim() ===
+    (casted.toCategoryId as string).trim()
+  ) {
+    return {
+      valid: false,
+      error: "fromCategoryId and toCategoryId must be different",
+    };
+  }
+
+  return {
+    valid: true,
+    data: {
+      fromCategoryId: (casted.fromCategoryId as string).trim(),
+      toCategoryId: (casted.toCategoryId as string).trim(),
+    },
+  };
+};
+
+export const validateDeleteByCategoryBody = (
+  body: unknown
+): ValidationResult & { data?: { categoryId: string } } => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const result = validateCategoryId(casted.categoryId);
+  if (!result.valid) {
+    return result;
+  }
+
+  return {
+    valid: true,
+    data: { categoryId: (casted.categoryId as string).trim() },
+  };
+};
+
+export const validatePreferences = (
+  body: unknown
+): ValidationResult & { data?: UserPreferences } => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  if (typeof casted.groupByCategory !== "boolean") {
+    return { valid: false, error: "groupByCategory must be a boolean" };
+  }
+  if (typeof casted.funAnimations !== "boolean") {
+    return { valid: false, error: "funAnimations must be a boolean" };
+  }
+  if (typeof casted.isLightTheme !== "boolean") {
+    return { valid: false, error: "isLightTheme must be a boolean" };
+  }
+
+  return {
+    valid: true,
+    data: {
+      groupByCategory: casted.groupByCategory,
+      funAnimations: casted.funAnimations,
+      isLightTheme: casted.isLightTheme,
+    },
+  };
+};
+
+export const validateImportData = (
+  body: unknown
+): ValidationResult => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  if (!casted.activities || typeof casted.activities !== "object") {
+    return { valid: false, error: "activities must be an object" };
+  }
+  if (!casted.categories || typeof casted.categories !== "object") {
+    return { valid: false, error: "categories must be an object" };
+  }
+
+  // Validate each activity
+  const activityEntries = Object.entries(
+    casted.activities as Record<string, unknown>
+  );
+  for (const [key, activity] of activityEntries) {
+    const result = validateActivityRecord(activity);
+    if (!result.valid) {
+      return { valid: false, error: `Activity "${key}": ${result.error}` };
+    }
+  }
+
+  // Validate each category
+  const categoryEntries = Object.entries(
+    casted.categories as Record<string, unknown>
+  );
+  for (const [key, category] of categoryEntries) {
+    const result = validateCategory(category);
+    if (!result.valid) {
+      return { valid: false, error: `Category "${key}": ${result.error}` };
+    }
+  }
+
+  // Validate preferences if present
+  if (casted.preferences !== undefined) {
+    const prefsResult = validatePreferences(casted.preferences);
+    if (!prefsResult.valid) {
+      return { valid: false, error: `Preferences: ${prefsResult.error}` };
+    }
+  }
+
+  return { valid: true };
 };

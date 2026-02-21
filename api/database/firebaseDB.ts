@@ -1,5 +1,11 @@
 import { database } from "../firebase/firebase";
-import type { ActivityMap, ActivityRecord, CategoryMap } from "../utils/types";
+import {
+  DEFAULT_PREFERENCES,
+  type ActivityMap,
+  type ActivityRecord,
+  type CategoryMap,
+  type UserPreferences,
+} from "../utils/types";
 import type { Database } from "./types";
 
 const activityDocument = (userId: string): string =>
@@ -7,6 +13,11 @@ const activityDocument = (userId: string): string =>
 
 const categoryDocument = (userId: string): string =>
   `/users/${userId}/categories`;
+
+const preferencesDocument = (userId: string): string =>
+  `/users/${userId}/preferences`;
+
+const userDocument = (userId: string): string => `/users/${userId}`;
 
 export const firebaseDB: Database = {
   getActivities: async (userId: string, limit?: number) => {
@@ -106,5 +117,111 @@ export const firebaseDB: Database = {
   deleteAllCategories: async (userId) => {
     const categoriesRef = database.ref(categoryDocument(userId));
     await categoriesRef.remove();
+  },
+
+  bulkRenameActivities: async (userId, oldName, newName) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    const snapshot = await activitiesRef.once("value");
+    const activities = snapshot.val() as ActivityMap | null;
+    if (!activities) return 0;
+
+    const updates: Record<string, string> = {};
+    for (const [key, activity] of Object.entries(activities)) {
+      if (activity.name === oldName) {
+        updates[`${key}/name`] = newName;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      await activitiesRef.update(updates);
+    }
+    return Object.keys(updates).length;
+  },
+
+  bulkAssignCategory: async (userId, activityName, categoryId) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    const snapshot = await activitiesRef.once("value");
+    const activities = snapshot.val() as ActivityMap | null;
+    if (!activities) return 0;
+
+    const updates: Record<string, string> = {};
+    for (const [key, activity] of Object.entries(activities)) {
+      if (activity.name === activityName) {
+        updates[`${key}/categoryId`] = categoryId;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      await activitiesRef.update(updates);
+    }
+    return Object.keys(updates).length;
+  },
+
+  bulkReassignCategory: async (userId, fromCategoryId, toCategoryId) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    const snapshot = await activitiesRef.once("value");
+    const activities = snapshot.val() as ActivityMap | null;
+    if (!activities) return 0;
+
+    const updates: Record<string, string> = {};
+    for (const [key, activity] of Object.entries(activities)) {
+      if (activity.categoryId === fromCategoryId) {
+        updates[`${key}/categoryId`] = toCategoryId;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      await activitiesRef.update(updates);
+    }
+    return Object.keys(updates).length;
+  },
+
+  deleteActivitiesByCategory: async (userId, categoryId) => {
+    const activitiesRef = database.ref(activityDocument(userId));
+    const snapshot = await activitiesRef.once("value");
+    const activities = snapshot.val() as ActivityMap | null;
+    if (!activities) return 0;
+
+    const updates: Record<string, null> = {};
+    for (const [key, activity] of Object.entries(activities)) {
+      if (activity.categoryId === categoryId) {
+        updates[key] = null;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      await activitiesRef.update(updates);
+    }
+    return Object.keys(updates).length;
+  },
+
+  getUserData: async (userId) => {
+    const snapshot = await database.ref(userDocument(userId)).once("value");
+    const data = snapshot.val() ?? {};
+    return {
+      activities: (data.activity ?? {}) as ActivityMap,
+      categories: (data.categories ?? {}) as CategoryMap,
+      preferences: {
+        ...DEFAULT_PREFERENCES,
+        ...((data.preferences ?? {}) as Partial<UserPreferences>),
+      },
+    };
+  },
+
+  setUserData: async (userId, data) => {
+    const userRef = database.ref(userDocument(userId));
+    await userRef.update({
+      activity: data.activities,
+      categories: data.categories,
+      preferences: data.preferences,
+    });
+  },
+
+  getPreferences: async (userId) => {
+    const snapshot = await database
+      .ref(preferencesDocument(userId))
+      .once("value");
+    const stored = (snapshot.val() ?? {}) as Partial<UserPreferences>;
+    return { ...DEFAULT_PREFERENCES, ...stored };
+  },
+
+  setPreferences: async (userId, preferences) => {
+    await database.ref(preferencesDocument(userId)).set(preferences);
   },
 };
