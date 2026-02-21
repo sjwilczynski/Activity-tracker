@@ -103,20 +103,24 @@ export const Welcome = () => {
   const showOnboarding =
     !onboardingSkipped && categories !== undefined && categories.length === 0;
 
+  const header = (
+    <div>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary tabular-nums">
+        {format(new Date(), "EEEE, MMM d")}
+      </p>
+      <h1 className="text-2xl sm:text-3xl font-bold heading-gradient mt-1">
+        Welcome{user?.displayName ? `, ${user.displayName}` : ""}
+      </h1>
+      <p className="text-muted-foreground mt-1">
+        Track your activities and stay healthy
+      </p>
+    </div>
+  );
+
   if (showOnboarding) {
     return (
       <div className="space-y-4 sm:space-y-6">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary tabular-nums">
-            {format(new Date(), "EEEE, MMM d")}
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold heading-gradient mt-1">
-            Welcome{user?.displayName ? `, ${user.displayName}` : ""}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Track your activities and stay healthy
-          </p>
-        </div>
+        {header}
         <OnboardingCard onSkip={() => setOnboardingSkipped(true)} />
       </div>
     );
@@ -124,18 +128,7 @@ export const Welcome = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Page Header */}
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary tabular-nums">
-          {format(new Date(), "EEEE, MMM d")}
-        </p>
-        <h1 className="text-2xl sm:text-3xl font-bold heading-gradient mt-1">
-          Welcome{user?.displayName ? `, ${user.displayName}` : ""}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Track your activities and stay healthy
-        </p>
-      </div>
+      {header}
 
       {/* Stat Cards */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">

@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Sparkles } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../auth";
 import {
   defaultCategories,
@@ -20,6 +21,10 @@ type CategorySelection = {
   selected: boolean;
   activityNames: Set<string>;
 };
+
+function toSafeId(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
 
 function buildInitialSelection() {
   const map = new Map<string, CategorySelection>();
@@ -47,14 +52,14 @@ function CategoryRow({
     <Collapsible>
       <div className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50">
         <Checkbox
-          id={`cat-${category.name}`}
+          id={`cat-${toSafeId(category.name)}`}
           checked={selection.selected}
           onCheckedChange={() => onToggleCategory(category.name)}
         />
         <CollapsibleTrigger className="flex flex-1 items-center justify-between">
           <div className="text-left">
             <label
-              htmlFor={`cat-${category.name}`}
+              htmlFor={`cat-${toSafeId(category.name)}`}
               className="text-sm font-medium cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             >
@@ -163,9 +168,16 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
         })
       );
 
-      const failed = results.filter((r) => r.status === "rejected").length;
+      const failed = results.filter(
+        (r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok)
+      ).length;
+
       if (failed > 0) {
-        console.error(`${failed} categories failed to create`);
+        toast.error(
+          `Failed to create ${failed} ${failed === 1 ? "category" : "categories"}. You can add them manually in Settings.`
+        );
+      } else {
+        toast.success("Categories set up successfully!");
       }
 
       await queryClient.invalidateQueries({
