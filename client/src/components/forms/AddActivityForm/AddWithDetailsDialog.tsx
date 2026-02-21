@@ -164,7 +164,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
                 <Label htmlFor="details-intensity">Intensity</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={field.handleChange}
+                  onValueChange={(v) => field.handleChange(v as "" | "low" | "medium" | "high")}
                 >
                   <SelectTrigger id="details-intensity">
                     <SelectValue placeholder="None" />

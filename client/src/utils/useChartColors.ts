@@ -1,18 +1,21 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useIsLightTheme } from "../components/styles/StylesProvider";
 
-function getCssColor(varName: string): string {
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue(varName)
-    .trim();
+function readColors() {
+  const style = getComputedStyle(document.documentElement);
+  return {
+    foreground: style.getPropertyValue("--color-foreground").trim(),
+    mutedForeground: style.getPropertyValue("--color-muted-foreground").trim(),
+  };
 }
 
 export function useChartColors() {
   const isLight = useIsLightTheme();
-  return useMemo(() => {
-    const foreground = getCssColor("--color-foreground");
-    const mutedForeground = getCssColor("--color-muted-foreground");
-    return { foreground, mutedForeground };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-compute on theme change
+  const [colors, setColors] = useState(readColors);
+
+  useEffect(() => {
+    setColors(readColors());
   }, [isLight]);
+
+  return colors;
 }

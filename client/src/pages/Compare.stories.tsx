@@ -34,8 +34,7 @@ export const AddPeriodInteraction: Story = {
     });
 
     await step("Select February month", async () => {
-      // The month select shows the current mocked month name
-      const monthTrigger = canvas.getAllByRole("combobox")[1];
+      const monthTrigger = canvas.getByRole("combobox", { name: /month/i });
       await userEvent.click(monthTrigger);
       const februaryOption = await screen.findByRole("option", {
         name: "February",
@@ -44,7 +43,7 @@ export const AddPeriodInteraction: Story = {
     });
 
     await step("Select year 2024", async () => {
-      const yearTrigger = canvas.getAllByRole("combobox")[2];
+      const yearTrigger = canvas.getByRole("combobox", { name: /year/i });
       await userEvent.click(yearTrigger);
       const yearOption = await screen.findByRole("option", { name: "2024" });
       await userEvent.click(yearOption);

@@ -147,7 +147,7 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
                 <Label htmlFor="edit-intensity">Intensity</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={field.handleChange}
+                  onValueChange={(v) => field.handleChange(v as "" | "low" | "medium" | "high")}
                 >
                   <SelectTrigger id="edit-intensity">
                     <SelectValue placeholder="None" />

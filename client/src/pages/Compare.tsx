@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { GitCompare, X } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { useSearchParams } from "react-router";
 import { ErrorView } from "../components/states/ErrorView";
@@ -238,17 +238,20 @@ export const Compare = () => {
   );
 
   // Set default year when data loads
-  useMemo(() => {
+  useEffect(() => {
     if (availableYears.length > 0 && selectedYear === "") {
       setSelectedYear(String(availableYears[0]));
     }
   }, [availableYears, selectedYear]);
 
+  const activeData = useMemo(
+    () => (data ? data.filter((a) => a.active) : []),
+    [data],
+  );
+
   if (isLoading) return <Loading />;
   if (error) return <ErrorView error={error} />;
   if (!data?.length) return <NoActivitiesPage />;
-
-  const activeData = data.filter((a) => a.active);
 
   const addPeriod = () => {
     if (periods.length >= 7) return;
@@ -353,12 +356,12 @@ export const Compare = () => {
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
-              <Label>Comparison Type</Label>
+              <Label htmlFor="compare-type">Comparison Type</Label>
               <Select
                 value={comparisonType}
                 onValueChange={(v) => setComparisonType(v as "month" | "year")}
               >
-                <SelectTrigger>
+                <SelectTrigger id="compare-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -370,12 +373,12 @@ export const Compare = () => {
 
             {comparisonType === "month" && (
               <div className="space-y-2">
-                <Label>Month</Label>
+                <Label htmlFor="compare-month">Month</Label>
                 <Select
                   value={String(selectedMonth)}
                   onValueChange={(v) => setSelectedMonth(Number(v))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="compare-month">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -390,9 +393,9 @@ export const Compare = () => {
             )}
 
             <div className="space-y-2">
-              <Label>Year</Label>
+              <Label htmlFor="compare-year">Year</Label>
               <Select value={selectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger>
+                <SelectTrigger id="compare-year">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -432,6 +435,7 @@ export const Compare = () => {
                   {getPeriodLabel(period)}
                   <button
                     onClick={() => removePeriod(period.id)}
+                    aria-label={`Remove ${getPeriodLabel(period)}`}
                     className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
                   >
                     <X className="size-3" />

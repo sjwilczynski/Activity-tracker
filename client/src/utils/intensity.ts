@@ -1,11 +1,13 @@
-export const intensityLabels: Record<string, string> = {
+import type { Intensity } from "../data/types";
+
+export const intensityLabels: Record<Intensity, string> = {
   low: "Easy",
   medium: "Moderate",
   high: "Intense",
 };
 
 export const intensityStyles: Record<
-  string,
+  Intensity,
   { bg: string; text: string; darkBg: string; darkText: string }
 > = {
   low: {

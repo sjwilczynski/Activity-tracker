@@ -13,9 +13,12 @@ export const activityFormSchema = z.object({
 });
 
 export const detailedActivityFormSchema = activityFormSchema.extend({
-  intensity: z.string(),
-  timeSpent: z.string(),
-  description: z.string(),
+  intensity: z.enum(["low", "medium", "high", ""]),
+  timeSpent: z.string().refine(
+    (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
+    "Must be a non-negative number",
+  ),
+  description: z.string().max(500),
 });
 
 export type ActivityFormValues = z.infer<typeof activityFormSchema>;

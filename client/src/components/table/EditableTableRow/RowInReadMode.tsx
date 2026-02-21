@@ -16,10 +16,10 @@ type Props = {
 };
 
 export const RowInReadMode = ({ record }: Props) => {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isDeleting = fetcher.state !== "idle";
-  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
-  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const { state, data, submit } = useFetcher<{ ok?: boolean; error?: string }>();
+  const isDeleting = state !== "idle";
+  const isError = state === "idle" && data?.error !== undefined;
+  const isSuccess = state === "idle" && data?.ok === true;
   const color = getActivityColor(record.name);
 
   useFeedbackToast(
@@ -33,7 +33,7 @@ export const RowInReadMode = ({ record }: Props) => {
   const deleteActivity = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      fetcher.submit(
+      submit(
         {
           intent: "delete",
           id: record.id,
@@ -41,7 +41,7 @@ export const RowInReadMode = ({ record }: Props) => {
         { method: "post", action: "/activity-list" }
       );
     },
-    [record.id, fetcher]
+    [record.id, submit]
   );
 
   return (

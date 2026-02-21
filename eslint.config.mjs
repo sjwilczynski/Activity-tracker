@@ -51,6 +51,7 @@ export default defineConfig([
 
     settings: {
       react: {
+        // Hardcoded because React is in client/ workspace; "detect" warns since it's not at root
         version: "19",
       },
     },
@@ -72,6 +73,8 @@ export default defineConfig([
       "react/prop-types": "off",
 
       // React hooks
+      // React hooks — manual rules instead of preset because v7 preset includes
+      // React Compiler rules we're not ready for yet (tracked in CP9)
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
     },

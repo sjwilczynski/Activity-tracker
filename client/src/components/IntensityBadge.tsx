@@ -1,8 +1,10 @@
+import type { Intensity } from "../data/types";
 import { intensityLabels, intensityStyles } from "../utils/intensity";
 
 export function IntensityBadge({ intensity }: { intensity: string }) {
-  const style = intensityStyles[intensity];
-  const label = intensityLabels[intensity];
+  const key = intensity as Intensity;
+  const style = intensityStyles[key];
+  const label = intensityLabels[key];
   if (!style || !label) return null;
   return (
     <>
