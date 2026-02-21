@@ -72,9 +72,7 @@ export const AppearanceTab: Story = {
     await canvas.findByText("Settings");
 
     // Switch to Appearance tab
-    await userEvent.click(
-      canvas.getByRole("tab", { name: /appearance/i })
-    );
+    await userEvent.click(canvas.getByRole("tab", { name: /appearance/i }));
 
     // Appearance tab content should appear (tab trigger + card title both contain "Appearance")
     const appearanceTexts = await canvas.findAllByText("Appearance");
