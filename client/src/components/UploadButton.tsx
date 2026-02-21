@@ -21,9 +21,10 @@ export const UploadButton = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Activities Upload</DialogTitle>
+          <DialogTitle>Import Data</DialogTitle>
           <DialogDescription>
-            Select a JSON file containing activities in a compliant format
+            Select a JSON file containing activities, categories, and optionally
+            preferences
           </DialogDescription>
         </DialogHeader>
         <FileUploadForm />

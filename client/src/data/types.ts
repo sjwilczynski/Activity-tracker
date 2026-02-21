@@ -34,18 +34,17 @@ export type ActivityRecordServer = {
   timeSpent?: number;
 } & Activity;
 
-/** Raw activity from the query cache — does NOT include `active` (derived by useActivities) */
-export type ActivityRecordFromQuery = { id: string } & ActivityRecord;
+/** Server now returns categoryId + active (computed from Category.activityNames) */
+export type ActivityRecordWithIdServer = {
+  id: string;
+  active: boolean;
+} & ActivityRecordServer;
 
-/** Enriched activity with `active` derived from linked category */
+/** Enriched activity with `active` from server */
 export type ActivityRecordWithId = {
   id: string;
   active: boolean;
 } & ActivityRecord;
-
-export type ActivityRecordWithIdServer = {
-  id: string;
-} & ActivityRecordServer;
 
 export type ActivitySummary = {
   count: number;
@@ -54,4 +53,10 @@ export type ActivitySummary = {
 
 export type ActivitySummaries = {
   [key: string]: ActivitySummary;
+};
+
+export type UserPreferences = {
+  groupByCategory: boolean;
+  funAnimations: boolean;
+  isLightTheme: boolean;
 };

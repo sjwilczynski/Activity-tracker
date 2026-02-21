@@ -1,6 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Provider } from "jotai";
 import { useEffect, useState } from "react";
 import { Outlet, redirect, useNavigate } from "react-router";
 import { AuthContext, type User } from "../../auth/AuthContext";
@@ -10,17 +9,21 @@ import { MobileHeader } from "../../components/navigation/MobileHeader";
 import { StylesProvider } from "../../components/styles/StylesProvider";
 import { SidebarInset, SidebarProvider } from "../../components/ui/sidebar";
 import { Toaster } from "../../components/ui/sonner";
+import { preferencesQueryOptions } from "../../data/queryOptions";
 import { PagesContainer } from "../../pages/PagesContainer";
 import { getLoadContext } from "../root";
 
 export async function clientLoader() {
-  const { authService } = getLoadContext();
+  const { queryClient, getAuthToken, authService } = getLoadContext();
   await authService.waitForAuth();
 
   if (!authService.isSignedIn()) {
     const returnTo = window.location.pathname;
     throw redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }
+
+  // Pre-fetch preferences so StylesProvider has theme data immediately
+  queryClient.ensureQueryData(preferencesQueryOptions(getAuthToken));
 
   return null;
 }
@@ -58,23 +61,21 @@ export default function Layout() {
   // If we get here, user is authenticated (loader redirects otherwise)
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider>
-        <StylesProvider>
-          <AuthStateProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset className="bg-transparent">
-                <MobileHeader />
-                <PagesContainer>
-                  <Outlet />
-                </PagesContainer>
-              </SidebarInset>
-            </SidebarProvider>
-          </AuthStateProvider>
-          <Toaster />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </StylesProvider>
-      </Provider>
+      <StylesProvider>
+        <AuthStateProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="bg-transparent">
+              <MobileHeader />
+              <PagesContainer>
+                <Outlet />
+              </PagesContainer>
+            </SidebarInset>
+          </SidebarProvider>
+        </AuthStateProvider>
+        <Toaster />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </StylesProvider>
     </QueryClientProvider>
   );
 }

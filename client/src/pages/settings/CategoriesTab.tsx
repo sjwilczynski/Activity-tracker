@@ -1,17 +1,6 @@
 import { Folder, Pencil, Plus, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../../components/ui/alert-dialog";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
@@ -33,6 +22,7 @@ import {
 } from "../../components/ui/dialog";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -83,12 +73,19 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Activity Names</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {categories.map((category) => (
-                    <CategoryRow key={category.id} category={category} />
+                    <CategoryRow
+                      key={category.id}
+                      category={category}
+                      otherCategories={categories.filter(
+                        (c) => c.id !== category.id
+                      )}
+                    />
                   ))}
                 </TableBody>
               </Table>
@@ -96,7 +93,13 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
             {/* Mobile cards */}
             <div className="sm:hidden space-y-2">
               {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  otherCategories={categories.filter(
+                    (c) => c.id !== category.id
+                  )}
+                />
               ))}
             </div>
           </>
@@ -106,24 +109,65 @@ export function CategoriesTab({ categories }: { categories: Category[] }) {
   );
 }
 
-function CategoryCard({ category }: { category: Category }) {
+function ActivityNamesBadges({
+  activityNames,
+}: {
+  activityNames: string[];
+}) {
+  if (activityNames.length === 0) {
+    return (
+      <span className="text-xs text-muted-foreground italic">
+        No activities
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {activityNames.map((name) => (
+        <Badge key={name} variant="outline" className="text-xs capitalize">
+          {name}
+        </Badge>
+      ))}
+    </div>
+  );
+}
+
+function CategoryCard({
+  category,
+  otherCategories,
+}: {
+  category: Category;
+  otherCategories: Category[];
+}) {
   return (
     <div className="rounded-md border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <span className="font-medium truncate">{category.name}</span>
         <div className="flex shrink-0 gap-1">
           <EditCategoryButton category={category} />
-          <DeleteCategoryButton category={category} />
+          <DeleteCategoryButton
+            category={category}
+            otherCategories={otherCategories}
+          />
         </div>
       </div>
-      <Badge variant={category.active ? "default" : "secondary"}>
-        {category.active ? "active" : "inactive"}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge variant={category.active ? "default" : "secondary"}>
+          {category.active ? "active" : "inactive"}
+        </Badge>
+      </div>
+      <ActivityNamesBadges activityNames={category.activityNames ?? []} />
     </div>
   );
 }
 
-function CategoryRow({ category }: { category: Category }) {
+function CategoryRow({
+  category,
+  otherCategories,
+}: {
+  category: Category;
+  otherCategories: Category[];
+}) {
   return (
     <TableRow>
       <TableCell className="font-medium">{category.name}</TableCell>
@@ -132,10 +176,16 @@ function CategoryRow({ category }: { category: Category }) {
           {category.active ? "active" : "inactive"}
         </Badge>
       </TableCell>
+      <TableCell>
+        <ActivityNamesBadges activityNames={category.activityNames ?? []} />
+      </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
           <EditCategoryButton category={category} />
-          <DeleteCategoryButton category={category} />
+          <DeleteCategoryButton
+            category={category}
+            otherCategories={otherCategories}
+          />
         </div>
       </TableCell>
     </TableRow>
@@ -350,8 +400,27 @@ function EditCategoryButton({ category }: { category: Category }) {
   );
 }
 
-function DeleteCategoryButton({ category }: { category: Category }) {
+function DeleteCategoryButton({
+  category,
+  otherCategories,
+}: {
+  category: Category;
+  otherCategories: Category[];
+}) {
+  const [action, setAction] = useState<"delete" | "reassign">("delete");
+  const [targetCategoryId, setTargetCategoryId] = useState<string>(
+    otherCategories[0]?.id ?? ""
+  );
+  const closeRef = useRef<HTMLButtonElement>(null);
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isPending = fetcher.state !== "idle";
+
+  // Sync targetCategoryId when otherCategories changes
+  useEffect(() => {
+    if (!otherCategories.some((c) => c.id === targetCategoryId)) {
+      setTargetCategoryId(otherCategories[0]?.id ?? "");
+    }
+  }, [otherCategories, targetCategoryId]);
 
   useFeedbackToast(
     {
@@ -361,19 +430,41 @@ function DeleteCategoryButton({ category }: { category: Category }) {
     {
       successMessage: "Category deleted successfully!",
       errorMessage: "Failed to delete category",
+      onSuccess: () => closeRef.current?.click(),
     }
   );
 
-  const handleDelete = useCallback(() => {
-    fetcher.submit(
-      { intent: "delete-category", id: category.id },
-      { method: "POST" }
-    );
-  }, [category.id, fetcher]);
+  const handleDelete = () => {
+    if (action === "reassign") {
+      fetcher.submit(
+        {
+          intent: "delete-category-reassign",
+          id: category.id,
+          targetCategoryId,
+        },
+        { method: "POST" }
+      );
+    } else {
+      fetcher.submit(
+        {
+          intent: "delete-category-with-activities",
+          id: category.id,
+        },
+        { method: "POST" }
+      );
+    }
+  };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <Dialog
+      onOpenChange={(open) => {
+        if (open) {
+          setAction("delete");
+          setTargetCategoryId(otherCategories[0]?.id ?? "");
+        }
+      }}
+    >
+      <DialogTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
@@ -382,20 +473,87 @@ function DeleteCategoryButton({ category }: { category: Category }) {
           <Trash2 className="size-4 text-destructive dark:text-red-400" />
           <span className="sr-only">Delete</span>
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Category?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            &quot;{category.name}&quot; category.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete &quot;{category.name}&quot;?</DialogTitle>
+          <DialogDescription>
+            Choose what to do with activities in this category. This action
+            cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <RadioGroup
+            value={action}
+            onValueChange={(value) => setAction(value as "delete" | "reassign")}
+            className="space-y-3"
+          >
+            <label className="flex items-start gap-3 cursor-pointer">
+              <RadioGroupItem value="delete" className="mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">
+                  Delete all activities in this category
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Permanently remove all activities assigned to &quot;
+                  {category.name}&quot;
+                </p>
+              </div>
+            </label>
+            <label
+              className={`flex items-start gap-3 ${otherCategories.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              <RadioGroupItem
+                value="reassign"
+                disabled={otherCategories.length === 0}
+                className="mt-0.5"
+              />
+              <div>
+                <p className="font-medium text-sm">
+                  Reassign activities to another category
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Move all activities to a different category before deleting
+                </p>
+              </div>
+            </label>
+          </RadioGroup>
+          {action === "reassign" && otherCategories.length > 0 && (
+            <div className="space-y-2 pl-6">
+              <Label>Target category</Label>
+              <Select
+                value={targetCategoryId}
+                onValueChange={setTargetCategoryId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {otherCategories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline" ref={closeRef}>
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isPending || (action === "reassign" && !targetCategoryId)}
+          >
+            {isPending ? "Deleting..." : "Delete Category"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

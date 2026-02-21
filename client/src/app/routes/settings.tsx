@@ -56,16 +56,81 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
-  } else if (intent === "delete-category") {
+  } else if (intent === "delete-category-with-activities") {
     const id = formData.get("id") as string;
 
-    const response = await fetch(`/api/categories/${id}`, {
+    // First delete all activities in this category
+    const deleteResponse = await fetch("/api/activities/delete-by-category", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ categoryId: id }),
+    });
+
+    if (!deleteResponse.ok) {
+      return {
+        error: `Failed to delete activities (status: ${deleteResponse.status})`,
+      };
+    }
+
+    // Then delete the category itself
+    const catResponse = await fetch(`/api/categories/${id}`, {
       method: "DELETE",
       headers: { "x-auth-token": token },
     });
 
-    if (!response.ok) {
-      return { error: `HTTP error! status: ${response.status}` };
+    if (!catResponse.ok) {
+      // Activities were already deleted — invalidate so UI reflects actual state
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
+        queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] }),
+      ]);
+      return {
+        error: `Activities deleted but failed to delete category (status: ${catResponse.status})`,
+      };
+    }
+  } else if (intent === "delete-category-reassign") {
+    const id = formData.get("id") as string;
+    const targetCategoryId = formData.get("targetCategoryId") as string;
+
+    // First reassign activities to target category
+    const reassignResponse = await fetch("/api/activities/reassign-category", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fromCategoryId: id,
+        toCategoryId: targetCategoryId,
+      }),
+    });
+
+    if (!reassignResponse.ok) {
+      return {
+        error: `Failed to reassign activities (status: ${reassignResponse.status})`,
+      };
+    }
+
+    // Then delete the category itself
+    const catResponse = await fetch(`/api/categories/${id}`, {
+      method: "DELETE",
+      headers: { "x-auth-token": token },
+    });
+
+    if (!catResponse.ok) {
+      // Activities were already reassigned — invalidate so UI reflects actual state
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
+        queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] }),
+      ]);
+      return {
+        error: `Activities reassigned but failed to delete category (status: ${catResponse.status})`,
+      };
     }
   } else if (intent === "edit-activity") {
     const id = formData.get("id") as string;
@@ -79,6 +144,57 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       },
       body: JSON.stringify(record),
     });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
+  } else if (intent === "rename-activity") {
+    const oldName = formData.get("oldName") as string;
+    const newName = formData.get("newName") as string;
+
+    const response = await fetch("/api/activities/rename", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ oldName, newName }),
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
+  } else if (intent === "assign-category") {
+    const activityName = formData.get("activityName") as string;
+    const categoryId = formData.get("categoryId") as string;
+
+    const response = await fetch("/api/activities/assign-category", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ activityName, categoryId }),
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
+  } else if (intent === "add-activity-name") {
+    const activityName = formData.get("activityName") as string;
+    const categoryId = formData.get("categoryId") as string;
+
+    const response = await fetch(
+      `/api/categories/${categoryId}/activity-names`,
+      {
+        method: "POST",
+        headers: {
+          "x-auth-token": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activityName }),
+      }
+    );
 
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };

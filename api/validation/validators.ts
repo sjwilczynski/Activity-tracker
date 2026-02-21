@@ -1,4 +1,9 @@
-import type { ActivityRecord, Category, Intensity } from "../utils/types";
+import type {
+  ActivityRecord,
+  Category,
+  Intensity,
+  UserPreferences,
+} from "../utils/types";
 import { LIMITS } from "./constants";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -6,6 +11,10 @@ const VALID_INTENSITIES: Intensity[] = ["low", "medium", "high"];
 
 export type ValidationResult =
   | { valid: true }
+  | { valid: false; error: string };
+
+export type ValidationResultWithData<T> =
+  | { valid: true; data: T }
   | { valid: false; error: string };
 
 export const validateActivityName = (name: unknown): ValidationResult => {
@@ -67,7 +76,7 @@ export const validateActivityRecord = (
     return { valid: false, error: "Activity cannot be null or undefined" };
   }
 
-  const castedActivity = activity as ActivityRecord;
+  const castedActivity = activity as Record<string, unknown>;
 
   if (
     typeof castedActivity.date !== "string" ||
@@ -82,11 +91,6 @@ export const validateActivityRecord = (
   const nameValidation = validateActivityName(castedActivity.name);
   if (!nameValidation.valid) {
     return nameValidation;
-  }
-
-  const categoryIdValidation = validateCategoryId(castedActivity.categoryId);
-  if (!categoryIdValidation.valid) {
-    return categoryIdValidation;
   }
 
   if (castedActivity.description !== undefined) {
@@ -113,19 +117,19 @@ export const validateActivityRecord = (
     }
   }
 
+  // Build storage record — categoryId is NOT stored (derived from categories)
   const data: ActivityRecord = {
-    date: castedActivity.date,
-    name: castedActivity.name,
-    categoryId: castedActivity.categoryId,
+    date: castedActivity.date as string,
+    name: castedActivity.name as string,
   };
   if (castedActivity.description !== undefined) {
-    data.description = castedActivity.description;
+    data.description = castedActivity.description as string;
   }
   if (castedActivity.intensity !== undefined) {
-    data.intensity = castedActivity.intensity;
+    data.intensity = castedActivity.intensity as ActivityRecord["intensity"];
   }
   if (castedActivity.timeSpent !== undefined) {
-    data.timeSpent = castedActivity.timeSpent;
+    data.timeSpent = castedActivity.timeSpent as number;
   }
 
   return { valid: true, data };
@@ -269,6 +273,240 @@ export const validateCategory = (
       description: casted.description,
       active: casted.active,
       activityNames: validatedNames,
+    },
+  };
+};
+
+export const validateRenameBody = (
+  body: unknown
+): ValidationResultWithData<{ oldName: string; newName: string }> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const oldNameResult = validateActivityName(casted.oldName);
+  if (!oldNameResult.valid) {
+    return { valid: false, error: `oldName: ${oldNameResult.error}` };
+  }
+  const newNameResult = validateActivityName(casted.newName);
+  if (!newNameResult.valid) {
+    return { valid: false, error: `newName: ${newNameResult.error}` };
+  }
+  if ((casted.oldName as string).trim() === (casted.newName as string).trim()) {
+    return { valid: false, error: "oldName and newName must be different" };
+  }
+
+  return {
+    valid: true,
+    data: {
+      oldName: (casted.oldName as string).trim(),
+      newName: (casted.newName as string).trim(),
+    },
+  };
+};
+
+export const validateAssignCategoryBody = (
+  body: unknown
+): ValidationResultWithData<{ activityName: string; categoryId: string }> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const nameResult = validateActivityName(casted.activityName);
+  if (!nameResult.valid) {
+    return { valid: false, error: `activityName: ${nameResult.error}` };
+  }
+  const categoryIdResult = validateCategoryId(casted.categoryId);
+  if (!categoryIdResult.valid) {
+    return { valid: false, error: `categoryId: ${categoryIdResult.error}` };
+  }
+
+  return {
+    valid: true,
+    data: {
+      activityName: (casted.activityName as string).trim(),
+      categoryId: (casted.categoryId as string).trim(),
+    },
+  };
+};
+
+export const validateReassignCategoryBody = (
+  body: unknown
+): ValidationResultWithData<{
+  fromCategoryId: string;
+  toCategoryId: string;
+}> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const fromResult = validateCategoryId(casted.fromCategoryId);
+  if (!fromResult.valid) {
+    return { valid: false, error: `fromCategoryId: ${fromResult.error}` };
+  }
+  const toResult = validateCategoryId(casted.toCategoryId);
+  if (!toResult.valid) {
+    return { valid: false, error: `toCategoryId: ${toResult.error}` };
+  }
+  if (
+    (casted.fromCategoryId as string).trim() ===
+    (casted.toCategoryId as string).trim()
+  ) {
+    return {
+      valid: false,
+      error: "fromCategoryId and toCategoryId must be different",
+    };
+  }
+
+  return {
+    valid: true,
+    data: {
+      fromCategoryId: (casted.fromCategoryId as string).trim(),
+      toCategoryId: (casted.toCategoryId as string).trim(),
+    },
+  };
+};
+
+export const validateDeleteByCategoryBody = (
+  body: unknown
+): ValidationResultWithData<{ categoryId: string }> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const result = validateCategoryId(casted.categoryId);
+  if (!result.valid) {
+    return { valid: false, error: `categoryId: ${result.error}` };
+  }
+
+  return {
+    valid: true,
+    data: { categoryId: (casted.categoryId as string).trim() },
+  };
+};
+
+export const validateAddActivityNameBody = (
+  body: unknown
+): ValidationResultWithData<{ activityName: string }> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  const nameResult = validateActivityName(casted.activityName);
+  if (!nameResult.valid) {
+    return { valid: false, error: `activityName: ${nameResult.error}` };
+  }
+
+  return {
+    valid: true,
+    data: { activityName: (casted.activityName as string).trim() },
+  };
+};
+
+export const validatePreferences = (
+  body: unknown
+): ValidationResultWithData<UserPreferences> => {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  if (typeof casted.groupByCategory !== "boolean") {
+    return { valid: false, error: "groupByCategory must be a boolean" };
+  }
+  if (typeof casted.funAnimations !== "boolean") {
+    return { valid: false, error: "funAnimations must be a boolean" };
+  }
+  if (typeof casted.isLightTheme !== "boolean") {
+    return { valid: false, error: "isLightTheme must be a boolean" };
+  }
+
+  return {
+    valid: true,
+    data: {
+      groupByCategory: casted.groupByCategory,
+      funAnimations: casted.funAnimations,
+      isLightTheme: casted.isLightTheme,
+    },
+  };
+};
+
+export const validateImportData = (
+  body: unknown
+): ValidationResultWithData<{
+  activities: Record<string, ActivityRecord>;
+  categories: Record<string, Category>;
+  preferences?: UserPreferences;
+}> => {
+  if (!body || typeof body !== "object") {
+    return { valid: false, error: "Request body must be an object" };
+  }
+  const casted = body as Record<string, unknown>;
+
+  if (
+    !casted.activities ||
+    typeof casted.activities !== "object" ||
+    Array.isArray(casted.activities)
+  ) {
+    return { valid: false, error: "activities must be a non-array object" };
+  }
+  if (
+    !casted.categories ||
+    typeof casted.categories !== "object" ||
+    Array.isArray(casted.categories)
+  ) {
+    return { valid: false, error: "categories must be a non-array object" };
+  }
+
+  // Validate and sanitize each activity
+  const activityEntries = Object.entries(
+    casted.activities as Record<string, unknown>
+  );
+  const sanitizedActivities: Record<string, ActivityRecord> = {};
+  for (const [key, activity] of activityEntries) {
+    const result = validateActivityRecord(activity);
+    if (!result.valid) {
+      return { valid: false, error: `Activity "${key}": ${result.error}` };
+    }
+    sanitizedActivities[key] = result.data!;
+  }
+
+  // Validate and sanitize each category
+  const categoryEntries = Object.entries(
+    casted.categories as Record<string, unknown>
+  );
+  const sanitizedCategories: Record<string, Category> = {};
+  for (const [key, category] of categoryEntries) {
+    const result = validateCategory(category);
+    if (!result.valid) {
+      return { valid: false, error: `Category "${key}": ${result.error}` };
+    }
+    sanitizedCategories[key] = result.data!;
+  }
+
+  // Validate preferences if present
+  let sanitizedPreferences: UserPreferences | undefined;
+  if (casted.preferences !== undefined) {
+    const prefsResult = validatePreferences(casted.preferences);
+    if (!prefsResult.valid) {
+      return { valid: false, error: `Preferences: ${prefsResult.error}` };
+    }
+    sanitizedPreferences = prefsResult.data;
+  }
+
+  return {
+    valid: true,
+    data: {
+      activities: sanitizedActivities,
+      categories: sanitizedCategories,
+      ...(sanitizedPreferences !== undefined && {
+        preferences: sanitizedPreferences,
+      }),
     },
   };
 };

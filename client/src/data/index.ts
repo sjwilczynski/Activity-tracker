@@ -1,7 +1,7 @@
 export {
   useActivities,
   useActivitiesWithLimit,
-  useExportActivities,
+  useExportUserData,
   useIsFetchingActivities,
 } from "./hooks/activities/useActivities";
 export {
@@ -12,6 +12,7 @@ export {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
   categoriesQueryOptions,
+  preferencesQueryOptions,
 } from "./queryOptions";
 export * from "./types";
 export * from "./utils/transforms";

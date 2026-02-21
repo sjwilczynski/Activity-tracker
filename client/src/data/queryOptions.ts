@@ -5,11 +5,14 @@ import {
   getActivitiesQueryId,
   getActivitiesQueryIdWithLimit,
   getCategoriesQueryId,
+  getPreferencesQueryId,
+  preferencesApiPath,
 } from "./react-query-config/query-constants";
 import type {
-  ActivityRecordFromQuery,
+  ActivityRecordWithId,
   ActivityRecordWithIdServer,
   Category,
+  UserPreferences,
 } from "./types";
 
 type GetAuthToken = () => Promise<string>;
@@ -17,7 +20,7 @@ type GetAuthToken = () => Promise<string>;
 const fetchActivities = async (
   getAuthToken: GetAuthToken,
   limit?: number
-): Promise<ActivityRecordFromQuery[]> => {
+): Promise<ActivityRecordWithId[]> => {
   const token = await getAuthToken();
 
   const url = new URL(activitiesApiPath, window.location.origin);
@@ -79,4 +82,33 @@ export const categoriesQueryOptions = (getAuthToken: GetAuthToken) =>
   queryOptions({
     queryKey: [...getCategoriesQueryId],
     queryFn: () => fetchCategories(getAuthToken),
+  });
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  groupByCategory: true,
+  funAnimations: true,
+  isLightTheme: true,
+};
+
+const fetchPreferences = async (
+  getAuthToken: GetAuthToken
+): Promise<UserPreferences> => {
+  const token = await getAuthToken();
+  const response = await fetch(preferencesApiPath, {
+    method: "GET",
+    headers: { "x-auth-token": token },
+  });
+
+  if (!response.ok) {
+    return DEFAULT_PREFERENCES;
+  }
+
+  return (await response.json()) as UserPreferences;
+};
+
+export const preferencesQueryOptions = (getAuthToken: GetAuthToken) =>
+  queryOptions({
+    queryKey: [...getPreferencesQueryId],
+    queryFn: () => fetchPreferences(getAuthToken),
+    staleTime: Infinity,
   });

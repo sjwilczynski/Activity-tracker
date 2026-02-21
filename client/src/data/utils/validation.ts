@@ -1,18 +1,56 @@
 import { isMatch } from "date-fns";
-import type { ActivityRecordServer } from "../types";
+import type { ActivityRecordServer, UserPreferences } from "../types";
 
-export const areActivitiesValid = (
+type ImportCategory = {
+  name: string;
+  active: boolean;
+  description: string;
+  activityNames: string[];
+};
+
+type ImportData = {
+  activities: Record<string, ActivityRecordServer>;
+  categories: Record<string, ImportCategory>;
+  preferences?: UserPreferences;
+};
+
+export const isImportDataValid = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activityRecords: any
-): activityRecords is ActivityRecordServer[] => {
+  data: any,
+): data is ImportData => {
+  if (!data || typeof data !== "object") {
+    return false;
+  }
+
+  const { activities, categories } = data;
+
   if (
-    !activityRecords ||
-    !activityRecords.length ||
-    activityRecords.length === 0
+    !activities ||
+    typeof activities !== "object" ||
+    Object.keys(activities).length === 0
   ) {
     return false;
   }
-  return activityRecords.every(isActivityValid);
+
+  if (!categories || typeof categories !== "object") {
+    return false;
+  }
+
+  if (
+    !Object.values(activities).every((a) => isActivityValid(a as unknown))
+  ) {
+    return false;
+  }
+
+  if (!Object.values(categories).every((c) => isCategoryValid(c as unknown))) {
+    return false;
+  }
+
+  if (data.preferences !== undefined && !isPreferencesValid(data.preferences)) {
+    return false;
+  }
+
+  return true;
 };
 
 const isActivityValid = (
@@ -42,4 +80,27 @@ const isActivityValid = (
 
 const isValidName = (name: string): boolean => {
   return Boolean(name);
+};
+
+const isCategoryValid = (category: unknown): category is ImportCategory => {
+  if (category == null) return false;
+  const c = category as ImportCategory;
+  return (
+    typeof c.name === "string" &&
+    isValidName(c.name) &&
+    typeof c.active === "boolean" &&
+    typeof c.description === "string" &&
+    Array.isArray(c.activityNames) &&
+    c.activityNames.every((n) => typeof n === "string")
+  );
+};
+
+const isPreferencesValid = (prefs: unknown): prefs is UserPreferences => {
+  if (prefs == null || typeof prefs !== "object") return false;
+  const p = prefs as UserPreferences;
+  return (
+    typeof p.groupByCategory === "boolean" &&
+    typeof p.funAnimations === "boolean" &&
+    typeof p.isLightTheme === "boolean"
+  );
 };

@@ -33,6 +33,12 @@ class TestContext {
       });
     }
   }
+
+  async invalidateCategories() {
+    if (this._queryClient) {
+      await this._queryClient.invalidateQueries({ queryKey: ["categories"] });
+    }
+  }
 }
 
 export const testContext = new TestContext();

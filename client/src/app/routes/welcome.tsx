@@ -21,17 +21,17 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
-  if (intent === "add") {
-    const activities = JSON.parse(formData.get("activities") as string);
+  if (intent === "import") {
+    const importData = JSON.parse(formData.get("importData") as string);
     const token = await getAuthToken();
 
-    const response = await fetch("/api/activities", {
+    const response = await fetch("/api/import", {
       method: "POST",
       headers: {
         "x-auth-token": token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(activities),
+      body: JSON.stringify(importData),
     });
 
     if (!response.ok) {
@@ -40,6 +40,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
     await queryClient.invalidateQueries({ queryKey: ["activities"] });
     await queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] });
+    await queryClient.invalidateQueries({ queryKey: ["categories"] });
+    await queryClient.invalidateQueries({ queryKey: ["preferences"] });
 
     return { ok: true };
   }

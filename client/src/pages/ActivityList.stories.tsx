@@ -300,7 +300,14 @@ export const ExportActivities: Story = {
     expect(exportButton).toBeEnabled();
 
     await userEvent.click(exportButton);
-    expect(exportButton).toBeInTheDocument();
+
+    // Focus should remain on the export button after export completes
+    await waitFor(() => {
+      expect(exportButton).not.toHaveAttribute("aria-disabled", "true");
+    });
+    await waitFor(() => {
+      expect(exportButton).toHaveFocus();
+    });
   },
 };
 
@@ -314,15 +321,13 @@ export const UploadDialogInteraction: Story = {
       await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/activities upload/i)).toBeInTheDocument();
+        expect(screen.getByText(/import data/i)).toBeInTheDocument();
       });
 
       await userEvent.click(screen.getByRole("button", { name: /close/i }));
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/activities upload/i)
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
       });
     });
   },
@@ -336,7 +341,7 @@ export const FileUploadFileTooLarge: Story = {
 
     await step("Open upload dialog", async () => {
       await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
-      await screen.findByText(/activities upload/i);
+      await screen.findByText(/import data/i);
     });
 
     await step("Upload file larger than 1MB and verify error", async () => {
@@ -365,7 +370,7 @@ export const FileUploadInvalidFormat: Story = {
 
     await step("Open upload dialog", async () => {
       await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
-      await screen.findByText(/activities upload/i);
+      await screen.findByText(/import data/i);
     });
 
     await step("Upload non-JSON file and verify error", async () => {
@@ -432,13 +437,11 @@ export const KeyboardFocusRestoration: Story = {
         expect(uploadButton).toHaveFocus();
 
         await userEvent.keyboard("{Enter}");
-        await screen.findByText(/activities upload/i);
+        await screen.findByText(/import data/i);
 
         await userEvent.keyboard("{Escape}");
         await waitFor(() => {
-          expect(
-            screen.queryByText(/activities upload/i)
-          ).not.toBeInTheDocument();
+          expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
         });
 
         await waitFor(() => {
