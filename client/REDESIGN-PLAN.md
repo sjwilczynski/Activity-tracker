@@ -256,8 +256,8 @@ type Category = {
 
 #### Separate follow-up PR: Onboarding flow
 
-- [ ] **Onboarding screen**: shown on first login when user has no categories. Displays default category/activity list with checkboxes. User picks their categories → seeds their account
-- [ ] This is a purely frontend feature using the `POST /api/user/init` or category creation endpoints from PR 1
+- [x] **Onboarding card**: non-blocking card on Welcome page when user has no categories. Displays default categories with expandable activity lists and checkboxes. User picks categories → seeds via `POST /api/categories` per category. Skip dismisses for the session.
+- [x] This is a purely frontend feature using the `POST /api/categories` endpoint
 
 ---
 
