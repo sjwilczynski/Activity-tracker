@@ -28,6 +28,8 @@ activities_list = [
 ]
 probabilities = [0.2, 0.03, 0.1, 0.08, 0.15, 0.08, 0.05, 0.1, 0.05, 0.06, 0.1]
 
+np.random.seed(42)
+
 date = datetime.datetime(2019, 1, 1)
 end_date = datetime.datetime.now()
 activities = {}

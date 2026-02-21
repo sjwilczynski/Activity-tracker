@@ -482,6 +482,17 @@ describe("validateCategory", () => {
     }
   });
 
+  it("rejects duplicate activity names (case-insensitive)", () => {
+    const result = validateCategory({
+      ...validCategory,
+      activityNames: ["Running", "Swimming", "running"],
+    });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.error).toContain('Duplicate activity name "running"');
+    }
+  });
+
   it("rejects description exceeding max length", () => {
     const longDesc = "a".repeat(LIMITS.DESCRIPTION_MAX + 1);
     expect(

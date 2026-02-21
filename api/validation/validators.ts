@@ -242,6 +242,7 @@ export const validateCategory = (
   }
 
   const validatedNames: string[] = [];
+  const seenNames = new Set<string>();
   for (let i = 0; i < casted.activityNames.length; i++) {
     const result = validateActivityNameInCategory(casted.activityNames[i]);
     if (!result.valid) {
@@ -250,6 +251,14 @@ export const validateCategory = (
         error: `Activity name at index ${i}: ${result.error}`,
       };
     }
+    const normalized = casted.activityNames[i].trim().toLowerCase();
+    if (seenNames.has(normalized)) {
+      return {
+        valid: false,
+        error: `Duplicate activity name "${casted.activityNames[i]}" at index ${i}`,
+      };
+    }
+    seenNames.add(normalized);
     validatedNames.push(casted.activityNames[i]);
   }
 

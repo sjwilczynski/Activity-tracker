@@ -219,6 +219,7 @@ type Category = {
 - [ ] **User preferences** (`GET/PUT /api/user-preferences`): `{ groupByCategory: boolean }`. Persists to `/users/{userId}/preferences`
 - [ ] **Client: export** — `useExportUserData` calls `GET /api/export`, downloads full JSON
 - [ ] **Client: import** — `FileUploadForm` accepts full user data format (backward compat with activities-only)
+- [ ] **Category deletion handling**: when deleting a category, show dialog asking user to either (A) delete all activities linked to that category, or (B) reassign them to a different category. Needs API endpoint for bulk reassign (`POST /api/activities/reassign-category`: `{ fromCategoryId, toCategoryId }`)
 - [ ] **Client: bulk ops** — enable rename button + category select in `ActivityNamesTab.tsx`, wire to new intents in `settings.tsx`
 - [ ] **Client: preferences** — `StylesProvider.tsx` loads `groupByCategory` from API, persists via PUT. New `useUserPreferences` hook
 - [ ] **Tests**: endpoint tests, update existing stories
