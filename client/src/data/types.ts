@@ -55,3 +55,9 @@ export type ActivitySummary = {
 export type ActivitySummaries = {
   [key: string]: ActivitySummary;
 };
+
+export type UserPreferences = {
+  groupByCategory: boolean;
+  funAnimations: boolean;
+  isLightTheme: boolean;
+};

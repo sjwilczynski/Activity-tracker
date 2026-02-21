@@ -1,15 +1,11 @@
-import { useIsFetching, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useIsFetching, useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
 } from "../../queryOptions";
 import { getActivitiesQueryId } from "../../react-query-config/query-constants";
-import type {
-  ActivityRecordFromQuery,
-  ActivityRecordWithId,
-  Category,
-} from "../../types";
+import type { ActivityRecordFromQuery, ActivityRecordWithId, Category } from "../../types";
 import { useCategories } from "../categories/useCategories";
 import { useRequestConfig } from "../useRequestConfig";
 
@@ -63,19 +59,21 @@ export const useActivitiesWithLimit = () => {
   };
 };
 
-export const useExportActivities = (): (() => string) => {
-  const client = useQueryClient();
+export const useExportUserData = () => {
+  const getConfig = useRequestConfig();
 
-  return useCallback(() => {
-    const activities = client
-      .getQueryData<ActivityRecordFromQuery[]>([...getActivitiesQueryId])
-      ?.map((activityRecord) => ({
-        date: activityRecord.date.toLocaleDateString("en-CA"),
-        name: activityRecord.name,
-        categoryId: activityRecord.categoryId,
-      }));
-    return JSON.stringify(activities);
-  }, [client]);
+  return useCallback(async (): Promise<string> => {
+    const config = await getConfig();
+    const response = await fetch("/api/export", {
+      method: "GET",
+      headers: { "x-auth-token": config["x-auth-token"] },
+    });
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.status}`);
+    }
+    const data = await response.json();
+    return JSON.stringify(data, null, 2);
+  }, [getConfig]);
 };
 
 export const useIsFetchingActivities = () => {

@@ -3,3 +3,5 @@ export const getActivitiesQueryIdWithLimit = ["activitiesWithLimit"] as const;
 export const activitiesApiPath = "/api/activities";
 export const getCategoriesQueryId = ["categories"] as const;
 export const categoriesApiPath = "api/categories";
+export const getPreferencesQueryId = ["preferences"] as const;
+export const preferencesApiPath = "/api/preferences";

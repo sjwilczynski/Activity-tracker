@@ -1,21 +1,25 @@
 import { Download } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 type Props = {
   disabled?: boolean;
-  exportFile: () => string;
+  exportFile: () => Promise<string>;
   filename?: string;
 };
 
 export const ExportButton = ({
   disabled = false,
   exportFile,
-  filename = "activities.json",
+  filename = "activity-tracker-export.json",
 }: Props) => {
-  const handleExport = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
     try {
-      const jsonData = exportFile();
+      const jsonData = await exportFile();
       const blob = new Blob([jsonData], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -28,6 +32,8 @@ export const ExportButton = ({
     } catch (error) {
       console.error("Error downloading file:", error);
       toast.error(`Failed to export ${filename}`);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -35,11 +41,13 @@ export const ExportButton = ({
     <Button
       variant="outline"
       className="flex-1 sm:flex-none"
-      disabled={disabled}
+      disabled={disabled || isExporting}
       onClick={handleExport}
     >
       <Download className="size-4 sm:mr-2" />
-      <span className="hidden sm:inline">Export</span>
+      <span className="hidden sm:inline">
+        {isExporting ? "Exporting..." : "Export"}
+      </span>
     </Button>
   );
 };

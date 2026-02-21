@@ -1,6 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Provider } from "jotai";
 import { useEffect, useState } from "react";
 import { Outlet, redirect, useNavigate } from "react-router";
 import { AuthContext, type User } from "../../auth/AuthContext";
@@ -58,23 +57,21 @@ export default function Layout() {
   // If we get here, user is authenticated (loader redirects otherwise)
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider>
-        <StylesProvider>
-          <AuthStateProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset className="bg-transparent">
-                <MobileHeader />
-                <PagesContainer>
-                  <Outlet />
-                </PagesContainer>
-              </SidebarInset>
-            </SidebarProvider>
-          </AuthStateProvider>
-          <Toaster />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </StylesProvider>
-      </Provider>
+      <StylesProvider>
+        <AuthStateProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="bg-transparent">
+              <MobileHeader />
+              <PagesContainer>
+                <Outlet />
+              </PagesContainer>
+            </SidebarInset>
+          </SidebarProvider>
+        </AuthStateProvider>
+        <Toaster />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </StylesProvider>
     </QueryClientProvider>
   );
 }

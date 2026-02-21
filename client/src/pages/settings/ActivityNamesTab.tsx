@@ -1,6 +1,7 @@
 import { Pencil } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { useMemo, useState } from "react";
+import { Link, useFetcher } from "react-router";
+import { toast } from "sonner";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -154,19 +155,24 @@ type ActivityNameRowProps = {
 };
 
 function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
-  // TODO: CP8 — needs a bulk assign endpoint (POST /api/activities/assign-category)
-  // Currently disabled: multiple fetcher.submit() calls cancel each other
-  const handleAssignCategory = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_newCategoryId: string) => {
-      console.warn(
-        `Category assignment for "${name}" requires bulk API — coming in CP8`
-      );
-    },
-    [name]
-  );
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
 
-  return handleAssignCategory;
+  const handleAssignCategory = (newCategoryId: string) => {
+    fetcher.submit(
+      {
+        intent: "assign-category",
+        activityName: name,
+        categoryId: newCategoryId === "none" ? "" : newCategoryId,
+      },
+      { method: "post" },
+    );
+  };
+
+  if (fetcher.state === "idle" && fetcher.data?.error) {
+    toast.error(`Failed to assign category for "${name}"`);
+  }
+
+  return { handleAssignCategory, isPending: fetcher.state !== "idle" };
 }
 
 function CategorySelect({
@@ -209,7 +215,7 @@ function ActivityNameRow({
   categoryId,
   categories,
 }: ActivityNameRowProps) {
-  const handleAssignCategory = useAssignCategory({ name });
+  const { handleAssignCategory, isPending } = useAssignCategory({ name });
 
   return (
     <TableRow>
@@ -221,7 +227,7 @@ function ActivityNameRow({
           categories={categories}
           onValueChange={handleAssignCategory}
           className="w-[180px]"
-          disabled
+          disabled={isPending}
         />
       </TableCell>
       <TableCell className="text-right">
@@ -237,7 +243,7 @@ function ActivityNameCard({
   categoryId,
   categories,
 }: ActivityNameRowProps) {
-  const handleAssignCategory = useAssignCategory({ name });
+  const { handleAssignCategory, isPending } = useAssignCategory({ name });
 
   return (
     <div className="rounded-md border p-3 space-y-2">
@@ -253,7 +259,7 @@ function ActivityNameCard({
         categories={categories}
         onValueChange={handleAssignCategory}
         className="w-full"
-        disabled
+        disabled={isPending}
       />
     </div>
   );
@@ -261,11 +267,30 @@ function ActivityNameCard({
 
 function EditActivityNameButton({ activityName }: { activityName: string }) {
   const [newName, setNewName] = useState(activityName);
+  const [open, setOpen] = useState(false);
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isPending = fetcher.state !== "idle";
+
+  const isValid = newName.trim().length > 0 && newName.trim() !== activityName;
+
+  const handleSubmit = () => {
+    fetcher.submit(
+      {
+        intent: "rename-activity",
+        oldName: activityName,
+        newName: newName.trim(),
+      },
+      { method: "post" },
+    );
+    setOpen(false);
+  };
 
   return (
     <Dialog
-      onOpenChange={(open) => {
-        if (open) setNewName(activityName);
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (isOpen) setNewName(activityName);
       }}
     >
       <DialogTrigger asChild>
@@ -295,17 +320,19 @@ function EditActivityNameButton({ activityName }: { activityName: string }) {
               id={`edit-name-${activityName}`}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && isValid) handleSubmit();
+              }}
             />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Bulk rename requires a new API endpoint — coming soon.
-          </p>
         </div>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button disabled>Update Name</Button>
+          <Button disabled={!isValid || isPending} onClick={handleSubmit}>
+            {isPending ? "Updating..." : "Update Name"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

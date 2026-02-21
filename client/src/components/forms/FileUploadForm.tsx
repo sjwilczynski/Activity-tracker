@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
-import { areActivitiesValid } from "../../data";
+import { isImportDataValid } from "../../data";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 import { Button } from "../ui/button";
 import { FileInput, getErrorMessage } from "./adapters";
@@ -24,20 +24,20 @@ export function FileUploadForm() {
       reader.onloadend = () => {
         const { result } = reader;
         if (typeof result === "string") {
-          const activities = JSON.parse(result);
-          if (areActivitiesValid(activities)) {
+          const data = JSON.parse(result);
+          if (isImportDataValid(data)) {
             fetcher.submit(
               {
-                intent: "add",
-                activities: JSON.stringify(activities),
+                intent: "import",
+                importData: JSON.stringify(data),
               },
-              { method: "post", action: "/welcome" }
+              { method: "post" },
             );
           } else {
             form.setFieldMeta("file", (meta) => ({
               ...meta,
               errors: [
-                "The specified json doesn't contain activities in proper format",
+                "Invalid format. Expected JSON with activities, categories, and optional preferences.",
               ],
             }));
           }

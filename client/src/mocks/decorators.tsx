@@ -1,6 +1,5 @@
 import type { Decorator } from "@storybook/react-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Provider } from "jotai";
 import { withRouter } from "storybook-addon-remix-react-router";
 import { AuthContext, type Auth, type User } from "../auth/AuthContext";
 import { StylesProvider } from "../components/styles/StylesProvider";
@@ -46,14 +45,12 @@ export const withAllProviders: Decorator = (Story, context) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider>
-        <StylesProvider>
-          <AuthContext.Provider value={createMockAuthContext(user)}>
-            <Story />
-            <Toaster />
-          </AuthContext.Provider>
-        </StylesProvider>
-      </Provider>
+      <StylesProvider>
+        <AuthContext.Provider value={createMockAuthContext(user)}>
+          <Story />
+          <Toaster />
+        </AuthContext.Provider>
+      </StylesProvider>
     </QueryClientProvider>
   );
 };

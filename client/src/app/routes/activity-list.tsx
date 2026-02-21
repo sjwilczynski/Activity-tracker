@@ -62,12 +62,29 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
+  } else if (intent === "import") {
+    const importData = JSON.parse(formData.get("importData") as string);
+
+    const response = await fetch("/api/import", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(importData),
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
   } else {
     return { error: "Unknown intent" };
   }
 
   await queryClient.invalidateQueries({ queryKey: ["activities"] });
   await queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] });
+  await queryClient.invalidateQueries({ queryKey: ["categories"] });
+  await queryClient.invalidateQueries({ queryKey: ["preferences"] });
 
   return { ok: true };
 }

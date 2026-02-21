@@ -1,25 +1,20 @@
-import { atom, useAtom, useAtomValue } from "jotai";
 import { useCallback, useEffect, type ReactNode } from "react";
+import {
+  useFunAnimations,
+  useGroupByCategory,
+  useIsLightTheme,
+  useSetIsLightTheme,
+} from "../../data/hooks/preferences/useUserPreferences";
 
 type Props = {
   children: ReactNode;
 };
 
-const isLightThemeAtom = atom(true);
-const themeAtom = atom(
-  (get) => get(isLightThemeAtom),
-  (get, set) => set(isLightThemeAtom, !get(isLightThemeAtom))
-);
-export const useIsLightTheme = () => useAtomValue(themeAtom);
-
-const groupByCategoryAtom = atom(true);
-export const useGroupByCategory = () => useAtom(groupByCategoryAtom);
-
-const funAnimationsAtom = atom(true);
-export const useFunAnimations = () => useAtom(funAnimationsAtom);
+export { useFunAnimations, useGroupByCategory, useIsLightTheme };
 
 export function useThemeToggleWithTransition() {
-  const [isLightTheme, toggleTheme] = useAtom(themeAtom);
+  const isLightTheme = useIsLightTheme();
+  const setIsLightTheme = useSetIsLightTheme();
 
   const toggle = useCallback(() => {
     const supportsViewTransition =
@@ -29,7 +24,7 @@ export function useThemeToggleWithTransition() {
     ).matches;
 
     if (!supportsViewTransition || prefersReducedMotion) {
-      toggleTheme();
+      setIsLightTheme(!isLightTheme);
       return;
     }
 
@@ -48,13 +43,13 @@ export function useThemeToggleWithTransition() {
       } else {
         root.classList.remove("dark");
       }
-      toggleTheme();
+      setIsLightTheme(!isLightTheme);
     });
 
     transition.finished.finally(() => {
       document.documentElement.classList.remove("theme-transitioning");
     });
-  }, [isLightTheme, toggleTheme]);
+  }, [isLightTheme, setIsLightTheme]);
 
   return [isLightTheme, toggle] as const;
 }

@@ -16,7 +16,7 @@ import {
   filterByDateRange,
   sortDescendingByDate,
   useActivities,
-  useExportActivities,
+  useExportUserData,
   useIsFetchingActivities,
 } from "../data";
 
@@ -26,7 +26,7 @@ export const ActivityList = () => {
   const [dateRange, setDateRange] = useDateRangeState();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const exportActivities = useExportActivities();
+  const exportUserData = useExportUserData();
   const isFetchingActivities = useIsFetchingActivities();
 
   if (isLoading) {
@@ -89,7 +89,7 @@ export const ActivityList = () => {
           {hasData && (
             <ExportButton
               disabled={isFetchingActivities}
-              exportFile={exportActivities}
+              exportFile={exportUserData}
             />
           )}
           <UploadButton />
