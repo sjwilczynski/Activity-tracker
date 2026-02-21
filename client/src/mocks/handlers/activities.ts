@@ -2,6 +2,7 @@ import { delay, http, HttpResponse } from "msw";
 import type {
   ActivityRecordServer,
   ActivityRecordWithIdServer,
+  Category,
 } from "../../data/types";
 import { createMockActivity, mockActivities } from "../data/activities";
 import { mockCategories } from "../data/categories";
@@ -24,15 +25,13 @@ export const activityHandlers = [
       activitiesMap[id] = rest;
     }
 
-    const categoriesMap: Record<
-      string,
-      Omit<(typeof mockCategories)[0], "id">
-    > = {};
+    const categoriesMap: Record<string, Omit<Category, "id">> = {};
     for (const category of mockCategories) {
       const { id, ...rest } = category;
       categoriesMap[id] = rest;
     }
 
+    // Preferences are hardcoded for tests — not synchronized with preferencesHandlers
     return HttpResponse.json({
       activities: activitiesMap,
       categories: categoriesMap,

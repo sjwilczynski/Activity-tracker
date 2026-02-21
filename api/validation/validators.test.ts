@@ -772,6 +772,17 @@ describe("validateImportData", () => {
     });
   });
 
+  it("rejects array inputs for activities and categories", () => {
+    expect(validateImportData({ activities: [], categories: {} })).toEqual({
+      valid: false,
+      error: "activities must be a non-array object",
+    });
+    expect(validateImportData({ activities: {}, categories: [] })).toEqual({
+      valid: false,
+      error: "categories must be a non-array object",
+    });
+  });
+
   it("rejects invalid activity in data", () => {
     const result = validateImportData({
       activities: {

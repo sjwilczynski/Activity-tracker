@@ -426,7 +426,14 @@ function DeleteCategoryButton({
   };
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={(open) => {
+        if (open) {
+          setAction("delete");
+          setTargetCategoryId(otherCategories[0]?.id ?? "");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"

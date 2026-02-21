@@ -285,7 +285,7 @@ export const validateCategory = (
 export const validateRenameBody = (
   body: unknown
 ): ValidationResultWithData<{ oldName: string; newName: string }> => {
-  if (!body || typeof body !== "object") {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
   const casted = body as Record<string, unknown>;
@@ -314,7 +314,7 @@ export const validateRenameBody = (
 export const validateAssignCategoryBody = (
   body: unknown
 ): ValidationResultWithData<{ activityName: string; categoryId: string }> => {
-  if (!body || typeof body !== "object") {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
   const casted = body as Record<string, unknown>;
@@ -343,7 +343,7 @@ export const validateReassignCategoryBody = (
   fromCategoryId: string;
   toCategoryId: string;
 }> => {
-  if (!body || typeof body !== "object") {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
   const casted = body as Record<string, unknown>;
@@ -378,7 +378,7 @@ export const validateReassignCategoryBody = (
 export const validateDeleteByCategoryBody = (
   body: unknown
 ): ValidationResultWithData<{ categoryId: string }> => {
-  if (!body || typeof body !== "object") {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
   const casted = body as Record<string, unknown>;
@@ -397,7 +397,7 @@ export const validateDeleteByCategoryBody = (
 export const validatePreferences = (
   body: unknown
 ): ValidationResultWithData<UserPreferences> => {
-  if (!body || typeof body !== "object") {
+  if (!body || Array.isArray(body) || typeof body !== "object") {
     return { valid: false, error: "Request body must be an object" };
   }
   const casted = body as Record<string, unknown>;

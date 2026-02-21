@@ -82,6 +82,12 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     });
 
     if (!catResponse.ok) {
+      // Activities were already deleted — invalidate so UI reflects actual state
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
+        queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] }),
+      ]);
       return {
         error: `Activities deleted but failed to delete category (status: ${catResponse.status})`,
       };
@@ -116,6 +122,12 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     });
 
     if (!catResponse.ok) {
+      // Activities were already reassigned — invalidate so UI reflects actual state
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
+        queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] }),
+      ]);
       return {
         error: `Activities reassigned but failed to delete category (status: ${catResponse.status})`,
       };
