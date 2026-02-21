@@ -1,9 +1,11 @@
 import { format, subDays } from "date-fns";
 import { Activity, Calendar, CalendarDays, Clock } from "lucide-react";
+import { useState } from "react";
 import { useAuth } from "../auth";
 import { AddActivityForm } from "../components/forms/AddActivityForm/AddActivityForm";
 import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWithDetailsDialog";
 import { IntensityBadge } from "../components/IntensityBadge";
+import { OnboardingCard } from "../components/OnboardingCard";
 import { Loading } from "../components/states/Loading";
 import {
   Card,
@@ -17,6 +19,7 @@ import {
   sortDescendingByDate,
   useActivities,
   useActivitiesWithLimit,
+  useCategories,
 } from "../data";
 import { getActivityColor } from "../utils/colors";
 
@@ -82,6 +85,8 @@ export const Welcome = () => {
   const { user } = useAuth();
   const { data: limitedData, isLoading } = useActivitiesWithLimit();
   const { data: allData } = useActivities();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const [onboardingSkipped, setOnboardingSkipped] = useState(false);
   const lastActivity = limitedData
     ? sortDescendingByDate([...limitedData])[0]
     : undefined;
@@ -91,24 +96,39 @@ export const Welcome = () => {
 
   const statCards = useStatCards(allData);
 
-  if (isLoading) {
+  if (isLoading || categoriesLoading) {
     return <Loading />;
+  }
+
+  const showOnboarding =
+    !onboardingSkipped && categories !== undefined && categories.length === 0;
+
+  const header = (
+    <div>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary tabular-nums">
+        {format(new Date(), "EEEE, MMM d")}
+      </p>
+      <h1 className="text-2xl sm:text-3xl font-bold heading-gradient mt-1">
+        Welcome{user?.displayName ? `, ${user.displayName}` : ""}
+      </h1>
+      <p className="text-muted-foreground mt-1">
+        Track your activities and stay healthy
+      </p>
+    </div>
+  );
+
+  if (showOnboarding) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        {header}
+        <OnboardingCard onSkip={() => setOnboardingSkipped(true)} />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Page Header */}
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary tabular-nums">
-          {format(new Date(), "EEEE, MMM d")}
-        </p>
-        <h1 className="text-2xl sm:text-3xl font-bold heading-gradient mt-1">
-          Welcome{user?.displayName ? `, ${user.displayName}` : ""}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Track your activities and stay healthy
-        </p>
-      </div>
+      {header}
 
       {/* Stat Cards */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">

@@ -67,7 +67,10 @@ export const Loading: Story = {
 export const NoActivities: Story = {
   parameters: {
     msw: {
-      handlers: [http.get("*/api/activities", () => HttpResponse.json([]))],
+      handlers: [
+        http.get("*/api/activities", () => HttpResponse.json([])),
+        ...defaultHandlers,
+      ],
     },
   },
   play: async ({ canvasElement }) => {
@@ -130,6 +133,7 @@ export const WithLastActivity: Story = {
             },
           ]);
         }),
+        ...defaultHandlers,
       ],
     },
   },

@@ -31,16 +31,18 @@ export async function clientLoader() {
 function AuthStateProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(authService.getUser());
+  const { queryClient } = getLoadContext();
 
   useEffect(() => {
     return authService.onAuthStateChanged((newUser) => {
       setUser(newUser);
-      // If user signs out, redirect to login
+      // If user signs out, clear cached data and redirect to login
       if (!newUser) {
+        queryClient.clear();
         navigate("/login", { replace: true });
       }
     });
-  }, [navigate]);
+  }, [navigate, queryClient]);
 
   const authContextValue = {
     signOut: () => authService.signOut(),

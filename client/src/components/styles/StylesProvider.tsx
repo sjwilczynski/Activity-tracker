@@ -1,8 +1,9 @@
-import { useCallback, useEffect, type ReactNode } from "react";
+import { QueryClientContext } from "@tanstack/react-query";
+import { useCallback, useContext, useEffect, type ReactNode } from "react";
 import {
   useFunAnimations,
   useGroupByCategory,
-  useIsLightTheme,
+  useIsLightTheme as useIsLightThemeFromQuery,
   useSetIsLightTheme,
 } from "../../data/hooks/preferences/useUserPreferences";
 
@@ -10,7 +11,20 @@ type Props = {
   children: ReactNode;
 };
 
-export { useFunAnimations, useGroupByCategory, useIsLightTheme };
+export { useFunAnimations, useGroupByCategory };
+
+/**
+ * Safe wrapper that falls back to reading the DOM class when QueryClientProvider
+ * is unavailable (e.g. during sign-out route transition).
+ */
+export function useIsLightTheme(): boolean {
+  const queryClient = useContext(QueryClientContext);
+  if (!queryClient) {
+    return !document.documentElement.classList.contains("dark");
+  }
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- only called when queryClient is stable (present for entire authenticated session)
+  return useIsLightThemeFromQuery();
+}
 
 export function useThemeToggleWithTransition() {
   const isLightTheme = useIsLightTheme();
