@@ -186,6 +186,109 @@ export const SubmitServerError: Story = {
   },
 };
 
+export const AddWithDetailsInteraction: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    await step("Open the Add with Details dialog", async () => {
+      await userEvent.click(
+        canvas.getByRole("button", { name: /add with details/i })
+      );
+      await waitFor(() => {
+        expect(
+          screen.getByRole("heading", { name: /log activity with details/i })
+        ).toBeInTheDocument();
+      });
+    });
+
+    await step("Fill in the date", async () => {
+      // There are two Date labels on the page (quick form + dialog).
+      // The dialog one is the last one rendered in the portal.
+      const dateInputs = screen.getAllByLabelText("Date");
+      const dateInput = dateInputs[dateInputs.length - 1];
+      await userEvent.clear(dateInput);
+      await userEvent.type(dateInput, "2024-02-10");
+    });
+
+    await step("Select an activity", async () => {
+      const combobox = screen.getByRole("combobox", {
+        name: /activity name/i,
+      });
+      await userEvent.click(combobox);
+      const searchInput = await screen.findByPlaceholderText(
+        /search activities/i
+      );
+      await userEvent.type(searchInput, "Running");
+      const option = await screen.findByRole("option", {
+        name: /running/i,
+      });
+      await userEvent.click(option);
+    });
+
+    await step("Select intensity Low", async () => {
+      const intensityTrigger = screen.getByRole("combobox", {
+        name: /intensity/i,
+      });
+      await userEvent.click(intensityTrigger);
+      const lowOption = await screen.findByRole("option", { name: /low/i });
+      await userEvent.click(lowOption);
+    });
+
+    await step("Fill time spent and description", async () => {
+      const timeInput = screen.getByLabelText("Time Spent");
+      await userEvent.type(timeInput, "30");
+
+      const descriptionInput = screen.getByLabelText("Description");
+      await userEvent.type(descriptionInput, "Test description");
+    });
+
+    await step("Submit and verify success", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /log activity/i })
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/activity logged successfully/i)
+        ).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("heading", { name: /log activity with details/i })
+        ).not.toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const RecentActivitiesShowDetails: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    // Running activity has intensity: "high" which maps to "Intense"
+    // IntensityBadge renders two spans (light + dark mode), so use getAllByText
+    const intenseBadges = canvas.getAllByText("Intense");
+    expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
+
+    // Running's timeSpent is 45
+    expect(canvas.getByText("• 45 min")).toBeInTheDocument();
+
+    // Running's description
+    expect(
+      canvas.getByText(/morning run in the park/i)
+    ).toBeInTheDocument();
+  },
+};
+
 export const FormResetAfterSubmit: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);

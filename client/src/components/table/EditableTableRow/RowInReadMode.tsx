@@ -6,6 +6,7 @@ import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
+import { IntensityBadge } from "../../IntensityBadge";
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 import { MobileActivityCard } from "./MobileActivityCard";
@@ -40,7 +41,7 @@ export const RowInReadMode = ({ record }: Props) => {
         { method: "post", action: "/activity-list" }
       );
     },
-    [record.id, fetcher.submit]
+    [record.id, fetcher]
   );
 
   return (
@@ -62,11 +63,24 @@ export const RowInReadMode = ({ record }: Props) => {
 
         <div className="flex-1 min-w-0">
           <p className="font-medium capitalize text-sm">{record.name}</p>
+          {record.description && (
+            <p className="text-xs text-muted-foreground line-clamp-1">
+              {record.description}
+            </p>
+          )}
         </div>
 
         <span className="text-sm text-muted-foreground shrink-0">
           {formatDate(record.date)}
         </span>
+
+        <span className="text-sm text-muted-foreground w-16 text-right hidden lg:block">
+          {record.timeSpent ? `${record.timeSpent} min` : ""}
+        </span>
+
+        <div className="w-20 hidden sm:flex justify-center">
+          {record.intensity && <IntensityBadge intensity={record.intensity} />}
+        </div>
 
         <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 [&_button]:size-8 [&_svg]:size-3.5!">
           <EditActivityButton record={record} disabled={isDeleting} />

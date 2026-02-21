@@ -25,7 +25,7 @@ export const useAddActivityFormSubmit = () => {
         { method: "post", action: "/welcome" }
       );
     },
-    [fetcher.submit]
+    [fetcher]
   );
 
   return { onSubmit, isError, isSuccess, isPending };

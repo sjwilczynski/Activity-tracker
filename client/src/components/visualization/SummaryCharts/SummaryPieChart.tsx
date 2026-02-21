@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Pie } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
 import { useIsMobile } from "../../../hooks/use-mobile";
+import { useChartColors } from "../../../utils/useChartColors";
 import { getFlatPieChartData, getPieChartData } from "../utils";
 
 type Props = {
@@ -22,6 +23,7 @@ export function SummaryPieChart({
     ? getPieChartData(activitySummaries, allSummaries, categoryOptions)
     : getFlatPieChartData(activitySummaries);
   const isMobile = useIsMobile();
+  const chartColors = useChartColors();
   const tooltipCallback = groupByCategory
     ? groupedTooltipCallback
     : flatTooltipCallback;
@@ -34,10 +36,13 @@ export function SummaryPieChart({
         legend: {
           display: !isMobile,
           position: "right",
+          labels: {
+            color: chartColors.foreground,
+          },
         },
       },
     }),
-    [isMobile, tooltipCallback]
+    [isMobile, tooltipCallback, chartColors.foreground]
   );
   return (
     <Pie

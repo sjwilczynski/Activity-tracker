@@ -3,6 +3,7 @@ import type { ActivityRecordWithId } from "../../../data";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
+import { IntensityBadge } from "../../IntensityBadge";
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 
@@ -31,10 +32,21 @@ export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
             {getActivityIcon(record.name)}
           </div>
           <div className="flex-1">
-            <p className="font-semibold capitalize">{record.name}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold capitalize">{record.name}</p>
+              {record.intensity && (
+                <IntensityBadge intensity={record.intensity} />
+              )}
+            </div>
             <p className="text-sm text-muted-foreground">
               {formatDate(record.date)}
+              {record.timeSpent ? ` • ${record.timeSpent} min` : ""}
             </p>
+            {record.description && (
+              <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                {record.description}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex gap-1">

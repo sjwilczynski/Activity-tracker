@@ -244,13 +244,15 @@ type Category = {
 
 #### PR 3: Frontend features (detail fields, Compare page)
 
-- [ ] **Add Activity with Details dialog**: "Add with Details" button on Dashboard → Dialog (date, activity name combobox, category, description textarea, intensity select, time spent input)
-- [ ] **Activity List detail columns**: show description/intensity/timeSpent in rows. Intensity as colored badge
-- [ ] **Edit dialog**: include all new fields in `EditActivityDialog.tsx`
-- [ ] **Color system**: verify category-based chart colors (`buildCategoryColorInfo()`) remain correct after backend linking
-- [ ] **Compare page** (`client/src/pages/Compare.tsx` + route): Month vs Year toggle, period selectors, metric cards, Chart.js line chart. "Compare" nav item with `GitCompare` icon in sidebar
-- [ ] **Stories**: Compare page, AddActivityForm with details, ActivityList with detail columns
-- [ ] **Verify**: `cd client && bun run test`, build clean, `bun run knip`
+- [x] **Add Activity with Details dialog**: "Add with Details" button on Dashboard → Dialog (date, activity name combobox, category, description textarea, intensity select, time spent input)
+- [x] **Activity List detail columns**: show description/intensity/timeSpent in rows. Intensity as colored badge
+- [x] **Edit dialog**: include all new fields in `EditActivityDialog.tsx`
+- [x] **Color system**: verify category-based chart colors (`buildCategoryColorInfo()`) remain correct after backend linking
+- [x] **Compare page** (`client/src/pages/Compare.tsx` + route): Month vs Year toggle, period selectors, metric cards, Chart.js line chart. "Compare" nav item with `GitCompare` icon in sidebar. URL-persisted periods via searchParams. Inactive-category activities filtered out.
+- [x] **Stories**: Compare page, AddActivityForm with details, ActivityList with detail columns
+- [x] **Verify**: `cd client && bun run test` (59 pass), lint clean, knip clean
+- [x] **Bug fixes**: restored `intent=add` handler in welcome route (PR2 regression), fixed Chart.js dark mode contrast with `useChartColors` hook
+- [x] **ESLint**: added `eslint-plugin-react` (recommended + jsx-runtime) and `eslint-plugin-react-hooks` (rules-of-hooks + exhaustive-deps as error)
 
 #### Separate follow-up PR: Onboarding flow
 
@@ -276,5 +278,6 @@ type Category = {
 - [ ] Audit other shadcn components (`tooltip.tsx`, `skeleton.tsx`, etc.) for unused exports
 - [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
 - [ ] Remove any knip exceptions that are no longer needed
+- [ ] Enable all `eslint-plugin-react-hooks` v7 recommended rules (currently only `rules-of-hooks` and `exhaustive-deps` are enabled). Investigate React Compiler adoption — v7 includes compiler-related lint rules (`purity`, `immutability`, `refs`, etc.) that enforce compiler-compatible patterns. Evaluate enabling them incrementally and assess whether adding `babel-plugin-react-compiler` / `react-compiler-runtime` is worthwhile for this project.
 - [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
 - [ ] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)

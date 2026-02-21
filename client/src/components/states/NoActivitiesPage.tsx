@@ -4,7 +4,7 @@ export const NoActivitiesPage = () => {
   return (
     <div className="text-base leading-8">
       <div>
-        You haven't added any activities yet, so there is no data to display 😟
+        You haven&apos;t added any activities yet, so there is no data to display 😟
       </div>
       <div>
         To start your journey go to{" "}

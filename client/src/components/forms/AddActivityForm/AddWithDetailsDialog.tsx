@@ -1,19 +1,14 @@
 import { useForm } from "@tanstack/react-form";
-import { Pencil } from "lucide-react";
-import { useEffect, useRef } from "react";
-import type { ActivityRecordWithId, CategoryOption } from "../../../data";
-import { useAvailableCategories } from "../../../data";
+import { addDays, format } from "date-fns";
+import { Plus } from "lucide-react";
+import { useRef } from "react";
+import { useFetcher } from "react-router";
+import type {
+  ActivityRecordServer,
+  ActivityRecordWithId,
+  Intensity,
+} from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
-import {
-  CategoryAutocomplete,
-  DatePicker,
-  getErrorMessage,
-} from "../../forms/adapters";
-import {
-  categoryOptionSchema,
-  dateSchema,
-  type DetailedActivityFormValues,
-} from "../../forms/schemas";
 import { Button } from "../../ui/button";
 import {
   Dialog,
@@ -35,71 +30,100 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-import { useEditActivityFormSubmit } from "./useEditActivityFormSubmit";
+import {
+  CategoryAutocomplete,
+  DatePicker,
+  getErrorMessage,
+} from "../adapters";
+import {
+  categoryOptionSchema,
+  dateSchema,
+  type DetailedActivityFormValues,
+} from "../schemas";
 
-type Props = {
-  record: ActivityRecordWithId;
-  disabled?: boolean;
+const emptyCategory = {
+  name: "",
+  active: false,
+  categoryName: "",
+  categoryId: "",
 };
 
-export const EditActivityButton = ({ record, disabled }: Props) => {
-  const { onSubmit, isSuccess, isError, isPending } = useEditActivityFormSubmit(
-    record.id
-  );
-  const { availableCategories } = useAvailableCategories();
+type Props = {
+  lastActivity: ActivityRecordWithId | undefined;
+};
+
+export function AddWithDetailsDialog({ lastActivity }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  useCloseOnSuccess(isSuccess, closeRef);
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const isPending = fetcher.state !== "idle";
+  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
 
   useFeedbackToast(
     { isSuccess, isError },
     {
-      successMessage: "Successfully edited activity",
-      errorMessage: "Failed to edit activity",
+      successMessage: "Activity logged successfully!",
+      errorMessage: "Failed to log activity",
+      onSuccess: () => closeRef.current?.click(),
     }
   );
 
-  const matchedCategory = availableCategories.find(
-    (option) =>
-      option.categoryId === record.categoryId && option.name === record.name
-  );
-  const initialCategory: CategoryOption = {
-    name: record.name,
-    categoryName: matchedCategory?.categoryName ?? "",
-    categoryId: record.categoryId,
-    active: record.active,
-  };
+  const initialDate = lastActivity
+    ? addDays(lastActivity.date, 1)
+    : new Date();
 
   const form = useForm({
     defaultValues: {
-      date: record.date,
-      category: initialCategory,
-      intensity: record.intensity ?? "",
-      timeSpent: record.timeSpent?.toString() ?? "",
-      description: record.description ?? "",
+      date: initialDate,
+      category: emptyCategory,
+      intensity: "",
+      timeSpent: "",
+      description: "",
     } as DetailedActivityFormValues,
     onSubmit: ({ value }) => {
-      onSubmit(value);
+      const record: ActivityRecordServer = {
+        date: format(value.date, "yyyy-MM-dd"),
+        name: value.category.name,
+        categoryId: value.category.categoryId,
+      };
+      if (value.intensity) record.intensity = value.intensity as Intensity;
+      if (value.timeSpent) record.timeSpent = Number(value.timeSpent);
+      if (value.description.trim())
+        record.description = value.description.trim();
+
+      fetcher.submit(
+        {
+          intent: "add",
+          activities: JSON.stringify([record]),
+        },
+        { method: "post", action: "/welcome" }
+      );
     },
   });
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={(isOpen) => {
+        if (isOpen) {
+          form.reset();
+          form.setFieldValue(
+            "date",
+            lastActivity ? addDays(lastActivity.date, 1) : new Date()
+          );
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
-          disabled={disabled}
-        >
-          <Pencil />
-          <span className="sr-only">Edit</span>
+        <Button variant="outline" size="sm">
+          <Plus className="size-4 mr-2" />
+          Add with Details
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Activity</DialogTitle>
+          <DialogTitle>Log Activity with Details</DialogTitle>
           <DialogDescription>
-            Make changes to your activity details
+            Add more information about your activity
           </DialogDescription>
         </DialogHeader>
         <form
@@ -109,12 +133,7 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
             form.handleSubmit();
           }}
         >
-          <form.Field
-            name="date"
-            validators={{
-              onChange: dateSchema,
-            }}
-          >
+          <form.Field name="date" validators={{ onChange: dateSchema }}>
             {(field) => (
               <DatePicker
                 value={field.state.value}
@@ -127,9 +146,7 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
           </form.Field>
           <form.Field
             name="category"
-            validators={{
-              onChange: categoryOptionSchema,
-            }}
+            validators={{ onChange: categoryOptionSchema }}
           >
             {(field) => (
               <CategoryAutocomplete
@@ -137,19 +154,19 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 error={getErrorMessage(field.state.meta.errors)}
-                label="Activity name"
+                label="Activity Name"
               />
             )}
           </form.Field>
           <form.Field name="intensity">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor="edit-intensity">Intensity</Label>
+                <Label htmlFor="details-intensity">Intensity</Label>
                 <Select
                   value={field.state.value}
                   onValueChange={field.handleChange}
                 >
-                  <SelectTrigger id="edit-intensity">
+                  <SelectTrigger id="details-intensity">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
                   <SelectContent>
@@ -164,9 +181,9 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
           <form.Field name="timeSpent">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor="edit-time">Time Spent</Label>
+                <Label htmlFor="details-time">Time Spent</Label>
                 <Input
-                  id="edit-time"
+                  id="details-time"
                   type="number"
                   min={0}
                   placeholder="e.g., 30"
@@ -180,10 +197,10 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
           <form.Field name="description">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
+                <Label htmlFor="details-description">Description</Label>
                 <Textarea
-                  id="edit-description"
-                  placeholder="Add notes..."
+                  id="details-description"
+                  placeholder="Add notes about your activity..."
                   rows={3}
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -193,29 +210,21 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
             )}
           </form.Field>
           <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" ref={closeRef}>
+                Cancel
+              </Button>
+            </DialogClose>
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isDirty]}
             >
               {([canSubmit, isDirty]) => (
-                <>
-                  <DialogClose asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={isPending}
-                      ref={closeRef}
-                    >
-                      Cancel
-                    </Button>
-                  </DialogClose>
-                  <Button
-                    type="submit"
-                    variant="gradient"
-                    disabled={!canSubmit || !isDirty || isPending}
-                  >
-                    {isPending ? "Saving..." : "Save Changes"}
-                  </Button>
-                </>
+                <Button
+                  type="submit"
+                  disabled={isPending || !canSubmit || !isDirty}
+                >
+                  {isPending ? "Logging..." : "Log Activity"}
+                </Button>
               )}
             </form.Subscribe>
           </DialogFooter>
@@ -223,19 +232,4 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-/** Programmatically close the dialog after a successful save */
-const useCloseOnSuccess = (
-  isSuccess: boolean,
-  closeRef: React.RefObject<HTMLButtonElement | null>
-) => {
-  const prevRef = useRef(isSuccess);
-  useEffect(() => {
-    if (isSuccess && !prevRef.current) {
-      const timer = setTimeout(() => closeRef.current?.click(), 1500);
-      return () => clearTimeout(timer);
-    }
-    prevRef.current = isSuccess;
-  }, [isSuccess, closeRef]);
-};
+}

@@ -15,5 +15,6 @@ export default [
     route("settings", "routes/settings.tsx"),
     route("charts", "routes/charts.tsx"),
     route("activity-list", "routes/activity-list.tsx"),
+    route("compare", "routes/compare.tsx"),
   ]),
 ] satisfies RouteConfig;

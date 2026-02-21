@@ -12,7 +12,16 @@ export const activityFormSchema = z.object({
   category: categoryOptionSchema,
 });
 
+export const detailedActivityFormSchema = activityFormSchema.extend({
+  intensity: z.string(),
+  timeSpent: z.string(),
+  description: z.string(),
+});
+
 export type ActivityFormValues = z.infer<typeof activityFormSchema>;
+export type DetailedActivityFormValues = z.infer<
+  typeof detailedActivityFormSchema
+>;
 
 const FILE_SIZE = 1000 * 1024; // 1MB
 const SUPPORTED_FORMATS = ["application/json"];
