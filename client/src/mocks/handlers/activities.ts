@@ -137,12 +137,13 @@ export const activityHandlers = [
       newName: string;
     };
     let count = 0;
-    for (const activity of activities) {
-      if (activity.name === oldName) {
-        activity.name = newName;
+    activities = activities.map((a) => {
+      if (a.name === oldName) {
         count++;
+        return { ...a, name: newName };
       }
-    }
+      return a;
+    });
     return HttpResponse.json({ count });
   }),
 
@@ -157,12 +158,13 @@ export const activityHandlers = [
       categoryId: string;
     };
     let count = 0;
-    for (const activity of activities) {
-      if (activity.name === activityName) {
-        activity.categoryId = categoryId;
+    activities = activities.map((a) => {
+      if (a.name === activityName) {
         count++;
+        return { ...a, categoryId };
       }
-    }
+      return a;
+    });
     return HttpResponse.json({ count });
   }),
 
@@ -177,12 +179,13 @@ export const activityHandlers = [
       toCategoryId: string;
     };
     let count = 0;
-    for (const activity of activities) {
-      if (activity.categoryId === fromCategoryId) {
-        activity.categoryId = toCategoryId;
+    activities = activities.map((a) => {
+      if (a.categoryId === fromCategoryId) {
         count++;
+        return { ...a, categoryId: toCategoryId };
       }
-    }
+      return a;
+    });
     return HttpResponse.json({ count });
   }),
 

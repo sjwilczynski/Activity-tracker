@@ -305,7 +305,9 @@ export const ExportActivities: Story = {
     await waitFor(() => {
       expect(exportButton).not.toHaveAttribute("aria-disabled", "true");
     });
-    expect(exportButton).toHaveFocus();
+    await waitFor(() => {
+      expect(exportButton).toHaveFocus();
+    });
   },
 };
 

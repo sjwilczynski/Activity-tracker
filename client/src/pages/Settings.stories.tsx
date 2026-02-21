@@ -10,6 +10,15 @@ const meta: Meta<typeof Settings> = {
 export default meta;
 type Story = StoryObj<typeof Settings>;
 
+function getVisibleButtons(
+  canvas: ReturnType<typeof within>,
+  name: RegExp
+): HTMLElement[] {
+  return canvas
+    .getAllByRole("button", { name })
+    .filter((el: HTMLElement) => el.offsetParent !== null);
+}
+
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -94,7 +103,7 @@ export const RenameActivityInteraction: Story = {
     await canvas.findByText("Activity Name");
 
     await step("Open rename dialog and verify content", async () => {
-      const editButtons = canvas.getAllByRole("button", { name: /edit/i });
+      const editButtons = getVisibleButtons(canvas, /edit/i);
       await userEvent.click(editButtons[0]);
 
       await waitFor(() => {
@@ -132,7 +141,7 @@ export const DeleteCategoryDialogInteraction: Story = {
     await canvas.findAllByText("Sports");
 
     await step("Open delete dialog and verify radio options", async () => {
-      const deleteButtons = canvas.getAllByRole("button", { name: /delete/i });
+      const deleteButtons = getVisibleButtons(canvas, /delete/i);
       await userEvent.click(deleteButtons[0]);
 
       await waitFor(() => {
@@ -176,7 +185,7 @@ export const DeleteCategoryWithActivities: Story = {
     await canvas.findAllByText("Sports");
 
     await step("Open delete dialog and submit with delete option", async () => {
-      const deleteButtons = canvas.getAllByRole("button", { name: /delete/i });
+      const deleteButtons = getVisibleButtons(canvas, /delete/i);
       await userEvent.click(deleteButtons[0]);
 
       await waitFor(() => {
