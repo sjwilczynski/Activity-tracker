@@ -77,11 +77,8 @@ export const ToggleCategoryAndActivities: Story = {
     });
 
     await step("Expand Cycling to see activity names", async () => {
-      // Click the collapsible trigger for Cycling
-      const cyclingRow = canvas.getByText("Cycling").closest("button");
-      if (cyclingRow) {
-        await userEvent.click(cyclingRow);
-      }
+      const cyclingTrigger = canvas.getByText("Cycling").closest("button")!;
+      await userEvent.click(cyclingTrigger);
 
       // Activity names should be visible
       await waitFor(() => {
@@ -164,12 +161,18 @@ export const SubmitCategories: Story = {
       );
     });
 
-    await step("Verify loading state appears", async () => {
-      // Button shows loading text
+    await step("Verify loading state appears and resolves", async () => {
       await waitFor(() => {
         expect(
           canvas.getByRole("button", { name: /setting up/i })
         ).toBeInTheDocument();
+      });
+
+      // Wait for submission to complete
+      await waitFor(() => {
+        expect(
+          canvas.queryByRole("button", { name: /setting up/i })
+        ).not.toBeInTheDocument();
       });
     });
   },
