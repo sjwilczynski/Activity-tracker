@@ -28,7 +28,7 @@ export function RouteErrorBoundary() {
       <div className="flex flex-col items-center justify-center h-[50vh] gap-4 text-center p-8">
         <h2 className="text-2xl font-bold">Page Not Found</h2>
         <p className="text-muted-foreground">
-          The page you're looking for doesn't exist
+          The page you&apos;re looking for doesn&apos;t exist
         </p>
         <Button variant="gradient" asChild>
           <Link to="/welcome">Go Home</Link>
@@ -42,7 +42,7 @@ export function RouteErrorBoundary() {
     <div className="flex flex-col items-center justify-center h-[50vh] gap-4 text-center p-8">
       <h2 className="text-2xl font-bold">Something Went Wrong</h2>
       <p className="text-muted-foreground">
-        We couldn't load this page. Please try again.
+        We couldn&apos;t load this page. Please try again.
       </p>
       <Button variant="gradient" onClick={() => window.location.reload()}>
         Try Again

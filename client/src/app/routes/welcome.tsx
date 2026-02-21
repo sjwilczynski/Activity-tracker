@@ -20,10 +20,32 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const { queryClient, getAuthToken } = getLoadContext();
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const token = await getAuthToken();
+
+  if (intent === "add") {
+    const activities = JSON.parse(formData.get("activities") as string);
+
+    const response = await fetch("/api/activities", {
+      method: "POST",
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(activities),
+    });
+
+    if (!response.ok) {
+      return { error: `HTTP error! status: ${response.status}` };
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ["activities"] });
+    await queryClient.invalidateQueries({ queryKey: ["activitiesWithLimit"] });
+
+    return { ok: true };
+  }
 
   if (intent === "import") {
     const importData = JSON.parse(formData.get("importData") as string);
-    const token = await getAuthToken();
 
     const response = await fetch("/api/import", {
       method: "POST",

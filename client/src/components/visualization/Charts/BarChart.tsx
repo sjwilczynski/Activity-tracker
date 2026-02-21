@@ -1,6 +1,8 @@
 import type { ChartOptions } from "chart.js";
+import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
+import { useChartColors } from "../../../utils/useChartColors";
 import { getFlatBarChartData, getStackedBarChartData } from "../utils";
 
 type Props = {
@@ -19,44 +21,41 @@ export function BarChart({
   const data = groupByCategory
     ? getStackedBarChartData(activitySummaries, allSummaries, categoryOptions)
     : getFlatBarChartData(activitySummaries, allSummaries);
-  return (
-    <Bar aria-label="Activities bar chart" data={data} options={chartOptions} />
-  );
-}
-
-const chartOptions: ChartOptions<"bar"> = {
-  maintainAspectRatio: false,
-  responsive: true,
-  scales: {
-    x: {
-      stacked: true,
-      grid: {
-        display: false,
-      },
-    },
-    y: {
-      stacked: true,
-      grid: {
-        display: false,
-      },
-    },
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      callbacks: {
-        title: (items) => {
-          const item = items[0];
-          return item?.dataset.label || item?.label || "";
+  const chartColors = useChartColors();
+  const options = useMemo<ChartOptions<"bar">>(
+    () => ({
+      maintainAspectRatio: false,
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { color: chartColors.mutedForeground },
+          grid: { display: false },
+        },
+        y: {
+          stacked: true,
+          ticks: { color: chartColors.mutedForeground },
+          grid: { display: false },
         },
       },
-    },
-  },
-  elements: {
-    bar: {
-      borderRadius: 6,
-    },
-  },
-};
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const item = items[0];
+              return item?.dataset.label || item?.label || "";
+            },
+          },
+        },
+      },
+      elements: {
+        bar: { borderRadius: 6 },
+      },
+    }),
+    [chartColors.mutedForeground],
+  );
+  return (
+    <Bar aria-label="Activities bar chart" data={data} options={options} />
+  );
+}

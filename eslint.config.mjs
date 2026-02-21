@@ -8,6 +8,8 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +35,11 @@ export default defineConfig([
       "prettier"
     ),
 
+    plugins: {
+      react,
+      "react-hooks": reactHooks,
+    },
+
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -40,6 +47,13 @@ export default defineConfig([
       },
 
       parser: tsParser,
+    },
+
+    settings: {
+      react: {
+        // Hardcoded because React is in client/ workspace; "detect" warns since it's not at root
+        version: "19",
+      },
     },
 
     rules: {
@@ -52,6 +66,17 @@ export default defineConfig([
           prefer: "type-imports",
         },
       ],
+
+      // React recommended rules
+      ...react.configs.flat.recommended.rules,
+      ...react.configs.flat["jsx-runtime"].rules,
+      "react/prop-types": "off",
+
+      // React hooks
+      // React hooks — manual rules instead of preset because v7 preset includes
+      // React Compiler rules we're not ready for yet (tracked in CP9)
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error",
     },
   },
   ...storybook.configs["flat/recommended"],

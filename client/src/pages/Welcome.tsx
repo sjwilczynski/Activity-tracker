@@ -1,15 +1,10 @@
 import { format, subDays } from "date-fns";
-import {
-  Activity,
-  Calendar,
-  CalendarDays,
-  Clock,
-  ExternalLink,
-} from "lucide-react";
+import { Activity, Calendar, CalendarDays, Clock } from "lucide-react";
 import { useAuth } from "../auth";
 import { AddActivityForm } from "../components/forms/AddActivityForm/AddActivityForm";
+import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWithDetailsDialog";
+import { IntensityBadge } from "../components/IntensityBadge";
 import { Loading } from "../components/states/Loading";
-import { Button } from "../components/ui/button";
 import {
   Card,
   CardAction,
@@ -164,10 +159,7 @@ export const Welcome = () => {
             <CardTitle>Log Activity</CardTitle>
             <CardDescription>Quickly log your latest activity</CardDescription>
             <CardAction>
-              <Button variant="outline" size="sm" disabled>
-                <ExternalLink className="size-3.5" />
-                Add with Details
-              </Button>
+              <AddWithDetailsDialog lastActivity={lastActivity} />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -207,12 +199,25 @@ export const Welcome = () => {
                           <Activity className="size-4" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium capitalize truncate">
-                            {activity.name}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(activity.date, "MMM d, yyyy")}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium capitalize truncate">
+                              {activity.name}
+                            </p>
+                            {activity.intensity && (
+                              <IntensityBadge intensity={activity.intensity} />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{format(activity.date, "MMM d, yyyy")}</span>
+                            {activity.timeSpent && (
+                              <span>• {activity.timeSpent} min</span>
+                            )}
+                          </div>
+                          {activity.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              {activity.description}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

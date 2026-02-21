@@ -418,6 +418,27 @@ export const DeleteAllInteraction: Story = {
   },
 };
 
+export const DetailFieldsDisplay: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    // Running activity has intensity: "high" → label "Intense"
+    // IntensityBadge renders two spans (light + dark mode), so use getAllByText
+    const intenseBadges = canvas.getAllByText("Intense");
+    expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
+
+    // Running's timeSpent is 45
+    const durationTexts = canvas.getAllByText("45 min");
+    expect(durationTexts.length).toBeGreaterThanOrEqual(1);
+
+    // At least one description is visible
+    const descriptions = canvas.getAllByText(/morning run in the park/i);
+    expect(descriptions.length).toBeGreaterThanOrEqual(1);
+  },
+};
+
 export const KeyboardFocusRestoration: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
