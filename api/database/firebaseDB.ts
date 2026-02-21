@@ -1,10 +1,5 @@
 import { database } from "../firebase/firebase";
-import type {
-  ActivityMap,
-  ActivityRecord,
-  Category,
-  CategoryMap,
-} from "../utils/types";
+import type { ActivityMap, ActivityRecord, CategoryMap } from "../utils/types";
 import type { Database } from "./types";
 
 const activityDocument = (userId: string): string =>
@@ -80,36 +75,31 @@ export const firebaseDB: Database = {
     const snapshot = await database.ref(categoryDocument(userId)).once("value");
     return snapshot.numChildren();
   },
-  addCategory: async (userId: string, category: Category) => {
+  addCategory: async (userId, category) => {
     const categoriesRef = database.ref(categoryDocument(userId));
-    const newId = categoriesRef.push().key;
-    if (newId === null) {
+    const newRef = categoriesRef.push();
+    if (newRef.key === null) {
       throw new Error("Unable to add new category");
-    } else {
-      await categoriesRef.push({ ...category, id: newId });
     }
+    await newRef.set(category);
   },
-  editCategory: async (
-    userId: string,
-    categoryName: string,
-    newCategory: Category
-  ) => {
+  editCategory: async (userId, categoryId, newCategory) => {
     const categoryRef = database.ref(
-      `${categoryDocument(userId)}/${categoryName}`
+      `${categoryDocument(userId)}/${categoryId}`
     );
     const category = await categoryRef.once("value");
     if (!category.exists()) {
-      throw new Error(`Unable to find category with name ${categoryName}`);
+      throw new Error(`Unable to find category with id ${categoryId}`);
     }
-    await categoryRef.update(newCategory);
+    await categoryRef.set(newCategory);
   },
-  deleteCategory: async (userId: string, categoryName: string) => {
+  deleteCategory: async (userId, categoryId) => {
     const categoryRef = database.ref(
-      `${categoryDocument(userId)}/${categoryName}`
+      `${categoryDocument(userId)}/${categoryId}`
     );
     const category = await categoryRef.once("value");
     if (!category.exists()) {
-      throw new Error(`Unable to find category with name ${categoryName}`);
+      throw new Error(`Unable to find category with id ${categoryId}`);
     }
     await categoryRef.remove();
   },

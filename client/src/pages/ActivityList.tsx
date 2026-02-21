@@ -17,7 +17,7 @@ import {
   sortDescendingByDate,
   useActivities,
   useExportActivities,
-  useIsFetchingActivties,
+  useIsFetchingActivities,
 } from "../data";
 
 export const ActivityList = () => {
@@ -27,7 +27,7 @@ export const ActivityList = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const exportActivities = useExportActivities();
-  const isFetchingActivities = useIsFetchingActivties();
+  const isFetchingActivities = useIsFetchingActivities();
 
   if (isLoading) {
     return <Loading />;

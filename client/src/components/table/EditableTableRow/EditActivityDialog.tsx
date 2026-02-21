@@ -48,11 +48,14 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
     }
   );
 
+  const matchedCategory = availableCategories.find(
+    (option) =>
+      option.categoryId === record.categoryId && option.name === record.name
+  );
   const initialCategory: CategoryOption = {
     name: record.name,
-    categoryName:
-      availableCategories.find((category) => category.name === record.name)
-        ?.categoryName ?? "",
+    categoryName: matchedCategory?.categoryName ?? "",
+    categoryId: record.categoryId,
     active: record.active,
   };
 

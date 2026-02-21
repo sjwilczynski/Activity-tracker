@@ -1,23 +1,66 @@
 import { useIsFetching, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
 } from "../../queryOptions";
 import { getActivitiesQueryId } from "../../react-query-config/query-constants";
-import type { ActivityRecordWithId } from "../../types";
+import type {
+  ActivityRecordFromQuery,
+  ActivityRecordWithId,
+  Category,
+} from "../../types";
+import { useCategories } from "../categories/useCategories";
 import { useRequestConfig } from "../useRequestConfig";
+
+function enrichWithActive(
+  activities: ActivityRecordFromQuery[],
+  categories: Category[]
+): ActivityRecordWithId[] {
+  const categoryMap = new Map(categories.map((c) => [c.id, c]));
+  return activities.map((activity) => {
+    const category = categoryMap.get(activity.categoryId);
+    return {
+      ...activity,
+      active: category?.active ?? true,
+    };
+  });
+}
 
 export const useActivities = () => {
   const getConfig = useRequestConfig();
   const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(activitiesQueryOptions(getAuthToken));
+  const activitiesQuery = useQuery(activitiesQueryOptions(getAuthToken));
+  const { data: categories } = useCategories();
+
+  const data = useMemo(() => {
+    if (!activitiesQuery.data) return undefined;
+    return enrichWithActive(activitiesQuery.data, categories ?? []);
+  }, [activitiesQuery.data, categories]);
+
+  return {
+    ...activitiesQuery,
+    data,
+  };
 };
 
 export const useActivitiesWithLimit = () => {
   const getConfig = useRequestConfig();
   const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(activitiesWithLimitQueryOptions(getAuthToken));
+  const activitiesQuery = useQuery(
+    activitiesWithLimitQueryOptions(getAuthToken)
+  );
+  const { data: categories } = useCategories();
+
+  const data = useMemo(() => {
+    if (!activitiesQuery.data) return undefined;
+    return enrichWithActive(activitiesQuery.data, categories ?? []);
+  }, [activitiesQuery.data, categories]);
+
+  return {
+    ...activitiesQuery,
+    data,
+  };
 };
 
 export const useExportActivities = (): (() => string) => {
@@ -25,16 +68,16 @@ export const useExportActivities = (): (() => string) => {
 
   return useCallback(() => {
     const activities = client
-      .getQueryData<ActivityRecordWithId[]>([...getActivitiesQueryId])
+      .getQueryData<ActivityRecordFromQuery[]>([...getActivitiesQueryId])
       ?.map((activityRecord) => ({
         date: activityRecord.date.toLocaleDateString("en-CA"),
         name: activityRecord.name,
-        active: activityRecord.active,
+        categoryId: activityRecord.categoryId,
       }));
     return JSON.stringify(activities);
   }, [client]);
 };
 
-export const useIsFetchingActivties = () => {
+export const useIsFetchingActivities = () => {
   return useIsFetching({ queryKey: [...getActivitiesQueryId] }) > 0;
 };

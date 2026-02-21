@@ -13,9 +13,10 @@
       "ignore": ["src/components/ui/*.tsx"]
     },
     "api": {
-      "entry": ["functions/*/index.ts"],
+      "entry": ["functions/*/index.ts", "scripts/migrate.ts", "scripts/migrate-local-test.ts"],
       "project": ["**/*.ts"],
-      "ignoreBinaries": ["func"]
+      "ignoreBinaries": ["func"],
+      "ignore": ["utils/defaultCategories.ts"]
     }
   },
   "ignore": ["**/build/**", "**/dist/**", "**/.storybook/**", "**/mocks/**"],

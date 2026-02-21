@@ -28,9 +28,9 @@ export type Database = {
   addCategory: (userId: string, category: Category) => Promise<void>;
   editCategory: (
     userId: string,
-    categoryName: string,
+    categoryId: string,
     newCategory: Category
   ) => Promise<void>;
-  deleteCategory: (userId: string, categoryName: string) => Promise<void>;
+  deleteCategory: (userId: string, categoryId: string) => Promise<void>;
   deleteAllCategories: (userId: string) => Promise<void>;
 };

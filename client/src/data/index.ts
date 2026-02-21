@@ -2,7 +2,7 @@ export {
   useActivities,
   useActivitiesWithLimit,
   useExportActivities,
-  useIsFetchingActivties,
+  useIsFetchingActivities,
 } from "./hooks/activities/useActivities";
 export {
   useAvailableCategories,

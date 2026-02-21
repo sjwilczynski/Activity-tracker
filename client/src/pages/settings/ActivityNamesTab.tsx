@@ -44,20 +44,6 @@ type ActivityNameInfo = {
   categoryId: string | undefined;
 };
 
-/** Find the category that an activity belongs to (by name or subcategory match) */
-function findCategoryForActivity(
-  activityName: string,
-  categories: Category[]
-): Category | undefined {
-  return categories.find(
-    (c) =>
-      c.name.toLowerCase() === activityName.toLowerCase() ||
-      c.subcategories?.some(
-        (s) => s.name.toLowerCase() === activityName.toLowerCase()
-      )
-  );
-}
-
 export function ActivityNamesTab({
   activities,
   categories,
@@ -66,19 +52,27 @@ export function ActivityNamesTab({
   categories: Category[];
 }) {
   const activityNames = useMemo<ActivityNameInfo[]>(() => {
-    const nameMap = new Map<string, number>();
+    const nameMap = new Map<string, { count: number; categoryId: string }>();
     for (const activity of activities) {
-      nameMap.set(activity.name, (nameMap.get(activity.name) ?? 0) + 1);
+      const existing = nameMap.get(activity.name);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        nameMap.set(activity.name, {
+          count: 1,
+          categoryId: activity.categoryId,
+        });
+      }
     }
 
     return Array.from(nameMap.entries())
-      .map(([name, count]) => ({
+      .map(([name, { count, categoryId }]) => ({
         name,
         count,
-        categoryId: findCategoryForActivity(name, categories)?.id,
+        categoryId: categoryId || undefined,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activities, categories]);
+  }, [activities]);
 
   return (
     <Card>

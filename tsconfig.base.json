@@ -10,7 +10,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "verbatimModuleSyntax": true,
-    "module": "ES2022",
+    "module": "ESNext",
     "target": "ES2022"
   }
 }

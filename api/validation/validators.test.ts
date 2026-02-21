@@ -3,11 +3,14 @@ import { LIMITS } from "./constants";
 import {
   validateActivityBatch,
   validateActivityName,
+  validateActivityNameInCategory,
   validateActivityRecord,
   validateCategory,
+  validateCategoryId,
   validateCategoryName,
   validateDescription,
-  validateSubcategory,
+  validateIntensity,
+  validateTimeSpent,
 } from "./validators";
 
 describe("validateActivityName", () => {
@@ -50,17 +53,135 @@ describe("validateActivityName", () => {
   });
 });
 
+describe("validateCategoryId", () => {
+  it("accepts valid category ID", () => {
+    expect(validateCategoryId("-OlhOzarZLqK2dHhKQDd")).toEqual({
+      valid: true,
+    });
+  });
+
+  it("rejects non-string", () => {
+    expect(validateCategoryId(123)).toEqual({
+      valid: false,
+      error: "Category ID must be a string",
+    });
+  });
+
+  it("rejects empty string", () => {
+    expect(validateCategoryId("")).toEqual({
+      valid: false,
+      error: "Category ID cannot be empty",
+    });
+  });
+
+  it("rejects whitespace-only string", () => {
+    expect(validateCategoryId("   ")).toEqual({
+      valid: false,
+      error: "Category ID cannot be empty",
+    });
+  });
+});
+
+describe("validateIntensity", () => {
+  it("accepts 'low'", () => {
+    expect(validateIntensity("low")).toEqual({ valid: true });
+  });
+
+  it("accepts 'medium'", () => {
+    expect(validateIntensity("medium")).toEqual({ valid: true });
+  });
+
+  it("accepts 'high'", () => {
+    expect(validateIntensity("high")).toEqual({ valid: true });
+  });
+
+  it("rejects invalid string", () => {
+    expect(validateIntensity("extreme")).toEqual({
+      valid: false,
+      error: "Intensity must be one of: low, medium, high",
+    });
+  });
+
+  it("rejects non-string", () => {
+    expect(validateIntensity(5)).toEqual({
+      valid: false,
+      error: "Intensity must be one of: low, medium, high",
+    });
+  });
+});
+
+describe("validateTimeSpent", () => {
+  it("accepts valid time", () => {
+    expect(validateTimeSpent(45)).toEqual({ valid: true });
+  });
+
+  it("accepts zero", () => {
+    expect(validateTimeSpent(0)).toEqual({ valid: true });
+  });
+
+  it("rejects non-number", () => {
+    expect(validateTimeSpent("45")).toEqual({
+      valid: false,
+      error: "Time spent must be a number",
+    });
+  });
+
+  it("rejects negative", () => {
+    expect(validateTimeSpent(-10)).toEqual({
+      valid: false,
+      error: "Time spent must be a non-negative number",
+    });
+  });
+
+  it("rejects exceeding max", () => {
+    expect(validateTimeSpent(LIMITS.MAX_TIME_SPENT + 1)).toEqual({
+      valid: false,
+      error: `Time spent exceeds ${LIMITS.MAX_TIME_SPENT} minutes`,
+    });
+  });
+
+  it("accepts at exact max", () => {
+    expect(validateTimeSpent(LIMITS.MAX_TIME_SPENT)).toEqual({ valid: true });
+  });
+
+  it("rejects NaN", () => {
+    expect(validateTimeSpent(NaN)).toEqual({
+      valid: false,
+      error: "Time spent must be a non-negative number",
+    });
+  });
+
+  it("rejects Infinity", () => {
+    expect(validateTimeSpent(Infinity)).toEqual({
+      valid: false,
+      error: "Time spent must be a non-negative number",
+    });
+  });
+});
+
 describe("validateActivityRecord", () => {
   const validActivity = {
     name: "Running",
     date: "2024-01-15",
-    active: true,
+    categoryId: "cat-sports",
   };
 
   it("accepts valid activity", () => {
     const result = validateActivityRecord(validActivity);
     expect(result.valid).toBe(true);
     expect(result.data).toEqual(validActivity);
+  });
+
+  it("accepts activity with all optional fields", () => {
+    const full = {
+      ...validActivity,
+      description: "Morning run",
+      intensity: "medium" as const,
+      timeSpent: 45,
+    };
+    const result = validateActivityRecord(full);
+    expect(result.valid).toBe(true);
+    expect(result.data).toEqual(full);
   });
 
   it("rejects null", () => {
@@ -95,11 +216,29 @@ describe("validateActivityRecord", () => {
     });
   });
 
-  it("rejects non-boolean active", () => {
-    expect(validateActivityRecord({ ...validActivity, active: "yes" })).toEqual(
+  it("rejects missing categoryId", () => {
+    expect(
+      validateActivityRecord({ name: "Running", date: "2024-01-15" })
+    ).toEqual({
+      valid: false,
+      error: "Category ID must be a string",
+    });
+  });
+
+  it("rejects invalid intensity", () => {
+    expect(
+      validateActivityRecord({ ...validActivity, intensity: "extreme" })
+    ).toEqual({
+      valid: false,
+      error: "Intensity must be one of: low, medium, high",
+    });
+  });
+
+  it("rejects invalid timeSpent", () => {
+    expect(validateActivityRecord({ ...validActivity, timeSpent: -5 })).toEqual(
       {
         valid: false,
-        error: "Activity active must be a boolean",
+        error: "Time spent must be a non-negative number",
       }
     );
   });
@@ -113,13 +252,25 @@ describe("validateActivityRecord", () => {
       error: `Activity name exceeds ${LIMITS.ACTIVITY_NAME_MAX} characters`,
     });
   });
+
+  it("strips unknown fields from validated data", () => {
+    const result = validateActivityRecord({
+      ...validActivity,
+      unknownField: "should be stripped",
+    });
+    expect(result.valid).toBe(true);
+    expect(result.data).toEqual(validActivity);
+    expect(
+      (result.data as Record<string, unknown>).unknownField
+    ).toBeUndefined();
+  });
 });
 
 describe("validateActivityBatch", () => {
   const validActivity = {
     name: "Running",
     date: "2024-01-15",
-    active: true,
+    categoryId: "cat-sports",
   };
 
   it("accepts valid batch", () => {
@@ -148,7 +299,7 @@ describe("validateActivityBatch", () => {
   it("rejects batch with invalid activity", () => {
     const result = validateActivityBatch([
       validActivity,
-      { name: "", date: "2024-01-15", active: true },
+      { name: "", date: "2024-01-15", categoryId: "cat-sports" },
     ]);
     expect(result.valid).toBe(false);
     if (!result.valid) {
@@ -227,49 +378,30 @@ describe("validateDescription", () => {
   });
 });
 
-describe("validateSubcategory", () => {
-  const validSubcategory = {
-    name: "Running",
-    description: "Outdoor running",
-  };
-
-  it("accepts valid subcategory", () => {
-    const result = validateSubcategory(validSubcategory);
-    expect(result.valid).toBe(true);
-    expect(result.data).toEqual(validSubcategory);
+describe("validateActivityNameInCategory", () => {
+  it("accepts valid name", () => {
+    expect(validateActivityNameInCategory("Running")).toEqual({ valid: true });
   });
 
-  it("rejects null", () => {
-    expect(validateSubcategory(null)).toEqual({
+  it("rejects non-string", () => {
+    expect(validateActivityNameInCategory(null)).toEqual({
       valid: false,
-      error: "Subcategory cannot be null or undefined",
+      error: "Activity name must be a string",
     });
   });
 
   it("rejects empty name", () => {
-    expect(validateSubcategory({ ...validSubcategory, name: "" })).toEqual({
+    expect(validateActivityNameInCategory("")).toEqual({
       valid: false,
-      error: "Subcategory name cannot be empty",
+      error: "Activity name cannot be empty",
     });
   });
 
   it("rejects name exceeding max length", () => {
-    const longName = "a".repeat(LIMITS.SUBCATEGORY_NAME_MAX + 1);
-    expect(
-      validateSubcategory({ ...validSubcategory, name: longName })
-    ).toEqual({
+    const longName = "a".repeat(LIMITS.ACTIVITY_NAME_IN_CATEGORY_MAX + 1);
+    expect(validateActivityNameInCategory(longName)).toEqual({
       valid: false,
-      error: `Subcategory name exceeds ${LIMITS.SUBCATEGORY_NAME_MAX} characters`,
-    });
-  });
-
-  it("rejects description exceeding max length", () => {
-    const longDesc = "a".repeat(LIMITS.DESCRIPTION_MAX + 1);
-    expect(
-      validateSubcategory({ ...validSubcategory, description: longDesc })
-    ).toEqual({
-      valid: false,
-      error: `Subcategory description exceeds ${LIMITS.DESCRIPTION_MAX} characters`,
+      error: `Activity name exceeds ${LIMITS.ACTIVITY_NAME_IN_CATEGORY_MAX} characters`,
     });
   });
 });
@@ -279,7 +411,7 @@ describe("validateCategory", () => {
     name: "Sports",
     description: "Physical activities",
     active: true,
-    subcategories: [{ name: "Running", description: "Outdoor running" }],
+    activityNames: ["Running", "Swimming"],
   };
 
   it("accepts valid category", () => {
@@ -309,47 +441,55 @@ describe("validateCategory", () => {
     });
   });
 
-  it("rejects non-array subcategories", () => {
+  it("rejects non-array activityNames", () => {
     expect(
-      validateCategory({ ...validCategory, subcategories: "none" })
+      validateCategory({ ...validCategory, activityNames: "none" })
     ).toEqual({
       valid: false,
-      error: "Subcategories must be an array",
+      error: "Activity names must be an array",
     });
   });
 
-  it("accepts empty subcategories array", () => {
-    const result = validateCategory({ ...validCategory, subcategories: [] });
+  it("accepts empty activityNames array", () => {
+    const result = validateCategory({
+      ...validCategory,
+      activityNames: [],
+    });
     expect(result.valid).toBe(true);
   });
 
-  it("rejects too many subcategories", () => {
+  it("rejects too many activity names", () => {
     const tooMany = Array.from(
-      { length: LIMITS.MAX_SUBCATEGORIES_PER_CATEGORY + 1 },
-      (_, i) => ({
-        name: `Sub ${i}`,
-        description: "Desc",
-      })
+      { length: LIMITS.MAX_ACTIVITY_NAMES_PER_CATEGORY + 1 },
+      (_, i) => `Activity ${i}`
     );
     expect(
-      validateCategory({ ...validCategory, subcategories: tooMany })
+      validateCategory({ ...validCategory, activityNames: tooMany })
     ).toEqual({
       valid: false,
-      error: `Subcategories exceed limit of ${LIMITS.MAX_SUBCATEGORIES_PER_CATEGORY}`,
+      error: `Activity names exceed limit of ${LIMITS.MAX_ACTIVITY_NAMES_PER_CATEGORY}`,
     });
   });
 
-  it("rejects invalid subcategory in array", () => {
+  it("rejects invalid activity name in array", () => {
     const result = validateCategory({
       ...validCategory,
-      subcategories: [
-        { name: "Valid", description: "OK" },
-        { name: "", description: "Bad" },
-      ],
+      activityNames: ["Valid", ""],
     });
     expect(result.valid).toBe(false);
     if (!result.valid) {
-      expect(result.error).toContain("Subcategory at index 1");
+      expect(result.error).toContain("Activity name at index 1");
+    }
+  });
+
+  it("rejects duplicate activity names (case-insensitive)", () => {
+    const result = validateCategory({
+      ...validCategory,
+      activityNames: ["Running", "Swimming", "running"],
+    });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.error).toContain('Duplicate activity name "running"');
     }
   });
 

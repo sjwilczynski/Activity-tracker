@@ -1,6 +1,8 @@
+export type Intensity = "low" | "medium" | "high";
+
 export type Activity = {
   name: string;
-  active: boolean;
+  categoryId: string;
 };
 
 export type Category = {
@@ -8,32 +10,42 @@ export type Category = {
   name: string;
   active: boolean;
   description: string;
-  subcategories?: Subcategory[];
-};
-
-export type Subcategory = {
-  name: string;
-  description: string;
+  activityNames: string[];
 };
 
 export type CategoryOption = {
   name: string;
   active: boolean;
   categoryName: string;
-  description?: string;
+  categoryId: string;
 };
 
 export type ActivityRecord = {
   date: Date;
+  description?: string;
+  intensity?: Intensity;
+  timeSpent?: number;
 } & Activity;
 
 export type ActivityRecordServer = {
   date: string;
+  description?: string;
+  intensity?: Intensity;
+  timeSpent?: number;
 } & Activity;
 
-export type ActivityRecordWithId = { id: string } & ActivityRecord;
+/** Raw activity from the query cache — does NOT include `active` (derived by useActivities) */
+export type ActivityRecordFromQuery = { id: string } & ActivityRecord;
 
-export type ActivityRecordWithIdServer = { id: string } & ActivityRecordServer;
+/** Enriched activity with `active` derived from linked category */
+export type ActivityRecordWithId = {
+  id: string;
+  active: boolean;
+} & ActivityRecord;
+
+export type ActivityRecordWithIdServer = {
+  id: string;
+} & ActivityRecordServer;
 
 export type ActivitySummary = {
   count: number;

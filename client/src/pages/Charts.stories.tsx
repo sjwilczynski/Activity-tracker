@@ -154,11 +154,11 @@ export const SingleActivityType: Story = {
       handlers: [
         http.get("*/api/activities", () => {
           return HttpResponse.json([
-            { id: "1", date: generateDate(0), name: "Running", active: true },
-            { id: "2", date: generateDate(1), name: "Running", active: true },
-            { id: "3", date: generateDate(2), name: "Running", active: true },
-            { id: "4", date: generateDate(3), name: "Running", active: true },
-            { id: "5", date: generateDate(4), name: "Running", active: true },
+            { id: "1", date: generateDate(0), name: "Running", categoryId: "cat-sports" },
+            { id: "2", date: generateDate(1), name: "Running", categoryId: "cat-sports" },
+            { id: "3", date: generateDate(2), name: "Running", categoryId: "cat-sports" },
+            { id: "4", date: generateDate(3), name: "Running", categoryId: "cat-sports" },
+            { id: "5", date: generateDate(4), name: "Running", categoryId: "cat-sports" },
           ]);
         }),
       ],
@@ -185,6 +185,12 @@ export const ManyActivityTypes: Story = {
     msw: {
       handlers: [
         http.get("*/api/activities", () => {
+          const categoryMap: Record<string, string> = {
+            Running: "cat-sports", Swimming: "cat-sports", Cycling: "cat-sports",
+            Yoga: "cat-wellness", Meditation: "cat-wellness", Reading: "cat-learning",
+            Walking: "cat-outdoor", Hiking: "cat-outdoor", Dancing: "cat-other",
+            Gym: "cat-gym", Basketball: "cat-team", Soccer: "cat-team",
+          };
           const activities = [
             "Running",
             "Swimming",
@@ -203,7 +209,7 @@ export const ManyActivityTypes: Story = {
               id: `${idx * 3 + i + 1}`,
               date: generateDate(i),
               name,
-              active: idx % 2 === 0,
+              categoryId: categoryMap[name],
             }))
           );
           return HttpResponse.json(activities);

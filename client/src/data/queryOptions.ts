@@ -7,7 +7,7 @@ import {
   getCategoriesQueryId,
 } from "./react-query-config/query-constants";
 import type {
-  ActivityRecordWithId,
+  ActivityRecordFromQuery,
   ActivityRecordWithIdServer,
   Category,
 } from "./types";
@@ -17,7 +17,7 @@ type GetAuthToken = () => Promise<string>;
 const fetchActivities = async (
   getAuthToken: GetAuthToken,
   limit?: number
-): Promise<ActivityRecordWithId[]> => {
+): Promise<ActivityRecordFromQuery[]> => {
   const token = await getAuthToken();
 
   const url = new URL(activitiesApiPath, window.location.origin);
