@@ -13,6 +13,18 @@ export const categoryHandlers = [
 
     return HttpResponse.json(mockCategories);
   }),
+
+  // DELETE api/categories/:id
+  http.delete("*/api/categories/:id", async ({ request }) => {
+    await delay(100);
+
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) {
+      return new HttpResponse(null, { status: 401 });
+    }
+
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];
 
 // Error scenario handlers for testing

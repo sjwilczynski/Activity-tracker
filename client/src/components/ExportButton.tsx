@@ -15,8 +15,10 @@ export const ExportButton = ({
   filename = "activity-tracker-export.json",
 }: Props) => {
   const [isExporting, setIsExporting] = useState(false);
+  const isDisabled = disabled || isExporting;
 
   const handleExport = async () => {
+    if (isDisabled) return;
     setIsExporting(true);
     try {
       const jsonData = await exportFile();
@@ -41,7 +43,8 @@ export const ExportButton = ({
     <Button
       variant="outline"
       className="flex-1 sm:flex-none"
-      disabled={disabled || isExporting}
+      disabled={disabled}
+      aria-disabled={isDisabled}
       onClick={handleExport}
     >
       <Download className="size-4 sm:mr-2" />

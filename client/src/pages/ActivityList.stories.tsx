@@ -300,7 +300,12 @@ export const ExportActivities: Story = {
     expect(exportButton).toBeEnabled();
 
     await userEvent.click(exportButton);
-    expect(exportButton).toBeInTheDocument();
+
+    // Focus should remain on the export button after export completes
+    await waitFor(() => {
+      expect(exportButton).not.toHaveAttribute("aria-disabled", "true");
+    });
+    expect(exportButton).toHaveFocus();
   },
 };
 
@@ -320,9 +325,7 @@ export const UploadDialogInteraction: Story = {
       await userEvent.click(screen.getByRole("button", { name: /close/i }));
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/import data/i)
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
       });
     });
   },
@@ -436,9 +439,7 @@ export const KeyboardFocusRestoration: Story = {
 
         await userEvent.keyboard("{Escape}");
         await waitFor(() => {
-          expect(
-            screen.queryByText(/import data/i)
-          ).not.toBeInTheDocument();
+          expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
         });
 
         await waitFor(() => {

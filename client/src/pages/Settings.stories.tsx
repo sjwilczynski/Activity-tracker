@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Settings } from "./Settings";
 
 const meta: Meta<typeof Settings> = {
@@ -82,5 +82,116 @@ export const AppearanceTab: Story = {
 
     const switches = canvas.getAllByRole("switch");
     expect(switches).toHaveLength(2);
+  },
+};
+
+export const RenameActivityInteraction: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findAllByText("Sports");
+    await userEvent.click(canvas.getByRole("tab", { name: /activity names/i }));
+    await canvas.findByText("Activity Name");
+
+    await step("Open rename dialog and verify content", async () => {
+      const editButtons = canvas.getAllByRole("button", { name: /edit/i });
+      await userEvent.click(editButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText("Edit Activity Name")).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole("button", { name: /update name/i })
+      ).toBeDisabled();
+    });
+
+    await step("Type new name and submit", async () => {
+      const input = screen.getByLabelText(/new activity name/i);
+      await userEvent.clear(input);
+      await userEvent.type(input, "Jogging");
+
+      const updateButton = screen.getByRole("button", { name: /update name/i });
+      expect(updateButton).toBeEnabled();
+      await userEvent.click(updateButton);
+
+      // Dialog should close on success
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Edit Activity Name")
+        ).not.toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const DeleteCategoryDialogInteraction: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findAllByText("Sports");
+
+    await step("Open delete dialog and verify radio options", async () => {
+      const deleteButtons = canvas.getAllByRole("button", { name: /delete/i });
+      await userEvent.click(deleteButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
+      });
+
+      // Radio options are present
+      const radios = screen.getAllByRole("radio");
+      expect(radios).toHaveLength(2);
+      expect(
+        screen.getByText("Delete all activities in this category")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Reassign activities to another category")
+      ).toBeInTheDocument();
+    });
+
+    await step("Select reassign option and verify target picker", async () => {
+      const reassignRadio = screen.getByRole("radio", { name: /reassign/i });
+      await userEvent.click(reassignRadio);
+
+      await waitFor(() => {
+        expect(screen.getByText("Target category")).toBeInTheDocument();
+      });
+    });
+
+    await step("Cancel and verify dialog closes", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Delete "Sports"\?/)).not.toBeInTheDocument();
+      });
+    });
+  },
+};
+
+export const DeleteCategoryWithActivities: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findAllByText("Sports");
+
+    await step("Open delete dialog and submit with delete option", async () => {
+      const deleteButtons = canvas.getAllByRole("button", { name: /delete/i });
+      await userEvent.click(deleteButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
+      });
+
+      // "Delete all activities" is the default selection
+      await userEvent.click(
+        screen.getByRole("button", { name: /delete category/i })
+      );
+
+      // Dialog should close on success
+      await waitFor(() => {
+        expect(screen.queryByText(/Delete "Sports"\?/)).not.toBeInTheDocument();
+      });
+    });
   },
 };

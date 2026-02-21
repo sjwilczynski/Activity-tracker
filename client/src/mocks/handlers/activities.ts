@@ -125,6 +125,78 @@ export const activityHandlers = [
     activities = [];
     return new HttpResponse(null, { status: 204 });
   }),
+
+  // POST */api/activities/rename
+  http.post("*/api/activities/rename", async ({ request }) => {
+    await delay(100);
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) return new HttpResponse(null, { status: 401 });
+
+    const { oldName, newName } = (await request.json()) as {
+      oldName: string;
+      newName: string;
+    };
+    let count = 0;
+    for (const activity of activities) {
+      if (activity.name === oldName) {
+        activity.name = newName;
+        count++;
+      }
+    }
+    return HttpResponse.json({ count });
+  }),
+
+  // POST */api/activities/assign-category
+  http.post("*/api/activities/assign-category", async ({ request }) => {
+    await delay(100);
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) return new HttpResponse(null, { status: 401 });
+
+    const { activityName, categoryId } = (await request.json()) as {
+      activityName: string;
+      categoryId: string;
+    };
+    let count = 0;
+    for (const activity of activities) {
+      if (activity.name === activityName) {
+        activity.categoryId = categoryId;
+        count++;
+      }
+    }
+    return HttpResponse.json({ count });
+  }),
+
+  // POST */api/activities/reassign-category
+  http.post("*/api/activities/reassign-category", async ({ request }) => {
+    await delay(100);
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) return new HttpResponse(null, { status: 401 });
+
+    const { fromCategoryId, toCategoryId } = (await request.json()) as {
+      fromCategoryId: string;
+      toCategoryId: string;
+    };
+    let count = 0;
+    for (const activity of activities) {
+      if (activity.categoryId === fromCategoryId) {
+        activity.categoryId = toCategoryId;
+        count++;
+      }
+    }
+    return HttpResponse.json({ count });
+  }),
+
+  // POST */api/activities/delete-by-category
+  http.post("*/api/activities/delete-by-category", async ({ request }) => {
+    await delay(100);
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) return new HttpResponse(null, { status: 401 });
+
+    const { categoryId } = (await request.json()) as { categoryId: string };
+    const before = activities.length;
+    activities = activities.filter((a) => a.categoryId !== categoryId);
+    return HttpResponse.json({ count: before - activities.length });
+  }),
 ];
 
 // Error scenario handlers for testing
