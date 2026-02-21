@@ -282,3 +282,4 @@ type Category = {
 - [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
 - [ ] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)
 - [ ] Update the repository README with screenshots/GIFs of the app (Dashboard, Activity List, Charts, Compare, Settings), architecture overview (React + Azure Functions + Firebase), key features summary, and tech stack details — sourced from `REDESIGN-PLAN.md`, `REDESIGN-DESIGN-GUIDE.md`, and other existing docs
+- [ ] Split files/components exceeding 250 lines into smaller, focused modules with a reasonable folder structure (e.g. extract sub-components, utility functions, or hooks into separate files)
