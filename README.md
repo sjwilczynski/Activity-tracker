@@ -146,4 +146,3 @@ The app is deployed on **Azure Static Web Apps** with CI/CD via GitHub Actions (
 - Static content served from `client/build/client`
 - API functions served from `api/dist` (Node.js 22)
 - `/api/*` routes automatically routed to the Functions backend by Azure SWA — no proxy or routing config needed in production
-- Renovate branches are excluded from PR deployments
