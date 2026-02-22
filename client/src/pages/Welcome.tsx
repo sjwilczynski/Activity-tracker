@@ -207,7 +207,7 @@ export const Welcome = () => {
                     <Link
                       to="/activity-list"
                       key={activity.id}
-                      className="flex items-center justify-between p-3 rounded-lg border animate-fade-slide-up cursor-pointer hover:shadow-md transition-shadow"
+                      className="flex items-center justify-between p-3 rounded-lg border animate-fade-slide-up cursor-pointer hover:shadow-md hover:bg-secondary/50 dark:hover:bg-[#253550]/50 transition-all"
                       style={{ animationDelay: `${i * 60}ms` }}
                     >
                       <div className="flex items-center gap-3 flex-1">
