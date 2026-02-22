@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActivityMap, CategoryMap } from "../utils/types";
+import type {
+  ActivityMap,
+  CategoryMap,
+  UserPreferences,
+} from "../utils/types";
 
 // In-memory Firebase mock
 let store: Record<string, unknown> = {};
@@ -431,6 +435,706 @@ describe("firebaseDB", () => {
         "catA"
       );
       expect(count).toBe(0);
+    });
+  });
+
+  describe("addActivities", () => {
+    it("inserts a single activity", async () => {
+      await firebaseDB.addActivities(USER_ID, [
+        { date: "2024-01-01", name: "Running" },
+      ]);
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      const keys = Object.keys(activities);
+      expect(keys).toHaveLength(1);
+      expect(activities[keys[0]]).toEqual({
+        date: "2024-01-01",
+        name: "Running",
+      });
+    });
+
+    it("inserts multiple activities in bulk", async () => {
+      await firebaseDB.addActivities(USER_ID, [
+        { date: "2024-01-01", name: "Running" },
+        { date: "2024-01-02", name: "Swimming" },
+        { date: "2024-01-03", name: "Cycling" },
+      ]);
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      const keys = Object.keys(activities);
+      expect(keys).toHaveLength(3);
+      const names = keys.map((k) => activities[k].name).sort();
+      expect(names).toEqual(["Cycling", "Running", "Swimming"]);
+    });
+
+    it("stores optional fields correctly", async () => {
+      await firebaseDB.addActivities(USER_ID, [
+        {
+          date: "2024-06-15",
+          name: "Yoga",
+          description: "Morning session",
+          intensity: "medium",
+          timeSpent: 45,
+        },
+      ]);
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      const entry = Object.values(activities)[0];
+      expect(entry).toEqual({
+        date: "2024-06-15",
+        name: "Yoga",
+        description: "Morning session",
+        intensity: "medium",
+        timeSpent: 45,
+      });
+    });
+  });
+
+  describe("editActivity", () => {
+    it("updates fields of an existing activity", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+      });
+
+      await firebaseDB.editActivity(USER_ID, "act1", {
+        date: "2024-02-01",
+        name: "Jogging",
+      });
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      expect(activities.act1.date).toBe("2024-02-01");
+      expect(activities.act1.name).toBe("Jogging");
+    });
+
+    it("throws when activity does not exist", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+      });
+
+      await expect(
+        firebaseDB.editActivity(USER_ID, "nonexistent", {
+          date: "2024-02-01",
+          name: "Jogging",
+        })
+      ).rejects.toThrow("Unable to find activity with id nonexistent");
+    });
+  });
+
+  describe("deleteActivity", () => {
+    it("removes an existing activity", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+        act2: { date: "2024-01-02", name: "Swimming" },
+      });
+
+      await firebaseDB.deleteActivity(USER_ID, "act1");
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      expect(activities.act1).toBeUndefined();
+      expect(activities.act2).toBeDefined();
+    });
+
+    it("throws when activity does not exist", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+      });
+
+      await expect(
+        firebaseDB.deleteActivity(USER_ID, "nonexistent")
+      ).rejects.toThrow("Unable to find activity with id nonexistent");
+    });
+  });
+
+  describe("deleteAllActivities", () => {
+    it("removes all activities", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+        act2: { date: "2024-01-02", name: "Swimming" },
+        act3: { date: "2024-01-03", name: "Cycling" },
+      });
+
+      await firebaseDB.deleteAllActivities(USER_ID);
+
+      const activities = getNestedValue(`users/${USER_ID}/activity`);
+      expect(activities).toBeNull();
+    });
+
+    it("is safe to call when no activities exist", async () => {
+      await firebaseDB.deleteAllActivities(USER_ID);
+
+      const activities = getNestedValue(`users/${USER_ID}/activity`);
+      expect(activities).toBeNull();
+    });
+  });
+
+  describe("getActivityCount", () => {
+    it("returns 0 when no activities exist", async () => {
+      const count = await firebaseDB.getActivityCount(USER_ID);
+      expect(count).toBe(0);
+    });
+
+    it("returns the correct count", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+        act2: { date: "2024-01-02", name: "Swimming" },
+        act3: { date: "2024-01-03", name: "Cycling" },
+      });
+
+      const count = await firebaseDB.getActivityCount(USER_ID);
+      expect(count).toBe(3);
+    });
+  });
+
+  describe("addCategory", () => {
+    it("creates a new category with activityNames", async () => {
+      await firebaseDB.addCategory(USER_ID, {
+        name: "Sports",
+        active: true,
+        description: "Athletic activities",
+        activityNames: ["Running", "Swimming"],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      const keys = Object.keys(categories);
+      expect(keys).toHaveLength(1);
+      expect(categories[keys[0]]).toEqual({
+        name: "Sports",
+        active: true,
+        description: "Athletic activities",
+        activityNames: ["Running", "Swimming"],
+      });
+    });
+
+    it("generates a push key for the new category", async () => {
+      await firebaseDB.addCategory(USER_ID, {
+        name: "Sports",
+        active: true,
+        description: "",
+        activityNames: [],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      const keys = Object.keys(categories);
+      expect(keys).toHaveLength(1);
+      expect(keys[0]).toMatch(/^push-/);
+    });
+
+    it("can add multiple categories", async () => {
+      await firebaseDB.addCategory(USER_ID, {
+        name: "Sports",
+        active: true,
+        description: "",
+        activityNames: [],
+      });
+      await firebaseDB.addCategory(USER_ID, {
+        name: "Learning",
+        active: false,
+        description: "",
+        activityNames: ["Reading"],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      const names = Object.values(categories)
+        .map((c) => c.name)
+        .sort();
+      expect(names).toEqual(["Learning", "Sports"]);
+    });
+  });
+
+  describe("editCategory", () => {
+    it("renames a category", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+      });
+
+      await firebaseDB.editCategory(USER_ID, "catA", {
+        name: "Athletics",
+        active: true,
+        description: "",
+        activityNames: ["Running"],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.name).toBe("Athletics");
+    });
+
+    it("changes active status", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+      });
+
+      await firebaseDB.editCategory(USER_ID, "catA", {
+        name: "Sports",
+        active: false,
+        description: "",
+        activityNames: ["Running"],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.active).toBe(false);
+    });
+
+    it("updates activityNames", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+      });
+
+      await firebaseDB.editCategory(USER_ID, "catA", {
+        name: "Sports",
+        active: true,
+        description: "Updated",
+        activityNames: ["Running", "Swimming", "Cycling"],
+      });
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.activityNames).toEqual([
+        "Running",
+        "Swimming",
+        "Cycling",
+      ]);
+      expect(categories.catA.description).toBe("Updated");
+    });
+
+    it("throws when category does not exist", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await expect(
+        firebaseDB.editCategory(USER_ID, "nonexistent", {
+          name: "New",
+          active: true,
+          description: "",
+          activityNames: [],
+        })
+      ).rejects.toThrow("Unable to find category with id nonexistent");
+    });
+  });
+
+  describe("deleteCategory", () => {
+    it("removes an existing category", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+        catB: {
+          name: "Other",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await firebaseDB.deleteCategory(USER_ID, "catA");
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA).toBeUndefined();
+      expect(categories.catB).toBeDefined();
+    });
+
+    it("throws when category does not exist", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await expect(
+        firebaseDB.deleteCategory(USER_ID, "nonexistent")
+      ).rejects.toThrow("Unable to find category with id nonexistent");
+    });
+  });
+
+  describe("deleteAllCategories", () => {
+    it("removes all categories", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+        catB: {
+          name: "Other",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await firebaseDB.deleteAllCategories(USER_ID);
+
+      const categories = getNestedValue(`users/${USER_ID}/categories`);
+      expect(categories).toBeNull();
+    });
+
+    it("is safe to call when no categories exist", async () => {
+      await firebaseDB.deleteAllCategories(USER_ID);
+
+      const categories = getNestedValue(`users/${USER_ID}/categories`);
+      expect(categories).toBeNull();
+    });
+  });
+
+  describe("getCategories", () => {
+    it("returns null when no categories exist", async () => {
+      const result = await firebaseDB.getCategories(USER_ID);
+      expect(result).toBeNull();
+    });
+
+    it("returns categories when they exist", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "Athletic",
+          activityNames: ["Running", "Swimming"],
+        },
+        catB: {
+          name: "Learning",
+          active: false,
+          description: "",
+          activityNames: ["Reading"],
+        },
+      });
+
+      const result = await firebaseDB.getCategories(USER_ID);
+      expect(result).not.toBeNull();
+      expect(Object.keys(result!)).toHaveLength(2);
+      expect(result!.catA.name).toBe("Sports");
+      expect(result!.catA.activityNames).toEqual(["Running", "Swimming"]);
+      expect(result!.catB.name).toBe("Learning");
+      expect(result!.catB.active).toBe(false);
+    });
+  });
+
+  describe("getCategoryCount", () => {
+    it("returns 0 when no categories exist", async () => {
+      const count = await firebaseDB.getCategoryCount(USER_ID);
+      expect(count).toBe(0);
+    });
+
+    it("returns the correct count", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+        catB: {
+          name: "Learning",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      const count = await firebaseDB.getCategoryCount(USER_ID);
+      expect(count).toBe(2);
+    });
+  });
+
+  describe("getPreferences", () => {
+    it("returns defaults when no preferences are stored", async () => {
+      const prefs = await firebaseDB.getPreferences(USER_ID);
+      expect(prefs).toEqual({
+        groupByCategory: true,
+        funAnimations: true,
+        isLightTheme: true,
+      });
+    });
+
+    it("merges stored preferences with defaults", async () => {
+      setNestedValue(`users/${USER_ID}/preferences`, {
+        funAnimations: false,
+      });
+
+      const prefs = await firebaseDB.getPreferences(USER_ID);
+      expect(prefs.groupByCategory).toBe(true);
+      expect(prefs.funAnimations).toBe(false);
+      expect(prefs.isLightTheme).toBe(true);
+    });
+
+    it("returns fully overridden preferences", async () => {
+      setNestedValue(`users/${USER_ID}/preferences`, {
+        groupByCategory: false,
+        funAnimations: false,
+        isLightTheme: false,
+      });
+
+      const prefs = await firebaseDB.getPreferences(USER_ID);
+      expect(prefs).toEqual({
+        groupByCategory: false,
+        funAnimations: false,
+        isLightTheme: false,
+      });
+    });
+  });
+
+  describe("setPreferences", () => {
+    it("stores preferences", async () => {
+      const prefs: UserPreferences = {
+        groupByCategory: false,
+        funAnimations: true,
+        isLightTheme: false,
+      };
+
+      await firebaseDB.setPreferences(USER_ID, prefs);
+
+      const stored = getNestedValue(
+        `users/${USER_ID}/preferences`
+      ) as UserPreferences;
+      expect(stored).toEqual(prefs);
+    });
+
+    it("overwrites existing preferences", async () => {
+      setNestedValue(`users/${USER_ID}/preferences`, {
+        groupByCategory: true,
+        funAnimations: true,
+        isLightTheme: true,
+      });
+
+      const newPrefs: UserPreferences = {
+        groupByCategory: false,
+        funAnimations: false,
+        isLightTheme: false,
+      };
+
+      await firebaseDB.setPreferences(USER_ID, newPrefs);
+
+      const stored = getNestedValue(
+        `users/${USER_ID}/preferences`
+      ) as UserPreferences;
+      expect(stored).toEqual(newPrefs);
+    });
+
+    it("round-trips with getPreferences", async () => {
+      const prefs: UserPreferences = {
+        groupByCategory: false,
+        funAnimations: true,
+        isLightTheme: false,
+      };
+
+      await firebaseDB.setPreferences(USER_ID, prefs);
+      const retrieved = await firebaseDB.getPreferences(USER_ID);
+      expect(retrieved).toEqual(prefs);
+    });
+  });
+
+  describe("getUserData", () => {
+    it("returns defaults when user has no data", async () => {
+      const data = await firebaseDB.getUserData(USER_ID);
+      expect(data.activities).toEqual({});
+      expect(data.categories).toEqual({});
+      expect(data.preferences).toEqual({
+        groupByCategory: true,
+        funAnimations: true,
+        isLightTheme: true,
+      });
+    });
+
+    it("returns full user data", async () => {
+      seedActivities({
+        act1: { date: "2024-01-01", name: "Running" },
+      });
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+      });
+      setNestedValue(`users/${USER_ID}/preferences`, {
+        groupByCategory: false,
+        funAnimations: false,
+        isLightTheme: true,
+      });
+
+      const data = await firebaseDB.getUserData(USER_ID);
+      expect(Object.keys(data.activities)).toHaveLength(1);
+      expect(data.activities.act1.name).toBe("Running");
+      expect(Object.keys(data.categories)).toHaveLength(1);
+      expect(data.categories.catA.name).toBe("Sports");
+      expect(data.preferences.groupByCategory).toBe(false);
+      expect(data.preferences.funAnimations).toBe(false);
+      expect(data.preferences.isLightTheme).toBe(true);
+    });
+
+    it("merges partial preferences with defaults", async () => {
+      setNestedValue(`users/${USER_ID}/preferences`, {
+        isLightTheme: false,
+      });
+
+      const data = await firebaseDB.getUserData(USER_ID);
+      expect(data.preferences).toEqual({
+        groupByCategory: true,
+        funAnimations: true,
+        isLightTheme: false,
+      });
+    });
+  });
+
+  describe("setUserData", () => {
+    it("stores full user data", async () => {
+      await firebaseDB.setUserData(USER_ID, {
+        activities: {
+          act1: { date: "2024-01-01", name: "Running" },
+        },
+        categories: {
+          catA: {
+            name: "Sports",
+            active: true,
+            description: "",
+            activityNames: ["Running"],
+          },
+        },
+        preferences: {
+          groupByCategory: false,
+          funAnimations: true,
+          isLightTheme: false,
+        },
+      });
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      expect(activities.act1.name).toBe("Running");
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.name).toBe("Sports");
+
+      const preferences = getNestedValue(
+        `users/${USER_ID}/preferences`
+      ) as UserPreferences;
+      expect(preferences.groupByCategory).toBe(false);
+    });
+
+    it("round-trips with getUserData", async () => {
+      const original = {
+        activities: {
+          act1: { date: "2024-01-01", name: "Running" },
+          act2: { date: "2024-01-02", name: "Swimming" },
+        },
+        categories: {
+          catA: {
+            name: "Sports",
+            active: true,
+            description: "Athletic activities",
+            activityNames: ["Running", "Swimming"],
+          },
+        },
+        preferences: {
+          groupByCategory: false,
+          funAnimations: false,
+          isLightTheme: true,
+        } as UserPreferences,
+      };
+
+      await firebaseDB.setUserData(USER_ID, original);
+      const retrieved = await firebaseDB.getUserData(USER_ID);
+
+      expect(retrieved.activities).toEqual(original.activities);
+      expect(retrieved.categories).toEqual(original.categories);
+      expect(retrieved.preferences).toEqual(original.preferences);
+    });
+
+    it("overwrites existing data", async () => {
+      seedActivities({
+        old1: { date: "2023-01-01", name: "OldActivity" },
+      });
+      seedCategories({
+        oldCat: {
+          name: "OldCategory",
+          active: false,
+          description: "",
+          activityNames: ["OldActivity"],
+        },
+      });
+
+      await firebaseDB.setUserData(USER_ID, {
+        activities: {
+          new1: { date: "2024-06-01", name: "NewActivity" },
+        },
+        categories: {
+          newCat: {
+            name: "NewCategory",
+            active: true,
+            description: "",
+            activityNames: ["NewActivity"],
+          },
+        },
+        preferences: {
+          groupByCategory: true,
+          funAnimations: true,
+          isLightTheme: true,
+        },
+      });
+
+      const activities = getNestedValue(
+        `users/${USER_ID}/activity`
+      ) as ActivityMap;
+      expect(activities.old1).toBeUndefined();
+      expect(activities.new1.name).toBe("NewActivity");
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.oldCat).toBeUndefined();
+      expect(categories.newCat.name).toBe("NewCategory");
     });
   });
 });
