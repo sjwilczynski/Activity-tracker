@@ -471,17 +471,28 @@ describe("firebaseDB", () => {
       expect(names).toEqual(["Cycling", "Running", "Swimming"]);
     });
 
-    it("stores all fields correctly", async () => {
+    it("stores optional fields correctly", async () => {
       await firebaseDB.addActivities(USER_ID, [
-        { date: "2024-06-15", name: "Yoga" },
+        {
+          date: "2024-06-15",
+          name: "Yoga",
+          description: "Morning session",
+          intensity: "medium",
+          timeSpent: 45,
+        },
       ]);
 
       const activities = getNestedValue(
         `users/${USER_ID}/activity`
       ) as ActivityMap;
       const entry = Object.values(activities)[0];
-      expect(entry.date).toBe("2024-06-15");
-      expect(entry.name).toBe("Yoga");
+      expect(entry).toEqual({
+        date: "2024-06-15",
+        name: "Yoga",
+        description: "Morning session",
+        intensity: "medium",
+        timeSpent: 45,
+      });
     });
   });
 
