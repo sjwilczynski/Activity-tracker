@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { GitCompare, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { useSearchParams } from "react-router";
 import { ErrorView } from "../components/states/ErrorView";
@@ -237,12 +237,10 @@ export const Compare = () => {
     [data],
   );
 
-  // Set default year when data loads
-  useEffect(() => {
-    if (availableYears.length > 0 && selectedYear === "") {
-      setSelectedYear(String(availableYears[0]));
-    }
-  }, [availableYears, selectedYear]);
+  // Derive effective year — avoids setState-in-effect for default selection
+  const effectiveYear =
+    selectedYear ||
+    (availableYears.length > 0 ? String(availableYears[0]) : "");
 
   const activeData = useMemo(
     () => (data ? data.filter((a) => a.active) : []),
@@ -255,7 +253,7 @@ export const Compare = () => {
 
   const addPeriod = () => {
     if (periods.length >= 7) return;
-    const year = Number(selectedYear);
+    const year = Number(effectiveYear);
     if (isNaN(year)) return;
 
     const id =
@@ -394,7 +392,7 @@ export const Compare = () => {
 
             <div className="space-y-2">
               <Label htmlFor="compare-year">Year</Label>
-              <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <Select value={effectiveYear} onValueChange={setSelectedYear}>
                 <SelectTrigger id="compare-year">
                   <SelectValue />
                 </SelectTrigger>

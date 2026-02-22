@@ -1,5 +1,5 @@
 import { Folder, Pencil, Plus, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFetcher } from "react-router";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -415,12 +415,12 @@ function DeleteCategoryButton({
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const isPending = fetcher.state !== "idle";
 
-  // Sync targetCategoryId when otherCategories changes
-  useEffect(() => {
-    if (!otherCategories.some((c) => c.id === targetCategoryId)) {
-      setTargetCategoryId(otherCategories[0]?.id ?? "");
-    }
-  }, [otherCategories, targetCategoryId]);
+  // Derive effective target — avoids setState-in-effect
+  const effectiveTargetId = otherCategories.some(
+    (c) => c.id === targetCategoryId
+  )
+    ? targetCategoryId
+    : (otherCategories[0]?.id ?? "");
 
   useFeedbackToast(
     {
@@ -440,7 +440,7 @@ function DeleteCategoryButton({
         {
           intent: "delete-category-reassign",
           id: category.id,
-          targetCategoryId,
+          targetCategoryId: effectiveTargetId,
         },
         { method: "POST" }
       );
@@ -522,7 +522,7 @@ function DeleteCategoryButton({
             <div className="space-y-2 pl-6">
               <Label>Target category</Label>
               <Select
-                value={targetCategoryId}
+                value={effectiveTargetId}
                 onValueChange={setTargetCategoryId}
               >
                 <SelectTrigger>
@@ -548,7 +548,7 @@ function DeleteCategoryButton({
           <Button
             variant="destructive"
             onClick={handleDelete}
-            disabled={isPending || (action === "reassign" && !targetCategoryId)}
+            disabled={isPending || (action === "reassign" && !effectiveTargetId)}
           >
             {isPending ? "Deleting..." : "Delete Category"}
           </Button>

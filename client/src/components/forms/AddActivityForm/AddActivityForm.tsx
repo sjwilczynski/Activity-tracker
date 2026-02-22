@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { addDays } from "date-fns";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { type ActivityRecordWithId, type CategoryOption } from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { cn } from "../../../utils/cn";
@@ -28,25 +28,28 @@ function useFormResetOnSuccess(
   { isSuccess, isPending }: { isSuccess: boolean; isPending: boolean }
 ) {
   const [submitCount, setSubmitCount] = useState(0);
-  const prevIsSuccess = useRef(isSuccess);
+  const [prevIsSuccess, setPrevIsSuccess] = useState(false);
 
-  useEffect(() => {
-    if (isPending) {
-      prevIsSuccess.current = false;
-    }
-  }, [isPending]);
+  // Reset tracking when a new submission starts
+  if (isPending && prevIsSuccess) {
+    setPrevIsSuccess(false);
+  }
 
+  // Detect success transition — adjust state during render (React-approved pattern)
+  if (isSuccess && !prevIsSuccess) {
+    setPrevIsSuccess(true);
+    setSubmitCount((c) => c + 1);
+  }
+
+  // Reset form after successful submission
   useEffect(() => {
-    if (isSuccess && !prevIsSuccess.current) {
-      reset();
-      const nextDate = lastActivity
-        ? addDays(lastActivity.date, 1)
-        : new Date();
-      setFieldValue("date", nextDate);
-      setSubmitCount((c) => c + 1);
-    }
-    prevIsSuccess.current = isSuccess;
-  }, [isSuccess, lastActivity, reset, setFieldValue, setSubmitCount]);
+    if (submitCount === 0) return;
+    reset();
+    const nextDate = lastActivity
+      ? addDays(lastActivity.date, 1)
+      : new Date();
+    setFieldValue("date", nextDate);
+  }, [submitCount, reset, lastActivity, setFieldValue]);
 
   return submitCount;
 }
