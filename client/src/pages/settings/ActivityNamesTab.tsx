@@ -1,7 +1,5 @@
-import { Pencil, Plus } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-import { Link, useFetcher } from "react-router";
-import { Button } from "../../components/ui/button";
+import { useMemo } from "react";
+import { Link } from "react-router";
 import {
   Card,
   CardContent,
@@ -9,25 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../components/ui/dialog";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
 import {
   Table,
   TableBody,
@@ -37,7 +16,10 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import type { ActivityRecordWithId, Category } from "../../data";
-import { useFeedbackToast } from "../../hooks/useFeedbackToast";
+import { AddActivityNameButton } from "./AddActivityNameButton";
+import { CategorySelect } from "./CategorySelect";
+import { EditActivityNameButton } from "./EditActivityNameButton";
+import { useAssignCategory } from "./useAssignCategory";
 
 type ActivityNameInfo = {
   name: string;
@@ -156,67 +138,6 @@ type ActivityNameRowProps = {
   categories: Category[];
 };
 
-function useAssignCategory({ name }: Pick<ActivityNameRowProps, "name">) {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-
-  const handleAssignCategory = (newCategoryId: string) => {
-    fetcher.submit(
-      {
-        intent: "assign-category",
-        activityName: name,
-        categoryId: newCategoryId,
-      },
-      { method: "post" }
-    );
-  };
-
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: `Category updated for "${name}"`,
-      errorMessage: `Failed to assign category for "${name}"`,
-    }
-  );
-
-  return { handleAssignCategory, isPending: fetcher.state !== "idle" };
-}
-
-function CategorySelect({
-  categoryId,
-  categories,
-  onValueChange,
-  className,
-  disabled,
-}: {
-  categoryId: string | undefined;
-  categories: Category[];
-  onValueChange: (value: string) => void;
-  className?: string;
-  disabled?: boolean;
-}) {
-  return (
-    <Select
-      value={categoryId ?? ""}
-      onValueChange={onValueChange}
-      disabled={disabled}
-    >
-      <SelectTrigger className={className}>
-        <SelectValue placeholder="Select category" />
-      </SelectTrigger>
-      <SelectContent>
-        {categories.map((cat) => (
-          <SelectItem key={cat.id} value={cat.id}>
-            {cat.name} ({cat.active ? "active" : "inactive"})
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
 function ActivityNameRow({
   name,
   count,
@@ -270,192 +191,5 @@ function ActivityNameCard({
         disabled={isPending}
       />
     </div>
-  );
-}
-
-function AddActivityNameButton({ categories }: { categories: Category[] }) {
-  const [name, setName] = useState("");
-  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  const isValid = name.trim().length > 0 && categoryId.length > 0;
-
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: "Activity name added successfully!",
-      errorMessage: "Failed to add activity name",
-      onSuccess: () => closeRef.current?.click(),
-    }
-  );
-
-  const handleSubmit = () => {
-    if (!isValid) return;
-    fetcher.submit(
-      {
-        intent: "add-activity-name",
-        activityName: name.trim(),
-        categoryId,
-      },
-      { method: "POST" }
-    );
-  };
-
-  return (
-    <Dialog
-      onOpenChange={(isOpen) => {
-        if (isOpen) {
-          setName("");
-          setCategoryId(categories[0]?.id ?? "");
-        }
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className="w-full sm:w-auto">
-          <Plus className="size-4 mr-2" />
-          Add Activity Name
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Activity Name</DialogTitle>
-          <DialogDescription>
-            Add a new activity name and assign it to a category
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="new-activity-name">Activity Name</Label>
-            <Input
-              id="new-activity-name"
-              placeholder="e.g., Running, Swimming"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !isPending && isValid) handleSubmit();
-              }}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="new-activity-category">Category</Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger id="new-activity-category">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name} ({cat.active ? "active" : "inactive"})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline" ref={closeRef}>
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            onClick={handleSubmit}
-            disabled={isPending || !isValid}
-          >
-            {isPending ? "Adding..." : "Add Activity Name"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function EditActivityNameButton({ activityName }: { activityName: string }) {
-  const [newName, setNewName] = useState(activityName);
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  const isValid = newName.trim().length > 0 && newName.trim() !== activityName;
-
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: `Renamed "${activityName}" successfully`,
-      errorMessage: `Failed to rename "${activityName}"`,
-      onSuccess: () => closeRef.current?.click(),
-    }
-  );
-
-  const handleSubmit = () => {
-    fetcher.submit(
-      {
-        intent: "rename-activity",
-        oldName: activityName,
-        newName: newName.trim(),
-      },
-      { method: "post" }
-    );
-  };
-
-  return (
-    <Dialog
-      onOpenChange={(isOpen) => {
-        if (isOpen) setNewName(activityName);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
-        >
-          <Pencil className="size-4" />
-          <span className="sr-only">Edit</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Activity Name</DialogTitle>
-          <DialogDescription>
-            This will update all activities with the name &quot;{activityName}
-            &quot;
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor={`edit-name-${activityName}`}>
-              New Activity Name
-            </Label>
-            <Input
-              id={`edit-name-${activityName}`}
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !isPending && isValid) handleSubmit();
-              }}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline" ref={closeRef}>
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button disabled={!isValid || isPending} onClick={handleSubmit}>
-            {isPending ? "Updating..." : "Update Name"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
