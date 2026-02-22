@@ -9,11 +9,14 @@
         "chromatic",
         "tailwindcss",
         "tw-animate-css"
-      ],
-      "ignore": ["src/components/ui/*.tsx"]
+      ]
     },
     "api": {
-      "entry": ["functions/*/index.ts", "scripts/migrate.ts", "scripts/migrate-local-test.ts"],
+      "entry": [
+        "functions/*/index.ts",
+        "scripts/migrate.ts",
+        "scripts/migrate-local-test.ts"
+      ],
       "project": ["**/*.ts"],
       "ignoreBinaries": ["func"],
       "ignore": ["utils/defaultCategories.ts"]
