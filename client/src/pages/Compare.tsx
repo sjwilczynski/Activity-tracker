@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { useActivities } from "../data";
+import type { ActivityRecordWithId } from "../data";
 import { useChartColors } from "../utils/useChartColors";
 import {
   type ComparisonPeriod,
@@ -33,6 +34,7 @@ import {
   getPeriodLabel,
   getYearCounts,
   MONTH_LABELS_SHORT,
+  MONTH_NAMES,
   periodsFromParams,
   periodsToParam,
 } from "./compare-utils";
@@ -47,6 +49,34 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+function getMostActiveTimeUnit(
+  periodActivities: ActivityRecordWithId[],
+  period: ComparisonPeriod,
+): string {
+  if (periodActivities.length === 0) return "None";
+
+  if (period.type === "month") {
+    const dayCounts: Record<number, number> = {};
+    for (const a of periodActivities) {
+      const day = a.date.getDate();
+      dayCounts[day] = (dayCounts[day] || 0) + 1;
+    }
+    const entries = Object.entries(dayCounts);
+    entries.sort((a, b) => Number(b[1]) - Number(a[1]));
+    const day = Number(entries[0][0]);
+    return `${MONTH_LABELS_SHORT[period.month ?? 0]} ${day}`;
+  } else {
+    const monthCounts: Record<number, number> = {};
+    for (const a of periodActivities) {
+      const month = a.date.getMonth();
+      monthCounts[month] = (monthCounts[month] || 0) + 1;
+    }
+    const entries = Object.entries(monthCounts);
+    entries.sort((a, b) => Number(b[1]) - Number(a[1]));
+    return MONTH_NAMES[Number(entries[0][0])];
+  }
+}
 
 export const Compare = () => {
   const { isLoading, error, data } = useActivities();
@@ -209,6 +239,14 @@ export const Compare = () => {
                       </span>
                       <span className="font-semibold capitalize">
                         {mostPopular}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {period.type === "month" ? "Most Active Day" : "Most Active Month"}
+                      </span>
+                      <span className="font-semibold">
+                        {getMostActiveTimeUnit(periodActivities, period)}
                       </span>
                     </div>
                   </CardContent>
