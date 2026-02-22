@@ -4,7 +4,7 @@ import { Pie } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
 import { useIsMobile } from "../../../hooks/use-mobile";
 import { useChartColors } from "../../../utils/useChartColors";
-import { getFlatPieChartData, getPieChartData } from "../utils";
+import { getFlatPieChartData, getPieChartData } from "../pie-chart-data";
 
 type Props = {
   activitySummaries: ActivitySummaries;
