@@ -38,7 +38,7 @@ The app is split into a client-side React SPA and a serverless API layer:
 
 ## Project Structure
 
-```
+```text
 /client  - React frontend (Vite, shadcn/ui + Tailwind CSS, React Query)
 /api     - Azure Functions backend
 /scripts - Migration and utility scripts
@@ -68,7 +68,7 @@ bun run --filter '*' build      # Build both frontend and API
 ### Linting
 
 ```bash
-bun eslint .
+bun run lint
 ```
 
 ## Deployment
