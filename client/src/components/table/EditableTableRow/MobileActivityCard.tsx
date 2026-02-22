@@ -1,9 +1,10 @@
 import { Trash2 } from "lucide-react";
-import type { ActivityRecordWithId } from "../../../data";
+import { type ActivityRecordWithId, useCategories } from "../../../data";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
 import { IntensityBadge } from "../../IntensityBadge";
+import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 
@@ -15,12 +16,15 @@ type Props = {
 
 export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
   const color = getActivityColor(record.name);
+  const { data: categories } = useCategories();
+  const categoryName = categories?.find((c) => c.id === record.categoryId)?.name;
 
   return (
     <div
       className={cn(
         "md:hidden rounded-lg border p-4 space-y-3 transition-all duration-500",
-        isDeleting && "opacity-0 scale-95 pointer-events-none"
+        isDeleting && "opacity-0 scale-95 pointer-events-none",
+        !record.active && "opacity-60"
       )}
     >
       <div className="flex items-start justify-between">
@@ -34,6 +38,11 @@ export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <p className="font-semibold capitalize">{record.name}</p>
+              {categoryName && (
+                <Badge variant="outline" className="text-xs">
+                  {categoryName}
+                </Badge>
+              )}
               {record.intensity && (
                 <IntensityBadge intensity={record.intensity} />
               )}

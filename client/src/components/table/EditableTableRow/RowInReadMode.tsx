@@ -1,12 +1,13 @@
 import { Trash2 } from "lucide-react";
 import { useCallback } from "react";
 import { useFetcher } from "react-router";
-import type { ActivityRecordWithId } from "../../../data";
+import { type ActivityRecordWithId, useCategories } from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
 import { IntensityBadge } from "../../IntensityBadge";
+import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 import { MobileActivityCard } from "./MobileActivityCard";
@@ -21,6 +22,8 @@ export const RowInReadMode = ({ record }: Props) => {
   const isError = state === "idle" && data?.error !== undefined;
   const isSuccess = state === "idle" && data?.ok === true;
   const color = getActivityColor(record.name);
+  const { data: categories } = useCategories();
+  const categoryName = categories?.find((c) => c.id === record.categoryId)?.name;
 
   useFeedbackToast(
     { isSuccess, isError },
@@ -51,7 +54,8 @@ export const RowInReadMode = ({ record }: Props) => {
         data-testid="activity-row"
         className={cn(
           "hidden md:flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-500 hover:bg-secondary dark:hover:bg-[#253550]/50 group",
-          isDeleting && "opacity-0 scale-95 pointer-events-none"
+          isDeleting && "opacity-0 scale-95 pointer-events-none",
+          !record.active && "opacity-60"
         )}
       >
         <div
@@ -63,6 +67,11 @@ export const RowInReadMode = ({ record }: Props) => {
 
         <div className="flex-1 min-w-0">
           <p className="font-medium capitalize text-sm">{record.name}</p>
+          {categoryName && (
+            <Badge variant="outline" className="text-xs">
+              {categoryName}
+            </Badge>
+          )}
           {record.description && (
             <p className="text-xs text-muted-foreground line-clamp-1">
               {record.description}
