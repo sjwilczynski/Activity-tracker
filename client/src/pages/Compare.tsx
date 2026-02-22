@@ -64,7 +64,6 @@ function getMostActiveTimeUnit(
       dayCounts[day] = (dayCounts[day] || 0) + 1;
     }
     const entries = Object.entries(dayCounts);
-    if (entries.length === 0) return "None";
     entries.sort((a, b) => Number(b[1]) - Number(a[1]));
     const day = Number(entries[0][0]);
     const monthName = MONTH_NAMES[period.month ?? 0].slice(0, 3);
@@ -76,7 +75,6 @@ function getMostActiveTimeUnit(
       monthCounts[month] = (monthCounts[month] || 0) + 1;
     }
     const entries = Object.entries(monthCounts);
-    if (entries.length === 0) return "None";
     entries.sort((a, b) => Number(b[1]) - Number(a[1]));
     return MONTH_NAMES[Number(entries[0][0])];
   }
