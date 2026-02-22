@@ -71,36 +71,61 @@ export const AddPeriodInteraction: Story = {
   },
 };
 
-// Activities spanning 2023 and 2024 for year comparison
-const multiYearActivities: ActivityRecordWithIdServer[] = [
-  // 2024 — Jan & Feb, mix of activities
-  { id: "y1", date: "2024-01-05", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y2", date: "2024-01-12", name: "Swimming", categoryId: "cat-sports", active: true },
-  { id: "y3", date: "2024-01-20", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y4", date: "2024-02-03", name: "Cycling", categoryId: "cat-sports", active: true },
-  { id: "y5", date: "2024-02-08", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y6", date: "2024-02-14", name: "Yoga", categoryId: "cat-wellness", active: true },
-  { id: "y7", date: "2024-02-20", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y8", date: "2024-03-01", name: "Meditation", categoryId: "cat-wellness", active: true },
-  { id: "y9", date: "2024-03-15", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y10", date: "2024-04-10", name: "Cycling", categoryId: "cat-sports", active: true },
-  { id: "y11", date: "2024-05-22", name: "Swimming", categoryId: "cat-sports", active: true },
-  { id: "y12", date: "2024-06-18", name: "Running", categoryId: "cat-sports", active: true },
-  // 2023 — spread across the year
-  { id: "y13", date: "2023-01-10", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y14", date: "2023-02-14", name: "Swimming", categoryId: "cat-sports", active: true },
-  { id: "y15", date: "2023-03-05", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y16", date: "2023-03-20", name: "Cycling", categoryId: "cat-sports", active: true },
-  { id: "y17", date: "2023-04-12", name: "Yoga", categoryId: "cat-wellness", active: true },
-  { id: "y18", date: "2023-05-08", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y19", date: "2023-05-25", name: "Meditation", categoryId: "cat-wellness", active: true },
-  { id: "y20", date: "2023-06-15", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y21", date: "2023-07-01", name: "Swimming", categoryId: "cat-sports", active: true },
-  { id: "y22", date: "2023-08-18", name: "Cycling", categoryId: "cat-sports", active: true },
-  { id: "y23", date: "2023-09-03", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y24", date: "2023-10-20", name: "Yoga", categoryId: "cat-wellness", active: true },
-  { id: "y25", date: "2023-11-11", name: "Running", categoryId: "cat-sports", active: true },
-  { id: "y26", date: "2023-12-25", name: "Meditation", categoryId: "cat-wellness", active: true },
+const ACTIVITY_POOL = [
+  { name: "Running", categoryId: "cat-sports", active: true },
+  { name: "Swimming", categoryId: "cat-sports", active: true },
+  { name: "Cycling", categoryId: "cat-sports", active: true },
+  { name: "Yoga", categoryId: "cat-wellness", active: true },
+  { name: "Meditation", categoryId: "cat-wellness", active: true },
+  { name: "Reading", categoryId: "cat-learning", active: false },
+] as const;
+
+// Seeded PRNG for deterministic mock data
+function seededRandom(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+/** Generate a full year of activities with seasonal variation per month */
+function generateYearActivities(
+  year: number,
+  basePerMonth: number,
+  idPrefix: string,
+): ActivityRecordWithIdServer[] {
+  // More activities in spring/summer (months 3-8), fewer in winter
+  const seasonalMultiplier = [
+    0.6, 0.6, 0.8, 1.0, 1.2, 1.4, 1.4, 1.2, 1.0, 0.8, 0.6, 0.5,
+  ];
+  const rand = seededRandom(year * 1000 + basePerMonth);
+  const result: ActivityRecordWithIdServer[] = [];
+  let id = 0;
+
+  for (let month = 0; month < 12; month++) {
+    const count = Math.round(basePerMonth * seasonalMultiplier[month]);
+    for (let i = 0; i < count; i++) {
+      const day = Math.min(28, Math.floor(rand() * 28) + 1);
+      const activity =
+        ACTIVITY_POOL[Math.floor(rand() * ACTIVITY_POOL.length)];
+      const mm = String(month + 1).padStart(2, "0");
+      const dd = String(day).padStart(2, "0");
+      result.push({
+        id: `${idPrefix}-${id++}`,
+        date: `${year}-${mm}-${dd}`,
+        name: activity.name,
+        categoryId: activity.categoryId,
+        active: activity.active,
+      });
+    }
+  }
+  return result;
+}
+
+const multiYearActivities = [
+  ...generateYearActivities(2024, 8, "y24"),
+  ...generateYearActivities(2023, 6, "y23"),
 ];
 
 export const CompareYears: Story = {
