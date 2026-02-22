@@ -1,18 +1,17 @@
-[![Azure Static Web Apps CI/CD](https://github.com/sjwilczynski/Activity-tracker/actions/workflows/azure-static-web-apps.yml/badge.svg?branch=main)](https://github.com/sjwilczynski/Activity-tracker/actions/workflows/azure-static-web-apps.yml)
-
 # Activity Tracker
 
-A sports activity tracking web app for logging workouts, comparing performance across time periods, and visualizing trends with interactive charts. Built with a modern React stack, serverless Azure Functions API, and Firebase for authentication and real-time data storage.
+A sports activity tracking web app for logging workouts, comparing performance across time periods, and visualizing trends with interactive charts. Built with a modern React stack, Azure Static Web Apps, and Firebase for authentication and data storage.
 
 ## Features
 
-- **Dashboard** — Quick activity logging, stat cards (total, last 7/30 days, last activity), and recent activity feed
-- **Activity List** — Full activity history with search, pagination, month grouping, inline editing, and bulk operations (rename, reassign category, delete by category)
-- **Charts** — Bar charts and pie charts for activity distribution, with group-by-category toggle and date range filtering
-- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend line charts and metric cards
-- **Settings** — Category and activity name management with drag-and-drop, import/export, and theme preferences
+- **Dashboard** — Quick activity logging with autocomplete, stat cards (total, last 7/30 days, last activity), recent activity feed with clickable navigation, and first-time onboarding with category picker
+- **Activity List** — Full activity history with search, date range filtering, pagination, month grouping, inline editing via dialogs, and bulk operations (rename, reassign category, delete by category)
+- **Charts** — Stacked bar charts and multi-ring pie charts for activity distribution, with group-by-category toggle and date range filtering
+- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend line charts and metric cards (total, most popular, most active day/month)
+- **Settings** — Category management (add/edit/delete with activity reassignment), activity name management (rename, assign to category), and chart display preferences
+- **Export / Import** — Full data export to JSON and import from JSON for backup and migration
 - **PWA** — Installable as a Progressive Web App with offline support via service worker
-- **Dark mode** — System-aware dark/light theme toggle
+- **Dark mode** — Dark/light theme toggle, persisted in user preferences
 
 ## Screenshots
 
@@ -26,9 +25,9 @@ A sports activity tracking web app for logging workouts, comparing performance a
 ## Tech Stack
 
 ### Frontend
-- **React 19** with the new JSX transform (no `React` import needed) and ref-as-prop (no `forwardRef`)
-- **TypeScript** with strict mode
-- **React Router v7** with file-based routing, loaders, and client actions for mutations
+- **React 19** 
+- **TypeScript**
+- **React Router v7** with SPA in framework mode
 - **TanStack React Query** for server state management, caching, and optimistic updates
 - **TanStack Form** for form state and validation
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
@@ -39,14 +38,14 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
 
 ### Backend
-- **Azure Functions** (Node.js 22) — serverless API with 19 CRUD functions for activities, categories, preferences, and bulk operations
-- **Firebase Admin SDK** for token verification and Realtime Database access
-- **Rate limiting** middleware per user
+- **Azure Functions** (Node.js 22) — serverless API with 19 functions covering CRUD for activities, categories, preferences, bulk operations (rename, reassign, delete by category), and data export/import
+- **Firebase Admin SDK** for ID token verification and Realtime Database access
+- **Rate limiting** middleware (per-user, per-function)
 
 ### Infrastructure
-- **Firebase Auth** for client-side authentication (Google sign-in)
+- **Firebase Auth** for client-side authentication (Google sign-in provider)
 - **Firebase Realtime Database** as the primary data store
-- **Azure Static Web Apps** for hosting with integrated API routing
+- **Azure Static Web Apps** for hosting with integrated serverless API routing
 
 ## Quick Start
 
@@ -57,7 +56,7 @@ bun run dev    # Start frontend (:3000) and API (:7071)
 
 ## Architecture
 
-The app is split into two workspaces: a client-side React SPA and a serverless API layer.
+The app is split into two workspaces (`/client` and `/api`) managed as a bun monorepo.
 
 ### Client → API Communication
 - In **local development**, Vite proxies `/api/*` requests from the frontend (port 3000) to the Azure Functions backend (port 7071)
@@ -67,13 +66,34 @@ The app is split into two workspaces: a client-side React SPA and a serverless A
 - **Client**: Firebase Auth handles sign-in (Google provider). The auth state is managed via `AuthContext` and a route loader redirects unauthenticated users to `/login`
 - **API**: Each function extracts the Firebase ID token from the `Authorization` header, verifies it via the Admin SDK, and uses the resulting `userId` to scope all database operations
 
+### Data Model
+
+The data model keeps the **client simple** by pushing business logic to the API:
+
+- **Activities** are stored as flat records keyed by Firebase push IDs, each containing `name`, `date`, and optional fields (`description`, `intensity`, `timeSpent`)
+- **Categories** each contain an `activityNames` array — the **single source of truth** for which activities belong to which category, plus metadata (`name`, `active`, `description`)
+- **Enrichment on read**: The API enriches activities with computed `categoryId` and `active` fields based on the category lookup before returning them to the client. This means the client never needs to perform the category ↔ activity join — it receives ready-to-render data
+- **User preferences** (e.g., theme, chart grouping) are stored per-user and merged with defaults on read
+- **Export/Import**: The `exportData` endpoint returns the complete user dataset (activities, categories, preferences) as a single JSON payload; `importData` replaces it atomically
+
 ### State Management
 - **Server state**: TanStack React Query manages all API data with automatic caching, background refetching, and cache invalidation on mutations
 - **Client state**: React Router loaders pre-fetch data, client actions handle mutations (edit, delete, bulk ops) via `useFetcher`
 - **UI state**: Component-local state with `useState`; theme preference synced to `<html>` class for Tailwind dark mode
 
-### Data Model
-Activities are stored as flat records keyed by Firebase push IDs. Categories contain an `activityNames` array — the single source of truth for which activities belong to which category. The API enriches activities with computed `categoryId` and `active` fields on read.
+## Testing
+
+The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writing-tests)** as the primary testing strategy — stories with `play` functions serve as both living documentation and executable tests. This approach provides [component-level testing](https://storybook.js.org/docs/writing-tests/component-testing) that runs in a real browser, striking the right balance between the isolation of unit tests and the confidence of end-to-end tests.
+
+- Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
+- **MSW (Mock Service Worker)** is used extensively to mock all API responses at the network level, providing realistic test data without a backend. MSW handlers cover all 19 API endpoints with representative datasets
+- API tests use **Vitest** with an in-memory Firebase mock for fast, isolated database operation testing
+
+```bash
+cd client && bun run test      # Storybook play function tests via Vitest + Playwright
+cd api && bun run test          # API unit tests (Vitest)
+cd client && bun run storybook  # Start Storybook on :6006 for interactive development
+```
 
 ## Project Structure
 
@@ -87,28 +107,13 @@ Activities are stored as flat records keyed by Firebase push IDs. Categories con
   /src/mocks                MSW handlers and Storybook decorators
   /src/utils                Helpers (colors, icons, cn)
 /api                        Azure Functions backend
-  /functions                Individual function endpoints
-  /database                 Firebase DB abstraction layer
+  /functions                Individual function endpoints (19 functions)
+  /database                 Firebase DB abstraction layer with enrichment logic
   /utils                    Shared types, validators, rate limiter
 /scripts                    Migration and utility scripts
 ```
 
 ## Development
-
-### Testing
-
-```bash
-cd client && bun run test      # Storybook play function tests via Vitest + Playwright browser
-cd api && bun run test          # API unit tests (Vitest)
-```
-
-Client tests use Storybook's test addon: stories with `play` functions run as Vitest tests in a real browser via `@vitest/browser-playwright`.
-
-### Storybook
-
-```bash
-cd client && bun run storybook  # Start Storybook on :6006
-```
 
 ### Building
 
@@ -140,5 +145,5 @@ The app is deployed on **Azure Static Web Apps** with CI/CD via GitHub Actions (
 ### Azure SWA Configuration
 - Static content served from `client/build/client`
 - API functions served from `api/dist` (Node.js 22)
-- `/api/*` routes automatically routed to the Functions backend
+- `/api/*` routes automatically routed to the Functions backend by Azure SWA — no proxy or routing config needed in production
 - Renovate branches are excluded from PR deployments
