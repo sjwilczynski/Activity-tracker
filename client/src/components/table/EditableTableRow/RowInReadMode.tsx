@@ -7,6 +7,7 @@ import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
 import { IntensityBadge } from "../../IntensityBadge";
+
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 import { MobileActivityCard } from "./MobileActivityCard";
@@ -51,7 +52,9 @@ export const RowInReadMode = ({ record }: Props) => {
         data-testid="activity-row"
         className={cn(
           "hidden md:flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-500 hover:bg-secondary dark:hover:bg-[#253550]/50 group",
-          isDeleting && "opacity-0 scale-95 pointer-events-none"
+          isDeleting
+            ? "opacity-0 scale-95 pointer-events-none"
+            : !record.active && "opacity-75"
         )}
       >
         <div

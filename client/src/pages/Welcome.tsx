@@ -1,6 +1,7 @@
 import { format, subDays } from "date-fns";
 import { Activity, Calendar, CalendarDays, Clock } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 import { useAuth } from "../auth";
 import { AddActivityForm } from "../components/forms/AddActivityForm/AddActivityForm";
 import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWithDetailsDialog";
@@ -203,9 +204,10 @@ export const Welcome = () => {
                 {recentActivities.map((activity, i) => {
                   const color = getActivityColor(activity.name);
                   return (
-                    <div
+                    <Link
+                      to="/activity-list"
                       key={activity.id}
-                      className="flex items-center justify-between p-3 rounded-lg border animate-fade-slide-up"
+                      className="flex items-center justify-between p-3 rounded-lg border animate-fade-slide-up cursor-pointer hover:shadow-md hover:bg-secondary/50 dark:hover:bg-[#253550]/50 transition-all"
                       style={{ animationDelay: `${i * 60}ms` }}
                     >
                       <div className="flex items-center gap-3 flex-1">
@@ -240,7 +242,7 @@ export const Welcome = () => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
