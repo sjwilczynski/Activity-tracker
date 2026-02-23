@@ -50,4 +50,3 @@ All new code should include tests.
 
 - Keep `CLAUDE.md` and `AGENTS.md` in sync when making structural changes.
 - When making a mistake, document the lesson in the relevant MD file.
-- Plans should be concise. In case of lack of enough information, ask for more details.
