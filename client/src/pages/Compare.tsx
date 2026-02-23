@@ -22,19 +22,19 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { useActivities } from "../data";
 import type { ActivityRecordWithId } from "../data";
+import { useActivities } from "../data";
 import { useChartColors } from "../utils/useChartColors";
 import {
   type ComparisonPeriod,
-  MONTH_LABELS_SHORT,
-  MONTH_NAMES,
   getAvailableYears,
   getMonthCounts,
   getMostPopularActivity,
   getPeriodActivities,
   getPeriodLabel,
   getYearCounts,
+  MONTH_LABELS_SHORT,
+  MONTH_NAMES,
   periodsFromParams,
   periodsToParam,
 } from "./compare-utils";
@@ -51,10 +51,9 @@ ChartJS.register(
 );
 
 function getMostActiveTimeUnit(
-  activities: ActivityRecordWithId[],
-  period: ComparisonPeriod,
+  periodActivities: ActivityRecordWithId[],
+  period: ComparisonPeriod
 ): string {
-  const periodActivities = getPeriodActivities(activities, period);
   if (periodActivities.length === 0) return "None";
 
   if (period.type === "month") {
@@ -66,8 +65,7 @@ function getMostActiveTimeUnit(
     const entries = Object.entries(dayCounts);
     entries.sort((a, b) => Number(b[1]) - Number(a[1]));
     const day = Number(entries[0][0]);
-    const monthName = MONTH_NAMES[period.month ?? 0].slice(0, 3);
-    return `${monthName} ${day}`;
+    return `${MONTH_LABELS_SHORT[period.month ?? 0]} ${day}`;
   } else {
     const monthCounts: Record<number, number> = {};
     for (const a of periodActivities) {
@@ -245,10 +243,12 @@ export const Compare = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {period.type === "month" ? "Most Active Day" : "Most Active Month"}
+                        {period.type === "month"
+                          ? "Most Active Day"
+                          : "Most Active Month"}
                       </span>
                       <span className="font-semibold">
-                        {getMostActiveTimeUnit(activeData, period)}
+                        {getMostActiveTimeUnit(periodActivities, period)}
                       </span>
                     </div>
                   </CardContent>

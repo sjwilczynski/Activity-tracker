@@ -93,7 +93,7 @@ function seededRandom(seed: number) {
 function generateYearActivities(
   year: number,
   basePerMonth: number,
-  idPrefix: string,
+  idPrefix: string
 ): ActivityRecordWithIdServer[] {
   // More activities in spring/summer (months 3-8), fewer in winter
   const seasonalMultiplier = [
@@ -106,9 +106,8 @@ function generateYearActivities(
   for (let month = 0; month < 12; month++) {
     const count = Math.round(basePerMonth * seasonalMultiplier[month]);
     for (let i = 0; i < count; i++) {
-      const day = Math.min(28, Math.floor(rand() * 28) + 1);
-      const activity =
-        ACTIVITY_POOL[Math.floor(rand() * ACTIVITY_POOL.length)];
+      const day = Math.floor(rand() * 28) + 1;
+      const activity = ACTIVITY_POOL[Math.floor(rand() * ACTIVITY_POOL.length)];
       const mm = String(month + 1).padStart(2, "0");
       const dd = String(day).padStart(2, "0");
       result.push({
