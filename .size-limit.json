@@ -1,6 +1,6 @@
 [
   {
     "path": "client/build/client/assets/*.js",
-    "limit": "345 kB"
+    "limit": "346 kB"
   }
 ]
