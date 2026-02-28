@@ -9,7 +9,7 @@ export {
   categoryHandlers,
   resetCategories,
 } from "./categories";
-export { preferencesHandlers } from "./preferences";
+export { darkPreferencesHandler, preferencesHandlers } from "./preferences";
 
 import { activityHandlers } from "./activities";
 import { activityBulkHandlers } from "./activity-bulk-ops";

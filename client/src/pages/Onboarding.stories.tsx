@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse } from "msw";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { handlers as defaultHandlers } from "../mocks/handlers";
+import {
+  darkPreferencesHandler,
+  handlers as defaultHandlers,
+} from "../mocks/handlers";
 import { Welcome } from "./Welcome";
 
 const meta: Meta<typeof Welcome> = {
@@ -175,5 +178,31 @@ export const SubmitCategories: Story = {
         ).not.toBeInTheDocument();
       });
     });
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        darkPreferencesHandler,
+        http.get("*/api/categories", () => HttpResponse.json([])),
+        http.get("*/api/activities", () => HttpResponse.json([])),
+        http.post("*/api/import", () => {
+          return new HttpResponse(null, { status: 200 });
+        }),
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(
+      canvas.getByText(/welcome! set up your activities/i)
+    ).toBeInTheDocument();
   },
 };

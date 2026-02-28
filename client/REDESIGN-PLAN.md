@@ -160,6 +160,7 @@
 **Key architectural decision: single source of truth for category mapping**
 
 The name→category mapping lives exclusively in `Category.activityNames`. This eliminates the sync bug where deleting a category and reassigning would lose `activityNames` on the target, causing charts to show "other". Consequences:
+
 - Bulk operations (assign/reassign) only touch `activityNames` on categories — no activity record updates needed
 - Server enriches activities with computed `categoryId` + `active` before returning to client
 - Client `useActivities` no longer depends on `useCategories` — no client-side `enrichWithActive`
@@ -273,13 +274,13 @@ type Category = {
 
 ### CP9: Cleanup + Full-App Story
 
-- [ ] Audit `src/components/ui/sidebar.tsx`: remove unused subcomponents (e.g. `SidebarMenuSub`, `SidebarMenuSkeleton`, `SidebarRail`, `SidebarGroupAction`, etc.) that aren't imported anywhere
-- [ ] Audit `src/components/ui/sheet.tsx`: remove unused exports if only `SheetContent` is used internally by sidebar
-- [ ] Audit other shadcn components (`tooltip.tsx`, `skeleton.tsx`, etc.) for unused exports
-- [ ] Run `bun run knip` to verify no dead code or unused dependencies remain
-- [ ] Remove any knip exceptions that are no longer needed
-- [ ] Enable all `eslint-plugin-react-hooks` v7 recommended rules (currently only `rules-of-hooks` and `exhaustive-deps` are enabled). Investigate React Compiler adoption — v7 includes compiler-related lint rules (`purity`, `immutability`, `refs`, etc.) that enforce compiler-compatible patterns. Evaluate enabling them incrementally and assess whether adding `babel-plugin-react-compiler` / `react-compiler-runtime` is worthwhile for this project.
-- [ ] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
-- [ ] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)
-- [ ] Update the repository README with screenshots/GIFs of the app (Dashboard, Activity List, Charts, Compare, Settings), architecture overview (React + Azure Functions + Firebase), key features summary, and tech stack details — sourced from `REDESIGN-PLAN.md`, `REDESIGN-DESIGN-GUIDE.md`, and other existing docs
-- [ ] Split files/components exceeding 250 lines into smaller, focused modules with a reasonable folder structure (e.g. extract sub-components, utility functions, or hooks into separate files)
+- [x] Audit `src/components/ui/sidebar.tsx`: remove unused subcomponents (e.g. `SidebarMenuSub`, `SidebarMenuSkeleton`, `SidebarRail`, `SidebarGroupAction`, etc.) that aren't imported anywhere
+- [x] Audit `src/components/ui/sheet.tsx`: remove unused exports if only `SheetContent` is used internally by sidebar
+- [x] Audit other shadcn components (`tooltip.tsx`, `skeleton.tsx`, etc.) for unused exports
+- [x] Run `bun run knip` to verify no dead code or unused dependencies remain
+- [x] Remove any knip exceptions that are no longer needed
+- [x] Enable all `eslint-plugin-react-hooks` v7 recommended rules (currently only `rules-of-hooks` and `exhaustive-deps` are enabled). Investigate React Compiler adoption — v7 includes compiler-related lint rules (`purity`, `immutability`, `refs`, etc.) that enforce compiler-compatible patterns. Evaluate enabling them incrementally and assess whether adding `babel-plugin-react-compiler` / `react-compiler-runtime` is worthwhile for this project.
+- [x] Add a full-app story that renders the complete app layout (sidebar + page content) with mocked data for visual regression testing
+- [x] For each page, add a story which renders it in dark mode and verify visual correctness (e.g. no color contrast issues, all elements visible)
+- [x] Update the repository README with screenshots/GIFs of the app (Dashboard, Activity List, Charts, Compare, Settings), architecture overview (React + Azure Functions + Firebase), key features summary, and tech stack details — sourced from `REDESIGN-PLAN.md`, `REDESIGN-DESIGN-GUIDE.md`, and other existing docs
+- [x] Split files/components exceeding 250 lines into smaller, focused modules with a reasonable folder structure (e.g. extract sub-components, utility functions, or hooks into separate files)

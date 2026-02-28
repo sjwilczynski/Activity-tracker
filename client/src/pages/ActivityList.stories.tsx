@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import {
+  darkPreferencesHandler,
+  handlers as defaultHandlers,
+} from "../mocks/handlers";
 import { ActivityList } from "./ActivityList";
 
 const meta: Meta<typeof ActivityList> = {
@@ -529,5 +533,25 @@ export const KeyboardFocusRestoration: Story = {
         });
       }
     );
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [darkPreferencesHandler, ...defaultHandlers],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(canvas.getByPlaceholderText(/search/i)).toBeInTheDocument();
+    expect(
+      canvas.getByRole("button", { name: /all time/i })
+    ).toBeInTheDocument();
   },
 };

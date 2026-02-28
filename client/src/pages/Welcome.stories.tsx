@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { handlers as defaultHandlers } from "../mocks/handlers";
+import {
+  darkPreferencesHandler,
+  handlers as defaultHandlers,
+} from "../mocks/handlers";
 import { Welcome } from "./Welcome";
 
 const meta: Meta<typeof Welcome> = {
@@ -223,9 +226,8 @@ export const AddWithDetailsInteraction: Story = {
         name: /activity name/i,
       });
       await userEvent.click(combobox);
-      const searchInput = await screen.findByPlaceholderText(
-        /search activities/i
-      );
+      const searchInput =
+        await screen.findByPlaceholderText(/search activities/i);
       await userEvent.type(searchInput, "Running");
       const option = await screen.findByRole("option", {
         name: /running/i,
@@ -287,9 +289,7 @@ export const RecentActivitiesShowDetails: Story = {
     expect(canvas.getByText("• 45 min")).toBeInTheDocument();
 
     // Running's description
-    expect(
-      canvas.getByText(/morning run in the park/i)
-    ).toBeInTheDocument();
+    expect(canvas.getByText(/morning run in the park/i)).toBeInTheDocument();
   },
 };
 
@@ -336,5 +336,24 @@ export const FormResetAfterSubmit: Story = {
         expect(combobox).toHaveTextContent("Search activities...");
       });
     });
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [darkPreferencesHandler, ...defaultHandlers],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(canvas.getByText(/welcome/i)).toBeInTheDocument();
+    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
   },
 };

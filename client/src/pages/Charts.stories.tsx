@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import {
+  darkPreferencesHandler,
+  handlers as defaultHandlers,
+} from "../mocks/handlers";
 import { Charts } from "./Charts";
 
 const meta: Meta<typeof Charts> = {
@@ -154,11 +158,41 @@ export const SingleActivityType: Story = {
       handlers: [
         http.get("*/api/activities", () => {
           return HttpResponse.json([
-            { id: "1", date: generateDate(0), name: "Running", categoryId: "cat-sports", active: true },
-            { id: "2", date: generateDate(1), name: "Running", categoryId: "cat-sports", active: true },
-            { id: "3", date: generateDate(2), name: "Running", categoryId: "cat-sports", active: true },
-            { id: "4", date: generateDate(3), name: "Running", categoryId: "cat-sports", active: true },
-            { id: "5", date: generateDate(4), name: "Running", categoryId: "cat-sports", active: true },
+            {
+              id: "1",
+              date: generateDate(0),
+              name: "Running",
+              categoryId: "cat-sports",
+              active: true,
+            },
+            {
+              id: "2",
+              date: generateDate(1),
+              name: "Running",
+              categoryId: "cat-sports",
+              active: true,
+            },
+            {
+              id: "3",
+              date: generateDate(2),
+              name: "Running",
+              categoryId: "cat-sports",
+              active: true,
+            },
+            {
+              id: "4",
+              date: generateDate(3),
+              name: "Running",
+              categoryId: "cat-sports",
+              active: true,
+            },
+            {
+              id: "5",
+              date: generateDate(4),
+              name: "Running",
+              categoryId: "cat-sports",
+              active: true,
+            },
           ]);
         }),
       ],
@@ -186,10 +220,18 @@ export const ManyActivityTypes: Story = {
       handlers: [
         http.get("*/api/activities", () => {
           const categoryMap: Record<string, string> = {
-            Running: "cat-sports", Swimming: "cat-sports", Cycling: "cat-sports",
-            Yoga: "cat-wellness", Meditation: "cat-wellness", Reading: "cat-learning",
-            Walking: "cat-outdoor", Hiking: "cat-outdoor", Dancing: "cat-other",
-            Gym: "cat-gym", Basketball: "cat-team", Soccer: "cat-team",
+            Running: "cat-sports",
+            Swimming: "cat-sports",
+            Cycling: "cat-sports",
+            Yoga: "cat-wellness",
+            Meditation: "cat-wellness",
+            Reading: "cat-learning",
+            Walking: "cat-outdoor",
+            Hiking: "cat-outdoor",
+            Dancing: "cat-other",
+            Gym: "cat-gym",
+            Basketball: "cat-team",
+            Soccer: "cat-team",
           };
           const activities = [
             "Running",
@@ -230,5 +272,25 @@ export const ManyActivityTypes: Story = {
 
     expect(canvas.getByText("36")).toBeInTheDocument();
     expect(canvas.getByText("12")).toBeInTheDocument();
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [darkPreferencesHandler, ...defaultHandlers],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(
+      canvas.getByRole("button", { name: /all time/i })
+    ).toBeInTheDocument();
+    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
   },
 };
