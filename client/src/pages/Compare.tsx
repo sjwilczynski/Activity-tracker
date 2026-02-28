@@ -136,8 +136,7 @@ export const Compare = () => {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
-    aspectRatio: 2,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         labels: {
@@ -179,22 +178,8 @@ export const Compare = () => {
 
       {/* Chart & Metrics or Empty State */}
       {periods.length > 0 ? (
-        <>
-          <Card>
-            <CardHeader>
-              <CardTitle>Activity Comparison</CardTitle>
-              <CardDescription>
-                {isMonthMode
-                  ? "Weekly activity counts"
-                  : "Monthly activity counts"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Line data={chartData} options={chartOptions} />
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-[280px_1fr]">
+          <div className="flex flex-col gap-4 order-last md:order-first">
             {periods.map((period) => {
               const periodActivities = getPeriodActivities(activeData, period);
               const total = periodActivities.length;
@@ -243,7 +228,23 @@ export const Compare = () => {
               );
             })}
           </div>
-        </>
+
+          <Card className="md:row-span-6">
+            <CardHeader>
+              <CardTitle>Activity Comparison</CardTitle>
+              <CardDescription>
+                {isMonthMode
+                  ? "Weekly activity counts"
+                  : "Monthly activity counts"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="min-h-[300px] md:min-h-[400px]">
+                <Line data={chartData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <Card className="max-w-4xl">
           <CardContent className="flex flex-col items-center justify-center py-16 animate-fade-slide-up">
