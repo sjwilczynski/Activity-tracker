@@ -2,7 +2,11 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "workspaces": {
     "client": {
-      "entry": ["src/app/routes/**/*.tsx", "src/**/*.stories.tsx"],
+      "entry": [
+        "src/app/routes/**/*.tsx",
+        "src/**/*.stories.tsx",
+        "src/app/entry.client.e2e.tsx"
+      ],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": [
         "@babel/preset-typescript",
