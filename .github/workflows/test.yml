@@ -7,35 +7,35 @@ on:
   pull_request:
     types: [synchronize, opened]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: setup bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
         with:
-          bun-version: latest
-      - name: install
-        run: bun install
-      - name: install playwright
-        run: bunx playwright@1.58.2 install --with-deps chromium
+          install-playwright: "true"
       - name: test
         run: bun run --cwd client test
 
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: setup bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
         with:
-          bun-version: latest
-      - name: install
-        run: bun install
-      - name: install playwright
-        run: bunx playwright@1.58.2 install --with-deps chromium
+          install-playwright: "true"
       - name: e2e tests
         run: bun run --cwd client test:e2e
+
+  api-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: api tests
+        run: bun run --cwd api test
