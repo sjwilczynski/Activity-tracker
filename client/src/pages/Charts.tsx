@@ -9,7 +9,8 @@ import {
   PieController,
   Tooltip,
 } from "chart.js";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { DateRangePicker } from "../components/DateRangePicker";
 import {
   useDateRange,
@@ -35,6 +36,7 @@ import {
   useActivities,
   useAvailableCategories,
 } from "../data";
+import { cn } from "../utils/cn";
 
 Chart.register(
   BarElement,
@@ -53,6 +55,7 @@ export const Charts = () => {
   const { startDate, endDate } = useDateRange();
   const [dateRange, setDateRange] = useDateRangeState();
   const [groupByCategory] = useGroupByCategory();
+  const [showInactive, setShowInactive] = useState(true);
 
   if (isLoading) {
     return <Loading />;
@@ -67,8 +70,18 @@ export const Charts = () => {
   }
 
   const filtered = filterByDateRange(data, startDate, endDate);
-  const allSummaries = transformDataToSummaryMap(data);
-  const activitySummaries = transformDataToSummaryMap(filtered);
+  const allSummariesRaw = transformDataToSummaryMap(data);
+  const activitySummariesRaw = transformDataToSummaryMap(filtered);
+
+  const filterActive = (summaries: typeof allSummariesRaw) =>
+    showInactive
+      ? summaries
+      : Object.fromEntries(
+          Object.entries(summaries).filter(([, v]) => v.active)
+        );
+
+  const allSummaries = filterActive(allSummariesRaw);
+  const activitySummaries = filterActive(activitySummariesRaw);
   const keys = sortKeys(activitySummaries);
   const uniqueCount = keys.length;
   const mostPopular = keys
@@ -86,12 +99,27 @@ export const Charts = () => {
             Visualize your activity patterns
           </p>
         </div>
-        <DateRangePicker
-          value={{ from: dateRange.startDate, to: dateRange.endDate }}
-          onChange={(range) =>
-            setDateRange({ startDate: range.from, endDate: range.to })
-          }
-        />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowInactive((v) => !v)}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
+              !showInactive
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-input text-muted-foreground hover:bg-accent"
+            )}
+          >
+            <EyeOff className="size-4" />
+            <span className="hidden sm:inline">Hide inactive</span>
+          </button>
+          <DateRangePicker
+            value={{ from: dateRange.startDate, to: dateRange.endDate }}
+            onChange={(range) =>
+              setDateRange({ startDate: range.from, endDate: range.to })
+            }
+          />
+        </div>
       </div>
 
       {filtered.length === 0 ? (
