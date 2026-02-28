@@ -125,6 +125,9 @@ function generateYearActivities(
 const multiYearActivities = [
   ...generateYearActivities(2024, 8, "y24"),
   ...generateYearActivities(2023, 6, "y23"),
+  ...generateYearActivities(2022, 5, "y22"),
+  ...generateYearActivities(2021, 7, "y21"),
+  ...generateYearActivities(2020, 4, "y20"),
 ];
 
 export const CompareYears: Story = {
@@ -139,7 +142,9 @@ export const CompareYears: Story = {
     },
     reactRouter: reactRouterParameters({
       location: {
-        searchParams: { periods: "year-2024,year-2023" },
+        searchParams: {
+          periods: "year-2024,year-2023,year-2022,year-2021,year-2020",
+        },
       },
     }),
   },
@@ -158,17 +163,20 @@ export const CompareYears: Story = {
     await step("Verify both period badges", async () => {
       expect(canvas.getAllByText("2024").length).toBeGreaterThanOrEqual(1);
       expect(canvas.getAllByText("2023").length).toBeGreaterThanOrEqual(1);
+      expect(canvas.getAllByText("2022").length).toBeGreaterThanOrEqual(1);
+      expect(canvas.getAllByText("2021").length).toBeGreaterThanOrEqual(1);
+      expect(canvas.getAllByText("2020").length).toBeGreaterThanOrEqual(1);
     });
 
     await step("Scroll to metric cards and verify", async () => {
       const metricCards = canvas.getAllByText("Total Activities");
-      expect(metricCards.length).toBe(2);
+      expect(metricCards.length).toBe(5);
 
       const popularLabels = canvas.getAllByText("Most Popular");
-      expect(popularLabels.length).toBe(2);
+      expect(popularLabels.length).toBe(5);
 
       const mostActiveLabels = canvas.getAllByText("Most Active Month");
-      expect(mostActiveLabels.length).toBe(2);
+      expect(mostActiveLabels.length).toBe(5);
     });
   },
 };
