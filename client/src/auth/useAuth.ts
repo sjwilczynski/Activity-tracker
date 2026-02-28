@@ -27,7 +27,7 @@ export const useAuth = () => {
     return () => {
       unregisterAuthObserver();
     };
-  }, [auth, isSignedIn, currentUser]);
+  }, [auth]);
 
   const getIdTokenFun = currentUser
     ? () => currentUser.getIdToken()
