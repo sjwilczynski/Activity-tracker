@@ -1,3 +1,4 @@
+import { cn } from "@/utils/cn";
 import {
   ArcElement,
   BarController,
@@ -36,7 +37,6 @@ import {
   useActivities,
   useAvailableCategories,
 } from "../data";
-import { cn } from "../utils/cn";
 
 Chart.register(
   BarElement,
@@ -103,6 +103,12 @@ export const Charts = () => {
           <button
             type="button"
             onClick={() => setShowInactive((v) => !v)}
+            aria-pressed={showInactive}
+            aria-label={
+              showInactive
+                ? "Show inactive activities"
+                : "Hide inactive activities"
+            }
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
               !showInactive
