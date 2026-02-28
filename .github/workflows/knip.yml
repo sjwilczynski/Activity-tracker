@@ -4,17 +4,15 @@ on:
   pull_request:
     types: [synchronize, opened]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   knip:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: setup bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - name: install
-        run: bun install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - name: knip
         run: bun run knip

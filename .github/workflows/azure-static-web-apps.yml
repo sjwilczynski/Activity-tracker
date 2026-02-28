@@ -6,25 +6,21 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
-    # do not deploy PR branch that renovate created
-    branches-ignore:
-      - renovate/*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_and_deploy_job:
-    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')) && startsWith(github.head_ref, 'renovate') == false
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: setup bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - name: Install
-        run: bun install
+      - uses: ./.github/actions/setup
       - name: Setup Firebase Config
         run: echo "${{ secrets.API_FIREBASE_CONFIG }}" | base64 -d > api/firebase/firebaseConfig.json
       - name: Typecheck API
