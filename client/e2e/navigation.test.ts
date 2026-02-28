@@ -5,7 +5,7 @@ test.describe("Full app navigation", () => {
   test.beforeEach(async ({ page }) => {
     // Intercept API calls at the browser level (no service worker needed)
     await mockApi(page);
-    await page.goto("/welcome");
+    await page.goto("/welcome", { waitUntil: "domcontentloaded" });
     await page.waitForSelector('[data-slot="sidebar"]', { timeout: 15_000 });
   });
 

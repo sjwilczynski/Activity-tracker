@@ -7,11 +7,12 @@
   "scripts": {
     "analyze": "bunx vite-bundle-analyzer -m static -d gzip -o false",
     "build": "react-router build",
+    "build:e2e": "E2E=true react-router build",
     "build-storybook": "storybook build",
     "prepare": "react-router typegen",
     "serve": "vite preview --outDir build/client",
+    "serve:e2e": "vite preview --outDir build/client --port 3000",
     "start": "vite",
-    "start:e2e": "E2E=true vite",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "test:e2e": "playwright test"
