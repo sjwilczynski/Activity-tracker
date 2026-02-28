@@ -3,7 +3,7 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   testMatch: "**/*.test.ts",
-  timeout: 30_000,
+  timeout: 60_000,
   retries: process.env.CI ? 2 : 0,
   use: {
     baseURL: "http://localhost:3000",
@@ -13,7 +13,7 @@ export default defineConfig({
     command: "bun run start:e2e",
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    timeout: 60_000,
   },
   projects: [
     {

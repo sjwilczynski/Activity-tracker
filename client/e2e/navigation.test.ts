@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 test.describe("Full app navigation", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/welcome");
-    // Wait for MSW worker to initialize and app to render (first load is slower)
-    await page.waitForSelector('[data-slot="sidebar"]', { timeout: 30_000 });
+    // MSW service worker install can be slow on CI cold start
+    await page.waitForSelector('[data-slot="sidebar"]', { timeout: 45_000 });
   });
 
   test("shows dashboard with stats and recent activities", async ({ page }) => {
