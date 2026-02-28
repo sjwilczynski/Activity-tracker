@@ -7,6 +7,8 @@ import { enableMockAuth } from "../mocks/mockAuth";
 async function boot() {
   enableMockAuth();
   await worker.start({ onUnhandledRequest: "bypass" });
+  // Signal that MSW is intercepting requests before React renders
+  document.documentElement.dataset.mswReady = "true";
 
   ReactDOM.hydrateRoot(
     document,
