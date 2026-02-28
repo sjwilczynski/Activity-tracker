@@ -3,6 +3,7 @@ import { delay, http, HttpResponse } from "msw";
 import { reactRouterParameters } from "storybook-addon-remix-react-router";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import type { ActivityRecordWithIdServer } from "../data/types";
+import { darkPreferencesHandler } from "../mocks/handlers";
 import { Compare } from "./Compare";
 
 const meta: Meta<typeof Compare> = {
@@ -170,5 +171,34 @@ export const CompareYears: Story = {
       const mostActiveLabels = canvas.getAllByText("Most Active Month");
       expect(mostActiveLabels.length).toBe(2);
     });
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        darkPreferencesHandler,
+        http.get("*/api/activities", async () => {
+          await delay(50);
+          return HttpResponse.json(multiYearActivities);
+        }),
+      ],
+    },
+    reactRouter: reactRouterParameters({
+      location: {
+        searchParams: { periods: "year-2024,year-2023" },
+      },
+    }),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
+    expect(canvas.getAllByText("Total Activities").length).toBe(2);
   },
 };

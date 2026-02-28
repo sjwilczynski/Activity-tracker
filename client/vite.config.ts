@@ -21,6 +21,8 @@ const isStorybook =
 const isVitest =
   process.env.VITEST === "true" || process.argv.includes("vitest");
 
+const isE2E = process.env.E2E === "true";
+
 // Dynamically import reactRouter only when not in Storybook or Vitest
 const getReactPlugin = async () => {
   if (isStorybook || isVitest) {
@@ -39,6 +41,24 @@ export default defineConfig(async (): Promise<UserConfig> => {
   const reactPlugin = await getReactPlugin();
   return {
     plugins: [
+      // Swap entry.client.tsx → entry.client.e2e.tsx for E2E tests
+      ...(isE2E
+        ? [
+            {
+              name: "e2e-entry-swap",
+              enforce: "pre" as const,
+              async load(id: string) {
+                if (id.endsWith("entry.client.tsx") && !id.includes(".e2e.")) {
+                  const { readFileSync } = await import("node:fs");
+                  return readFileSync(
+                    id.replace("entry.client.tsx", "entry.client.e2e.tsx"),
+                    "utf-8"
+                  );
+                }
+              },
+            },
+          ]
+        : []),
       ...(!isStorybook && !isVitest
         ? [
             babel({
@@ -48,42 +68,47 @@ export default defineConfig(async (): Promise<UserConfig> => {
                 plugins: [["babel-plugin-react-compiler"]],
               },
             }),
-            VitePWA({
-              registerType: "autoUpdate",
-              manifest: {
-                name: "Activity tracker",
-                short_name: "AT",
-                lang: "en",
-                description: "A place to track and review all your activities",
-                start_url: ".",
-                background_color: "#f2f2f2",
-                theme_color: "#4479a2",
-                dir: "ltr",
-                display: "standalone",
-                icons: [
-                  {
-                    src: "favicon.ico",
-                    sizes: "64x64 32x32 24x24 16x16",
-                    type: "image/x-icon",
-                  },
-                  {
-                    src: "android-chrome-192x192.png",
-                    sizes: "192x192",
-                    type: "image/png",
-                    purpose: "any maskable",
-                  },
-                  {
-                    src: "android-chrome-512x512.png",
-                    sizes: "512x512",
-                    type: "image/png",
-                    purpose: "any maskable",
-                  },
-                ],
-              },
-              workbox: {
-                globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-              },
-            }),
+            ...(!isE2E
+              ? [
+                  VitePWA({
+                    registerType: "autoUpdate",
+                    manifest: {
+                      name: "Activity tracker",
+                      short_name: "AT",
+                      lang: "en",
+                      description:
+                        "A place to track and review all your activities",
+                      start_url: ".",
+                      background_color: "#f2f2f2",
+                      theme_color: "#4479a2",
+                      dir: "ltr",
+                      display: "standalone",
+                      icons: [
+                        {
+                          src: "favicon.ico",
+                          sizes: "64x64 32x32 24x24 16x16",
+                          type: "image/x-icon",
+                        },
+                        {
+                          src: "android-chrome-192x192.png",
+                          sizes: "192x192",
+                          type: "image/png",
+                          purpose: "any maskable",
+                        },
+                        {
+                          src: "android-chrome-512x512.png",
+                          sizes: "512x512",
+                          type: "image/png",
+                          purpose: "any maskable",
+                        },
+                      ],
+                    },
+                    workbox: {
+                      globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+                    },
+                  }),
+                ]
+              : []),
           ]
         : []),
       tailwindcss(),

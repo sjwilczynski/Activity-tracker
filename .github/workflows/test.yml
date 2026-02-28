@@ -23,3 +23,19 @@ jobs:
         run: bunx playwright@1.58.2 install --with-deps chromium
       - name: test
         run: bun run --cwd client test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: install
+        run: bun install
+      - name: install playwright
+        run: bunx playwright@1.58.2 install --with-deps chromium
+      - name: e2e tests
+        run: bun run --cwd client test:e2e

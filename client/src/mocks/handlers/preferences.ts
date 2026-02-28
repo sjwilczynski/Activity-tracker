@@ -7,6 +7,11 @@ const defaultPreferences: UserPreferences = {
   isLightTheme: true,
 };
 
+const darkPreferences: UserPreferences = {
+  ...defaultPreferences,
+  isLightTheme: false,
+};
+
 export const preferencesHandlers = [
   http.get("*/api/preferences", async ({ request }) => {
     await delay(100);
@@ -30,3 +35,17 @@ export const preferencesHandlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 ];
+
+export const darkPreferencesHandler = http.get(
+  "*/api/preferences",
+  async ({ request }) => {
+    await delay(100);
+
+    const authHeader = request.headers.get("x-auth-token");
+    if (!authHeader) {
+      return new HttpResponse(null, { status: 401 });
+    }
+
+    return HttpResponse.json(darkPreferences);
+  }
+);

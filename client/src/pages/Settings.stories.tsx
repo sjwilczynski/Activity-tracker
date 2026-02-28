@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import {
+  darkPreferencesHandler,
+  handlers as defaultHandlers,
+} from "../mocks/handlers";
 import { Settings } from "./Settings";
 
 const meta: Meta<typeof Settings> = {
@@ -94,7 +98,9 @@ export const AddActivityNameInteraction: Story = {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Add a new activity name and assign it to a category")
+          screen.getByText(
+            "Add a new activity name and assign it to a category"
+          )
         ).toBeInTheDocument();
       });
     });
@@ -119,7 +125,9 @@ export const AddActivityNameInteraction: Story = {
 
       await waitFor(() => {
         expect(
-          screen.queryByText("Add a new activity name and assign it to a category")
+          screen.queryByText(
+            "Add a new activity name and assign it to a category"
+          )
         ).not.toBeInTheDocument();
       });
     });
@@ -266,5 +274,27 @@ export const DeleteCategoryWithActivities: Story = {
         expect(screen.queryByText(/Delete "Sports"\?/)).not.toBeInTheDocument();
       });
     });
+  },
+};
+
+export const DarkMode: Story = {
+  parameters: {
+    msw: {
+      handlers: [darkPreferencesHandler, ...defaultHandlers],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    expect(
+      canvas.getByRole("heading", { name: /settings/i })
+    ).toBeInTheDocument();
+    expect(
+      canvas.getByRole("tab", { name: /categories/i })
+    ).toBeInTheDocument();
   },
 };
