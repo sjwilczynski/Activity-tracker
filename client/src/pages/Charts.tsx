@@ -103,12 +103,8 @@ export const Charts = () => {
           <button
             type="button"
             onClick={() => setShowInactive((v) => !v)}
-            aria-pressed={showInactive}
-            aria-label={
-              showInactive
-                ? "Show inactive activities"
-                : "Hide inactive activities"
-            }
+            aria-pressed={!showInactive}
+            aria-label="Hide inactive"
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
               !showInactive
