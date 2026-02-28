@@ -76,7 +76,7 @@ export const CategoryAutocomplete = ({
             aria-label={hideLabel ? label : undefined}
             aria-invalid={!!error}
             className={cn(
-              "flex h-9 w-full items-center justify-between rounded-md border border-input bg-[var(--color-input-background)] px-3 py-2 text-sm shadow-xs",
+              "flex h-9 w-full items-center justify-between rounded-md border border-input bg-(--color-input-background) px-3 py-2 text-sm shadow-xs",
               "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring",
               "disabled:cursor-not-allowed disabled:opacity-50",
               !value.name && "text-muted-foreground"
