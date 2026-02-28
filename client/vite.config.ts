@@ -6,6 +6,7 @@ import { playwright } from "@vitest/browser-playwright";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vite";
+import babel from "vite-plugin-babel";
 import checker from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
 import viteTsconfigPaths from "vite-tsconfig-paths";
@@ -23,7 +24,11 @@ const isVitest =
 // Dynamically import reactRouter only when not in Storybook or Vitest
 const getReactPlugin = async () => {
   if (isStorybook || isVitest) {
-    return react();
+    return react({
+      babel: {
+        plugins: [["babel-plugin-react-compiler"]],
+      },
+    });
   }
   const { reactRouter } = await import("@react-router/dev/vite");
   return reactRouter();
@@ -36,6 +41,13 @@ export default defineConfig(async (): Promise<UserConfig> => {
     plugins: [
       ...(!isStorybook && !isVitest
         ? [
+            babel({
+              filter: /src\/.*\.[jt]sx?$/,
+              babelConfig: {
+                presets: ["@babel/preset-typescript"],
+                plugins: [["babel-plugin-react-compiler"]],
+              },
+            }),
             VitePWA({
               registerType: "autoUpdate",
               manifest: {

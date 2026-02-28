@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight, ListChecks } from "lucide-react";
-import type { ChangeEvent } from "react";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import type { ActivityRecordWithId } from "../../data";
 import { Button } from "../ui/button";
 import {

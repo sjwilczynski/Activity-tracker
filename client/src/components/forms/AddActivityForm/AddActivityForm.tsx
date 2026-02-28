@@ -30,24 +30,19 @@ function useFormResetOnSuccess(
   const [submitCount, setSubmitCount] = useState(0);
   const [prevIsSuccess, setPrevIsSuccess] = useState(false);
 
-  // Reset tracking when a new submission starts
   if (isPending && prevIsSuccess) {
     setPrevIsSuccess(false);
   }
 
-  // Detect success transition — adjust state during render (React-approved pattern)
   if (isSuccess && !prevIsSuccess) {
     setPrevIsSuccess(true);
     setSubmitCount((c) => c + 1);
   }
 
-  // Reset form after successful submission
   useEffect(() => {
     if (submitCount === 0) return;
     reset();
-    const nextDate = lastActivity
-      ? addDays(lastActivity.date, 1)
-      : new Date();
+    const nextDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
     setFieldValue("date", nextDate);
   }, [submitCount, reset, lastActivity, setFieldValue]);
 

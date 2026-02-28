@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
 import { useChartColors } from "../../../utils/useChartColors";
-import { getFlatBarChartData, getStackedBarChartData } from "../utils";
+import { getFlatBarChartData, getStackedBarChartData } from "../bar-chart-data";
 
 type Props = {
   activitySummaries: ActivitySummaries;
@@ -53,7 +53,7 @@ export function BarChart({
         bar: { borderRadius: 6 },
       },
     }),
-    [chartColors.mutedForeground],
+    [chartColors.mutedForeground]
   );
   return (
     <Bar aria-label="Activities bar chart" data={data} options={options} />
