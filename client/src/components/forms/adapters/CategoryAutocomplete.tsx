@@ -103,30 +103,38 @@ export const CategoryAutocomplete = ({
               ) : (
                 <>
                   <CommandEmpty>No activity found.</CommandEmpty>
-                  {Object.entries(grouped).map(([groupName, options]) => (
-                    <CommandGroup key={groupName} heading={groupName}>
-                      {options.map((option) => (
-                        <CommandItem
-                          key={option.name}
-                          value={option.name}
-                          onSelect={() => {
-                            onChange(option);
-                            setOpen(false);
-                          }}
-                        >
-                          <CheckIcon
-                            className={cn(
-                              "mr-2 size-4",
-                              value.name === option.name
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {option.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  ))}
+                  {Object.entries(grouped).map(([groupName, options]) => {
+                    const renderItem = (option: CategoryOption) => (
+                      <CommandItem
+                        key={option.name}
+                        value={option.name}
+                        onSelect={() => {
+                          onChange(option);
+                          setOpen(false);
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 size-4",
+                            value.name === option.name
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {option.name}
+                      </CommandItem>
+                    );
+
+                    if (options.length === 1) {
+                      return renderItem(options[0]);
+                    }
+
+                    return (
+                      <CommandGroup key={groupName} heading={groupName}>
+                        {options.map(renderItem)}
+                      </CommandGroup>
+                    );
+                  })}
                 </>
               )}
             </CommandList>
