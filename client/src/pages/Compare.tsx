@@ -136,8 +136,7 @@ export const Compare = () => {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
-    aspectRatio: 2,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         labels: {
@@ -179,8 +178,57 @@ export const Compare = () => {
 
       {/* Chart & Metrics or Empty State */}
       {periods.length > 0 ? (
-        <>
-          <Card>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] xl:grid-cols-5">
+          {/* Period cards: auto-placed into col 1, overflow wraps after chart */}
+          {periods.map((period) => {
+            const periodActivities = getPeriodActivities(activeData, period);
+            const total = periodActivities.length;
+            const mostPopular = getMostPopularActivity(activeData, period);
+
+            return (
+              <Card
+                key={period.id}
+                className="bloom-hover py-4 gap-2 col-span-1 row-span-1"
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                    <span
+                      className="size-2.5 rounded-full"
+                      style={{ backgroundColor: period.color }}
+                    />
+                    {getPeriodLabel(period)}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Total Activities
+                    </span>
+                    <span className="font-semibold tabular-nums">{total}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Most Popular</span>
+                    <span className="font-semibold capitalize">
+                      {mostPopular}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {period.type === "month"
+                        ? "Most Active Day"
+                        : "Most Active Month"}
+                    </span>
+                    <span className="font-semibold">
+                      {getMostActiveTimeUnit(periodActivities, period)}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+
+          {/* Chart: explicit placement at col 2, height driven by card rows */}
+          <Card className="-order-1 col-span-full md:order-0 md:col-[2/-1] md:row-start-1 md:row-end-3 lg:row-end-4 h-full max-w-250">
             <CardHeader>
               <CardTitle>Activity Comparison</CardTitle>
               <CardDescription>
@@ -189,61 +237,13 @@ export const Compare = () => {
                   : "Monthly activity counts"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Line data={chartData} options={chartOptions} />
+            <CardContent className="flex-1">
+              <div className="h-full min-h-62.5">
+                <Line data={chartData} options={chartOptions} />
+              </div>
             </CardContent>
           </Card>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {periods.map((period) => {
-              const periodActivities = getPeriodActivities(activeData, period);
-              const total = periodActivities.length;
-              const mostPopular = getMostPopularActivity(activeData, period);
-
-              return (
-                <Card key={period.id} className="bloom-hover py-4 gap-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                      <span
-                        className="size-2.5 rounded-full"
-                        style={{ backgroundColor: period.color }}
-                      />
-                      {getPeriodLabel(period)}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Total Activities
-                      </span>
-                      <span className="font-semibold tabular-nums">
-                        {total}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Most Popular
-                      </span>
-                      <span className="font-semibold capitalize">
-                        {mostPopular}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {period.type === "month"
-                          ? "Most Active Day"
-                          : "Most Active Month"}
-                      </span>
-                      <span className="font-semibold">
-                        {getMostActiveTimeUnit(periodActivities, period)}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </>
+        </div>
       ) : (
         <Card className="max-w-4xl">
           <CardContent className="flex flex-col items-center justify-center py-16 animate-fade-slide-up">
