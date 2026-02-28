@@ -1,13 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-// All tests load the app with ?msw to activate MSW + mock auth
-const MSW_PARAM = "?msw";
-
 test.describe("Full app navigation", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/welcome${MSW_PARAM}`);
-    // Wait for MSW to initialize and app to render
-    await page.waitForSelector('[data-slot="sidebar"]', { timeout: 15_000 });
+    await page.goto("/welcome");
+    // Wait for MSW worker to initialize and app to render (first load is slower)
+    await page.waitForSelector('[data-slot="sidebar"]', { timeout: 30_000 });
   });
 
   test("shows dashboard with stats and recent activities", async ({ page }) => {
@@ -22,7 +19,9 @@ test.describe("Full app navigation", () => {
 
   test("navigates to Charts and shows analytics", async ({ page }) => {
     await page.getByRole("link", { name: /charts/i }).click();
-    await expect(page.getByText("Activity Analytics")).toBeVisible();
+    await expect(page.getByText("Activity Analytics")).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.getByText("Total Activities")).toBeVisible();
     await expect(page.getByText("Activity Frequency")).toBeVisible();
     await expect(page.getByText("Activity Distribution")).toBeVisible();

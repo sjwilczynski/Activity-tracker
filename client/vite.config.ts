@@ -21,6 +21,8 @@ const isStorybook =
 const isVitest =
   process.env.VITEST === "true" || process.argv.includes("vitest");
 
+const isE2E = process.env.E2E === "true";
+
 // Dynamically import reactRouter only when not in Storybook or Vitest
 const getReactPlugin = async () => {
   if (isStorybook || isVitest) {
@@ -39,6 +41,22 @@ export default defineConfig(async (): Promise<UserConfig> => {
   const reactPlugin = await getReactPlugin();
   return {
     plugins: [
+      // Swap entry.client.tsx → entry.client.e2e.tsx for E2E tests
+      ...(isE2E
+        ? [
+            {
+              name: "e2e-entry-swap",
+              enforce: "pre" as const,
+              resolveId(id: string) {
+                if (id.endsWith("entry.client.tsx") && !id.includes(".e2e.")) {
+                  return this.resolve(
+                    id.replace("entry.client", "entry.client.e2e")
+                  );
+                }
+              },
+            },
+          ]
+        : []),
       ...(!isStorybook && !isVitest
         ? [
             babel({

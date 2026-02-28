@@ -10,7 +10,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "bun run start",
+    command: "bun run start:e2e",
     port: 3000,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
