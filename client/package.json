@@ -70,7 +70,7 @@
     "msw": "^2.12.7",
     "msw-storybook-addon": "^2.0.6",
     "playwright": "^1.57.0",
-    "storybook": "10.2.8",
+    "storybook": "10.2.10",
     "storybook-addon-remix-react-router": "^6.0.0",
     "tailwindcss": "^4.1.18",
     "typescript": "5.9.3",
