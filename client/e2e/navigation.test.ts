@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { mockApi } from "./mock-api";
 
 test.describe("Full app navigation", () => {
   test.beforeEach(async ({ page }) => {
+    // Intercept API calls at the browser level (no service worker needed)
+    await mockApi(page);
     await page.goto("/welcome");
-    // MSW worker is pre-warmed by globalSetup; this wait is just for this page's hydration
-    await page.waitForSelector("[data-msw-ready]", { timeout: 15_000 });
     await page.waitForSelector('[data-slot="sidebar"]', { timeout: 15_000 });
   });
 
