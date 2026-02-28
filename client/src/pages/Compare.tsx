@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from "chart.js";
 import { GitCompare } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { useSearchParams } from "react-router";
 import { ErrorView } from "../components/states/ErrorView";
@@ -83,45 +82,33 @@ export const Compare = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const chartColors = useChartColors();
 
-  const periods = useMemo(
-    () => periodsFromParams(searchParams.get("periods")),
-    [searchParams]
-  );
+  const periods = periodsFromParams(searchParams.get("periods"));
 
-  const setPeriods = useCallback(
-    (
-      updater:
-        | ComparisonPeriod[]
-        | ((prev: ComparisonPeriod[]) => ComparisonPeriod[])
-    ) => {
-      setSearchParams(
-        (prev) => {
-          const currentPeriods = periodsFromParams(prev.get("periods"));
-          const next =
-            typeof updater === "function" ? updater(currentPeriods) : updater;
-          const params = new URLSearchParams(prev);
-          if (next.length === 0) {
-            params.delete("periods");
-          } else {
-            params.set("periods", periodsToParam(next));
-          }
-          return params;
-        },
-        { replace: true }
-      );
-    },
-    [setSearchParams]
-  );
+  const setPeriods = (
+    updater:
+      | ComparisonPeriod[]
+      | ((prev: ComparisonPeriod[]) => ComparisonPeriod[])
+  ) => {
+    setSearchParams(
+      (prev) => {
+        const currentPeriods = periodsFromParams(prev.get("periods"));
+        const next =
+          typeof updater === "function" ? updater(currentPeriods) : updater;
+        const params = new URLSearchParams(prev);
+        if (next.length === 0) {
+          params.delete("periods");
+        } else {
+          params.set("periods", periodsToParam(next));
+        }
+        return params;
+      },
+      { replace: true }
+    );
+  };
 
-  const availableYears = useMemo(
-    () => (data ? getAvailableYears(data) : []),
-    [data]
-  );
+  const availableYears = data ? getAvailableYears(data) : [];
 
-  const activeData = useMemo(
-    () => (data ? data.filter((a) => a.active) : []),
-    [data]
-  );
+  const activeData = data ? data.filter((a) => a.active) : [];
 
   if (isLoading) return <Loading />;
   if (error) return <ErrorView error={error} />;

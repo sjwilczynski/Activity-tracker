@@ -1,5 +1,4 @@
 import { isValid, parseISO } from "date-fns";
-import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 export type FormValues = {
@@ -29,13 +28,10 @@ export const useDateRange = (): FormValues => {
   const startDateParam = searchParams.get(startDateFieldKey);
   const endDateParam = searchParams.get(endDateFieldKey);
 
-  return useMemo(
-    () => ({
-      startDate: deserializeDate(startDateParam),
-      endDate: deserializeDate(endDateParam),
-    }),
-    [startDateParam, endDateParam]
-  );
+  return {
+    startDate: deserializeDate(startDateParam),
+    endDate: deserializeDate(endDateParam),
+  };
 };
 
 export const useDateRangeState = (): [
@@ -46,39 +42,33 @@ export const useDateRangeState = (): [
   const startDateParam = searchParams.get(startDateFieldKey);
   const endDateParam = searchParams.get(endDateFieldKey);
 
-  const dateRange = useMemo(
-    () => ({
-      startDate: deserializeDate(startDateParam),
-      endDate: deserializeDate(endDateParam),
-    }),
-    [startDateParam, endDateParam]
-  );
+  const dateRange = {
+    startDate: deserializeDate(startDateParam),
+    endDate: deserializeDate(endDateParam),
+  };
 
-  const setDateRange = useCallback(
-    (values: FormValues) => {
-      setSearchParams((currentParams) => {
-        const newParams = new URLSearchParams(currentParams);
+  const setDateRange = (values: FormValues) => {
+    setSearchParams((currentParams) => {
+      const newParams = new URLSearchParams(currentParams);
 
-        const serializedStart = serializeDate(values.startDate);
-        const serializedEnd = serializeDate(values.endDate);
+      const serializedStart = serializeDate(values.startDate);
+      const serializedEnd = serializeDate(values.endDate);
 
-        if (serializedStart) {
-          newParams.set(startDateFieldKey, serializedStart);
-        } else {
-          newParams.delete(startDateFieldKey);
-        }
+      if (serializedStart) {
+        newParams.set(startDateFieldKey, serializedStart);
+      } else {
+        newParams.delete(startDateFieldKey);
+      }
 
-        if (serializedEnd) {
-          newParams.set(endDateFieldKey, serializedEnd);
-        } else {
-          newParams.delete(endDateFieldKey);
-        }
+      if (serializedEnd) {
+        newParams.set(endDateFieldKey, serializedEnd);
+      } else {
+        newParams.delete(endDateFieldKey);
+      }
 
-        return newParams;
-      });
-    },
-    [setSearchParams]
-  );
+      return newParams;
+    });
+  };
 
   return [dateRange, setDateRange];
 };

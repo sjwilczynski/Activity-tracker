@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
 import { preferencesQueryOptions } from "../../queryOptions";
 import {
   getPreferencesQueryId,
@@ -61,14 +60,11 @@ export const useGroupByCategory = (): [boolean, (val: boolean) => void] => {
   const { mutate } = useUpdatePreferences();
 
   const groupByCategory = data?.groupByCategory ?? true;
-  const setGroupByCategory = useCallback(
-    (val: boolean) => {
-      if (data) {
-        mutate({ ...data, groupByCategory: val });
-      }
-    },
-    [data, mutate]
-  );
+  const setGroupByCategory = (val: boolean) => {
+    if (data) {
+      mutate({ ...data, groupByCategory: val });
+    }
+  };
 
   return [groupByCategory, setGroupByCategory];
 };
@@ -78,14 +74,11 @@ export const useFunAnimations = (): [boolean, (val: boolean) => void] => {
   const { mutate } = useUpdatePreferences();
 
   const funAnimations = data?.funAnimations ?? true;
-  const setFunAnimations = useCallback(
-    (val: boolean) => {
-      if (data) {
-        mutate({ ...data, funAnimations: val });
-      }
-    },
-    [data, mutate]
-  );
+  const setFunAnimations = (val: boolean) => {
+    if (data) {
+      mutate({ ...data, funAnimations: val });
+    }
+  };
 
   return [funAnimations, setFunAnimations];
 };
@@ -99,12 +92,9 @@ export const useSetIsLightTheme = (): ((val: boolean) => void) => {
   const { data } = useUserPreferences();
   const { mutate } = useUpdatePreferences();
 
-  return useCallback(
-    (val: boolean) => {
-      if (data) {
-        mutate({ ...data, isLightTheme: val });
-      }
-    },
-    [data, mutate]
-  );
+  return (val: boolean) => {
+    if (data) {
+      mutate({ ...data, isLightTheme: val });
+    }
+  };
 };

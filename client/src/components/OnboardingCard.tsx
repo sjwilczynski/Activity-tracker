@@ -1,5 +1,5 @@
 import { ChevronDown, Loader2, Sparkles } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useFetcher } from "react-router";
 import {
   defaultCategories,
@@ -64,7 +64,8 @@ function CategoryRow({
               {category.name}
             </label>
             <p className="text-xs text-muted-foreground">
-              {category.description} · {category.activityNames.length} activities
+              {category.description} · {category.activityNames.length}{" "}
+              activities
             </p>
           </div>
           <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -80,9 +81,7 @@ function CategoryRow({
               <Checkbox
                 checked={selection.activityNames.has(name)}
                 disabled={!selection.selected}
-                onCheckedChange={() =>
-                  onToggleActivity(category.name, name)
-                }
+                onCheckedChange={() => onToggleActivity(category.name, name)}
               />
               {name}
             </label>
@@ -112,7 +111,7 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
     }
   );
 
-  const toggleCategory = useCallback((name: string) => {
+  const toggleCategory = (name: string) => {
     setSelections((prev) => {
       const next = new Map(prev);
       const current = next.get(name);
@@ -126,26 +125,23 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
       });
       return next;
     });
-  }, []);
+  };
 
-  const toggleActivity = useCallback(
-    (categoryName: string, activityName: string) => {
-      setSelections((prev) => {
-        const next = new Map(prev);
-        const current = next.get(categoryName);
-        if (!current) return prev;
-        const names = new Set(current.activityNames);
-        if (names.has(activityName)) {
-          names.delete(activityName);
-        } else {
-          names.add(activityName);
-        }
-        next.set(categoryName, { ...current, activityNames: names });
-        return next;
-      });
-    },
-    []
-  );
+  const toggleActivity = (categoryName: string, activityName: string) => {
+    setSelections((prev) => {
+      const next = new Map(prev);
+      const current = next.get(categoryName);
+      if (!current) return prev;
+      const names = new Set(current.activityNames);
+      if (names.has(activityName)) {
+        names.delete(activityName);
+      } else {
+        names.add(activityName);
+      }
+      next.set(categoryName, { ...current, activityNames: names });
+      return next;
+    });
+  };
 
   const selectedCount = [...selections.values()].filter(
     (s) => s.selected && s.activityNames.size > 0
@@ -159,7 +155,12 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
 
     const categoriesMap: Record<
       string,
-      { name: string; active: boolean; description: string; activityNames: string[] }
+      {
+        name: string;
+        active: boolean;
+        description: string;
+        activityNames: string[];
+      }
     > = {};
     for (const cat of categoriesToCreate) {
       const sel = selections.get(cat.name)!;

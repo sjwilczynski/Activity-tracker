@@ -1,6 +1,6 @@
 import { FileUp, Info } from "lucide-react";
 import type { ChangeEvent } from "react";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { Button } from "../../ui/button";
 
 type FileInputProps = {
@@ -32,17 +32,14 @@ export const FileInput = ({
 }: FileInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onFileInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const input = event.target;
-      const files = input.files;
-      if (files && files[0]) {
-        onChange(makeFileEnumerable(files[0]));
-        input.value = "";
-      }
-    },
-    [onChange]
-  );
+  const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.target;
+    const files = input.files;
+    if (files && files[0]) {
+      onChange(makeFileEnumerable(files[0]));
+      input.value = "";
+    }
+  };
 
   const fileName = value?.name;
 

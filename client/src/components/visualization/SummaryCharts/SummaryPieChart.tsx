@@ -1,5 +1,4 @@
 import type { ChartOptions, TooltipCallbacks, TooltipItem } from "chart.js";
-import { useMemo } from "react";
 import { Pie } from "react-chartjs-2";
 import type { ActivitySummaries, CategoryOption } from "../../../data";
 import { useIsMobile } from "../../../hooks/use-mobile";
@@ -27,23 +26,20 @@ export function SummaryPieChart({
   const tooltipCallback = groupByCategory
     ? groupedTooltipCallback
     : flatTooltipCallback;
-  const options = useMemo<ChartOptions<"pie">>(
-    () => ({
-      maintainAspectRatio: false,
-      responsive: true,
-      plugins: {
-        tooltip: { callbacks: tooltipCallback },
-        legend: {
-          display: !isMobile,
-          position: "right",
-          labels: {
-            color: chartColors.foreground,
-          },
+  const options: ChartOptions<"pie"> = {
+    maintainAspectRatio: false,
+    responsive: true,
+    plugins: {
+      tooltip: { callbacks: tooltipCallback },
+      legend: {
+        display: !isMobile,
+        position: "right",
+        labels: {
+          color: chartColors.foreground,
         },
       },
-    }),
-    [isMobile, tooltipCallback, chartColors.foreground]
-  );
+    },
+  };
   return (
     <Pie
       aria-label="Activities summary pie chart"
