@@ -14,6 +14,7 @@ concurrency:
 jobs:
   chromatic:
     name: Run Chromatic
+    if: github.event.pull_request == null || (github.event.pull_request.head.repo.fork == false && secrets.CHROMATIC_PROJECT_TOKEN != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
