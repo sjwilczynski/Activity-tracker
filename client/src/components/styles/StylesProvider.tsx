@@ -1,5 +1,5 @@
 import { QueryClientContext } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, type ReactNode } from "react";
+import { useContext, useEffect, type ReactNode } from "react";
 import {
   useFunAnimations,
   useGroupByCategory,
@@ -30,7 +30,7 @@ export function useThemeToggleWithTransition() {
   const isLightTheme = useIsLightTheme();
   const setIsLightTheme = useSetIsLightTheme();
 
-  const toggle = useCallback(() => {
+  const toggle = () => {
     const supportsViewTransition =
       typeof document !== "undefined" && "startViewTransition" in document;
     const prefersReducedMotion = window.matchMedia(
@@ -63,7 +63,7 @@ export function useThemeToggleWithTransition() {
     transition.finished.finally(() => {
       document.documentElement.classList.remove("theme-transitioning");
     });
-  }, [isLightTheme, setIsLightTheme]);
+  };
 
   return [isLightTheme, toggle] as const;
 }

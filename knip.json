@@ -5,7 +5,9 @@
       "entry": ["src/app/routes/**/*.tsx", "src/**/*.stories.tsx"],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": [
+        "@babel/preset-typescript",
         "@vitest/coverage-v8",
+        "babel-plugin-react-compiler",
         "chromatic",
         "tailwindcss",
         "tw-animate-css"

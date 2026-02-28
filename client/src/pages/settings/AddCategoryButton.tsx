@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useFetcher } from "react-router";
 import { Button } from "../../components/ui/button";
 import {
@@ -41,7 +41,7 @@ export function AddCategoryButton() {
     }
   );
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (!name.trim()) return;
     fetcher.submit(
       {
@@ -58,7 +58,7 @@ export function AddCategoryButton() {
     setName("");
     setActive("active");
     setOpen(false);
-  }, [name, active, fetcher]);
+  };
 
   return (
     <Dialog

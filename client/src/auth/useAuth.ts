@@ -4,7 +4,7 @@ import {
   getAuth,
   onAuthStateChanged,
 } from "firebase/auth";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { User } from "./AuthContext";
 
 export const useAuth = () => {
@@ -27,15 +27,15 @@ export const useAuth = () => {
     return () => {
       unregisterAuthObserver();
     };
-  }, [auth, isSignedIn, currentUser]);
+  }, [auth]);
 
   const getIdTokenFun = currentUser
     ? () => currentUser.getIdToken()
     : undefined;
 
-  const signOut = useCallback(() => {
+  const signOut = () => {
     return firebaseSignOut(auth);
-  }, [auth]);
+  };
 
   return {
     isSignedIn,

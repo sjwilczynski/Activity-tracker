@@ -1,5 +1,4 @@
 import { useIsFetching, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
 import {
   activitiesQueryOptions,
   activitiesWithLimitQueryOptions,
@@ -25,7 +24,7 @@ export const useActivitiesWithLimit = () => {
 export const useExportUserData = () => {
   const getConfig = useRequestConfig();
 
-  return useCallback(async (): Promise<string> => {
+  return async (): Promise<string> => {
     const config = await getConfig();
     const response = await fetch(exportApiPath, {
       method: "GET",
@@ -36,7 +35,7 @@ export const useExportUserData = () => {
     }
     const data = await response.json();
     return JSON.stringify(data, null, 2);
-  }, [getConfig]);
+  };
 };
 
 export const useIsFetchingActivities = () => {

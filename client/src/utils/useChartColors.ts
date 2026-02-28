@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
-import { useIsLightTheme } from "../components/styles/StylesProvider";
+import { useSyncExternalStore } from "react";
 
-function readColors() {
+type ChartColors = {
+  foreground: string;
+  mutedForeground: string;
+};
+
+function readColors(): ChartColors {
   const style = getComputedStyle(document.documentElement);
   return {
     foreground: style.getPropertyValue("--color-foreground").trim(),
@@ -9,13 +13,28 @@ function readColors() {
   };
 }
 
+let cached: ChartColors = { foreground: "", mutedForeground: "" };
+
+function getSnapshot(): ChartColors {
+  const next = readColors();
+  if (
+    next.foreground !== cached.foreground ||
+    next.mutedForeground !== cached.mutedForeground
+  ) {
+    cached = next;
+  }
+  return cached;
+}
+
+function subscribe(callback: () => void) {
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => observer.disconnect();
+}
+
 export function useChartColors() {
-  const isLight = useIsLightTheme();
-  const [colors, setColors] = useState(readColors);
-
-  useEffect(() => {
-    setColors(readColors());
-  }, [isLight]);
-
-  return colors;
+  return useSyncExternalStore(subscribe, getSnapshot);
 }

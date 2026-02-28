@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Link } from "react-router";
 import {
   Card,
@@ -34,7 +33,7 @@ export function ActivityNamesTab({
   activities: ActivityRecordWithId[];
   categories: Category[];
 }) {
-  const activityNames = useMemo<ActivityNameInfo[]>(() => {
+  const activityNames: ActivityNameInfo[] = (() => {
     const nameMap = new Map<string, { count: number; categoryId: string }>();
     for (const activity of activities) {
       const existing = nameMap.get(activity.name);
@@ -55,7 +54,7 @@ export function ActivityNamesTab({
         categoryId: categoryId || undefined,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activities]);
+  })();
 
   return (
     <Card>

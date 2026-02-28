@@ -1,5 +1,4 @@
 import { Trash2 } from "lucide-react";
-import { useCallback } from "react";
 import { useFetcher } from "react-router";
 import type { ActivityRecordWithId } from "../../../data";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
@@ -17,7 +16,10 @@ type Props = {
 };
 
 export const RowInReadMode = ({ record }: Props) => {
-  const { state, data, submit } = useFetcher<{ ok?: boolean; error?: string }>();
+  const { state, data, submit } = useFetcher<{
+    ok?: boolean;
+    error?: string;
+  }>();
   const isDeleting = state !== "idle";
   const isError = state === "idle" && data?.error !== undefined;
   const isSuccess = state === "idle" && data?.ok === true;
@@ -31,19 +33,16 @@ export const RowInReadMode = ({ record }: Props) => {
     }
   );
 
-  const deleteActivity = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      submit(
-        {
-          intent: "delete",
-          id: record.id,
-        },
-        { method: "post", action: "/activity-list" }
-      );
-    },
-    [record.id, submit]
-  );
+  const deleteActivity = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    submit(
+      {
+        intent: "delete",
+        id: record.id,
+      },
+      { method: "post", action: "/activity-list" }
+    );
+  };
 
   return (
     <>

@@ -37,7 +37,6 @@ export default defineConfig([
 
     plugins: {
       react,
-      "react-hooks": reactHooks,
     },
 
     languageOptions: {
@@ -72,10 +71,13 @@ export default defineConfig([
       ...react.configs.flat["jsx-runtime"].rules,
       "react/prop-types": "off",
 
-      // React hooks
-      // React hooks — manual rules instead of preset because v7 preset includes
-      // React Compiler rules we're not ready for yet (tracked in CP9)
-      "react-hooks/rules-of-hooks": "error",
+    },
+  },
+  // React hooks — use flat/recommended preset (includes React Compiler rules)
+  reactHooks.configs.flat.recommended,
+  {
+    rules: {
+      // Keep exhaustive-deps as error (preset uses warn) to match --max-warnings=0
       "react-hooks/exhaustive-deps": "error",
     },
   },
