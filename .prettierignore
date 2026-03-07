@@ -10,3 +10,4 @@ bun.lock
 *.py
 .husky/*
 .npmrc
+*.gif
