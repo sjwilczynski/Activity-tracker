@@ -357,3 +357,52 @@ export const DarkMode: Story = {
     expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
   },
 };
+
+export const FuzzySearch: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
+    await step(
+      "Open the activity picker and type a non-contiguous fuzzy query",
+      async () => {
+        const combobox = canvas.getByRole("combobox", {
+          name: /activity name/i,
+        });
+        await userEvent.click(combobox);
+        const searchInput =
+          await screen.findByPlaceholderText(/search activities/i);
+        // "rnng" is not a substring of "Running" but all characters appear in order
+        await userEvent.type(searchInput, "rnng");
+      }
+    );
+
+    await step(
+      "Verify that 'Running' is shown and non-matching items are hidden",
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByRole("option", { name: /running/i })
+          ).toBeInTheDocument();
+        });
+        expect(
+          screen.queryByRole("option", { name: /swimming/i })
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("option", { name: /cycling/i })
+        ).not.toBeInTheDocument();
+      }
+    );
+
+    await step("Select the fuzzy-matched option", async () => {
+      await userEvent.click(screen.getByRole("option", { name: /running/i }));
+      const combobox = canvas.getByRole("combobox", {
+        name: /activity name/i,
+      });
+      expect(combobox).toHaveTextContent("Running");
+    });
+  },
+};
