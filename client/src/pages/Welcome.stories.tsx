@@ -367,7 +367,7 @@ export const FuzzySearch: Story = {
     });
 
     await step(
-      "Open the activity picker and type a non-contiguous fuzzy query",
+      "Open the activity picker and type a query with a typo",
       async () => {
         const combobox = canvas.getByRole("combobox", {
           name: /activity name/i,
@@ -375,8 +375,8 @@ export const FuzzySearch: Story = {
         await userEvent.click(combobox);
         const searchInput =
           await screen.findByPlaceholderText(/search activities/i);
-        // "rnng" is not a substring of "Running" but all characters appear in order
-        await userEvent.type(searchInput, "rnng");
+        // "Runnig" is a common typo for "Running" (missing one 'n')
+        await userEvent.type(searchInput, "Runnig");
       }
     );
 
@@ -397,7 +397,7 @@ export const FuzzySearch: Story = {
       }
     );
 
-    await step("Select the fuzzy-matched option", async () => {
+    await step("Select the typo-matched option", async () => {
       await userEvent.click(screen.getByRole("option", { name: /running/i }));
       const combobox = canvas.getByRole("combobox", {
         name: /activity name/i,
