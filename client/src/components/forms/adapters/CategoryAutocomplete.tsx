@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
 import { cn } from "../../../utils/cn";
+import { fuzzyFilter } from "../../../utils/fuzzyFilter";
 import {
   Command,
   CommandEmpty,
@@ -93,7 +94,7 @@ export const CategoryAutocomplete = ({
           align="start"
           sideOffset={4}
         >
-          <Command>
+          <Command filter={fuzzyFilter}>
             <CommandInput placeholder="Search activities..." />
             <CommandList>
               {isLoading ? (
