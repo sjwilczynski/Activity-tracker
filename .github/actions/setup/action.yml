@@ -41,12 +41,17 @@ runs:
         restore-keys: |
           playwright-${{ runner.os }}-
 
+    # Run from client/ so bunx resolves the workspace-pinned playwright version.
+    # Running at the repo root fetches the latest playwright instead, installing
+    # a browser build that doesn't match the installed playwright-core.
     - name: Install Playwright browsers
       if: inputs.install-playwright == 'true' && steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
+      working-directory: client
       run: bunx playwright install --with-deps chromium
 
     - name: Install Playwright deps (OS libraries)
       if: inputs.install-playwright == 'true' && steps.cache-playwright.outputs.cache-hit == 'true'
       shell: bash
+      working-directory: client
       run: bunx playwright install-deps chromium
