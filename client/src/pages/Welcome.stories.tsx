@@ -366,23 +366,19 @@ export const FuzzySearch: Story = {
       expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    await step(
-      "Open the activity picker and type a query with a typo",
-      async () => {
-        const combobox = canvas.getByRole("combobox", {
-          name: /activity name/i,
-        });
-        await userEvent.click(combobox);
-        const searchInput =
-          await screen.findByPlaceholderText(/search activities/i);
-        // "Runnig" is a common typo for "Running" (missing one 'n')
-        await userEvent.type(searchInput, "Runnig");
-      }
-    );
+    const combobox = canvas.getByRole("combobox", { name: /activity name/i });
+    await userEvent.click(combobox);
+    const searchInput =
+      await screen.findByPlaceholderText(/search activities/i);
 
     await step(
-      "Verify that 'Running' is shown and non-matching items are hidden",
+      "Substitution typo surfaces the right activity (guards the edit-distance path)",
       async () => {
+        // "Runninh" substitutes the trailing 'g' with 'h'. This is NOT an
+        // in-order subsequence of "Running", so cmdk's default filter scores it
+        // 0 and would hide it. Only fuzzyFilter's edit-distance fallback matches
+        // it — so this assertion fails if that fallback regresses.
+        await userEvent.type(searchInput, "Runninh");
         await waitFor(() => {
           expect(
             screen.getByRole("option", { name: /running/i })
@@ -397,11 +393,26 @@ export const FuzzySearch: Story = {
       }
     );
 
-    await step("Select the typo-matched option", async () => {
-      await userEvent.click(screen.getByRole("option", { name: /running/i }));
-      const combobox = canvas.getByRole("combobox", {
-        name: /activity name/i,
+    await step("Transposition typo also matches", async () => {
+      // "Ygoa" swaps two characters of "Yoga".
+      await userEvent.clear(searchInput);
+      await userEvent.type(searchInput, "Ygoa");
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: /yoga/i })
+        ).toBeInTheDocument();
       });
+      expect(
+        screen.queryByRole("option", { name: /running/i })
+      ).not.toBeInTheDocument();
+    });
+
+    await step("Select a typo-matched option", async () => {
+      await userEvent.clear(searchInput);
+      await userEvent.type(searchInput, "Runninh");
+      await userEvent.click(
+        await screen.findByRole("option", { name: /running/i })
+      );
       expect(combobox).toHaveTextContent("Running");
     });
   },

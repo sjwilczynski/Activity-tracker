@@ -1,52 +1,57 @@
+import { defaultFilter } from "cmdk";
+
 /**
- * Fuzzy filter for cmdk Command component.
+ * Fuzzy filter for the cmdk Command component.
  *
- * Returns a score > 0 when the search is a plausible match for `value`,
- * handling both typos and non-contiguous abbreviations.
+ * cmdk's own `defaultFilter` (the `command-score` algorithm) already handles
+ * exact, prefix, word-boundary and in-order subsequence ("abbreviation")
+ * matches, and ranks them with useful, nuanced scores. We keep all of that and
+ * only add what it lacks: tolerance for typos that break its in-order matching,
+ * such as substitutions ("Runninh" → "Running") where the default returns 0.
  *
- * Scoring:
- *   1.0 – exact substring match
- *   0.8 – typo-tolerant match (edit distance ≤ threshold within any substring)
- *   0.5 – all search characters appear in value in order (abbreviation match)
- *   0   – no match (item hidden)
+ * Strategy:
+ *   1. Defer to `defaultFilter`. If it matches (> 0), return its score so the
+ *      built-in ranking is preserved.
+ *   2. Otherwise fall back to a bounded edit-distance check and return a flat
+ *      score for plausible typo matches.
  *
- * Typo thresholds (scales with query length so short queries stay precise):
- *   length < 3  → 0 errors allowed
+ * Edit-distance thresholds scale with query length so short queries stay
+ * precise (a 1-edit window on a 2-char query would match almost anything):
+ *   length < 3  → 0 errors allowed (typo fallback disabled)
  *   length 3–5  → 1 error allowed
  *   length ≥ 6  → 2 errors allowed
  *
- * Compatible with cmdk's `filter` prop: `(value, search) => number`.
+ * Compatible with cmdk's `filter` prop: `(value, search, keywords?) => number`.
  */
-export function fuzzyFilter(value: string, search: string): number {
+export function fuzzyFilter(
+  value: string,
+  search: string,
+  keywords?: string[]
+): number {
   if (search.length === 0) return 1;
 
-  const val = value.toLowerCase();
+  const baseScore = defaultFilter(value, search, keywords);
+  if (baseScore > 0) return baseScore;
+
+  return typoToleranceScore(value, search);
+}
+
+/** Score (0.5) for queries within the allowed edit distance, else 0. */
+function typoToleranceScore(value: string, search: string): number {
   const srch = search.toLowerCase();
-
-  // 1. Exact substring match
-  if (val.includes(srch)) return 1;
-
-  // 2. Typo-tolerant match using minimum edit distance over any substring
   const maxErrors = srch.length < 3 ? 0 : srch.length < 6 ? 1 : 2;
-  if (maxErrors > 0 && minEditDistanceInSubstring(val, srch) <= maxErrors) {
-    return 0.8;
-  }
+  if (maxErrors === 0) return 0;
 
-  // 3. Subsequence (in-order chars, useful for abbreviation-style queries)
-  let si = 0;
-  for (let i = 0; i < val.length && si < srch.length; i++) {
-    if (val[i] === srch[si]) si++;
-  }
-  if (si === srch.length) return 0.5;
-
-  return 0;
+  return minEditDistanceInSubstring(value.toLowerCase(), srch) <= maxErrors
+    ? 0.5
+    : 0;
 }
 
 /**
  * Returns the minimum edit distance between `pattern` and any substring of
  * `text` (insertions, deletions, substitutions each cost 1).
  *
- * Setting `dp[j][0] = 0` gives "free" alignment to any starting position in
+ * Setting `dp[0][j] = 0` gives "free" alignment to any starting position in
  * `text`, making this a fuzzy substring search rather than a full-string
  * comparison.
  */
