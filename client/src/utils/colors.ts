@@ -32,3 +32,10 @@ export function getActivityColor(activityName: string): string {
     hashString(activityName.toLowerCase().trim()) % COLOR_PALETTE.length;
   return COLOR_PALETTE[index];
 }
+
+/** Get a deterministic color for a category name via hash. */
+export function getCategoryColor(categoryName: string): string {
+  const index =
+    hashString(categoryName.toLowerCase().trim()) % COLOR_PALETTE.length;
+  return COLOR_PALETTE[index];
+}

@@ -177,9 +177,7 @@ export const EditRowSavesAndUpdates: Story = {
         });
         await userEvent.click(combobox);
 
-        await screen.findByText("Sports");
-
-        const cyclingOption = screen.getByRole("option", {
+        const cyclingOption = await screen.findByRole("option", {
           name: /cycling/i,
         });
         await userEvent.click(cyclingOption);
@@ -422,8 +420,31 @@ export const DeleteAllInteraction: Story = {
   },
 };
 
-export const DetailFieldsDisplay: Story = {
-  play: async ({ canvasElement }) => {
+export const CategoryBadgesDisplay: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+
+    await step("Category badge is shown next to the activity name", async () => {
+      // First row (most recent) is "Running", which belongs to "Sports".
+      // Categories load asynchronously, so wait for the badge to appear.
+      await waitFor(() => {
+        const rows = canvas.getAllByTestId("activity-row");
+        expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
+        expect(within(rows[0]).getByText("Sports")).toBeInTheDocument();
+      });
+    });
+
+    await step("Activities from other categories show their badge", async () => {
+      // Reading → Learning, Meditation → Wellness appear on the first page
+      expect(canvas.getAllByText("Learning").length).toBeGreaterThanOrEqual(1);
+      expect(canvas.getAllByText("Wellness").length).toBeGreaterThanOrEqual(1);
+    });
+  },
+};
+
+export const DetailFieldsDisplay: Story = {  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await canvas.findByText("All Activities");
