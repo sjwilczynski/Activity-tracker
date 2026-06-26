@@ -254,6 +254,27 @@ describe("firebaseDB", () => {
         "Swimming",
       ]);
     });
+
+    it("empties the category in one update when source and target are the same", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running", "Swimming"],
+        },
+      });
+
+      await firebaseDB.bulkReassignCategory(USER_ID, "catA", "catA");
+
+      // Colliding multi-path keys collapse to one; final state is empty
+      expect(updateCallCount).toBe(1);
+      expect(setCallCount).toBe(0);
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.activityNames).toEqual([]);
+    });
   });
 
   describe("bulkAssignCategory", () => {
@@ -312,6 +333,33 @@ describe("firebaseDB", () => {
       expect(updateCallCount).toBe(1);
       expect(setCallCount).toBe(0);
 
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.activityNames).toEqual(["Swimming"]);
+      expect(categories.catB.activityNames).toEqual(["Running"]);
+    });
+
+    it("adds to the target in a single update when the name is in no category", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Swimming"],
+        },
+        catB: {
+          name: "Other",
+          active: true,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await firebaseDB.bulkAssignCategory(USER_ID, "Running", "catB");
+
+      expect(updateCallCount).toBe(1);
+      expect(setCallCount).toBe(0);
       const categories = getNestedValue(
         `users/${USER_ID}/categories`
       ) as CategoryMap;
