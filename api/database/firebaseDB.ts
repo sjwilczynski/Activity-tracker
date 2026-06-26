@@ -211,13 +211,16 @@ export const firebaseDB: Database = {
     const categories = catSnapshot.val() as CategoryMap | null;
     if (!categories) return;
 
+    const updates: Record<string, string[]> = {};
+
     // Remove from current category
     for (const [catId, cat] of Object.entries(categories)) {
       const names = cat.activityNames ?? [];
       const idx = names.indexOf(activityName);
       if (idx !== -1) {
-        const newNames = names.filter((n) => n !== activityName);
-        await categoriesRef.child(catId).child("activityNames").set(newNames);
+        updates[`${catId}/activityNames`] = names.filter(
+          (n) => n !== activityName
+        );
         break;
       }
     }
@@ -227,11 +230,15 @@ export const firebaseDB: Database = {
     if (targetCat) {
       const targetNames = targetCat.activityNames ?? [];
       if (!targetNames.includes(activityName)) {
-        await categoriesRef
-          .child(categoryId)
-          .child("activityNames")
-          .set([...targetNames, activityName]);
+        updates[`${categoryId}/activityNames`] = [
+          ...targetNames,
+          activityName,
+        ];
       }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await categoriesRef.update(updates);
     }
   },
 
@@ -252,14 +259,10 @@ export const firebaseDB: Database = {
     const targetNames = [
       ...new Set([...(toCat.activityNames ?? []), ...namesToMove]),
     ];
-    await categoriesRef
-      .child(toCategoryId)
-      .child("activityNames")
-      .set(targetNames);
-    await categoriesRef
-      .child(fromCategoryId)
-      .child("activityNames")
-      .set([]);
+    await categoriesRef.update({
+      [`${toCategoryId}/activityNames`]: targetNames,
+      [`${fromCategoryId}/activityNames`]: [],
+    });
   },
 
   deleteActivitiesByCategory: async (userId, categoryId) => {

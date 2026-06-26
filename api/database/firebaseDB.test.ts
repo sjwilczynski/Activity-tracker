@@ -36,6 +36,8 @@ function setNestedValue(path: string, value: unknown): void {
 }
 
 let pushCounter = 0;
+let setCallCount = 0;
+let updateCallCount = 0;
 
 function createMockRef(path: string): Record<string, unknown> {
   return {
@@ -73,9 +75,11 @@ function createMockRef(path: string): Record<string, unknown> {
       };
     }),
     set: vi.fn(async (value: unknown) => {
+      setCallCount++;
       setNestedValue(path, value);
     }),
     update: vi.fn(async (updates: Record<string, unknown>) => {
+      updateCallCount++;
       for (const [updatePath, value] of Object.entries(updates)) {
         setNestedValue(`${path}/${updatePath}`, value);
       }
@@ -110,6 +114,8 @@ describe("firebaseDB", () => {
   beforeEach(() => {
     store = {};
     pushCounter = 0;
+    setCallCount = 0;
+    updateCallCount = 0;
   });
 
   describe("getActivities — enrichment", () => {
@@ -215,6 +221,39 @@ describe("firebaseDB", () => {
       expect(activities!.act1.categoryId).toBe("catB");
       expect(activities!.act2.categoryId).toBe("catB");
     });
+
+    it("applies the move as a single atomic update (no sequential set writes)", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running", "Swimming"],
+        },
+        catB: {
+          name: "Other",
+          active: true,
+          description: "",
+          activityNames: ["Yoga"],
+        },
+      });
+
+      await firebaseDB.bulkReassignCategory(USER_ID, "catA", "catB");
+
+      // Atomicity: exactly one fan-out update(), zero direct set() writes
+      expect(updateCallCount).toBe(1);
+      expect(setCallCount).toBe(0);
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.activityNames).toEqual([]);
+      expect(categories.catB.activityNames).toEqual([
+        "Yoga",
+        "Running",
+        "Swimming",
+      ]);
+    });
   });
 
   describe("bulkAssignCategory", () => {
@@ -249,6 +288,35 @@ describe("firebaseDB", () => {
       const activities = await firebaseDB.getActivities(USER_ID);
       expect(activities!.act1.categoryId).toBe("catB");
       expect(activities!.act1.active).toBe(false);
+    });
+
+    it("applies remove + add as a single atomic update (no sequential set writes)", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running", "Swimming"],
+        },
+        catB: {
+          name: "Other",
+          active: false,
+          description: "",
+          activityNames: [],
+        },
+      });
+
+      await firebaseDB.bulkAssignCategory(USER_ID, "Running", "catB");
+
+      // Atomicity: exactly one fan-out update(), zero direct set() writes
+      expect(updateCallCount).toBe(1);
+      expect(setCallCount).toBe(0);
+
+      const categories = getNestedValue(
+        `users/${USER_ID}/categories`
+      ) as CategoryMap;
+      expect(categories.catA.activityNames).toEqual(["Swimming"]);
+      expect(categories.catB.activityNames).toEqual(["Running"]);
     });
   });
 
