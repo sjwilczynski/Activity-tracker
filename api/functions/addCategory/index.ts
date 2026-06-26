@@ -53,9 +53,10 @@ async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
       body: "Successfully added",
     };
   } catch (err) {
+    console.error("addCategory error:", err);
     return {
       status: 500,
-      body: (err as Error).message,
+      body: "Internal server error",
     };
   }
 }

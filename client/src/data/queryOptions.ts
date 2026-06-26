@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { apiFetch, type GetAuthToken } from "./apiClient";
 import {
   activitiesApiPath,
   categoriesApiPath,
@@ -15,27 +16,16 @@ import type {
   UserPreferences,
 } from "./types";
 
-type GetAuthToken = () => Promise<string>;
-
 const fetchActivities = async (
   getAuthToken: GetAuthToken,
   limit?: number
 ): Promise<ActivityRecordWithId[]> => {
-  const token = await getAuthToken();
-
   const url = new URL(activitiesApiPath, window.location.origin);
   if (limit) {
     url.searchParams.append("limit", String(limit));
   }
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: { "x-auth-token": token },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  const response = await apiFetch(getAuthToken, url.toString());
 
   const activityRecordsResponse =
     (await response.json()) as ActivityRecordWithIdServer[];
@@ -49,16 +39,7 @@ const fetchActivities = async (
 const fetchCategories = async (
   getAuthToken: GetAuthToken
 ): Promise<Category[]> => {
-  const token = await getAuthToken();
-
-  const response = await fetch(categoriesApiPath, {
-    method: "GET",
-    headers: { "x-auth-token": token },
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  const response = await apiFetch(getAuthToken, categoriesApiPath);
 
   return (await response.json()) as Category[];
 };
@@ -74,7 +55,7 @@ export const activitiesWithLimitQueryOptions = (
   limit = 5
 ) =>
   queryOptions({
-    queryKey: [...getActivitiesQueryIdWithLimit],
+    queryKey: [...getActivitiesQueryIdWithLimit, limit],
     queryFn: () => fetchActivities(getAuthToken, limit),
   });
 
@@ -93,10 +74,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 const fetchPreferences = async (
   getAuthToken: GetAuthToken
 ): Promise<UserPreferences> => {
-  const token = await getAuthToken();
-  const response = await fetch(preferencesApiPath, {
-    method: "GET",
-    headers: { "x-auth-token": token },
+  const response = await apiFetch(getAuthToken, preferencesApiPath, {
+    allowNotOk: true,
   });
 
   if (!response.ok) {
