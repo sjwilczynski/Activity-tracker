@@ -9,6 +9,12 @@ import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
 import { handlers, resetActivities, resetCategories } from "../src/mocks/handlers";
 import { testContext } from "../src/mocks/testContext";
+import {
+  removeActivityById,
+  replaceActivityById,
+  runOptimisticActivityMutation,
+} from "../src/data/optimisticActivities";
+import type { ActivityRecordServer } from "../src/data/types";
 
 // Disable Chart.js animations in Storybook to fix rendering issues
 // in the constrained iframe environment
@@ -38,6 +44,10 @@ const mockAction = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
   const token = "mock-token-12345";
+  // Mirrors the real route action's optimistic updates (see
+  // app/routes/activity-list.tsx). The QueryClient is published by the
+  // withAllProviders decorator via testContext.
+  const queryClient = testContext.getQueryClient();
 
   try {
     let response: Response | undefined;
@@ -57,22 +67,40 @@ const mockAction = async ({ request }: { request: Request }) => {
     if (intent === "edit") {
       const id = formData.get("id") as string;
       const record = formData.get("record") as string;
-      response = await fetch(`/api/activities/${id}`, {
-        method: "PUT",
-        headers: {
-          "x-auth-token": token,
-          "Content-Type": "application/json",
-        },
-        body: record,
-      });
+      const performEdit = () =>
+        fetch(`/api/activities/${id}`, {
+          method: "PUT",
+          headers: {
+            "x-auth-token": token,
+            "Content-Type": "application/json",
+          },
+          body: record,
+        });
+      if (queryClient) {
+        return await runOptimisticActivityMutation(
+          queryClient,
+          replaceActivityById(id, JSON.parse(record) as ActivityRecordServer),
+          performEdit
+        );
+      }
+      response = await performEdit();
     }
 
     if (intent === "delete") {
       const id = formData.get("id") as string;
-      response = await fetch(`/api/activities/${id}`, {
-        method: "DELETE",
-        headers: { "x-auth-token": token },
-      });
+      const performDelete = () =>
+        fetch(`/api/activities/${id}`, {
+          method: "DELETE",
+          headers: { "x-auth-token": token },
+        });
+      if (queryClient) {
+        return await runOptimisticActivityMutation(
+          queryClient,
+          removeActivityById(id),
+          performDelete
+        );
+      }
+      response = await performDelete();
     }
 
     if (intent === "delete-all") {

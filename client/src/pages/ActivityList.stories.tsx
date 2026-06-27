@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import type { ActivityRecordServer } from "../data";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
 } from "../mocks/handlers";
+import { getActivities, setActivities } from "../mocks/handlers/activities";
 import { ActivityList } from "./ActivityList";
 
 const meta: Meta<typeof ActivityList> = {
@@ -14,6 +16,48 @@ const meta: Meta<typeof ActivityList> = {
 
 export default meta;
 type Story = StoryObj<typeof ActivityList>;
+
+/**
+ * Builds an activities-by-id handler that suspends until `gate.release()` is
+ * called, letting a play function assert the optimistic UI while the server
+ * request is still "in flight". `gate.completed` flips to true once the
+ * response has been produced, so a success assertion can prove the optimistic
+ * state survived the full round-trip (and was not rolled back) rather than only
+ * the optimistic phase. `finalize` mutates the mock server state so the
+ * post-settle refetch stays consistent with the optimistic change (skipped for
+ * error responses). The flags reset on each request so the gate is safe to
+ * reuse across runs/retries.
+ */
+function gatedActivityHandler(
+  method: "put" | "delete",
+  status: number,
+  finalize?: (id: string, request: Request) => Promise<void> | void
+) {
+  const gate: {
+    release?: () => void;
+    completed: boolean;
+    reset: () => void;
+  } = {
+    completed: false,
+    reset: () => {
+      gate.release = undefined;
+      gate.completed = false;
+    },
+  };
+  const handler = http[method]("*/api/activities/:id", async ({
+    params,
+    request,
+  }) => {
+    gate.completed = false;
+    await new Promise<void>((resolve) => {
+      gate.release = resolve;
+    });
+    await finalize?.(params.id as string, request);
+    gate.completed = true;
+    return new HttpResponse(null, { status });
+  });
+  return { handler, gate };
+}
 
 export const Default: Story = {
   play: async ({ canvasElement, step }) => {
@@ -224,6 +268,148 @@ export const DeleteRowInteraction: Story = {
       },
       { timeout: 5000 }
     );
+  },
+};
+
+// The server response is suspended via the gate so these assertions can only
+// pass if the UI updates optimistically (before the round-trip completes).
+const deleteSuccessGate = gatedActivityHandler("delete", 204, (id) => {
+  setActivities(getActivities().filter((activity) => activity.id !== id));
+});
+
+export const DeleteOptimisticUpdate: Story = {
+  parameters: {
+    msw: { handlers: [deleteSuccessGate.handler, ...defaultHandlers] },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+    expect(canvas.getByText(/1–10 of 30/)).toBeInTheDocument();
+    deleteSuccessGate.gate.reset();
+
+    const deleteButtons = canvas.getAllByRole("button", { name: /^delete$/i });
+    await userEvent.click(deleteButtons[0]);
+
+    // Wait until the server request is in flight (and suspended by the gate),
+    // then assert the row is already gone — i.e. removed optimistically.
+    await waitFor(() => {
+      expect(deleteSuccessGate.gate.release).toBeDefined();
+    });
+    await waitFor(() => {
+      expect(canvas.getByText(/1–10 of 29/)).toBeInTheDocument();
+    });
+
+    // Let the server finish and wait for the response to be produced; the
+    // optimistic delete is then confirmed (not rolled back) and stays applied
+    // through the post-settle refetch.
+    deleteSuccessGate.gate.release?.();
+    await waitFor(() => {
+      expect(deleteSuccessGate.gate.completed).toBe(true);
+    });
+    await waitFor(() => {
+      expect(canvas.getByText(/1–10 of 29/)).toBeInTheDocument();
+    });
+  },
+};
+
+const deleteErrorGate = gatedActivityHandler("delete", 500);
+
+export const DeleteOptimisticRollback: Story = {
+  parameters: {
+    msw: { handlers: [deleteErrorGate.handler, ...defaultHandlers] },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+    expect(canvas.getByText(/1–10 of 30/)).toBeInTheDocument();
+    deleteErrorGate.gate.reset();
+
+    const deleteButtons = canvas.getAllByRole("button", { name: /^delete$/i });
+    await userEvent.click(deleteButtons[0]);
+
+    // Optimistically removed while the (suspended) server request is in flight.
+    await waitFor(() => {
+      expect(deleteErrorGate.gate.release).toBeDefined();
+    });
+    await waitFor(() => {
+      expect(canvas.getByText(/1–10 of 29/)).toBeInTheDocument();
+    });
+
+    // Server fails → the row is rolled back into the list.
+    deleteErrorGate.gate.release?.();
+    await waitFor(() => {
+      expect(canvas.getByText(/1–10 of 30/)).toBeInTheDocument();
+    });
+  },
+};
+
+const editSuccessGate = gatedActivityHandler("put", 204, async (id, request) => {
+  const update = (await request.json()) as ActivityRecordServer;
+  setActivities(
+    getActivities().map((activity) =>
+      activity.id === id ? { ...activity, ...update } : activity
+    )
+  );
+});
+
+export const EditOptimisticUpdate: Story = {
+  parameters: {
+    msw: { handlers: [editSuccessGate.handler, ...defaultHandlers] },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("All Activities");
+    editSuccessGate.gate.reset();
+
+    await step("Open edit dialog and switch Running → Cycling", async () => {
+      const rows = canvas.getAllByTestId("activity-row");
+      expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
+
+      const editButtons = canvas.getAllByRole("button", { name: /edit/i });
+      await userEvent.click(editButtons[0]);
+
+      await screen.findByRole("button", { name: /save changes/i });
+
+      await userEvent.click(
+        screen.getByRole("combobox", { name: /activity name/i })
+      );
+      await screen.findByText("Sports");
+      await userEvent.click(screen.getByRole("option", { name: /cycling/i }));
+
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i })
+      );
+    });
+
+    await step("Row reflects the edit before the server responds", async () => {
+      await waitFor(() => {
+        expect(editSuccessGate.gate.release).toBeDefined();
+      });
+      await waitFor(() => {
+        const rows = canvas.getAllByTestId("activity-row");
+        expect(within(rows[0]).getByText("Cycling")).toBeInTheDocument();
+      });
+    });
+
+    await step("Release the server and confirm the edit settles", async () => {
+      editSuccessGate.gate.release?.();
+
+      await waitFor(() => {
+        expect(editSuccessGate.gate.completed).toBe(true);
+      });
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("heading", { level: 2, name: /edit activity/i })
+        ).not.toBeInTheDocument();
+      });
+      await waitFor(() => {
+        const rows = canvas.getAllByTestId("activity-row");
+        expect(within(rows[0]).getByText("Cycling")).toBeInTheDocument();
+      });
+    });
   },
 };
 
