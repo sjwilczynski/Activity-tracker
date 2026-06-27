@@ -32,7 +32,7 @@ export function HeatmapCell({ bucket }: HeatmapCellProps) {
         data-level={bucket.level}
         className={cn(
           "size-[16px] rounded-[3px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]",
-          "outline-none transition-transform focus-visible:ring-2 focus-visible:ring-ring",
+          "outline-hidden transition-transform focus-visible:ring-2 focus-visible:ring-ring",
           "focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:scale-110"
         )}
         style={{ backgroundColor: levelBackground(bucket.level) }}

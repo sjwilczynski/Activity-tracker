@@ -89,5 +89,16 @@ export const Default: Story = {
     // The legend is present.
     expect(canvas.getByText("Less")).toBeInTheDocument();
     expect(canvas.getByText("More")).toBeInTheDocument();
+
+    // The group is described by the screen-reader summary (aria-describedby).
+    const group = canvas.getByRole("group", {
+      name: "Weekly activity heatmap, last 52 weeks",
+    });
+    const summaryId = group.getAttribute("aria-describedby");
+    expect(summaryId).toBeTruthy();
+    const summary = canvasElement.ownerDocument.getElementById(summaryId!);
+    expect(summary).toHaveTextContent(
+      /Weekly activity heatmap of the last 52 weeks/
+    );
   },
 };

@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useId } from "react";
 import { HeatmapCell } from "./HeatmapCell";
 import { getMonthLabels, type WeeklyBucket } from "./weekly-heatmap-data";
 
@@ -27,14 +28,18 @@ function buildSummary(buckets: WeeklyBucket[]): string {
 export function WeeklyHeatmap({ buckets, monthLabels }: WeeklyHeatmapProps) {
   const labels = monthLabels ?? getMonthLabels(buckets);
   const gridTemplateColumns = `repeat(${buckets.length}, ${CELL_PX}px)`;
+  const summaryId = useId();
 
   return (
     <div className="overflow-x-auto pb-1">
-      <p className="sr-only">{buildSummary(buckets)}</p>
+      <p id={summaryId} className="sr-only">
+        {buildSummary(buckets)}
+      </p>
       <div
         className="inline-flex flex-col gap-1"
         role="group"
         aria-label={`Weekly activity heatmap, last ${buckets.length} weeks`}
+        aria-describedby={summaryId}
       >
         <div
           className="grid h-4 items-end text-[10px] leading-none text-muted-foreground"
