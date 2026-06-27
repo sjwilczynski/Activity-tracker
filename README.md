@@ -64,7 +64,7 @@ The app is split into two workspaces (`/client` and `/api`) managed as a bun mon
 ### Authentication Flow
 
 - **Client**: Firebase Auth handles sign-in (Google provider). The auth state is managed via `AuthContext` and a route loader redirects unauthenticated users to `/login`
-- **API**: Each function extracts the Firebase ID token from the `Authorization` header, verifies it via the Admin SDK, and uses the resulting `userId` to scope all database operations
+- **API**: Each function extracts the Firebase ID token from the `x-auth-token` header, verifies it via the Admin SDK, and uses the resulting `userId` to scope all database operations
 
 ### Data Model
 
