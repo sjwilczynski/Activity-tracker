@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ListChecks } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
-import type { ActivityRecordWithId } from "../../data";
+import { type ChangeEvent, useMemo, useState } from "react";
+import { type ActivityRecordWithId, useCategories } from "../../data";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -54,6 +54,15 @@ function formatMonthKey(key: string): string {
 
 export function SummaryTable(props: Props) {
   const { records, totalCount } = props;
+
+  const { data: categories } = useCategories();
+  const categoryNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const category of categories ?? []) {
+      map.set(category.id, category.name);
+    }
+    return map;
+  }, [categories]);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -117,7 +126,11 @@ export function SummaryTable(props: Props) {
                     </span>
                   </div>
                   {monthGroups[monthKey].map((record) => (
-                    <RowInReadMode key={record.id} record={record} />
+                    <RowInReadMode
+                      key={record.id}
+                      record={record}
+                      categoryName={categoryNameById.get(record.categoryId) ?? ""}
+                    />
                   ))}
                 </div>
               ))}
@@ -129,7 +142,11 @@ export function SummaryTable(props: Props) {
               className="md:hidden space-y-3 animate-content-fade-in"
             >
               {pageRecords.map((record) => (
-                <RowInReadMode key={record.id} record={record} />
+                <RowInReadMode
+                  key={record.id}
+                  record={record}
+                  categoryName={categoryNameById.get(record.categoryId) ?? ""}
+                />
               ))}
             </div>
 

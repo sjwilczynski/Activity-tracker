@@ -5,6 +5,7 @@ import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
+import { CategoryBadge } from "../../CategoryBadge";
 import { IntensityBadge } from "../../IntensityBadge";
 
 import { Button } from "../../ui/button";
@@ -13,9 +14,10 @@ import { MobileActivityCard } from "./MobileActivityCard";
 
 type Props = {
   record: ActivityRecordWithId;
+  categoryName?: string;
 };
 
-export const RowInReadMode = ({ record }: Props) => {
+export const RowInReadMode = ({ record, categoryName = "" }: Props) => {
   const { state, data, submit } = useFetcher<{
     ok?: boolean;
     error?: string;
@@ -64,7 +66,10 @@ export const RowInReadMode = ({ record }: Props) => {
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="font-medium capitalize text-sm">{record.name}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium capitalize text-sm">{record.name}</p>
+            <CategoryBadge name={categoryName} />
+          </div>
           {record.description && (
             <p className="text-xs text-muted-foreground line-clamp-1">
               {record.description}
@@ -101,6 +106,7 @@ export const RowInReadMode = ({ record }: Props) => {
 
       <MobileActivityCard
         record={record}
+        categoryName={categoryName}
         isDeleting={isDeleting}
         onDelete={deleteActivity}
       />

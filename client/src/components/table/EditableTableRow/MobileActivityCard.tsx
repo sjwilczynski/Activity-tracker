@@ -3,17 +3,24 @@ import type { ActivityRecordWithId } from "../../../data";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
+import { CategoryBadge } from "../../CategoryBadge";
 import { IntensityBadge } from "../../IntensityBadge";
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 
 type Props = {
   record: ActivityRecordWithId;
+  categoryName?: string;
   isDeleting: boolean;
   onDelete: (e: React.MouseEvent) => void;
 };
 
-export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
+export const MobileActivityCard = ({
+  record,
+  categoryName = "",
+  isDeleting,
+  onDelete,
+}: Props) => {
   const color = getActivityColor(record.name);
 
   return (
@@ -34,8 +41,9 @@ export const MobileActivityCard = ({ record, isDeleting, onDelete }: Props) => {
             {getActivityIcon(record.name)}
           </div>
           <div className="flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <p className="font-semibold capitalize">{record.name}</p>
+              <CategoryBadge name={categoryName} />
               {record.intensity && (
                 <IntensityBadge intensity={record.intensity} />
               )}
