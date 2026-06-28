@@ -1,6 +1,10 @@
 import type { HttpRequest } from "@azure/functions";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// These modules transitively import firebase/firebase.ts, which calls
+// initializeApp() at load time and would crash without real credentials, so
+// they must be stubbed. validateActivityBatch is pure and is intentionally
+// NOT mocked — the test exercises the real validation path with valid data.
 vi.mock("@azure/functions", () => ({
   app: { http: vi.fn() },
 }));
@@ -12,13 +16,6 @@ vi.mock("../../authorization/firebaseAuthorization", () => ({
 vi.mock("../../rateLimit/rateLimiter", () => ({
   checkRateLimit: vi.fn(async () => ({ allowed: true })),
   getRateLimitHeaders: vi.fn(() => ({})),
-}));
-
-vi.mock("../../validation/validators", () => ({
-  validateActivityBatch: vi.fn(() => ({
-    valid: true,
-    data: [{ name: "Running", date: "2024-01-01" }],
-  })),
 }));
 
 const { addActivities, getActivityCount } = vi.hoisted(() => ({
@@ -35,9 +32,11 @@ vi.mock("../../database/firebaseDB", () => ({
 
 import { addActivity } from "./index";
 
+const validActivities = [{ name: "Running", date: "2024-01-01" }];
+
 function makeRequest(): HttpRequest {
   return {
-    json: async () => [{ name: "Running", date: "2024-01-01" }],
+    json: async () => validActivities,
     headers: {
       get: (name: string) => (name === "x-auth-token" ? "valid-token" : null),
     },
@@ -51,13 +50,14 @@ describe("addActivity error handling", () => {
   });
 
   it("returns a generic 500 body without leaking the internal error message", async () => {
-    const secret = "Firebase connection string leaked: super-secret";
-    addActivities.mockRejectedValueOnce(new Error(secret));
+    const internalMessage =
+      "Firebase connection string: postgres://admin:super-secret@db";
+    addActivities.mockRejectedValueOnce(new Error(internalMessage));
 
     const response = await addActivity(makeRequest());
 
     expect(response.status).toBe(500);
     expect(response.body).toBe("Internal server error");
-    expect(response.body).not.toContain("secret");
+    expect(response.body).not.toContain(internalMessage);
   });
 });
