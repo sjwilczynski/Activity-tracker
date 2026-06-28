@@ -8,6 +8,7 @@ import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWit
 import { IntensityBadge } from "../components/IntensityBadge";
 import { OnboardingCard } from "../components/OnboardingCard";
 import { Loading } from "../components/states/Loading";
+import { WeeklyHeatmapCard } from "../components/visualization/WeeklyHeatmap";
 import {
   Card,
   CardAction,
@@ -171,6 +172,9 @@ export const Welcome = () => {
           );
         })}
       </div>
+
+      {/* Weekly Activity Heatmap */}
+      <WeeklyHeatmapCard />
 
       {/* Log Activity + Recent Activities */}
       <div className="grid gap-4 lg:grid-cols-2">

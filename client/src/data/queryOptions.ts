@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { parseISO } from "date-fns";
 import { apiFetch, type GetAuthToken } from "./apiClient";
 import {
   activitiesApiPath,
@@ -32,7 +33,10 @@ const fetchActivities = async (
 
   return activityRecordsResponse.map((activityRecord) => ({
     ...activityRecord,
-    date: new Date(activityRecord.date),
+    // Parse date-only strings (yyyy-MM-dd) as LOCAL dates. `new Date(str)`
+    // would treat them as UTC midnight, shifting them to the previous day in
+    // timezones west of UTC and bucketing them into the wrong local week.
+    date: parseISO(activityRecord.date),
   }));
 };
 
