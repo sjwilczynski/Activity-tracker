@@ -1,4 +1,5 @@
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useCommandState } from "cmdk";
 import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";
@@ -25,6 +26,69 @@ type CategoryAutocompleteProps = {
   hideLabel?: boolean;
 };
 
+/**
+ * Renders the selectable activity options inside a {@link Command}.
+ *
+ * While the user is searching we render a single flat list (no
+ * `CommandGroup`s) so cmdk ranks every option against each other and surfaces
+ * the closest match first. cmdk only sorts items within their own group, so
+ * keeping the category groups during search could push a closer match below
+ * weaker matches that happen to share a group with a strong one. When browsing
+ * (empty query) we keep the category headings for context.
+ */
+const CategoryOptions = ({
+  availableCategories,
+  selectedName,
+  onSelect,
+}: {
+  availableCategories: CategoryOption[];
+  selectedName: string;
+  onSelect: (option: CategoryOption) => void;
+}) => {
+  const isSearching = useCommandState(
+    (state) => state.search.trim().length > 0
+  );
+
+  const renderItem = (option: CategoryOption) => (
+    <CommandItem
+      key={option.name}
+      value={option.name}
+      onSelect={() => onSelect(option)}
+    >
+      <CheckIcon
+        className={cn(
+          "mr-2 size-4",
+          selectedName === option.name ? "opacity-100" : "opacity-0"
+        )}
+      />
+      {option.name}
+    </CommandItem>
+  );
+
+  if (isSearching) {
+    return <>{availableCategories.map(renderItem)}</>;
+  }
+
+  const grouped = availableCategories.reduce<Record<string, CategoryOption[]>>(
+    (acc, option) => {
+      const group = option.categoryName || "Other";
+      (acc[group] ??= []).push(option);
+      return acc;
+    },
+    {}
+  );
+
+  return (
+    <>
+      {Object.entries(grouped).map(([groupName, options]) => (
+        <CommandGroup key={groupName} heading={groupName}>
+          {options.map(renderItem)}
+        </CommandGroup>
+      ))}
+    </>
+  );
+};
+
 export const CategoryAutocomplete = ({
   value,
   onChange,
@@ -45,17 +109,6 @@ export const CategoryAutocomplete = ({
       return () => clearTimeout(timer);
     }
   }, [autoFocus]);
-
-  // Group options by categoryName
-  const grouped = availableCategories.reduce<Record<string, CategoryOption[]>>(
-    (acc, option) => {
-      const group = option.categoryName || "Other";
-      if (!acc[group]) acc[group] = [];
-      acc[group].push(option);
-      return acc;
-    },
-    {}
-  );
 
   return (
     <div className="space-y-1.5">
@@ -104,30 +157,14 @@ export const CategoryAutocomplete = ({
               ) : (
                 <>
                   <CommandEmpty>No activity found.</CommandEmpty>
-                  {Object.entries(grouped).map(([groupName, options]) => (
-                    <CommandGroup key={groupName} heading={groupName}>
-                      {options.map((option) => (
-                        <CommandItem
-                          key={option.name}
-                          value={option.name}
-                          onSelect={() => {
-                            onChange(option);
-                            setOpen(false);
-                          }}
-                        >
-                          <CheckIcon
-                            className={cn(
-                              "mr-2 size-4",
-                              value.name === option.name
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {option.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  ))}
+                  <CategoryOptions
+                    availableCategories={availableCategories}
+                    selectedName={value.name}
+                    onSelect={(option) => {
+                      onChange(option);
+                      setOpen(false);
+                    }}
+                  />
                 </>
               )}
             </CommandList>

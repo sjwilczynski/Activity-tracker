@@ -372,6 +372,17 @@ export const FuzzySearch: Story = {
       await screen.findByPlaceholderText(/search activities/i);
 
     await step(
+      "Browsing (empty query) keeps the category headings for context",
+      () => {
+        // The activities are grouped under their category headings while the
+        // user is just browsing the full list.
+        expect(
+          document.querySelectorAll("[cmdk-group-heading]").length
+        ).toBeGreaterThan(0);
+      }
+    );
+
+    await step(
       "Substitution typo surfaces the right activity (guards the edit-distance path)",
       async () => {
         // "Runninh" substitutes the trailing 'g' with 'h'. This is NOT an
@@ -406,6 +417,36 @@ export const FuzzySearch: Story = {
         screen.queryByRole("option", { name: /running/i })
       ).not.toBeInTheDocument();
     });
+
+    await step(
+      "Searching flattens groups so the closest match ranks first globally",
+      async () => {
+        await userEvent.clear(searchInput);
+        await userEvent.type(searchInput, "ding");
+        await waitFor(() => {
+          expect(
+            screen.getByRole("option", { name: /reading/i })
+          ).toBeInTheDocument();
+        });
+
+        // "ding" is a contiguous substring of "Reading" (Learning category) but
+        // only a typo match for "Running"/"Swimming"/"Cycling" (Sports). The
+        // exact substring match must rank first, ahead of the typo matches —
+        // even though they live in a different, earlier category.
+        const options = screen.getAllByRole("option");
+        expect(options[0]).toHaveTextContent(/reading/i);
+        expect(
+          screen.getByRole("option", { name: /running/i })
+        ).toBeInTheDocument();
+
+        // While searching, options render as one flat list (no category
+        // headings) so cmdk sorts every option against each other globally
+        // instead of only within its own group.
+        expect(
+          document.querySelectorAll("[cmdk-group-heading]").length
+        ).toBe(0);
+      }
+    );
 
     await step("Select a typo-matched option", async () => {
       await userEvent.clear(searchInput);

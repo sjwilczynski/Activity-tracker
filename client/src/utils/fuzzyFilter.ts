@@ -12,8 +12,10 @@ import { defaultFilter } from "cmdk";
  * Strategy:
  *   1. Defer to `defaultFilter`. If it matches (> 0), return its score so the
  *      built-in ranking is preserved.
- *   2. Otherwise fall back to a bounded edit-distance check and return a flat
- *      score for plausible typo matches.
+ *   2. Otherwise fall back to a bounded edit-distance check and return a graded
+ *      score (kept below cmdk's contiguous-match scores) for typo matches, so a
+ *      typo never outranks a real substring match and the closest typo ranks
+ *      first.
  *
  * Edit-distance thresholds scale with query length so short queries stay
  * precise (a 1-edit window on a 2-char query would match almost anything):
@@ -36,15 +38,27 @@ export function fuzzyFilter(
   return typoToleranceScore(value, search);
 }
 
-/** Score (0.5) for queries within the allowed edit distance, else 0. */
+/**
+ * Graded score for queries within the allowed edit distance, else 0.
+ *
+ * The score sits in a low band (below ~0.15). cmdk's `defaultFilter` scores
+ * contiguous substring matches at roughly 0.17 or higher, so keeping typo
+ * matches beneath that band guarantees a real substring match always ranks
+ * above a typo. Within the band the score scales with match quality (fewer
+ * edits → higher score), so the closest typo appears first.
+ */
 function typoToleranceScore(value: string, search: string): number {
   const srch = search.toLowerCase();
   const maxErrors = srch.length < 3 ? 0 : srch.length < 6 ? 1 : 2;
   if (maxErrors === 0) return 0;
 
-  return minEditDistanceInSubstring(value.toLowerCase(), srch) <= maxErrors
-    ? 0.5
-    : 0;
+  const distance = minEditDistanceInSubstring(value.toLowerCase(), srch);
+  if (distance > maxErrors) return 0;
+
+  // distance is always >= 1 here: a distance of 0 is an exact substring, which
+  // `defaultFilter` would already have scored above 0 before we got here.
+  const TYPO_BAND_CEILING = 0.15;
+  return TYPO_BAND_CEILING * (1 - distance / (srch.length + 1));
 }
 
 /**
