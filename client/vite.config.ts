@@ -134,10 +134,11 @@ export default defineConfig(async (): Promise<UserConfig> => {
     test: {
       projects: [
         {
+          extends: true,
           test: {
             name: "unit",
+            include: ["src/**/*.test.{ts,tsx}"],
             environment: "node",
-            include: ["src/**/*.test.ts"],
           },
         },
         {

@@ -40,9 +40,11 @@ cd api && bun run test            # Run API unit tests
 
 ## Testing
 
-**Client**: Storybook play functions as vitest tests via `@storybook/addon-vitest`. MSW mocks API. Use `@storybook/test` for assertions. Use deterministic data (seeded PRNG) for stable screenshot tests.
+**Client**: Two vitest projects run via `bun run test` (`vite.config.ts` → `test.projects`):
+- `storybook` (browser, Chromium): Storybook play functions as tests via `@storybook/addon-vitest`. MSW mocks API. Use `@storybook/test` for assertions. Use deterministic data (seeded PRNG) for stable screenshot tests. Stories live in `*.stories.tsx`.
+- `unit` (node): plain `*.test.ts(x)` files for pure logic that needs no DOM/browser (e.g. query options, `apiClient`). Stub `global.fetch` instead of MSW.
 
-**API**: Vitest unit tests for validation, rate limiting, database CRUD.
+**API**: Vitest unit tests for validation, rate limiting, database CRUD. Handler tests must mock `firebase/firebase` (and modules importing it) since it calls `initializeApp()` at load.
 
 All new code should include tests.
 

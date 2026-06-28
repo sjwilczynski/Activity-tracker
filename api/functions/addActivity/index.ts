@@ -8,7 +8,9 @@ import {
 import { LIMITS } from "../../validation/constants";
 import { validateActivityBatch } from "../../validation/validators";
 
-async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
+export async function addActivity(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   let activities: unknown;
   try {
     activities = await request.json();
@@ -58,9 +60,10 @@ async function addActivity(request: HttpRequest): Promise<HttpResponseInit> {
       body: "Successfully added",
     };
   } catch (err) {
+    console.error("addActivity error:", err);
     return {
       status: 500,
-      body: (err as Error).message,
+      body: "Internal server error",
     };
   }
 }

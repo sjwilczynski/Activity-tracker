@@ -1,4 +1,5 @@
 import { RouteErrorBoundary } from "../../components/states/RouteErrorBoundary";
+import { apiFetch } from "../../data/apiClient";
 import {
   activitiesQueryOptions,
   categoriesQueryOptions,
@@ -24,19 +25,16 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const { queryClient, getAuthToken } = getLoadContext();
   const formData = await request.formData();
   const intent = formData.get("intent");
-  const token = await getAuthToken();
 
   if (intent === "edit") {
     const id = formData.get("id") as string;
     const record = JSON.parse(formData.get("record") as string);
 
-    const response = await fetch(`/api/activities/${id}`, {
+    const response = await apiFetch(getAuthToken, `/api/activities/${id}`, {
       method: "PUT",
-      headers: {
-        "x-auth-token": token,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
+      allowNotOk: true,
     });
 
     if (!response.ok) {
@@ -45,18 +43,18 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   } else if (intent === "delete") {
     const id = formData.get("id") as string;
 
-    const response = await fetch(`/api/activities/${id}`, {
+    const response = await apiFetch(getAuthToken, `/api/activities/${id}`, {
       method: "DELETE",
-      headers: { "x-auth-token": token },
+      allowNotOk: true,
     });
 
     if (!response.ok) {
       return { error: `HTTP error! status: ${response.status}` };
     }
   } else if (intent === "delete-all") {
-    const response = await fetch("/api/activities", {
+    const response = await apiFetch(getAuthToken, "/api/activities", {
       method: "DELETE",
-      headers: { "x-auth-token": token },
+      allowNotOk: true,
     });
 
     if (!response.ok) {
@@ -65,13 +63,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   } else if (intent === "import") {
     const importData = JSON.parse(formData.get("importData") as string);
 
-    const response = await fetch("/api/import", {
+    const response = await apiFetch(getAuthToken, "/api/import", {
       method: "POST",
-      headers: {
-        "x-auth-token": token,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(importData),
+      allowNotOk: true,
     });
 
     if (!response.ok) {
