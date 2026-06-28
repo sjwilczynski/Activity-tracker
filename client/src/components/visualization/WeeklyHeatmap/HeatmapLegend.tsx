@@ -1,4 +1,4 @@
-import { HEATMAP_LEVELS, levelBackground } from "./heatmap-colors";
+import { HEATMAP_LEVELS, levelStyle } from "./heatmap-colors";
 
 export function HeatmapLegend() {
   return (
@@ -9,8 +9,8 @@ export function HeatmapLegend() {
           <span
             key={level}
             data-level={level}
-            className="size-[12px] rounded-[3px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]"
-            style={{ backgroundColor: levelBackground(level) }}
+            className="size-[12px] rounded-[3px]"
+            style={levelStyle(level)}
           />
         ))}
       </div>

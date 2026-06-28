@@ -3,8 +3,9 @@ import { useId } from "react";
 import { HeatmapCell } from "./HeatmapCell";
 import { getMonthLabels, type WeeklyBucket } from "./weekly-heatmap-data";
 
-const CELL_PX = 16;
 const GAP_PX = 4;
+/** Vertical room reserved above every cell for the per-cell month label. */
+const LABEL_SPACE_PX = 16;
 
 type WeeklyHeatmapProps = {
   buckets: WeeklyBucket[];
@@ -27,42 +28,44 @@ function buildSummary(buckets: WeeklyBucket[]): string {
 
 export function WeeklyHeatmap({ buckets, monthLabels }: WeeklyHeatmapProps) {
   const labels = monthLabels ?? getMonthLabels(buckets);
-  const gridTemplateColumns = `repeat(${buckets.length}, ${CELL_PX}px)`;
   const summaryId = useId();
 
   return (
-    <div className="overflow-x-auto pb-1">
+    <div className="pb-1">
       <p id={summaryId} className="sr-only">
         {buildSummary(buckets)}
       </p>
+      {/*
+        Continuous strip that WRAPS instead of horizontal-scrolling: on wide
+        containers all 52 weeks sit on one GitHub-style row; on narrow screens
+        they flow onto further rows. Each month's first cell carries its own
+        label in the reserved space above it (absolute, relative to the cell),
+        so month markers stay correctly positioned no matter where they wrap.
+      */}
       <div
-        className="inline-flex flex-col gap-1"
+        className="flex flex-wrap"
         role="group"
         aria-label={`Weekly activity heatmap, last ${buckets.length} weeks`}
         aria-describedby={summaryId}
+        style={{ columnGap: `${GAP_PX}px`, rowGap: 0 }}
       >
-        <div
-          className="grid h-4 items-end text-[10px] leading-none text-muted-foreground"
-          style={{ gridTemplateColumns, columnGap: `${GAP_PX}px` }}
-          aria-hidden="true"
-        >
-          {labels.map((label, index) => (
-            <span
-              key={index}
-              className="overflow-visible whitespace-nowrap"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-        <div
-          className="grid"
-          style={{ gridTemplateColumns, columnGap: `${GAP_PX}px` }}
-        >
-          {buckets.map((bucket) => (
-            <HeatmapCell key={bucket.weekStart.getTime()} bucket={bucket} />
-          ))}
-        </div>
+        {buckets.map((bucket, index) => (
+          <div
+            key={bucket.weekStart.getTime()}
+            className="relative"
+            style={{ marginTop: `${LABEL_SPACE_PX}px` }}
+          >
+            {labels[index] && (
+              <span
+                aria-hidden="true"
+                className="absolute -top-[14px] left-0 text-[10px] leading-none text-muted-foreground whitespace-nowrap"
+              >
+                {labels[index]}
+              </span>
+            )}
+            <HeatmapCell bucket={bucket} />
+          </div>
+        ))}
       </div>
     </div>
   );

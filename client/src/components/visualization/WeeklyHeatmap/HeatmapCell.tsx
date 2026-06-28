@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/utils/cn";
-import { levelBackground } from "./heatmap-colors";
+import { levelStyle } from "./heatmap-colors";
 import type { WeeklyBucket } from "./weekly-heatmap-data";
 
 type HeatmapCellProps = {
@@ -31,11 +31,11 @@ export function HeatmapCell({ bucket }: HeatmapCellProps) {
         aria-label={label}
         data-level={bucket.level}
         className={cn(
-          "size-[16px] rounded-[3px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]",
+          "size-[16px] rounded-[3px]",
           "outline-hidden transition-transform focus-visible:ring-2 focus-visible:ring-ring",
           "focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:scale-110"
         )}
-        style={{ backgroundColor: levelBackground(bucket.level) }}
+        style={levelStyle(bucket.level)}
       />
       <TooltipContent>
         <span className="font-medium">{range}</span>

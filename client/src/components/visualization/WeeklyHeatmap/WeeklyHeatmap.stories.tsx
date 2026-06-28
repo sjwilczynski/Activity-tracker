@@ -86,6 +86,19 @@ export const Default: Story = {
     });
     expect(busyWeek).toHaveAttribute("data-level", "3");
 
+    // Empty weeks (level 0) render HOLLOW — transparent fill — so they stay
+    // clearly distinct from level 1; active weeks are filled.
+    const emptyCells = cells.filter(
+      (cell) => cell.getAttribute("data-level") === "0"
+    );
+    expect(emptyCells.length).toBeGreaterThan(0);
+    for (const cell of emptyCells) {
+      expect((cell as HTMLElement).style.backgroundColor).toBe("transparent");
+    }
+    expect((busyWeek as HTMLElement).style.backgroundColor).not.toBe(
+      "transparent"
+    );
+
     // The legend is present.
     expect(canvas.getByText("Less")).toBeInTheDocument();
     expect(canvas.getByText("More")).toBeInTheDocument();

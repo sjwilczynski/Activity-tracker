@@ -1,23 +1,35 @@
+import type { CSSProperties } from "react";
 import type { HeatmapLevel } from "./weekly-heatmap-data";
 
+/** Inline style for a single heatmap cell at a given level. */
+export type LevelStyle = Pick<CSSProperties, "backgroundColor" | "boxShadow">;
+
+const mix = (pct: number) =>
+  `color-mix(in oklab, var(--color-primary) ${pct}%, var(--color-background))`;
+
 /**
- * Explicit 5-step shade ramp built from theme tokens (NOT opacity), so the
- * heatmap stays legible in both light and dark themes. Level 0 uses the muted
- * token to read clearly as "empty" and stay distinct from level 1.
+ * Explicit 5-step treatment (NOT opacity), so the heatmap stays legible in both
+ * light and dark themes and for colour-blind users.
  *
- * `color-mix` against `--color-background` keeps each step anchored to the
- * current theme's surface, so the ramp re-themes automatically.
+ * Empty weeks (level 0) render as a HOLLOW cell — transparent fill with a
+ * border ring — so they read clearly as "nothing logged" and stay obviously
+ * distinct from level 1. Active levels use a raised-floor primary ramp
+ * (level 1 starts at a substantial 42% mix, not near-background) climbing to
+ * the solid primary token, so even one active activity is unmistakable.
  */
-const LEVEL_BACKGROUND: Record<HeatmapLevel, string> = {
-  0: "var(--color-muted)",
-  1: "color-mix(in oklab, var(--color-primary) 28%, var(--color-background))",
-  2: "color-mix(in oklab, var(--color-primary) 50%, var(--color-background))",
-  3: "color-mix(in oklab, var(--color-primary) 72%, var(--color-background))",
-  4: "var(--color-primary)",
+const LEVEL_STYLES: Record<HeatmapLevel, LevelStyle> = {
+  0: {
+    backgroundColor: "transparent",
+    boxShadow: "inset 0 0 0 1.5px var(--color-border)",
+  },
+  1: { backgroundColor: mix(42) },
+  2: { backgroundColor: mix(60) },
+  3: { backgroundColor: mix(80) },
+  4: { backgroundColor: "var(--color-primary)" },
 };
 
-export function levelBackground(level: HeatmapLevel): string {
-  return LEVEL_BACKGROUND[level];
+export function levelStyle(level: HeatmapLevel): LevelStyle {
+  return LEVEL_STYLES[level];
 }
 
 export const HEATMAP_LEVELS: HeatmapLevel[] = [0, 1, 2, 3, 4];
