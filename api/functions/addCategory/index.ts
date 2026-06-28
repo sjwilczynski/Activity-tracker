@@ -8,7 +8,9 @@ import {
 import { LIMITS } from "../../validation/constants";
 import { validateCategory } from "../../validation/validators";
 
-async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
+export async function addCategory(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   let category: unknown;
   try {
     category = await request.json();
