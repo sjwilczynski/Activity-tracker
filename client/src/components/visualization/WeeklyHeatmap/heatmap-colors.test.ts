@@ -5,8 +5,12 @@ describe("levelStyle", () => {
   it("renders an empty week (level 0) as a hollow, transparent cell with a border ring", () => {
     const style = levelStyle(0);
     expect(style.backgroundColor).toBe("transparent");
-    // A visible outline is what makes empty weeks distinct from level 1.
-    expect(style.boxShadow).toMatch(/inset/);
+    // A visible border outline is what makes empty weeks distinct from level 1.
+    // It is deliberately a `border`, not an inline box-shadow: the cell's
+    // Tailwind focus-visible:ring-* is box-shadow based, so an inline box-shadow
+    // would override it and hide the keyboard focus ring on empty cells. The
+    // LevelStyle type (no `boxShadow` member) enforces this at compile time.
+    expect(style.border).toMatch(/var\(--color-border\)/);
   });
 
   it("fills active levels with the theme primary (no transparency)", () => {

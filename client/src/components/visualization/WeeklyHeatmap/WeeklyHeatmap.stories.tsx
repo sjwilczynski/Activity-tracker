@@ -94,6 +94,11 @@ export const Default: Story = {
     expect(emptyCells.length).toBeGreaterThan(0);
     for (const cell of emptyCells) {
       expect((cell as HTMLElement).style.backgroundColor).toBe("transparent");
+      // The hollow ring is a border, not an inline box-shadow — otherwise it
+      // would override the Tailwind focus-visible:ring-* and hide the keyboard
+      // focus indicator on empty cells.
+      expect((cell as HTMLElement).style.boxShadow).toBe("");
+      expect((cell as HTMLElement).style.border).not.toBe("");
     }
     expect((busyWeek as HTMLElement).style.backgroundColor).not.toBe(
       "transparent"
