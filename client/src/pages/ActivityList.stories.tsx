@@ -437,9 +437,27 @@ export const CategoryBadgesDisplay: Story = {
     });
 
     await step("Activities from other categories show their badge", async () => {
-      // Reading → Learning, Meditation → Wellness appear on the first page
-      expect(canvas.getAllByText("Learning").length).toBeGreaterThanOrEqual(1);
-      expect(canvas.getAllByText("Wellness").length).toBeGreaterThanOrEqual(1);
+      // Reading → Learning, Meditation → Wellness appear on the first page.
+      // Scope the badge assertions to the activity row containing the matching
+      // activity, so this proves the badge is rendered next to the activity
+      // (not just present somewhere in the story).
+      await waitFor(() => {
+        const rows = canvas.getAllByTestId("activity-row");
+        const readingRow = rows.find((row) =>
+          within(row).queryByText("Reading")
+        );
+        const meditationRow = rows.find((row) =>
+          within(row).queryByText("Meditation")
+        );
+        expect(readingRow).toBeDefined();
+        expect(meditationRow).toBeDefined();
+        expect(
+          within(readingRow as HTMLElement).getByText("Learning")
+        ).toBeInTheDocument();
+        expect(
+          within(meditationRow as HTMLElement).getByText("Wellness")
+        ).toBeInTheDocument();
+      });
     });
   },
 };

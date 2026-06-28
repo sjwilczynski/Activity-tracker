@@ -7,8 +7,9 @@ type Props = {
 };
 
 export function CategoryBadge({ name, className }: Props) {
-  if (!name) return null;
-  const color = getCategoryColor(name);
+  const normalizedName = name.trim();
+  if (!normalizedName) return null;
+  const color = getCategoryColor(normalizedName);
   return (
     <span
       className={cn(
@@ -17,7 +18,7 @@ export function CategoryBadge({ name, className }: Props) {
       )}
       style={{ backgroundColor: `${color}1f`, color }}
     >
-      {name}
+      {normalizedName}
     </span>
   );
 }
