@@ -23,7 +23,7 @@ cd api && bun run test            # Run API unit tests
 
 - `app/routes/` — Route modules with loaders/actions. `_layout.tsx` is the auth guard wrapper.
 - `components/ui/` — shadcn/ui primitives (no stories or tests needed for these)
-- `components/` — Domain components: `forms/`, `table/EditableTableRow/`, `visualization/`, `navigation/`, `states/`, `styles/`
+- `components/` — Domain components: `forms/`, `table/EditableTableRow/`, `visualization/` (incl. `WeeklyHeatmap/` — 52-week activity heatmap on the dashboard), `navigation/`, `states/`, `styles/`
 - `data/` — React Query hooks, API functions, types (`types.ts`), Zod validation
 - `pages/` — Page components + split utility modules (e.g., `compare-utils.ts`, `PeriodSelector.tsx`, settings tabs)
 - `mocks/` — MSW handlers and mock data for Storybook
