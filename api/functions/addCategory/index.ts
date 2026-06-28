@@ -8,7 +8,9 @@ import {
 import { LIMITS } from "../../validation/constants";
 import { validateCategory } from "../../validation/validators";
 
-async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
+export async function addCategory(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   let category: unknown;
   try {
     category = await request.json();
@@ -53,9 +55,10 @@ async function addCategory(request: HttpRequest): Promise<HttpResponseInit> {
       body: "Successfully added",
     };
   } catch (err) {
+    console.error("addCategory error:", err);
     return {
       status: 500,
-      body: (err as Error).message,
+      body: "Internal server error",
     };
   }
 }
