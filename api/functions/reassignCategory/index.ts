@@ -1,4 +1,5 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
+import { ActivityNameConflict } from "../../../shared/activity-names";
 import { getUserId } from "../../authorization/firebaseAuthorization";
 import { firebaseDB as database } from "../../database/firebaseDB";
 import {
@@ -47,6 +48,8 @@ async function reassignCategory(
     );
     return { status: 200, jsonBody: { ok: true } };
   } catch (err) {
+    if (err instanceof ActivityNameConflict)
+      return { status: 409, body: err.message };
     console.error("reassignCategory error:", err);
     return { status: 500, body: "Internal server error" };
   }

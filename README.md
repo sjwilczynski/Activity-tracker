@@ -59,6 +59,16 @@ bun run dev    # Start frontend (:3000) and API (:7071)
 
 The app is split into two workspaces (`/client` and `/api`) managed as a bun monorepo.
 
+Domain terminology is defined in [CONTEXT.md](CONTEXT.md). Three modules own the
+cross-cutting data behavior:
+
+- `shared/` defines stored records, backup validation, and activity-name ownership
+  rules. Stored records and enriched display records are separate contracts.
+- `api/database/activityNames.ts` applies name changes in Firebase transactions,
+  including conflict handling when transactions retry against newer data.
+- `client/src/data/actions.ts` implements mutations and cache invalidation for
+  both production routes and Storybook; only the HTTP adapter changes.
+
 ### Client → API Communication
 
 - In **local development**, Vite proxies `/api/*` requests from the frontend (port 3000) to the Azure Functions backend (port 7071)
@@ -78,6 +88,13 @@ The data model keeps the **client simple** by pushing business logic to the API:
 - **Enrichment on read**: The API enriches activities with computed `categoryId` and `active` fields based on the category lookup before returning them to the client. This means the client never needs to perform the category ↔ activity join — it receives ready-to-render data
 - **User preferences** (e.g., theme, chart grouping) are stored per-user and merged with defaults on read
 - **Export/Import**: The `exportData` endpoint returns the complete user dataset (activities, categories, preferences) as a single JSON payload; `importData` replaces it atomically
+- **Activity editing**: `PUT /api/activities/:id` replaces the complete stored
+  record. Omitting an optional field clears it; it does not preserve an old value.
+- **Rename/Merge**: Renaming preserves category membership. An existing target name
+  requires an explicit merge confirmation showing its category and the affected
+  entry count. A merge retains all entry IDs, dates, and details, adopts the target
+  name's membership, and removes only the source name. No entries are deduplicated.
+  The server rejects a merge if the confirmed target name or category has changed.
 
 ### State Management
 
@@ -92,6 +109,12 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
 - Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
 - **MSW (Mock Service Worker)** is used extensively to mock all API responses at the network level, providing realistic test data without a backend. MSW handlers cover all 19 API endpoints with representative datasets
 - API tests use **Vitest** with an in-memory Firebase mock for fast, isolated database operation testing
+- Regression coverage follows export -> upload -> restore and edit -> save -> read,
+  rather than treating a success toast or closed dialog as proof of persistence.
+  The Firebase adapter scenarios include cold-cache null snapshots, transaction
+  retries, failed commits, and omitted empty arrays. A null first callback is not
+  proof of missing data. Transaction callbacks abort on domain errors and rethrow
+  after settlement; throwing directly during an SDK retry can escape its promise.
 
 ```bash
 cd client && bun run test      # Storybook play function tests via Vitest + Playwright

@@ -1,4 +1,5 @@
 import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
+import { ActivityNameConflict } from "../../../shared/activity-names";
 import { getUserId } from "../../authorization/firebaseAuthorization";
 import { firebaseDB as database } from "../../database/firebaseDB";
 import {
@@ -7,7 +8,7 @@ import {
 } from "../../rateLimit/rateLimiter";
 import { validateRenameBody } from "../../validation/validators";
 
-async function renameActivities(
+export async function renameActivities(
   request: HttpRequest
 ): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
@@ -43,10 +44,14 @@ async function renameActivities(
     const count = await database.bulkRenameActivities(
       userId,
       validation.data.oldName,
-      validation.data.newName
+      validation.data.newName,
+      validation.data
     );
     return { status: 200, jsonBody: { updated: count } };
   } catch (err) {
+    if (err instanceof ActivityNameConflict) {
+      return { status: 409, body: err.message };
+    }
     console.error("renameActivities error:", err);
     return { status: 500, body: "Internal server error" };
   }

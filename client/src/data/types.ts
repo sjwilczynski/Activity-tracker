@@ -1,16 +1,17 @@
-export type Intensity = "low" | "medium" | "high";
+import type {
+  Intensity,
+  ActivityRecord as StoredActivityRecord,
+  Category as StoredCategory,
+} from "../../../shared/types";
+export type { Intensity, UserPreferences } from "../../../shared/types";
 
 export type Activity = {
   name: string;
   categoryId: string;
 };
 
-export type Category = {
+export type Category = StoredCategory & {
   id: string;
-  name: string;
-  active: boolean;
-  description: string;
-  activityNames: string[];
 };
 
 export type CategoryOption = {
@@ -27,12 +28,7 @@ export type ActivityRecord = {
   timeSpent?: number;
 } & Activity;
 
-export type ActivityRecordServer = {
-  date: string;
-  description?: string;
-  intensity?: Intensity;
-  timeSpent?: number;
-} & Activity;
+export type ActivityRecordServer = StoredActivityRecord & Activity;
 
 /** Server now returns categoryId + active (computed from Category.activityNames) */
 export type ActivityRecordWithIdServer = {
@@ -53,10 +49,4 @@ export type ActivitySummary = {
 
 export type ActivitySummaries = {
   [key: string]: ActivitySummary;
-};
-
-export type UserPreferences = {
-  groupByCategory: boolean;
-  funAnimations: boolean;
-  isLightTheme: boolean;
 };

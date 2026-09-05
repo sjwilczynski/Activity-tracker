@@ -510,6 +510,25 @@ describe("validateCategory", () => {
 });
 
 describe("validateRenameBody", () => {
+  it("preserves explicit merge consent and its expected target category", () => {
+    expect(
+      validateRenameBody({
+        oldName: "Running",
+        newName: "Yoga",
+        merge: true,
+        targetCategoryId: "wellness",
+      })
+    ).toEqual({
+      valid: true,
+      data: {
+        oldName: "Running",
+        newName: "Yoga",
+        merge: true,
+        targetCategoryId: "wellness",
+      },
+    });
+  });
+
   it("accepts valid rename", () => {
     const result = validateRenameBody({
       oldName: "Running",
@@ -747,7 +766,6 @@ describe("validateImportData", () => {
     }
   });
 
-  // Server validator accepts empty objects (client-side isImportDataValid rejects them)
   it("accepts empty activities and categories objects", () => {
     const result = validateImportData({ activities: {}, categories: {} });
     expect(result.valid).toBe(true);

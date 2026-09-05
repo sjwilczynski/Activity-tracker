@@ -1,4 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
+import { validateActivityRecord } from "../../../../shared/validators";
 import type {
   ActivityRecordServer,
   ActivityRecordWithIdServer,
@@ -35,42 +36,6 @@ function enrichActivities(
 }
 
 export const activityHandlers = [
-  // GET */api/export
-  http.get("*/api/export", async ({ request }) => {
-    await delay(100);
-
-    const authHeader = request.headers.get("x-auth-token");
-    if (!authHeader) {
-      return new HttpResponse(null, { status: 401 });
-    }
-
-    const enriched = enrichActivities(activities);
-    const activitiesMap: Record<string, ActivityRecordServer> = {};
-    for (const activity of enriched) {
-      const { id, active, ...rest } = activity;
-      // active is stripped — not part of the stored ActivityRecordServer shape
-      void active;
-      activitiesMap[id] = rest;
-    }
-
-    const cats = getCategories();
-    const categoriesMap: Record<string, Omit<(typeof cats)[number], "id">> = {};
-    for (const category of cats) {
-      const { id, ...rest } = category;
-      categoriesMap[id] = rest;
-    }
-
-    return HttpResponse.json({
-      activities: activitiesMap,
-      categories: categoriesMap,
-      preferences: {
-        groupByCategory: true,
-        funAnimations: true,
-        isLightTheme: true,
-      },
-    });
-  }),
-
   // GET */api/activities
   http.get("*/api/activities", async ({ request }) => {
     await delay(100);
@@ -117,14 +82,25 @@ export const activityHandlers = [
     }
 
     const { id } = params;
-    const update = (await request.json()) as ActivityRecordServer;
+    const validation = validateActivityRecord(await request.json());
+    if (!validation.valid || !validation.data) {
+      return new HttpResponse(
+        validation.valid ? "Missing activity" : validation.error,
+        { status: 400 }
+      );
+    }
     const index = activities.findIndex((a) => a.id === id);
 
     if (index === -1) {
       return new HttpResponse(null, { status: 404 });
     }
 
-    activities[index] = { ...activities[index], ...update };
+    activities[index] = {
+      ...validation.data,
+      id: activities[index].id,
+      categoryId: "",
+      active: true,
+    };
     return new HttpResponse(null, { status: 204 });
   }),
 

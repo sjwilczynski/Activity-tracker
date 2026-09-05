@@ -3,6 +3,7 @@ import type {
   Category,
   CategoryMap,
   EnrichedActivityMap,
+  RenameOptions,
   UserData,
   UserPreferences,
 } from "../utils/types";
@@ -40,7 +41,8 @@ export type Database = {
   bulkRenameActivities: (
     userId: string,
     oldName: string,
-    newName: string
+    newName: string,
+    options?: RenameOptions
   ) => Promise<number>;
   bulkAssignCategory: (
     userId: string,
