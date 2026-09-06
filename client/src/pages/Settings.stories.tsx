@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -10,7 +9,7 @@ import { Settings } from "./Settings";
 const meta: Meta<typeof Settings> = {
   title: "Pages/Settings",
   component: Settings,
-  parameters: { reactRouter: actionRouting("settings") },
+  parameters: { tanstack: { router: { path: "/settings" } } },
 };
 
 export default meta;

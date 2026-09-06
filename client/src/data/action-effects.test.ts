@@ -1,6 +1,10 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationObserver, QueryClient } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { runAction } from "./actions";
+import {
+  addActivitiesMutationOptions,
+  deleteCategoryMutationOptions,
+  restoreBackupMutationOptions,
+} from "./actions";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -19,31 +23,26 @@ function setup() {
   return { queryClient, getAuthToken: async () => "token" };
 }
 
-function request(intent: string, fields: Record<string, string> = {}) {
-  return new Request("http://localhost/settings", {
-    method: "POST",
-    body: new URLSearchParams({ intent, ...fields }),
-  });
-}
-
 function expectInvalidations(queryClient: QueryClient, expected: string[]) {
   for (const key of cacheKeys) {
     expect(queryClient.getQueryState(key)?.isInvalidated, key.join("/")).toBe(
       expected.includes(key[0])
     );
   }
+  queryClient.clear();
 }
 
-describe("mutation effects", () => {
-  it("adding an entry invalidates activity lists without refreshing categories or preferences", async () => {
+describe("native mutation effects", () => {
+  it("adding an entry invalidates every limited list without refreshing unrelated families", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => new Response(null, { status: 200 }))
     );
     const ctx = setup();
-    expect(
-      await runAction(request("add", { activities: "[]" }), ctx, "welcome")
-    ).toEqual({ ok: true });
+    await new MutationObserver(
+      ctx.queryClient,
+      addActivitiesMutationOptions(ctx)
+    ).mutate([{ date: "2026-09-06", name: "Running", categoryId: "sports" }]);
     expectInvalidations(ctx.queryClient, ["activities", "activitiesWithLimit"]);
   });
 
@@ -55,37 +54,46 @@ describe("mutation effects", () => {
         .mockResolvedValueOnce(new Response(null, { status: 200 }))
         .mockResolvedValueOnce(new Response(null, { status: 500 }))
     );
-    expect(
-      await runAction(
-        request("delete-category-reassign", {
-          id: "sports",
-          targetCategoryId: "wellness",
-        }),
-        setup(),
-        "settings"
-      )
-    ).toEqual({
-      error:
+    const ctx = setup();
+    await expect(
+      new MutationObserver(
+        ctx.queryClient,
+        deleteCategoryMutationOptions(ctx)
+      ).mutate({
+        id: "sports",
+        mode: "reassign",
+        targetCategoryId: "wellness",
+      })
+    ).rejects.toMatchObject({
+      message:
         "Activities reassigned, but the category could not be deleted. Request failed (status: 500)",
       status: 500,
     });
+    expectInvalidations(ctx.queryClient, [
+      "activities",
+      "activitiesWithLimit",
+      "categories",
+    ]);
   });
 
   it.each([400, 401, 404, 409, 500])(
-    "stops on first-step HTTP %s and never refreshes data for an unstarted category deletion",
+    "stops on first-step HTTP %s without refreshing unstarted category deletion",
     async (status) => {
       const fetch = vi.fn(
         async () => new Response("First step failed", { status })
       );
       vi.stubGlobal("fetch", fetch);
       const ctx = setup();
-      const result = await runAction(
-        request("delete-category-with-activities", { id: "sports" }),
-        ctx,
-        "settings"
-      );
-      expect(result).toEqual({
-        error:
+      await expect(
+        new MutationObserver(
+          ctx.queryClient,
+          deleteCategoryMutationOptions(ctx)
+        ).mutate({
+          id: "sports",
+          mode: "delete",
+        })
+      ).rejects.toMatchObject({
+        message:
           status >= 500 ? "Request failed (status: 500)" : "First step failed",
         status,
       });
@@ -99,7 +107,7 @@ describe("mutation effects", () => {
     }
   );
 
-  it("refreshes only completed deletions when the category delete is explicitly rejected", async () => {
+  it("refreshes only completed deletions when category deletion is explicitly rejected", async () => {
     vi.stubGlobal(
       "fetch",
       vi
@@ -108,94 +116,88 @@ describe("mutation effects", () => {
         .mockResolvedValueOnce(new Response("Not permitted", { status: 403 }))
     );
     const ctx = setup();
-    expect(
-      await runAction(
-        request("delete-category-with-activities", { id: "sports" }),
-        ctx,
-        "settings"
-      )
-    ).toEqual({
-      error:
+    await expect(
+      new MutationObserver(
+        ctx.queryClient,
+        deleteCategoryMutationOptions(ctx)
+      ).mutate({
+        id: "sports",
+        mode: "delete",
+      })
+    ).rejects.toMatchObject({
+      message:
         "Activities deleted, but the category could not be deleted. Not permitted",
       status: 403,
     });
     expectInvalidations(ctx.queryClient, ["activities", "activitiesWithLimit"]);
   });
 
-  it("refreshes only the attempted first step when its response is lost", async () => {
-    const fetch = vi.fn().mockRejectedValue(new Error("Response lost"));
-    vi.stubGlobal("fetch", fetch);
-    const ctx = setup();
-    await expect(
-      runAction(
-        request("delete-category-with-activities", { id: "sports" }),
-        ctx,
-        "settings"
-      )
-    ).rejects.toThrow("Response lost");
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expectInvalidations(ctx.queryClient, ["activities", "activitiesWithLimit"]);
-  });
+  it.each([1, 2])(
+    "refreshes completed/uncertain steps only when response %s is lost",
+    async (lostStep) => {
+      const fetch = vi.fn().mockRejectedValue(new Error("Response lost"));
+      if (lostStep === 2)
+        fetch.mockResolvedValueOnce(new Response(null, { status: 200 }));
+      vi.stubGlobal("fetch", fetch);
+      const ctx = setup();
+      await expect(
+        new MutationObserver(
+          ctx.queryClient,
+          deleteCategoryMutationOptions(ctx)
+        ).mutate({
+          id: "sports",
+          mode: "delete",
+        })
+      ).rejects.toThrow("Response lost");
+      expect(fetch).toHaveBeenCalledTimes(lostStep);
+      expectInvalidations(ctx.queryClient, [
+        "activities",
+        "activitiesWithLimit",
+        ...(lostStep === 2 ? ["categories"] : []),
+      ]);
+    }
+  );
 
-  it("refreshes both completed and uncertain steps when the second response is lost", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValueOnce(new Response(null, { status: 200 }))
-        .mockRejectedValueOnce(new Error("Response lost"))
-    );
-    const ctx = setup();
-    await expect(
-      runAction(
-        request("delete-category-with-activities", { id: "sports" }),
-        ctx,
-        "settings"
-      )
-    ).rejects.toThrow("Response lost");
-    expectInvalidations(ctx.queryClient, [
-      "activities",
-      "activitiesWithLimit",
-      "categories",
-    ]);
-  });
-
-  it("does not invalidate or dispatch when authentication fails before any request", async () => {
+  it("does not invalidate or dispatch when auth fails before the first request", async () => {
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
-    const ctx = setup();
+    const ctx = {
+      ...setup(),
+      getAuthToken: async () => {
+        throw new Error("Signed out");
+      },
+    };
     await expect(
-      runAction(
-        request("import", { importData: "{}" }),
-        {
-          ...ctx,
-          getAuthToken: async () => {
-            throw new Error("Signed out");
-          },
-        },
-        "welcome"
-      )
+      new MutationObserver(
+        ctx.queryClient,
+        restoreBackupMutationOptions(ctx)
+      ).mutate({
+        activities: {},
+        categories: {},
+      })
     ).rejects.toThrow("Signed out");
     expect(fetch).not.toHaveBeenCalled();
     expectInvalidations(ctx.queryClient, []);
   });
 
-  it("invalidates the first step if authentication prevents starting the second step", async () => {
+  it("invalidates the first step if auth prevents starting the second", async () => {
     const fetch = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetch);
-    const ctx = setup();
+    const ctx = {
+      ...setup(),
+      getAuthToken: vi
+        .fn()
+        .mockResolvedValueOnce("token")
+        .mockRejectedValueOnce(new Error("Signed out")),
+    };
     await expect(
-      runAction(
-        request("delete-category-with-activities", { id: "sports" }),
-        {
-          ...ctx,
-          getAuthToken: vi
-            .fn()
-            .mockResolvedValueOnce("token")
-            .mockRejectedValueOnce(new Error("Signed out")),
-        },
-        "settings"
-      )
+      new MutationObserver(
+        ctx.queryClient,
+        deleteCategoryMutationOptions(ctx)
+      ).mutate({
+        id: "sports",
+        mode: "delete",
+      })
     ).rejects.toThrow("Signed out");
     expect(fetch).toHaveBeenCalledTimes(1);
     expectInvalidations(ctx.queryClient, ["activities", "activitiesWithLimit"]);

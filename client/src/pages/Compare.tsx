@@ -1,3 +1,4 @@
+import { getRouteApi } from "@tanstack/react-router";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -10,7 +11,6 @@ import {
 } from "chart.js";
 import { GitCompare } from "lucide-react";
 import { Line } from "react-chartjs-2";
-import { useSearchParams } from "react-router";
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
 import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
@@ -79,31 +79,29 @@ function getMostActiveTimeUnit(
 
 export const Compare = () => {
   const { isLoading, error, data } = useActivities();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const search = getRouteApi("/_authenticated/compare").useSearch();
+  const navigate = getRouteApi("/_authenticated/compare").useNavigate();
   const chartColors = useChartColors();
 
-  const periods = periodsFromParams(searchParams.get("periods"));
+  const periods = periodsFromParams(search.periods ?? null);
 
   const setPeriods = (
     updater:
       | ComparisonPeriod[]
       | ((prev: ComparisonPeriod[]) => ComparisonPeriod[])
   ) => {
-    setSearchParams(
-      (prev) => {
-        const currentPeriods = periodsFromParams(prev.get("periods"));
+    void navigate({
+      search: (prev) => {
+        const currentPeriods = periodsFromParams(prev.periods ?? null);
         const next =
           typeof updater === "function" ? updater(currentPeriods) : updater;
-        const params = new URLSearchParams(prev);
-        if (next.length === 0) {
-          params.delete("periods");
-        } else {
-          params.set("periods", periodsToParam(next));
-        }
-        return params;
+        return {
+          ...prev,
+          periods: next.length ? periodsToParam(next) : undefined,
+        };
       },
-      { replace: true }
-    );
+      replace: true,
+    });
   };
 
   const availableYears = data ? getAvailableYears(data) : [];

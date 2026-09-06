@@ -1,6 +1,5 @@
 import { Pencil } from "lucide-react";
 import { useRef, useState } from "react";
-import { useFetcher } from "react-router";
 import {
   ActivityNameConflict,
   findRenameTarget,
@@ -20,6 +19,7 @@ import {
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useActivities, useCategories } from "../../data";
+import { useRenameActivity } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 import { MergeActivityConfirmation } from "./MergeActivityConfirmation";
 
@@ -35,12 +35,12 @@ export function EditActivityNameButton({
   const [localError, setLocalError] = useState<string | null>(null);
   const { data: activities, error: activitiesError } = useActivities();
   const { data: categories, error: categoriesError } = useCategories();
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
+  const mutation = useRenameActivity();
+  const { isPending } = mutation;
   const closeRef = useRef<HTMLButtonElement>(null);
   const error =
     localError ??
-    fetcher.data?.error ??
+    mutation.error?.message ??
     (activitiesError || categoriesError
       ? "Could not load activity names. Please try again."
       : undefined);
@@ -53,31 +53,31 @@ export function EditActivityNameButton({
     !activitiesError &&
     !categoriesError;
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: `Updated "${activityName}" successfully`,
-      errorMessage: `Failed to rename "${activityName}"`,
-      onSuccess: () => closeRef.current?.click(),
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: `Updated "${activityName}" successfully`,
+    errorMessage: `Failed to rename "${activityName}"`,
+    onSuccess: () => closeRef.current?.click(),
+  });
 
   const submitName = (target?: NameTarget) => {
-    void fetcher.submit(
-      {
-        intent: "rename-activity",
-        oldName: activityName,
-        newName: target?.name ?? newName.trim(),
-        ...(target && { merge: "true", targetCategoryId: target.categoryId }),
-      },
-      { method: "post" }
+    if (isPending) return;
+    mutation.mutate(
+      target
+        ? {
+            oldName: activityName,
+            newName: target.name,
+            merge: true,
+            targetCategoryId: target.categoryId,
+          }
+        : {
+            oldName: activityName,
+            newName: newName.trim(),
+          }
     );
   };
 
   const handleSubmit = () => {
+    if (isPending) return;
     if (!activities || !categories) {
       setLocalError("Activity names are not loaded. Please try again.");
       return;
@@ -109,7 +109,8 @@ export function EditActivityNameButton({
   return (
     <Dialog
       onOpenChange={(isOpen) => {
-        if (isOpen) {
+        if (isOpen && !isPending) {
+          mutation.reset();
           setNewName(activityName);
           setConfirmation(null);
           setLocalError(null);
@@ -120,6 +121,7 @@ export function EditActivityNameButton({
         <Button
           variant="ghost"
           size="icon"
+          disabled={isPending}
           className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
         >
           <Pencil className="size-4" />

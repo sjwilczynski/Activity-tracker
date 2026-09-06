@@ -51,7 +51,11 @@ Chart.register(
 
 export const Charts = () => {
   const { isLoading, error, data } = useActivities();
-  const { availableCategories } = useAvailableCategories();
+  const {
+    availableCategories,
+    error: categoryError,
+    refetch: refetchCategories,
+  } = useAvailableCategories();
   const { startDate, endDate } = useDateRange();
   const [dateRange, setDateRange] = useDateRangeState();
   const [groupByCategory] = useGroupByCategory();
@@ -90,6 +94,17 @@ export const Charts = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {categoryError && (
+        <div role="alert" className="text-sm text-destructive">
+          Categories could not be loaded.{" "}
+          <button
+            className="underline"
+            onClick={() => void refetchCategories()}
+          >
+            Try again
+          </button>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold heading-gradient">

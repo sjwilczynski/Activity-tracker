@@ -13,7 +13,7 @@ import { buildWeeklyHeatmap } from "./weekly-heatmap-data";
 import { WeeklyHeatmap } from "./WeeklyHeatmap";
 
 export function WeeklyHeatmapCard() {
-  const { data, isLoading } = useActivities();
+  const { data, isLoading, error, refetch } = useActivities();
 
   const buckets = useMemo(
     () => buildWeeklyHeatmap(data ?? [], { weeks: 52 }),
@@ -34,6 +34,13 @@ export function WeeklyHeatmapCard() {
       <CardContent>
         {isLoading ? (
           <Loading />
+        ) : error ? (
+          <p role="alert" className="py-6 text-center text-sm text-destructive">
+            Activity heatmap could not be loaded.{" "}
+            <button className="underline" onClick={() => void refetch()}>
+              Try again
+            </button>
+          </p>
         ) : !hasActivities ? (
           <p className="py-6 text-center text-sm text-muted-foreground">
             No activities yet — log your first activity to start building your

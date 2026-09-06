@@ -1,10 +1,10 @@
 import { ChevronDown, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useFetcher } from "react-router";
 import {
   defaultCategories,
   type DefaultCategory,
 } from "../data/defaultCategories";
+import { useRestoreBackup } from "../data/mutations";
 import { useFeedbackToast } from "../hooks/useFeedbackToast";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -93,14 +93,9 @@ function CategoryRow({
 }
 
 export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
-  const { state, data, submit } = useFetcher<{
-    ok?: boolean;
-    error?: string;
-  }>();
+  const mutation = useRestoreBackup();
   const [selections, setSelections] = useState(buildInitialSelection);
-  const isError = state === "idle" && data?.error !== undefined;
-  const isSuccess = state === "idle" && data?.ok === true;
-  const isPending = state !== "idle";
+  const { isError, isSuccess, isPending } = mutation;
 
   useFeedbackToast(
     { isSuccess, isError },
@@ -148,6 +143,7 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
   ).length;
 
   const handleSubmit = () => {
+    if (isPending) return;
     const categoriesToCreate = defaultCategories.filter((cat) => {
       const sel = selections.get(cat.name);
       return sel?.selected && sel.activityNames.size > 0;
@@ -172,16 +168,7 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
       };
     }
 
-    void submit(
-      {
-        intent: "import",
-        importData: JSON.stringify({
-          activities: {},
-          categories: categoriesMap,
-        }),
-      },
-      { method: "post", action: "/welcome" }
-    );
+    mutation.mutate({ activities: {}, categories: categoriesMap });
   };
 
   return (

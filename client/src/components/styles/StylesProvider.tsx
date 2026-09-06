@@ -1,5 +1,5 @@
-import { QueryClientContext } from "@tanstack/react-query";
-import { useContext, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { useAuthContext } from "../../auth/AuthContext";
 import {
   useFunAnimations,
   useGroupByCategory,
@@ -13,17 +13,14 @@ type Props = {
 
 export { useFunAnimations, useGroupByCategory };
 
-/**
- * Safe wrapper that falls back to reading the DOM class when QueryClientProvider
- * is unavailable (e.g. during sign-out route transition).
- */
+const ThemeContext = createContext<boolean | undefined>(undefined);
+
 export function useIsLightTheme(): boolean {
-  const queryClient = useContext(QueryClientContext);
-  if (!queryClient) {
-    return !document.documentElement.classList.contains("dark");
-  }
-  // oxlint-disable-next-line react/rules-of-hooks -- only called when queryClient is stable (present for entire authenticated session)
-  return useIsLightThemeFromQuery();
+  return (
+    useContext(ThemeContext) ??
+    (typeof document === "undefined" ||
+      !document.documentElement.classList.contains("dark"))
+  );
 }
 
 export function useThemeToggleWithTransition() {
@@ -68,8 +65,8 @@ export function useThemeToggleWithTransition() {
   return [isLightTheme, toggle] as const;
 }
 
-export const StylesProvider = ({ children }: Props) => {
-  const isLightTheme = useIsLightTheme();
+const AuthenticatedStyles = ({ children }: Props) => {
+  const isLightTheme = useIsLightThemeFromQuery();
 
   // Sync dark class on <html> for Tailwind dark mode
   useEffect(() => {
@@ -81,5 +78,18 @@ export const StylesProvider = ({ children }: Props) => {
     }
   }, [isLightTheme]);
 
-  return <>{children}</>;
+  return (
+    <ThemeContext.Provider value={isLightTheme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const StylesProvider = ({ children }: Props) => {
+  const { user } = useAuthContext();
+  return user ? (
+    <AuthenticatedStyles>{children}</AuthenticatedStyles>
+  ) : (
+    <>{children}</>
+  );
 };

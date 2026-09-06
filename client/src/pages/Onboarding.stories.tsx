@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { http, HttpResponse } from "msw";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -12,7 +11,7 @@ const meta: Meta<typeof Welcome> = {
   title: "Pages/Welcome/Onboarding",
   component: Welcome,
   parameters: {
-    reactRouter: actionRouting("welcome"),
+    tanstack: { router: { path: "/welcome" } },
     msw: {
       handlers: [
         // Return empty categories to trigger onboarding
@@ -75,7 +74,7 @@ export const ToggleCategoryAndActivities: Story = {
     });
 
     await step("Uncheck Running category", async () => {
-      const runningCheckbox = canvas.getByRole("checkbox", {
+      const runningCheckbox = await canvas.findByRole("checkbox", {
         name: /running/i,
       });
       await userEvent.click(runningCheckbox);

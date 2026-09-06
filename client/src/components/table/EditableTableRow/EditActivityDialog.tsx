@@ -43,9 +43,8 @@ type Props = {
 };
 
 export const EditActivityButton = ({ record, disabled }: Props) => {
-  const { onSubmit, isSuccess, isError, isPending } = useEditActivityFormSubmit(
-    record.id
-  );
+  const { onSubmit, isSuccess, isError, isPending, reset } =
+    useEditActivityFormSubmit(record.id);
   const { availableCategories } = useAvailableCategories();
   const closeRef = useRef<HTMLButtonElement>(null);
   useCloseOnSuccess(isSuccess, closeRef);
@@ -69,27 +68,35 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
     active: record.active,
   };
 
+  const defaultValues: DetailedActivityFormValues = {
+    date: record.date,
+    category: initialCategory,
+    intensity: record.intensity ?? "",
+    timeSpent: record.timeSpent?.toString() ?? "",
+    description: record.description ?? "",
+  };
   const form = useForm({
-    defaultValues: {
-      date: record.date,
-      category: initialCategory,
-      intensity: record.intensity ?? "",
-      timeSpent: record.timeSpent?.toString() ?? "",
-      description: record.description ?? "",
-    } as DetailedActivityFormValues,
+    defaultValues,
     onSubmit: ({ value }) => {
       onSubmit(value);
     },
   });
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={(open) => {
+        if (open && !isPending) {
+          reset();
+          form.reset(defaultValues);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
-          disabled={disabled}
+          disabled={disabled || isPending}
         >
           <Pencil />
           <span className="sr-only">Edit</span>

@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation } from "@tanstack/react-router";
 import { SidebarTrigger, useSidebar } from "../ui/sidebar";
 import { getPageTitle } from "./AppSidebar";
 

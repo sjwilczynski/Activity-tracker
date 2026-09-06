@@ -1,8 +1,5 @@
 import { useIsFetching, useQuery } from "@tanstack/react-query";
-import {
-  activitiesQueryOptions,
-  activitiesWithLimitQueryOptions,
-} from "../../queryOptions";
+import { getRouteApi } from "@tanstack/react-router";
 import {
   exportApiPath,
   getActivitiesQueryId,
@@ -10,15 +7,8 @@ import {
 import { useRequestConfig } from "../useRequestConfig";
 
 export const useActivities = () => {
-  const getConfig = useRequestConfig();
-  const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(activitiesQueryOptions(getAuthToken));
-};
-
-export const useActivitiesWithLimit = () => {
-  const getConfig = useRequestConfig();
-  const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(activitiesWithLimitQueryOptions(getAuthToken));
+  const { activitiesQuery } = getRouteApi("/_authenticated").useRouteContext();
+  return useQuery(activitiesQuery);
 };
 
 export const useExportUserData = () => {

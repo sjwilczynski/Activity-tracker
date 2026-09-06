@@ -2,6 +2,7 @@
   {
     "name": "Client JavaScript",
     "path": "client/build/client/assets/*.js",
-    "limit": "360 kB"
+    "limit": "360 kB",
+    "running": false
   }
 ]

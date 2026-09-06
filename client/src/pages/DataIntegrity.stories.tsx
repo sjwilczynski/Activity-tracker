@@ -1,14 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import type { UserData } from "../../../shared/types";
 import type { ActivityRecordWithIdServer } from "../data";
-import { actionRouting } from "../mocks/actionRouting";
 import { ActivityList } from "./ActivityList";
 
 const meta: Meta<typeof ActivityList> = {
   title: "Pages/Data integrity",
   component: ActivityList,
-  parameters: { reactRouter: actionRouting("activity-list") },
+  parameters: { tanstack: { router: { path: "/activity-list" } } },
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
