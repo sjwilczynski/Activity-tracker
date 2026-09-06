@@ -3,9 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "types": ["node"],
+    "rootDir": "..",
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../shared/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

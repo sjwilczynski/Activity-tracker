@@ -7,7 +7,9 @@ import {
 } from "../../rateLimit/rateLimiter";
 import { validateCategory } from "../../validation/validators";
 
-async function editCategory(request: HttpRequest): Promise<HttpResponseInit> {
+export async function editCategory(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
@@ -37,7 +39,9 @@ async function editCategory(request: HttpRequest): Promise<HttpResponseInit> {
     return { status: 400, body: "Missing categoryId route parameter." };
   }
 
-  const validation = validateCategory(category);
+  const validation = validateCategory(category, {
+    preserveActivityNameIdentities: true,
+  });
   if (!validation.valid) {
     return { status: 400, body: validation.error };
   }

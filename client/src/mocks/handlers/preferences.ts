@@ -12,6 +12,15 @@ const darkPreferences: UserPreferences = {
   isLightTheme: false,
 };
 
+let preferences = { ...defaultPreferences };
+export const getPreferences = () => preferences;
+export const setPreferences = (value: UserPreferences) => {
+  preferences = value;
+};
+export const resetPreferences = () => {
+  preferences = { ...defaultPreferences };
+};
+
 export const preferencesHandlers = [
   http.get("*/api/preferences", async ({ request }) => {
     await delay(100);
@@ -21,7 +30,7 @@ export const preferencesHandlers = [
       return new HttpResponse(null, { status: 401 });
     }
 
-    return HttpResponse.json(defaultPreferences);
+    return HttpResponse.json(preferences);
   }),
 
   http.put("*/api/preferences", async ({ request }) => {
@@ -32,6 +41,7 @@ export const preferencesHandlers = [
       return new HttpResponse(null, { status: 401 });
     }
 
+    preferences = (await request.json()) as UserPreferences;
     return new HttpResponse(null, { status: 204 });
   }),
 ];

@@ -7,6 +7,11 @@ import {
   type EnrichedActivityMap,
   type UserPreferences,
 } from "../utils/types";
+import {
+  bulkAssignCategory,
+  bulkReassignCategory,
+  bulkRenameActivities,
+} from "./activityNames";
 import type { Database } from "./types";
 
 const activityDocument = (userId: string): string =>
@@ -19,6 +24,15 @@ const preferencesDocument = (userId: string): string =>
   `/users/${userId}/preferences`;
 
 const userDocument = (userId: string): string => `/users/${userId}`;
+
+function normalizeCategories(categories: CategoryMap): CategoryMap {
+  return Object.fromEntries(
+    Object.entries(categories).map(([id, category]) => [
+      id,
+      { ...category, activityNames: category.activityNames ?? [] },
+    ])
+  );
+}
 
 /**
  * Build a name → { categoryId, active } map from categories' activityNames.
@@ -106,7 +120,7 @@ export const firebaseDB: Database = {
     if (!activity.exists()) {
       throw new Error(`Unable to find activity with id ${activityId}`);
     }
-    await activityRef.update(newActivity);
+    await activityRef.set(newActivity);
   },
   deleteActivity: async (userId: string, activityId: string) => {
     const activityDocumentPath = activityDocument(userId);
@@ -126,7 +140,8 @@ export const firebaseDB: Database = {
     const categories = await database
       .ref(categoryDocument(userId))
       .once("value");
-    return categories.val() as CategoryMap;
+    const stored = categories.val() as CategoryMap | null;
+    return stored === null ? null : normalizeCategories(stored);
   },
   getCategoryCount: async (userId: string) => {
     const snapshot = await database.ref(categoryDocument(userId)).once("value");
@@ -165,99 +180,11 @@ export const firebaseDB: Database = {
     await categoriesRef.remove();
   },
 
-  bulkRenameActivities: async (userId, oldName, newName) => {
-    // 1. Rename in activity records
-    const activitiesRef = database.ref(activityDocument(userId));
-    const snapshot = await activitiesRef.once("value");
-    const activities = snapshot.val() as ActivityMap | null;
+  bulkRenameActivities,
 
-    const activityUpdates: Record<string, string> = {};
-    if (activities) {
-      for (const [key, activity] of Object.entries(activities)) {
-        if (activity.name === oldName) {
-          activityUpdates[`${key}/name`] = newName;
-        }
-      }
-      if (Object.keys(activityUpdates).length > 0) {
-        await activitiesRef.update(activityUpdates);
-      }
-    }
+  bulkAssignCategory,
 
-    // 2. Update category activityNames
-    const categoriesRef = database.ref(categoryDocument(userId));
-    const catSnapshot = await categoriesRef.once("value");
-    const categories = catSnapshot.val() as CategoryMap | null;
-    if (categories) {
-      for (const [catId, cat] of Object.entries(categories)) {
-        const idx = (cat.activityNames ?? []).indexOf(oldName);
-        if (idx !== -1) {
-          const newNames = [...cat.activityNames];
-          newNames[idx] = newName;
-          await categoriesRef.child(catId).child("activityNames").set(newNames);
-          break; // a name should only be in one category
-        }
-      }
-    }
-
-    return Object.keys(activityUpdates).length;
-  },
-
-  bulkAssignCategory: async (userId, activityName, categoryId) => {
-    const categoriesRef = database.ref(categoryDocument(userId));
-    const catSnapshot = await categoriesRef.once("value");
-    const categories = catSnapshot.val() as CategoryMap | null;
-    if (!categories) return;
-
-    const updates: Record<string, string[]> = {};
-
-    // Remove from current category
-    for (const [catId, cat] of Object.entries(categories)) {
-      const names = cat.activityNames ?? [];
-      const idx = names.indexOf(activityName);
-      if (idx !== -1) {
-        updates[`${catId}/activityNames`] = names.filter(
-          (n) => n !== activityName
-        );
-        break;
-      }
-    }
-
-    // Add to target category
-    const targetCat = categories[categoryId];
-    if (targetCat) {
-      const targetNames = targetCat.activityNames ?? [];
-      if (!targetNames.includes(activityName)) {
-        updates[`${categoryId}/activityNames`] = [...targetNames, activityName];
-      }
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await categoriesRef.update(updates);
-    }
-  },
-
-  bulkReassignCategory: async (userId, fromCategoryId, toCategoryId) => {
-    const categoriesRef = database.ref(categoryDocument(userId));
-    const catSnapshot = await categoriesRef.once("value");
-    const categories = catSnapshot.val() as CategoryMap | null;
-    if (!categories) return;
-
-    const fromCat = categories[fromCategoryId];
-    const toCat = categories[toCategoryId];
-    if (!fromCat || !toCat) return;
-
-    const namesToMove = fromCat.activityNames ?? [];
-    if (namesToMove.length === 0) return;
-
-    // Move all names from source to target (deduplicate)
-    const targetNames = [
-      ...new Set([...(toCat.activityNames ?? []), ...namesToMove]),
-    ];
-    await categoriesRef.update({
-      [`${toCategoryId}/activityNames`]: targetNames,
-      [`${fromCategoryId}/activityNames`]: [],
-    });
-  },
+  bulkReassignCategory,
 
   deleteActivitiesByCategory: async (userId, categoryId) => {
     // Look up which activity names belong to this category
@@ -320,8 +247,10 @@ export const firebaseDB: Database = {
     const snapshot = await database.ref(userDocument(userId)).once("value");
     const data = snapshot.val() ?? {};
     return {
-      activities: (data.activity ?? {}) as ActivityMap,
-      categories: (data.categories ?? {}) as CategoryMap,
+      activities: Object.fromEntries(
+        Object.entries(data.activity ?? {})
+      ) as ActivityMap,
+      categories: normalizeCategories((data.categories ?? {}) as CategoryMap),
       preferences: {
         ...DEFAULT_PREFERENCES,
         ...((data.preferences ?? {}) as Partial<UserPreferences>),

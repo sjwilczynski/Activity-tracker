@@ -2,6 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
+    "rootDir": "..",
     "allowJs": false,
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
@@ -12,6 +13,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "vite", ".react-router/types/**/*"],
+  "include": ["src", "vite", ".react-router/types/**/*", "../shared/**/*.ts"],
   "exclude": ["node_modules", "build", "storybook-static"]
 }

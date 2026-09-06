@@ -146,15 +146,23 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
               <div className="space-y-2">
                 <Label htmlFor="edit-intensity">Intensity</Label>
                 <Select
-                  value={field.state.value}
-                  onValueChange={(v) =>
-                    field.handleChange(v as "" | "low" | "medium" | "high")
-                  }
+                  value={field.state.value || "none"}
+                  onValueChange={(value) => {
+                    if (value === "none") field.handleChange("");
+                    else if (
+                      value === "low" ||
+                      value === "medium" ||
+                      value === "high"
+                    ) {
+                      field.handleChange(value);
+                    }
+                  }}
                 >
                   <SelectTrigger id="edit-intensity">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -10,6 +11,7 @@ import { Welcome } from "./Welcome";
 const meta: Meta<typeof Welcome> = {
   title: "Pages/Welcome",
   component: Welcome,
+  parameters: { reactRouter: actionRouting("welcome") },
 };
 
 export default meta;

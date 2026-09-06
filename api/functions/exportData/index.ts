@@ -6,7 +6,9 @@ import {
   getRateLimitHeaders,
 } from "../../rateLimit/rateLimiter";
 
-async function exportData(request: HttpRequest): Promise<HttpResponseInit> {
+export async function exportData(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {

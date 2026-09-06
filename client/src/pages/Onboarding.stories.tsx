@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse } from "msw";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -11,6 +12,7 @@ const meta: Meta<typeof Welcome> = {
   title: "Pages/Welcome/Onboarding",
   component: Welcome,
   parameters: {
+    reactRouter: actionRouting("welcome"),
     msw: {
       handlers: [
         // Return empty categories to trigger onboarding

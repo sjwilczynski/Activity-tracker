@@ -33,10 +33,19 @@ function setNestedValue(path: string, value: unknown): void {
 
 let pushCounter = 0;
 let setCallCount = 0;
-let updateCallCount = 0;
+let transactionCallCount = 0;
 
 function createMockRef(path: string): Record<string, unknown> {
   return {
+    transaction: vi.fn(async (update: (value: unknown) => unknown) => {
+      transactionCallCount++;
+      const value = update(structuredClone(getNestedValue(path)));
+      if (value !== undefined) setNestedValue(path, value);
+      return {
+        committed: value !== undefined,
+        snapshot: { val: () => structuredClone(getNestedValue(path)) },
+      };
+    }),
     once: vi.fn(async () => ({
       val: () => getNestedValue(path),
       exists: () => getNestedValue(path) != null,
@@ -86,7 +95,6 @@ function createMockRef(path: string): Record<string, unknown> {
       setNestedValue(path, value);
     }),
     update: vi.fn(async (updates: Record<string, unknown>) => {
-      updateCallCount++;
       for (const [updatePath, value] of Object.entries(updates)) {
         setNestedValue(`${path}/${updatePath}`, value);
       }
@@ -122,7 +130,7 @@ describe("firebaseDB", () => {
     store = {};
     pushCounter = 0;
     setCallCount = 0;
-    updateCallCount = 0;
+    transactionCallCount = 0;
   });
 
   describe("getActivities — enrichment", () => {
@@ -229,7 +237,7 @@ describe("firebaseDB", () => {
       expect(activities!.act2.categoryId).toBe("catB");
     });
 
-    it("applies the move as a single atomic update (no sequential set writes)", async () => {
+    it("moves all names atomically without sequential writes", async () => {
       seedCategories({
         catA: {
           name: "Sports",
@@ -247,8 +255,7 @@ describe("firebaseDB", () => {
 
       await firebaseDB.bulkReassignCategory(USER_ID, "catA", "catB");
 
-      // Atomicity: exactly one fan-out update(), zero direct set() writes
-      expect(updateCallCount).toBe(1);
+      expect(transactionCallCount).toBe(1);
       expect(setCallCount).toBe(0);
 
       const categories = getNestedValue(
@@ -262,7 +269,7 @@ describe("firebaseDB", () => {
       ]);
     });
 
-    it("empties the category in one update when source and target are the same", async () => {
+    it("preserves the category when source and target are the same", async () => {
       seedCategories({
         catA: {
           name: "Sports",
@@ -274,17 +281,30 @@ describe("firebaseDB", () => {
 
       await firebaseDB.bulkReassignCategory(USER_ID, "catA", "catA");
 
-      // Colliding multi-path keys collapse to one; final state is empty
-      expect(updateCallCount).toBe(1);
-      expect(setCallCount).toBe(0);
       const categories = getNestedValue(
         `users/${USER_ID}/categories`
       ) as CategoryMap;
-      expect(categories.catA.activityNames).toEqual([]);
+      expect(categories.catA.activityNames).toEqual(["Running", "Swimming"]);
     });
   });
 
   describe("bulkAssignCategory", () => {
+    it("preserves ownership when assigning to the current category", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+      });
+      seedActivities({ act1: { name: "Running", date: "2024-01-01" } });
+      await firebaseDB.bulkAssignCategory(USER_ID, "Running", "catA");
+      expect((await firebaseDB.getActivities(USER_ID))?.act1.categoryId).toBe(
+        "catA"
+      );
+    });
+
     it("moves a single activity name to a different category", async () => {
       seedCategories({
         catA: {
@@ -318,7 +338,7 @@ describe("firebaseDB", () => {
       expect(activities!.act1.active).toBe(false);
     });
 
-    it("applies remove + add as a single atomic update (no sequential set writes)", async () => {
+    it("moves a name atomically without sequential writes", async () => {
       seedCategories({
         catA: {
           name: "Sports",
@@ -336,8 +356,7 @@ describe("firebaseDB", () => {
 
       await firebaseDB.bulkAssignCategory(USER_ID, "Running", "catB");
 
-      // Atomicity: exactly one fan-out update(), zero direct set() writes
-      expect(updateCallCount).toBe(1);
+      expect(transactionCallCount).toBe(1);
       expect(setCallCount).toBe(0);
 
       const categories = getNestedValue(
@@ -347,7 +366,7 @@ describe("firebaseDB", () => {
       expect(categories.catB.activityNames).toEqual(["Running"]);
     });
 
-    it("adds to the target in a single update when the name is in no category", async () => {
+    it("assigns an uncategorized name without changing unrelated names", async () => {
       seedCategories({
         catA: {
           name: "Sports",
@@ -365,7 +384,7 @@ describe("firebaseDB", () => {
 
       await firebaseDB.bulkAssignCategory(USER_ID, "Running", "catB");
 
-      expect(updateCallCount).toBe(1);
+      expect(transactionCallCount).toBe(1);
       expect(setCallCount).toBe(0);
       const categories = getNestedValue(
         `users/${USER_ID}/categories`
@@ -376,6 +395,81 @@ describe("firebaseDB", () => {
   });
 
   describe("bulkRenameActivities", () => {
+    it("merges confirmed histories into target ownership without deleting entries or details", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running", "Swimming"],
+        },
+        catB: {
+          name: "Wellness",
+          active: false,
+          description: "",
+          activityNames: ["Yoga"],
+        },
+      });
+      seedActivities({
+        act1: {
+          name: "Running",
+          date: "2024-01-01",
+          timeSpent: 45,
+          intensity: "high",
+          description: "Keep",
+        },
+        act2: { name: "Yoga", date: "2024-01-01", timeSpent: 10 },
+      });
+      expect(
+        await firebaseDB.bulkRenameActivities(USER_ID, "Running", "Yoga", {
+          merge: true,
+          targetCategoryId: "catB",
+        })
+      ).toBe(1);
+      const saved = await firebaseDB.getUserData(USER_ID);
+      expect(saved.activities).toEqual({
+        act1: {
+          name: "Yoga",
+          date: "2024-01-01",
+          timeSpent: 45,
+          intensity: "high",
+          description: "Keep",
+        },
+        act2: { name: "Yoga", date: "2024-01-01", timeSpent: 10 },
+      });
+      expect(saved.categories.catA.activityNames).toEqual(["Swimming"]);
+      expect(saved.categories.catB.activityNames).toEqual(["Yoga"]);
+      expect((await firebaseDB.getActivities(USER_ID))?.act1).toMatchObject({
+        categoryId: "catB",
+        active: false,
+      });
+    });
+
+    it("rejects a collision without changing entries or category ownership", async () => {
+      seedCategories({
+        catA: {
+          name: "Sports",
+          active: true,
+          description: "",
+          activityNames: ["Running"],
+        },
+        catB: {
+          name: "Wellness",
+          active: false,
+          description: "",
+          activityNames: ["Yoga"],
+        },
+      });
+      seedActivities({
+        act1: { name: "Running", date: "2024-01-01", timeSpent: 45 },
+      });
+      const before = await firebaseDB.getUserData(USER_ID);
+      await expect(
+        firebaseDB.bulkRenameActivities(USER_ID, "Running", "Yoga")
+      ).rejects.toThrow(/confirm/i);
+      expect(await firebaseDB.getUserData(USER_ID)).toEqual(before);
+    });
+
     it("renames activity records and updates category activityNames", async () => {
       seedCategories({
         catA: {
@@ -608,6 +702,25 @@ describe("firebaseDB", () => {
   });
 
   describe("editActivity", () => {
+    it("removes omitted optional details when replacing an entry", async () => {
+      seedActivities({
+        act1: {
+          name: "Running",
+          date: "2024-01-01",
+          description: "Remove me",
+          intensity: "high",
+          timeSpent: 45,
+        },
+      });
+      await firebaseDB.editActivity(USER_ID, "act1", {
+        name: "Running",
+        date: "2024-01-01",
+      });
+      expect((await firebaseDB.getUserData(USER_ID)).activities.act1).toEqual({
+        name: "Running",
+        date: "2024-01-01",
+      });
+    });
     it("updates fields of an existing activity", async () => {
       seedActivities({
         act1: { date: "2024-01-01", name: "Running" },
@@ -938,6 +1051,20 @@ describe("firebaseDB", () => {
   });
 
   describe("getCategories", () => {
+    it("returns empty membership when Firebase omits an empty array", async () => {
+      setNestedValue(`/users/${USER_ID}/categories`, {
+        empty: { name: "Empty", description: "", active: true },
+      });
+      expect(await firebaseDB.getCategories(USER_ID)).toEqual({
+        empty: {
+          name: "Empty",
+          description: "",
+          active: true,
+          activityNames: [],
+        },
+      });
+    });
+
     it("returns null when no categories exist", async () => {
       const result = await firebaseDB.getCategories(USER_ID);
       expect(result).toBeNull();

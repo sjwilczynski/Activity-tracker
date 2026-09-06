@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -9,6 +10,7 @@ import { Settings } from "./Settings";
 const meta: Meta<typeof Settings> = {
   title: "Pages/Settings",
   component: Settings,
+  parameters: { reactRouter: actionRouting("settings") },
 };
 
 export default meta;
@@ -260,6 +262,7 @@ export const DeleteCategoryDialogInteraction: Story = {
           screen.queryByText(/Delete "Sports"\?/)
         ).not.toBeInTheDocument();
       });
+      await expect(canvas.getAllByText("Sports").length).toBeGreaterThan(0);
     });
   },
 };
@@ -288,6 +291,9 @@ export const DeleteCategoryWithActivities: Story = {
         await expect(
           screen.queryByText(/Delete "Sports"\?/)
         ).not.toBeInTheDocument();
+      });
+      await waitFor(async () => {
+        await expect(canvas.queryAllByText("Sports")).toHaveLength(0);
       });
     });
   },

@@ -425,6 +425,19 @@ describe("validateCategory", () => {
     expect(result.data).toEqual(validCategory);
   });
 
+  it("trims only the edges of category names", () => {
+    expect(
+      validateCategory({ ...validCategory, name: " \tOutdoor  Sports \n" }).data
+    ).toEqual({ ...validCategory, name: "Outdoor  Sports" });
+  });
+
+  it("applies the category-name length limit after trimming", () => {
+    const name = "a".repeat(LIMITS.CATEGORY_NAME_MAX);
+    expect(validateCategory({ ...validCategory, name: `  ${name}  ` })).toEqual(
+      { valid: true, data: { ...validCategory, name } }
+    );
+  });
+
   it("rejects null", () => {
     expect(validateCategory(null)).toEqual({
       valid: false,
@@ -510,6 +523,25 @@ describe("validateCategory", () => {
 });
 
 describe("validateRenameBody", () => {
+  it("preserves explicit merge consent and its expected target category", () => {
+    expect(
+      validateRenameBody({
+        oldName: "Running",
+        newName: "Yoga",
+        merge: true,
+        targetCategoryId: "wellness",
+      })
+    ).toEqual({
+      valid: true,
+      data: {
+        oldName: "Running",
+        newName: "Yoga",
+        merge: true,
+        targetCategoryId: "wellness",
+      },
+    });
+  });
+
   it("accepts valid rename", () => {
     const result = validateRenameBody({
       oldName: "Running",
@@ -553,6 +585,41 @@ describe("validateRenameBody", () => {
 });
 
 describe("validateAssignCategoryBody", () => {
+  it("preserves category IDs rather than treating them as display names", () => {
+    expect(
+      validateAssignCategoryBody({
+        activityName: "Running",
+        categoryId: " sports ",
+      })
+    ).toEqual({
+      valid: true,
+      data: { activityName: "Running", categoryId: " sports " },
+    });
+    expect(
+      validateReassignCategoryBody({
+        fromCategoryId: " sports ",
+        toCategoryId: "sports",
+      })
+    ).toEqual({
+      valid: true,
+      data: { fromCategoryId: " sports ", toCategoryId: "sports" },
+    });
+    expect(validateDeleteByCategoryBody({ categoryId: " sports " })).toEqual({
+      valid: true,
+      data: { categoryId: " sports " },
+    });
+  });
+  it("preserves the exact activity name selected for reassignment", () => {
+    expect(
+      validateAssignCategoryBody({
+        activityName: " Running ",
+        categoryId: "sports",
+      })
+    ).toEqual({
+      valid: true,
+      data: { activityName: " Running ", categoryId: "sports" },
+    });
+  });
   it("accepts valid body", () => {
     const result = validateAssignCategoryBody({
       activityName: "Running",
@@ -747,7 +814,6 @@ describe("validateImportData", () => {
     }
   });
 
-  // Server validator accepts empty objects (client-side isImportDataValid rejects them)
   it("accepts empty activities and categories objects", () => {
     const result = validateImportData({ activities: {}, categories: {} });
     expect(result.valid).toBe(true);
@@ -759,25 +825,25 @@ describe("validateImportData", () => {
   it("rejects missing activities", () => {
     expect(validateImportData({ categories: {} })).toEqual({
       valid: false,
-      error: "activities must be a non-array object",
+      error: "activities must be an object or legacy array",
     });
   });
 
   it("rejects missing categories", () => {
     expect(validateImportData({ activities: {} })).toEqual({
       valid: false,
-      error: "categories must be a non-array object",
+      error: "categories must be an object or legacy array",
     });
   });
 
-  it("rejects array inputs for activities and categories", () => {
+  it("normalizes empty legacy arrays for activities and categories", () => {
     expect(validateImportData({ activities: [], categories: {} })).toEqual({
-      valid: false,
-      error: "activities must be a non-array object",
+      valid: true,
+      data: { activities: {}, categories: {} },
     });
     expect(validateImportData({ activities: {}, categories: [] })).toEqual({
-      valid: false,
-      error: "categories must be a non-array object",
+      valid: true,
+      data: { activities: {}, categories: {} },
     });
   });
 

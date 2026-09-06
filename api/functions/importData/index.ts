@@ -9,7 +9,9 @@ import { DEFAULT_PREFERENCES } from "../../utils/types";
 import { LIMITS } from "../../validation/constants";
 import { validateImportData } from "../../validation/validators";
 
-async function importData(request: HttpRequest): Promise<HttpResponseInit> {
+export async function importData(
+  request: HttpRequest
+): Promise<HttpResponseInit> {
   const idToken = request.headers.get("x-auth-token");
   let userId: string;
   try {
