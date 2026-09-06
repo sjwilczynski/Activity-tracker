@@ -34,11 +34,11 @@ async function startMerge(canvasElement: HTMLElement) {
   await userEvent.clear(input);
   await userEvent.type(input, "Yoga");
   await userEvent.click(dialog.getByRole("button", { name: /update name/i }));
-  expect(
+  await expect(
     await dialog.findByText(/merge activity history/i)
   ).toBeInTheDocument();
-  expect(dialog.getByText(/Wellness/)).toBeInTheDocument();
-  expect(dialog.getByText(/8 entries/)).toBeInTheDocument();
+  await expect(dialog.getByText(/Wellness/)).toBeInTheDocument();
+  await expect(dialog.getByText(/8 entries/)).toBeInTheDocument();
   return dialog;
 }
 
@@ -46,7 +46,7 @@ export const ConfirmedMigration: Story = {
   play: async ({ canvasElement }) => {
     const before = await readEntries();
     const dialog = await startMerge(canvasElement);
-    expect(await readEntries()).toEqual(before);
+    await expect(await readEntries()).toEqual(before);
     await userEvent.click(
       dialog.getByRole("button", { name: /confirm merge/i })
     );
@@ -54,15 +54,17 @@ export const ConfirmedMigration: Story = {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
     const after = await readEntries();
-    expect(after).toHaveLength(before.length);
+    await expect(after).toHaveLength(before.length);
     for (const entry of before) {
-      expect(after.find((saved) => saved.id === entry.id)).toEqual(
+      await expect(after.find((saved) => saved.id === entry.id)).toEqual(
         entry.name === "Running"
           ? { ...entry, name: "Yoga", categoryId: "cat-wellness", active: true }
           : entry
       );
     }
-    expect(within(canvasElement).queryAllByText("Running")).toHaveLength(0);
+    await expect(within(canvasElement).queryAllByText("Running")).toHaveLength(
+      0
+    );
   },
 };
 
@@ -74,8 +76,8 @@ export const CancelMigration: Story = {
     await waitFor(() =>
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
-    expect(await readEntries()).toEqual(before);
-    expect(document.activeElement).toHaveAccessibleName("Edit");
+    await expect(await readEntries()).toEqual(before);
+    await expect(document.activeElement).toHaveAccessibleName("Edit");
   },
 };
 
@@ -84,11 +86,15 @@ export const BackToRename: Story = {
     const before = await readEntries();
     const dialog = await startMerge(canvasElement);
     await userEvent.click(dialog.getByRole("button", { name: /back/i }));
-    expect(dialog.getByLabelText(/new activity name/i)).toHaveValue("Yoga");
-    expect(dialog.queryByRole("button", { name: /confirm merge/i })).toBeNull();
-    expect(await readEntries()).toEqual(before);
+    await expect(dialog.getByLabelText(/new activity name/i)).toHaveValue(
+      "Yoga"
+    );
+    await expect(
+      dialog.queryByRole("button", { name: /confirm merge/i })
+    ).toBeNull();
+    await expect(await readEntries()).toEqual(before);
     await userEvent.click(dialog.getByRole("button", { name: /update name/i }));
-    expect(
+    await expect(
       dialog.getByRole("button", { name: /confirm merge/i })
     ).toBeEnabled();
     await userEvent.click(dialog.getByRole("button", { name: /cancel/i }));
@@ -117,10 +123,10 @@ export const ChangedTarget: Story = {
     await userEvent.click(
       dialog.getByRole("button", { name: /confirm merge/i })
     );
-    expect(await dialog.findByRole("alert")).toHaveTextContent(
+    await expect(await dialog.findByRole("alert")).toHaveTextContent(
       /target changed/i
     );
-    expect(await readEntries()).toEqual(before);
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await expect(await readEntries()).toEqual(before);
+    await expect(screen.getByRole("dialog")).toBeInTheDocument();
   },
 };

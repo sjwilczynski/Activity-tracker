@@ -262,7 +262,7 @@ export const DeleteCategoryDialogInteraction: Story = {
           screen.queryByText(/Delete "Sports"\?/)
         ).not.toBeInTheDocument();
       });
-      expect(canvas.getAllByText("Sports").length).toBeGreaterThan(0);
+      await expect(canvas.getAllByText("Sports").length).toBeGreaterThan(0);
     });
   },
 };
@@ -292,8 +292,8 @@ export const DeleteCategoryWithActivities: Story = {
           screen.queryByText(/Delete "Sports"\?/)
         ).not.toBeInTheDocument();
       });
-      await waitFor(() => {
-        expect(canvas.queryAllByText("Sports")).toHaveLength(0);
+      await waitFor(async () => {
+        await expect(canvas.queryAllByText("Sports")).toHaveLength(0);
       });
     });
   },

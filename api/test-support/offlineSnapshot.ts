@@ -1,6 +1,6 @@
+import { randomUUID } from "node:crypto";
 import { deleteApp, initializeApp } from "firebase-admin/app";
 import { getDatabase } from "firebase-admin/database";
-import { randomUUID } from "node:crypto";
 import { afterAll } from "vitest";
 
 const app = initializeApp(

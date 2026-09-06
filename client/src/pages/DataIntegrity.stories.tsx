@@ -21,8 +21,8 @@ export const RestoreExport: Story = {
     const exported: UserData = await (
       await fetch("/api/export", { headers })
     ).json();
-    expect(exported.activities["1"]).not.toHaveProperty("categoryId");
-    expect(exported.activities["1"]).toMatchObject({
+    await expect(exported.activities["1"]).not.toHaveProperty("categoryId");
+    await expect(exported.activities["1"]).toMatchObject({
       name: "Running",
       timeSpent: 45,
       description: "Morning run in the park, felt great!",
@@ -44,8 +44,8 @@ export const RestoreExport: Story = {
       ).toBeInTheDocument()
     );
     const restored = await (await fetch("/api/export", { headers })).json();
-    expect(restored).toEqual(exported);
-    expect(canvas.getByText(/of 30 activities/i)).toBeInTheDocument();
+    await expect(restored).toEqual(exported);
+    await expect(canvas.getByText(/of 30 activities/i)).toBeInTheDocument();
   },
 };
 
@@ -59,10 +59,10 @@ export const ClearSavedDetails: Story = {
     if (!editButton) throw new Error("No visible edit button");
     await userEvent.click(editButton);
     const dialog = within(await screen.findByRole("dialog"));
-    expect(dialog.getByLabelText("Description")).toHaveValue(
+    await expect(dialog.getByLabelText("Description")).toHaveValue(
       "Morning run in the park, felt great!"
     );
-    expect(dialog.getByLabelText("Time Spent")).toHaveValue(45);
+    await expect(dialog.getByLabelText("Time Spent")).toHaveValue(45);
     await userEvent.clear(dialog.getByLabelText("Description"));
     await userEvent.clear(dialog.getByLabelText("Time Spent"));
     await userEvent.click(dialog.getByRole("combobox", { name: "Intensity" }));
@@ -78,10 +78,10 @@ export const ClearSavedDetails: Story = {
       await fetch("/api/activities", { headers })
     ).json();
     const saved = entries.find((entry) => entry.id === "1");
-    expect(saved).not.toHaveProperty("description");
-    expect(saved).not.toHaveProperty("timeSpent");
-    expect(saved).not.toHaveProperty("intensity");
-    expect(saved).toMatchObject({ name: "Running", date: "2024-02-10" });
+    await expect(saved).not.toHaveProperty("description");
+    await expect(saved).not.toHaveProperty("timeSpent");
+    await expect(saved).not.toHaveProperty("intensity");
+    await expect(saved).toMatchObject({ name: "Running", date: "2024-02-10" });
   },
 };
 
@@ -120,7 +120,7 @@ export const RestoreLegacyArray: Story = {
     const exported: UserData = await (
       await fetch("/api/export", { headers })
     ).json();
-    expect(exported.activities).toEqual({ "1": record });
-    expect(exported.categories).toEqual({ "1": category });
+    await expect(exported.activities).toEqual({ "1": record });
+    await expect(exported.categories).toEqual({ "1": category });
   },
 };

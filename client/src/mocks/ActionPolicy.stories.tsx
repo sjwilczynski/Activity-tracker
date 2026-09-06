@@ -35,11 +35,11 @@ export const RejectSettingsMutationOnWelcome: Story = {
     await userEvent.click(
       canvas.getByRole("button", { name: "Submit rename" })
     );
-    expect(await canvas.findByRole("alert")).toHaveTextContent(
+    await expect(await canvas.findByRole("alert")).toHaveTextContent(
       "Unknown intent"
     );
-    expect(await (await fetch("/api/export", { headers })).json()).toEqual(
-      before
-    );
+    await expect(
+      await (await fetch("/api/export", { headers })).json()
+    ).toEqual(before);
   },
 };

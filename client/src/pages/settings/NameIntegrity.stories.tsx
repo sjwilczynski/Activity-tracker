@@ -82,7 +82,7 @@ export const MergeImportedNames: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, "Yoga");
     await userEvent.click(dialog.getByRole("button", { name: /update name/i }));
-    expect(dialog.getByText(/1 entries.*Wellness/)).toBeInTheDocument();
+    await expect(dialog.getByText(/1 entries.*Wellness/)).toBeInTheDocument();
     await userEvent.click(
       dialog.getByRole("button", { name: /confirm merge/i })
     );
@@ -90,12 +90,12 @@ export const MergeImportedNames: Story = {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
     const after = await readBackup();
-    expect(after.activities).toEqual({
+    await expect(after.activities).toEqual({
       ...before.activities,
       source: { ...before.activities.source, name: " Yoga " },
     });
-    expect(after.categories.sports.activityNames).toEqual([]);
-    expect(after.categories.wellness.activityNames).toEqual([" Yoga "]);
+    await expect(after.categories.sports.activityNames).toEqual([]);
+    await expect(after.categories.wellness.activityNames).toEqual([" Yoga "]);
   },
 };
 
@@ -117,7 +117,7 @@ export const TrimCategoryNames: Story = {
     const added = categories.find(
       (category) => category.name === "Outdoor  Sports"
     );
-    expect(added).toBeDefined();
+    await expect(added).toBeDefined();
 
     const row = canvas
       .getAllByRole("row")
@@ -137,7 +137,7 @@ export const TrimCategoryNames: Story = {
     );
     await canvas.findAllByText("Team Sports");
     const saved = await readBackup();
-    expect(
+    await expect(
       Object.values(saved.categories).find(
         (category) => category.name === "Team Sports"
       )
