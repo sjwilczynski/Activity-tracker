@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild";
 import { cpSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
+import * as esbuild from "esbuild";
 
 // Find all function entry points
 const functionsDir = "functions";

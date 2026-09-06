@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type {
-  ActivityMap,
-  CategoryMap,
-  UserPreferences,
-} from "../utils/types";
+import type { ActivityMap, CategoryMap, UserPreferences } from "../utils/types";
 
 // In-memory Firebase mock
 let store: Record<string, unknown> = {};
@@ -52,17 +48,28 @@ function createMockRef(path: string): Record<string, unknown> {
     orderByChild: vi.fn(() => createMockRef(path)),
     limitToLast: vi.fn((n: number) => {
       const ref = createMockRef(path);
-      ref.once = vi.fn(async (): Promise<{ val: () => unknown; exists: () => boolean; numChildren: () => number }> => {
-        const val = getNestedValue(path) as Record<string, unknown> | null;
-        if (!val) return { val: () => null, exists: () => false, numChildren: () => 0 };
-        const entries = Object.entries(val).slice(-n);
-        const limited = Object.fromEntries(entries);
-        return {
-          val: () => limited,
-          exists: () => true,
-          numChildren: () => entries.length,
-        };
-      });
+      ref.once = vi.fn(
+        async (): Promise<{
+          val: () => unknown;
+          exists: () => boolean;
+          numChildren: () => number;
+        }> => {
+          const val = getNestedValue(path) as Record<string, unknown> | null;
+          if (!val)
+            return {
+              val: () => null,
+              exists: () => false,
+              numChildren: () => 0,
+            };
+          const entries = Object.entries(val).slice(-n);
+          const limited = Object.fromEntries(entries);
+          return {
+            val: () => limited,
+            exists: () => true,
+            numChildren: () => entries.length,
+          };
+        }
+      );
       return ref;
     }),
     push: vi.fn(() => {
@@ -423,11 +430,7 @@ describe("firebaseDB", () => {
         },
       });
 
-      await firebaseDB.addActivityNameToCategory(
-        USER_ID,
-        "catA",
-        "Swimming"
-      );
+      await firebaseDB.addActivityNameToCategory(USER_ID, "catA", "Swimming");
 
       const categories = getNestedValue(
         `users/${USER_ID}/categories`
@@ -466,11 +469,7 @@ describe("firebaseDB", () => {
         },
       });
 
-      await firebaseDB.addActivityNameToCategory(
-        USER_ID,
-        "catA",
-        "Running"
-      );
+      await firebaseDB.addActivityNameToCategory(USER_ID, "catA", "Running");
 
       const categories = getNestedValue(
         `users/${USER_ID}/categories`
@@ -489,11 +488,7 @@ describe("firebaseDB", () => {
       });
 
       await expect(
-        firebaseDB.addActivityNameToCategory(
-          USER_ID,
-          "nonexistent",
-          "Running"
-        )
+        firebaseDB.addActivityNameToCategory(USER_ID, "nonexistent", "Running")
       ).rejects.toThrow("not found");
     });
   });

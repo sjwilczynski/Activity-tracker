@@ -3,52 +3,51 @@
   "version": "1.0.0",
   "private": true,
   "description": "Repository containing api and client for activity tracker app",
-  "repository": "https://github.com/sjwilczynski/Activity-tracker.git",
   "license": "MIT",
   "author": "sjwilczynski <sjwilczynski@gmail.com>",
-  "type": "module",
+  "repository": "https://github.com/sjwilczynski/Activity-tracker.git",
   "workspaces": [
     "client",
     "api"
   ],
+  "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules client/node_modules api/node_modules client/build api/dist",
     "dev": "bun run --filter '*' start",
     "knip": "knip",
-    "lint": "eslint --max-warnings=0",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint --type-aware --deny-warnings",
+    "lint:fix": "oxlint --type-aware --fix --deny-warnings",
     "pre-commit": "lint-staged --allow-empty",
     "size-limit": "size-limit"
   },
+  "devDependencies": {
+    "@size-limit/preset-app": "^12.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-storybook": "10.6.0",
+    "husky": "9.1.7",
+    "knip": "6.34.0",
+    "lint-staged": "^16.2.7",
+    "oxfmt": "0.66.0",
+    "oxlint": "1.81.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "size-limit": "^12.0.0",
+    "typescript": "7.0.2"
+  },
   "lint-staged": {
-    "./**/*.{ts,tsx}": [
-      "eslint --max-warnings=0"
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
+      "oxlint --type-aware --fix --deny-warnings",
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint --type-aware --deny-warnings ."
     ],
-    "*": [
-      "prettier --write"
+    "!(*.{js,jsx,mjs,cjs,ts,tsx,mts,cts})": [
+      "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
-    "@size-limit/preset-app": "^12.0.0",
-    "@typescript-eslint/eslint-plugin": "8.55.0",
-    "@typescript-eslint/parser": "8.55.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-storybook": "10.2.8",
-    "globals": "^17.3.0",
-    "husky": "9.1.7",
-    "knip": "^5.83.1",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.8.1",
-    "prettier-plugin-organize-imports": "^4.3.0",
-    "prettier-plugin-packagejson": "^3.0.0",
-    "size-limit": "^12.0.0",
-    "typescript": "5.9.3"
-  },
   "engines": {
-    "bun": ">=1.2.0"
+    "bun": ">=1.2.0",
+    "node": "^22.22.0 || >=24.0.0"
   }
 }

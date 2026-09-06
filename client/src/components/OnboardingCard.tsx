@@ -172,7 +172,7 @@ export function OnboardingCard({ onSkip }: { onSkip: () => void }) {
       };
     }
 
-    submit(
+    void submit(
       {
         intent: "import",
         importData: JSON.stringify({

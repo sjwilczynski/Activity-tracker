@@ -43,7 +43,7 @@ export function AddCategoryButton() {
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    fetcher.submit(
+    void fetcher.submit(
       {
         intent: "add-category",
         category: JSON.stringify({

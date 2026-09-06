@@ -5,7 +5,7 @@ export function useAssignCategory({ name }: { name: string }) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
 
   const handleAssignCategory = (newCategoryId: string) => {
-    fetcher.submit(
+    void fetcher.submit(
       {
         intent: "assign-category",
         activityName: name,

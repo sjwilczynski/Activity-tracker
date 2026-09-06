@@ -7,7 +7,11 @@ import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { REFERENCE_DATE } from "../src/mocks/data/activities";
 import { withAllProviders, withRouter } from "../src/mocks/decorators";
-import { handlers, resetActivities, resetCategories } from "../src/mocks/handlers";
+import {
+  handlers,
+  resetActivities,
+  resetCategories,
+} from "../src/mocks/handlers";
 import { testContext } from "../src/mocks/testContext";
 
 // Disable Chart.js animations in Storybook to fix rendering issues

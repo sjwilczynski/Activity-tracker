@@ -38,7 +38,7 @@ export const DeleteAllButton = ({
   );
 
   const handleConfirm = () => {
-    fetcher.submit({ intent: "delete-all" }, { method: "post", action });
+    void fetcher.submit({ intent: "delete-all" }, { method: "post", action });
   };
 
   return (

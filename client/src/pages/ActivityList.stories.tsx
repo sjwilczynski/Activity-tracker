@@ -22,14 +22,14 @@ export const Default: Story = {
     await canvas.findByText("All Activities");
 
     await step("Verify page header is visible", async () => {
-      expect(canvas.getByText("Activity History")).toBeInTheDocument();
-      expect(
+      await expect(canvas.getByText("Activity History")).toBeInTheDocument();
+      await expect(
         canvas.getByPlaceholderText(/search activities/i)
       ).toBeInTheDocument();
     });
 
     await step("Verify activity list has content", async () => {
-      expect(canvas.getByText(/of 30 activities/i)).toBeInTheDocument();
+      await expect(canvas.getByText(/of 30 activities/i)).toBeInTheDocument();
     });
   },
 };
@@ -43,7 +43,7 @@ export const Mobile: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await canvas.findByText("All Activities");
-    expect(canvas.getByText("Activity History")).toBeInTheDocument();
+    await expect(canvas.getByText("Activity History")).toBeInTheDocument();
   },
 };
 
@@ -59,7 +59,7 @@ export const Loading: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
   },
 };
 
@@ -77,7 +77,7 @@ export const ErrorState: Story = {
     const canvas = within(canvasElement);
 
     await canvas.findByText(/an error has occurred/i);
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /back to homepage/i })
     ).toBeInTheDocument();
   },
@@ -92,10 +92,10 @@ export const EmptyState: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
-    expect(canvas.getByText(/Quick add/i)).toBeInTheDocument();
+    await expect(canvas.getByText(/Quick add/i)).toBeInTheDocument();
   },
 };
 
@@ -104,7 +104,7 @@ export const PaginationInteraction: Story = {
     const canvas = within(canvasElement);
 
     await canvas.findByText("All Activities");
-    expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
+    await expect(canvas.getByText(/1–10 of/i)).toBeInTheDocument();
 
     await step("Navigate to next page and back", async () => {
       await userEvent.click(
@@ -130,19 +130,19 @@ export const EditRowInteraction: Story = {
       const editButtons = canvas.getAllByRole("button", { name: /edit/i });
       await userEvent.click(editButtons[0]);
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByRole("button", { name: /save changes/i })
         ).toBeInTheDocument();
-        expect(
+        await expect(
           screen.getByRole("button", { name: /cancel/i })
         ).toBeInTheDocument();
       });
 
       await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.queryByRole("button", { name: /save changes/i })
         ).not.toBeInTheDocument();
       });
@@ -162,7 +162,7 @@ export const EditRowSavesAndUpdates: Story = {
         // The first row (most recent activity) is "Running"
         // Verify it's there before editing
         const rows = canvas.getAllByTestId("activity-row");
-        expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
+        await expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
 
         // Click the edit button for the first row
         const editButtons = canvas.getAllByRole("button", { name: /edit/i });
@@ -188,16 +188,16 @@ export const EditRowSavesAndUpdates: Story = {
         );
 
         // Dialog should close
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.queryByRole("heading", { level: 2, name: /edit activity/i })
           ).not.toBeInTheDocument();
         });
 
         // The first row should now show "Cycling" instead of "Running"
-        await waitFor(() => {
+        await waitFor(async () => {
           const updatedRows = canvas.getAllByTestId("activity-row");
-          expect(
+          await expect(
             within(updatedRows[0]).getByText("Cycling")
           ).toBeInTheDocument();
         });
@@ -217,8 +217,8 @@ export const DeleteRowInteraction: Story = {
     await userEvent.click(deleteButtons[0]);
 
     await waitFor(
-      () => {
-        expect(canvas.getByText(/1–10 of 29/i)).toBeInTheDocument();
+      async () => {
+        await expect(canvas.getByText(/1–10 of 29/i)).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
@@ -233,25 +233,27 @@ export const DateFilterInteraction: Story = {
 
     await step("Open date range picker", async () => {
       const dateButton = canvas.getByRole("button", { name: /all time/i });
-      expect(dateButton).toBeInTheDocument();
+      await expect(dateButton).toBeInTheDocument();
       await userEvent.click(dateButton);
 
-      await waitFor(() => {
-        expect(screen.getByText("Select Date Range")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText("Select Date Range")).toBeInTheDocument();
       });
     });
 
     await step("Apply Last Week preset", async () => {
       await userEvent.click(screen.getByRole("button", { name: /last week/i }));
 
-      await waitFor(() => {
-        expect(screen.queryByText("Select Date Range")).not.toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.queryByText("Select Date Range")
+        ).not.toBeInTheDocument();
       });
     });
 
     await step("Verify filtered results", async () => {
-      await waitFor(() => {
-        expect(canvas.getByText("All Activities")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(canvas.getByText("All Activities")).toBeInTheDocument();
       });
     });
   },
@@ -265,8 +267,8 @@ export const DateFilterInvalidRange: Story = {
 
     await step("Open date range picker", async () => {
       await userEvent.click(canvas.getByRole("button", { name: /all time/i }));
-      await waitFor(() => {
-        expect(screen.getByText("Select Date Range")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText("Select Date Range")).toBeInTheDocument();
       });
     });
 
@@ -281,13 +283,15 @@ export const DateFilterInvalidRange: Story = {
     });
 
     await step("Verify error and Apply button disabled", async () => {
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByText(/start date must be before/i)
         ).toBeInTheDocument();
       });
 
-      expect(screen.getByRole("button", { name: /apply/i })).toBeDisabled();
+      await expect(
+        screen.getByRole("button", { name: /apply/i })
+      ).toBeDisabled();
     });
   },
 };
@@ -299,16 +303,16 @@ export const ExportActivities: Story = {
     await canvas.findByText("All Activities");
 
     const exportButton = canvas.getByRole("button", { name: /export/i });
-    expect(exportButton).toBeEnabled();
+    await expect(exportButton).toBeEnabled();
 
     await userEvent.click(exportButton);
 
     // Focus should remain on the export button after export completes
-    await waitFor(() => {
-      expect(exportButton).not.toHaveAttribute("aria-disabled", "true");
+    await waitFor(async () => {
+      await expect(exportButton).not.toHaveAttribute("aria-disabled", "true");
     });
-    await waitFor(() => {
-      expect(exportButton).toHaveFocus();
+    await waitFor(async () => {
+      await expect(exportButton).toHaveFocus();
     });
   },
 };
@@ -322,14 +326,16 @@ export const UploadDialogInteraction: Story = {
     await step("Open and close upload dialog", async () => {
       await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
 
-      await waitFor(() => {
-        expect(screen.getByText(/import data/i)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText(/import data/i)).toBeInTheDocument();
       });
 
       await userEvent.click(screen.getByRole("button", { name: /close/i }));
 
-      await waitFor(() => {
-        expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.queryByText(/import data/i)
+        ).not.toBeInTheDocument();
       });
     });
   },
@@ -357,8 +363,8 @@ export const FileUploadFileTooLarge: Story = {
       });
       await userEvent.upload(fileInput, largeFile);
 
-      await waitFor(() => {
-        expect(screen.getByText(/file too large/i)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText(/file too large/i)).toBeInTheDocument();
       });
     });
   },
@@ -385,8 +391,10 @@ export const FileUploadInvalidFormat: Story = {
       });
       await userEvent.upload(fileInput, textFile);
 
-      await waitFor(() => {
-        expect(screen.getByText(/unsupported format/i)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.getByText(/unsupported format/i)
+        ).toBeInTheDocument();
       });
     });
   },
@@ -403,16 +411,16 @@ export const DeleteAllInteraction: Story = {
         canvas.getByRole("button", { name: /delete all/i })
       );
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByText(/delete all activities\?/i)
         ).toBeInTheDocument();
       });
 
       await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.queryByText(/delete all activities\?/i)
         ).not.toBeInTheDocument();
       });
@@ -426,43 +434,52 @@ export const CategoryBadgesDisplay: Story = {
 
     await canvas.findByText("All Activities");
 
-    await step("Category badge is shown next to the activity name", async () => {
-      // First row (most recent) is "Running", which belongs to "Sports".
-      // Categories load asynchronously, so wait for the badge to appear.
-      await waitFor(() => {
-        const rows = canvas.getAllByTestId("activity-row");
-        expect(within(rows[0]).getByText("Running")).toBeInTheDocument();
-        expect(within(rows[0]).getByText("Sports")).toBeInTheDocument();
-      });
-    });
+    await step(
+      "Category badge is shown next to the activity name",
+      async () => {
+        // First row (most recent) is "Running", which belongs to "Sports".
+        // Categories load asynchronously, so wait for the badge to appear.
+        await waitFor(async () => {
+          const rows = canvas.getAllByTestId("activity-row");
+          await expect(
+            within(rows[0]).getByText("Running")
+          ).toBeInTheDocument();
+          await expect(within(rows[0]).getByText("Sports")).toBeInTheDocument();
+        });
+      }
+    );
 
-    await step("Activities from other categories show their badge", async () => {
-      // Reading → Learning, Meditation → Wellness appear on the first page.
-      // Scope the badge assertions to the activity row containing the matching
-      // activity, so this proves the badge is rendered next to the activity
-      // (not just present somewhere in the story).
-      await waitFor(() => {
-        const rows = canvas.getAllByTestId("activity-row");
-        const readingRow = rows.find((row) =>
-          within(row).queryByText("Reading")
-        );
-        const meditationRow = rows.find((row) =>
-          within(row).queryByText("Meditation")
-        );
-        expect(readingRow).toBeDefined();
-        expect(meditationRow).toBeDefined();
-        expect(
-          within(readingRow as HTMLElement).getByText("Learning")
-        ).toBeInTheDocument();
-        expect(
-          within(meditationRow as HTMLElement).getByText("Wellness")
-        ).toBeInTheDocument();
-      });
-    });
+    await step(
+      "Activities from other categories show their badge",
+      async () => {
+        // Reading → Learning, Meditation → Wellness appear on the first page.
+        // Scope the badge assertions to the activity row containing the matching
+        // activity, so this proves the badge is rendered next to the activity
+        // (not just present somewhere in the story).
+        await waitFor(async () => {
+          const rows = canvas.getAllByTestId("activity-row");
+          const readingRow = rows.find((row) =>
+            within(row).queryByText("Reading")
+          );
+          const meditationRow = rows.find((row) =>
+            within(row).queryByText("Meditation")
+          );
+          await expect(readingRow).toBeDefined();
+          await expect(meditationRow).toBeDefined();
+          await expect(
+            within(readingRow as HTMLElement).getByText("Learning")
+          ).toBeInTheDocument();
+          await expect(
+            within(meditationRow as HTMLElement).getByText("Wellness")
+          ).toBeInTheDocument();
+        });
+      }
+    );
   },
 };
 
-export const DetailFieldsDisplay: Story = {  play: async ({ canvasElement }) => {
+export const DetailFieldsDisplay: Story = {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     await canvas.findByText("All Activities");
@@ -470,15 +487,15 @@ export const DetailFieldsDisplay: Story = {  play: async ({ canvasElement }) => 
     // Running activity has intensity: "high" → label "Intense"
     // IntensityBadge renders two spans (light + dark mode), so use getAllByText
     const intenseBadges = canvas.getAllByText("Intense");
-    expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
+    await expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
 
     // Running's timeSpent is 45
     const durationTexts = canvas.getAllByText("45 min");
-    expect(durationTexts.length).toBeGreaterThanOrEqual(1);
+    await expect(durationTexts.length).toBeGreaterThanOrEqual(1);
 
     // At least one description is visible
     const descriptions = canvas.getAllByText(/morning run in the park/i);
-    expect(descriptions.length).toBeGreaterThanOrEqual(1);
+    await expect(descriptions.length).toBeGreaterThanOrEqual(1);
   },
 };
 
@@ -498,18 +515,20 @@ export const KeyboardFocusRestoration: Story = {
         await userEvent.tab();
 
         const uploadButton = canvas.getByRole("button", { name: /upload/i });
-        expect(uploadButton).toHaveFocus();
+        await expect(uploadButton).toHaveFocus();
 
         await userEvent.keyboard("{Enter}");
         await screen.findByText(/import data/i);
 
         await userEvent.keyboard("{Escape}");
-        await waitFor(() => {
-          expect(screen.queryByText(/import data/i)).not.toBeInTheDocument();
+        await waitFor(async () => {
+          await expect(
+            screen.queryByText(/import data/i)
+          ).not.toBeInTheDocument();
         });
 
-        await waitFor(() => {
-          expect(uploadButton).toHaveFocus();
+        await waitFor(async () => {
+          await expect(uploadButton).toHaveFocus();
         });
       }
     );
@@ -523,24 +542,24 @@ export const KeyboardFocusRestoration: Story = {
         const deleteAllButton = canvas.getByRole("button", {
           name: /delete all/i,
         });
-        expect(deleteAllButton).toHaveFocus();
+        await expect(deleteAllButton).toHaveFocus();
 
         await userEvent.keyboard("{Enter}");
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.getByText(/delete all activities\?/i)
           ).toBeInTheDocument();
         });
 
         await userEvent.keyboard("{Escape}");
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.queryByText(/delete all activities\?/i)
           ).not.toBeInTheDocument();
         });
 
-        await waitFor(() => {
-          expect(deleteAllButton).toHaveFocus();
+        await waitFor(async () => {
+          await expect(deleteAllButton).toHaveFocus();
         });
       }
     );
@@ -553,22 +572,24 @@ export const KeyboardFocusRestoration: Story = {
 
         const editButtons = canvas.getAllByRole("button", { name: /edit/i });
         const firstEditButton = editButtons[0];
-        expect(firstEditButton).toHaveFocus();
+        await expect(firstEditButton).toHaveFocus();
 
         await userEvent.keyboard("{Enter}");
         await screen.findByText(/edit activity/i);
 
         await userEvent.keyboard("{Escape}");
-        await waitFor(() => {
-          expect(screen.queryByText(/edit activity/i)).not.toBeInTheDocument();
+        await waitFor(async () => {
+          await expect(
+            screen.queryByText(/edit activity/i)
+          ).not.toBeInTheDocument();
         });
 
         // Re-query after dialog close since DOM may have re-rendered
-        await waitFor(() => {
+        await waitFor(async () => {
           const currentEditButtons = canvas.getAllByRole("button", {
             name: /edit/i,
           });
-          expect(currentEditButtons[0]).toHaveFocus();
+          await expect(currentEditButtons[0]).toHaveFocus();
         });
       }
     );
@@ -584,12 +605,12 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByPlaceholderText(/search/i)).toBeInTheDocument();
-    expect(
+    await expect(canvas.getByPlaceholderText(/search/i)).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: /all time/i })
     ).toBeInTheDocument();
   },

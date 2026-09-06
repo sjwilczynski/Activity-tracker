@@ -8,7 +8,6 @@ import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWit
 import { IntensityBadge } from "../components/IntensityBadge";
 import { OnboardingCard } from "../components/OnboardingCard";
 import { Loading } from "../components/states/Loading";
-import { WeeklyHeatmapCard } from "../components/visualization/WeeklyHeatmap";
 import {
   Card,
   CardAction,
@@ -17,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { WeeklyHeatmapCard } from "../components/visualization/WeeklyHeatmap";
 import {
   sortDescendingByDate,
   useActivities,

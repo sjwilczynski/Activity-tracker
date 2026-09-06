@@ -33,32 +33,34 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     // Onboarding card is shown
-    expect(
+    await expect(
       canvas.getByText(/welcome! set up your activities/i)
     ).toBeInTheDocument();
-    expect(canvas.getByText(/pick the categories/i)).toBeInTheDocument();
+    await expect(canvas.getByText(/pick the categories/i)).toBeInTheDocument();
 
     // Default categories are visible
-    expect(canvas.getByText("Running")).toBeInTheDocument();
-    expect(canvas.getByText("Cycling")).toBeInTheDocument();
-    expect(canvas.getByText("Swimming")).toBeInTheDocument();
-    expect(canvas.getByText("Wellness")).toBeInTheDocument();
+    await expect(canvas.getByText("Running")).toBeInTheDocument();
+    await expect(canvas.getByText("Cycling")).toBeInTheDocument();
+    await expect(canvas.getByText("Swimming")).toBeInTheDocument();
+    await expect(canvas.getByText("Wellness")).toBeInTheDocument();
 
     // Buttons present
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /get started/i })
     ).toBeInTheDocument();
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /skip for now/i })
     ).toBeInTheDocument();
 
     // Selected count shown (9 active categories by default)
-    expect(canvas.getByText(/9 categories selected/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/9 categories selected/i)
+    ).toBeInTheDocument();
   },
 };
 
@@ -66,8 +68,8 @@ export const ToggleCategoryAndActivities: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Uncheck Running category", async () => {
@@ -76,7 +78,9 @@ export const ToggleCategoryAndActivities: Story = {
       });
       await userEvent.click(runningCheckbox);
       // Count decreases
-      expect(canvas.getByText(/8 categories selected/i)).toBeInTheDocument();
+      await expect(
+        canvas.getByText(/8 categories selected/i)
+      ).toBeInTheDocument();
     });
 
     await step("Expand Cycling to see activity names", async () => {
@@ -84,10 +88,10 @@ export const ToggleCategoryAndActivities: Story = {
       await userEvent.click(cyclingTrigger);
 
       // Activity names should be visible
-      await waitFor(() => {
-        expect(canvas.getByText("Indoor Cycling")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(canvas.getByText("Indoor Cycling")).toBeInTheDocument();
       });
-      expect(canvas.getByText("Spinning")).toBeInTheDocument();
+      await expect(canvas.getByText("Spinning")).toBeInTheDocument();
     });
 
     await step("Uncheck an individual activity", async () => {
@@ -96,7 +100,9 @@ export const ToggleCategoryAndActivities: Story = {
       });
       await userEvent.click(spinningCheckbox);
       // Spinning is unchecked but Cycling category still selected
-      expect(canvas.getByText(/8 categories selected/i)).toBeInTheDocument();
+      await expect(
+        canvas.getByText(/8 categories selected/i)
+      ).toBeInTheDocument();
     });
 
     await step("Re-check Running", async () => {
@@ -104,7 +110,9 @@ export const ToggleCategoryAndActivities: Story = {
         name: /running/i,
       });
       await userEvent.click(runningCheckbox);
-      expect(canvas.getByText(/9 categories selected/i)).toBeInTheDocument();
+      await expect(
+        canvas.getByText(/9 categories selected/i)
+      ).toBeInTheDocument();
     });
   },
 };
@@ -113,8 +121,8 @@ export const SkipOnboarding: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Click skip button", async () => {
@@ -124,14 +132,14 @@ export const SkipOnboarding: Story = {
     });
 
     await step("Onboarding card is hidden, dashboard shown", async () => {
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           canvas.queryByText(/welcome! set up your activities/i)
         ).not.toBeInTheDocument();
       });
       // Normal dashboard content shown
-      expect(canvas.getByText("Total Activities")).toBeInTheDocument();
-      expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
+      await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+      await expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
     });
   },
 };
@@ -154,8 +162,8 @@ export const SubmitCategories: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Click Get Started", async () => {
@@ -165,15 +173,15 @@ export const SubmitCategories: Story = {
     });
 
     await step("Verify loading state appears and resolves", async () => {
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           canvas.getByRole("button", { name: /setting up/i })
         ).toBeInTheDocument();
       });
 
       // Wait for submission to complete
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           canvas.queryByRole("button", { name: /setting up/i })
         ).not.toBeInTheDocument();
       });
@@ -197,11 +205,11 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
+    await expect(
       canvas.getByText(/welcome! set up your activities/i)
     ).toBeInTheDocument();
   },

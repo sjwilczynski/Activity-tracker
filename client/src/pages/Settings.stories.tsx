@@ -28,41 +28,51 @@ export const Default: Story = {
     const canvas = within(canvasElement);
 
     // Heading
-    expect(await canvas.findByText("Settings")).toBeInTheDocument();
-    expect(
+    await expect(await canvas.findByText("Settings")).toBeInTheDocument();
+    await expect(
       canvas.getByText("Manage your categories and activity types")
     ).toBeInTheDocument();
 
     // Tabs
-    expect(
+    await expect(
       canvas.getByRole("tab", { name: /categories/i })
     ).toBeInTheDocument();
-    expect(
+    await expect(
       canvas.getByRole("tab", { name: /activity names/i })
     ).toBeInTheDocument();
-    expect(
+    await expect(
       canvas.getByRole("tab", { name: /appearance/i })
     ).toBeInTheDocument();
 
     // Categories tab content loads asynchronously
     // Both mobile cards and desktop table are in DOM (CSS toggles visibility)
     const sportsElements = await canvas.findAllByText("Sports");
-    expect(sportsElements.length).toBeGreaterThanOrEqual(1);
-    expect(canvas.getAllByText("Wellness").length).toBeGreaterThanOrEqual(1);
-    expect(canvas.getAllByText("Learning").length).toBeGreaterThanOrEqual(1);
+    await expect(sportsElements.length).toBeGreaterThanOrEqual(1);
+    await expect(canvas.getAllByText("Wellness").length).toBeGreaterThanOrEqual(
+      1
+    );
+    await expect(canvas.getAllByText("Learning").length).toBeGreaterThanOrEqual(
+      1
+    );
 
     // Type badges (duplicated across mobile/desktop views)
     const activeBadges = canvas.getAllByText("active");
-    expect(activeBadges.length).toBeGreaterThanOrEqual(2);
-    expect(canvas.getAllByText("inactive").length).toBeGreaterThanOrEqual(1);
+    await expect(activeBadges.length).toBeGreaterThanOrEqual(2);
+    await expect(canvas.getAllByText("inactive").length).toBeGreaterThanOrEqual(
+      1
+    );
 
     // Activity names badges shown per category
-    expect(canvas.getAllByText("Running").length).toBeGreaterThanOrEqual(1);
-    expect(canvas.getAllByText("Swimming").length).toBeGreaterThanOrEqual(1);
-    expect(canvas.getAllByText("Yoga").length).toBeGreaterThanOrEqual(1);
+    await expect(canvas.getAllByText("Running").length).toBeGreaterThanOrEqual(
+      1
+    );
+    await expect(canvas.getAllByText("Swimming").length).toBeGreaterThanOrEqual(
+      1
+    );
+    await expect(canvas.getAllByText("Yoga").length).toBeGreaterThanOrEqual(1);
 
     // Add category button
-    expect(canvas.getByText("Add Category")).toBeInTheDocument();
+    await expect(canvas.getByText("Add Category")).toBeInTheDocument();
   },
 };
 
@@ -77,11 +87,11 @@ export const ActivityNamesTab: Story = {
     await userEvent.click(canvas.getByRole("tab", { name: /activity names/i }));
 
     // Activity Names tab content should appear
-    expect(await canvas.findByText("Activity Name")).toBeInTheDocument();
-    expect(canvas.getByText("Count")).toBeInTheDocument();
+    await expect(await canvas.findByText("Activity Name")).toBeInTheDocument();
+    await expect(canvas.getByText("Count")).toBeInTheDocument();
 
     // Add Activity Name button should be present
-    expect(canvas.getByText("Add Activity Name")).toBeInTheDocument();
+    await expect(canvas.getByText("Add Activity Name")).toBeInTheDocument();
   },
 };
 
@@ -96,8 +106,8 @@ export const AddActivityNameInteraction: Story = {
     await step("Open add activity name dialog", async () => {
       await userEvent.click(canvas.getByText("Add Activity Name"));
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByText(
             "Add a new activity name and assign it to a category"
           )
@@ -107,13 +117,13 @@ export const AddActivityNameInteraction: Story = {
 
     await step("Fill in name and verify submit button state", async () => {
       const input = screen.getByPlaceholderText(/e\.g\., Running/i);
-      expect(
+      await expect(
         screen.getByRole("button", { name: /add activity name/i })
       ).toBeDisabled();
 
       await userEvent.type(input, "Stretching");
 
-      expect(
+      await expect(
         screen.getByRole("button", { name: /add activity name/i })
       ).toBeEnabled();
     });
@@ -123,8 +133,8 @@ export const AddActivityNameInteraction: Story = {
         screen.getByRole("button", { name: /add activity name/i })
       );
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.queryByText(
             "Add a new activity name and assign it to a category"
           )
@@ -136,10 +146,10 @@ export const AddActivityNameInteraction: Story = {
       // Switch to categories tab and verify the badge appeared on Sports (default)
       await userEvent.click(canvas.getByRole("tab", { name: /categories/i }));
 
-      await waitFor(() => {
-        expect(canvas.getAllByText("Stretching").length).toBeGreaterThanOrEqual(
-          1
-        );
+      await waitFor(async () => {
+        await expect(
+          canvas.getAllByText("Stretching").length
+        ).toBeGreaterThanOrEqual(1);
       });
     });
   },
@@ -157,12 +167,12 @@ export const AppearanceTab: Story = {
 
     // Appearance tab content should appear (tab trigger + card title both contain "Appearance")
     const appearanceTexts = await canvas.findAllByText("Appearance");
-    expect(appearanceTexts).toHaveLength(2);
-    expect(canvas.getByText("Group by category")).toBeInTheDocument();
-    expect(canvas.getByText("Fun animations")).toBeInTheDocument();
+    await expect(appearanceTexts).toHaveLength(2);
+    await expect(canvas.getByText("Group by category")).toBeInTheDocument();
+    await expect(canvas.getByText("Fun animations")).toBeInTheDocument();
 
     const switches = canvas.getAllByRole("switch");
-    expect(switches).toHaveLength(2);
+    await expect(switches).toHaveLength(2);
   },
 };
 
@@ -178,11 +188,13 @@ export const RenameActivityInteraction: Story = {
       const editButtons = getVisibleButtons(canvas, /edit/i);
       await userEvent.click(editButtons[0]);
 
-      await waitFor(() => {
-        expect(screen.getByText("Edit Activity Name")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.getByText("Edit Activity Name")
+        ).toBeInTheDocument();
       });
 
-      expect(
+      await expect(
         screen.getByRole("button", { name: /update name/i })
       ).toBeDisabled();
     });
@@ -193,12 +205,12 @@ export const RenameActivityInteraction: Story = {
       await userEvent.type(input, "Jogging");
 
       const updateButton = screen.getByRole("button", { name: /update name/i });
-      expect(updateButton).toBeEnabled();
+      await expect(updateButton).toBeEnabled();
       await userEvent.click(updateButton);
 
       // Dialog should close on success
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.queryByText("Edit Activity Name")
         ).not.toBeInTheDocument();
       });
@@ -216,17 +228,17 @@ export const DeleteCategoryDialogInteraction: Story = {
       const deleteButtons = getVisibleButtons(canvas, /delete/i);
       await userEvent.click(deleteButtons[0]);
 
-      await waitFor(() => {
-        expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
       });
 
       // Radio options are present
       const radios = screen.getAllByRole("radio");
-      expect(radios).toHaveLength(2);
-      expect(
+      await expect(radios).toHaveLength(2);
+      await expect(
         screen.getByText("Delete all activities in this category")
       ).toBeInTheDocument();
-      expect(
+      await expect(
         screen.getByText("Reassign activities to another category")
       ).toBeInTheDocument();
     });
@@ -235,16 +247,18 @@ export const DeleteCategoryDialogInteraction: Story = {
       const reassignRadio = screen.getByRole("radio", { name: /reassign/i });
       await userEvent.click(reassignRadio);
 
-      await waitFor(() => {
-        expect(screen.getByText("Target category")).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText("Target category")).toBeInTheDocument();
       });
     });
 
     await step("Cancel and verify dialog closes", async () => {
       await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-      await waitFor(() => {
-        expect(screen.queryByText(/Delete "Sports"\?/)).not.toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.queryByText(/Delete "Sports"\?/)
+        ).not.toBeInTheDocument();
       });
     });
   },
@@ -260,8 +274,8 @@ export const DeleteCategoryWithActivities: Story = {
       const deleteButtons = getVisibleButtons(canvas, /delete/i);
       await userEvent.click(deleteButtons[0]);
 
-      await waitFor(() => {
-        expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(screen.getByText(/Delete "Sports"\?/)).toBeInTheDocument();
       });
 
       // "Delete all activities" is the default selection
@@ -270,8 +284,10 @@ export const DeleteCategoryWithActivities: Story = {
       );
 
       // Dialog should close on success
-      await waitFor(() => {
-        expect(screen.queryByText(/Delete "Sports"\?/)).not.toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.queryByText(/Delete "Sports"\?/)
+        ).not.toBeInTheDocument();
       });
     });
   },
@@ -286,14 +302,14 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
+    await expect(
       canvas.getByRole("heading", { name: /settings/i })
     ).toBeInTheDocument();
-    expect(
+    await expect(
       canvas.getByRole("tab", { name: /categories/i })
     ).toBeInTheDocument();
   },

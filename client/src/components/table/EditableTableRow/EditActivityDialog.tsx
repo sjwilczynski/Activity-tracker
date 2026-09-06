@@ -106,7 +106,7 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
           className="space-y-4 py-4"
           onSubmit={(e) => {
             e.preventDefault();
-            form.handleSubmit();
+            void form.handleSubmit();
           }}
         >
           <form.Field
@@ -147,7 +147,9 @@ export const EditActivityButton = ({ record, disabled }: Props) => {
                 <Label htmlFor="edit-intensity">Intensity</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={(v) => field.handleChange(v as "" | "low" | "medium" | "high")}
+                  onValueChange={(v) =>
+                    field.handleChange(v as "" | "low" | "medium" | "high")
+                  }
                 >
                   <SelectTrigger id="edit-intensity">
                     <SelectValue placeholder="None" />

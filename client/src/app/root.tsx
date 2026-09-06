@@ -1,5 +1,4 @@
 import "./globals.css";
-
 import { QueryClient } from "@tanstack/react-query";
 import {
   Links,

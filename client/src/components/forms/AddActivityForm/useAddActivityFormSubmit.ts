@@ -18,7 +18,7 @@ export const useAddActivityFormSubmit = () => {
       name: values.category.name,
       categoryId: values.category.categoryId,
     };
-    submit(
+    void submit(
       {
         intent: "add",
         activities: JSON.stringify([activityRecord]),

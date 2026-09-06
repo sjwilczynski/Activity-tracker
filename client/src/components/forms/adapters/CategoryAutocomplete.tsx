@@ -1,5 +1,5 @@
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useCommandState } from "cmdk";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryOption } from "../../../data";
 import { useAvailableCategories } from "../../../data";

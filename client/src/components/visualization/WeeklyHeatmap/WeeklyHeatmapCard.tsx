@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card";
 import { useActivities } from "@/data";
 import { HeatmapLegend } from "./HeatmapLegend";
-import { WeeklyHeatmap } from "./WeeklyHeatmap";
 import { buildWeeklyHeatmap } from "./weekly-heatmap-data";
+import { WeeklyHeatmap } from "./WeeklyHeatmap";
 
 export function WeeklyHeatmapCard() {
   const { data, isLoading } = useActivities();

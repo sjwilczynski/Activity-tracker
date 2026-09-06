@@ -11,7 +11,16 @@ const generateDate = (daysAgo: number): string => {
 };
 
 export const mockActivities: ActivityRecordWithIdServer[] = [
-  { id: "1", date: generateDate(0), name: "Running", categoryId: "cat-sports", active: true, intensity: "high", timeSpent: 45, description: "Morning run in the park, felt great!" },
+  {
+    id: "1",
+    date: generateDate(0),
+    name: "Running",
+    categoryId: "cat-sports",
+    active: true,
+    intensity: "high",
+    timeSpent: 45,
+    description: "Morning run in the park, felt great!",
+  },
   {
     id: "2",
     date: generateDate(1),
@@ -37,10 +46,41 @@ export const mockActivities: ActivityRecordWithIdServer[] = [
     intensity: "low",
     timeSpent: 20,
   },
-  { id: "5", date: generateDate(2), name: "Running", categoryId: "cat-sports", active: true, intensity: "medium", timeSpent: 30 },
-  { id: "6", date: generateDate(3), name: "Cycling", categoryId: "cat-sports", active: true, intensity: "high", timeSpent: 90, description: "Long ride through the countryside" },
-  { id: "7", date: generateDate(3), name: "Yoga", categoryId: "cat-wellness", active: true, intensity: "low", timeSpent: 45 },
-  { id: "8", date: generateDate(4), name: "Running", categoryId: "cat-sports", active: true },
+  {
+    id: "5",
+    date: generateDate(2),
+    name: "Running",
+    categoryId: "cat-sports",
+    active: true,
+    intensity: "medium",
+    timeSpent: 30,
+  },
+  {
+    id: "6",
+    date: generateDate(3),
+    name: "Cycling",
+    categoryId: "cat-sports",
+    active: true,
+    intensity: "high",
+    timeSpent: 90,
+    description: "Long ride through the countryside",
+  },
+  {
+    id: "7",
+    date: generateDate(3),
+    name: "Yoga",
+    categoryId: "cat-wellness",
+    active: true,
+    intensity: "low",
+    timeSpent: 45,
+  },
+  {
+    id: "8",
+    date: generateDate(4),
+    name: "Running",
+    categoryId: "cat-sports",
+    active: true,
+  },
   {
     id: "9",
     date: generateDate(4),
@@ -76,7 +116,13 @@ export const mockActivities: ActivityRecordWithIdServer[] = [
     categoryId: "cat-sports",
     active: true,
   },
-  { id: "14", date: generateDate(7), name: "Yoga", categoryId: "cat-wellness", active: true },
+  {
+    id: "14",
+    date: generateDate(7),
+    name: "Yoga",
+    categoryId: "cat-wellness",
+    active: true,
+  },
   {
     id: "15",
     date: generateDate(7),

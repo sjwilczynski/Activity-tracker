@@ -1,7 +1,8 @@
-import type { StorybookConfig } from "@storybook/react-vite";
-import tailwindcss from "@tailwindcss/postcss";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import type { StorybookConfig } from "@storybook/react-vite";
+import tailwindcss from "@tailwindcss/postcss";
+import type { Alias, AliasOptions } from "vite";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -9,6 +10,10 @@ import { fileURLToPath } from "url";
  */
 function getAbsolutePath(value: string) {
   return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}
+
+function isAliasArray(aliases: AliasOptions): aliases is readonly Alias[] {
+  return Array.isArray(aliases);
 }
 
 const config: StorybookConfig = {
@@ -44,7 +49,7 @@ const config: StorybookConfig = {
       new URL("../__mocks__/firebase/auth.js", import.meta.url)
     );
     const existingAlias = config.resolve.alias ?? [];
-    config.resolve.alias = Array.isArray(existingAlias)
+    config.resolve.alias = isAliasArray(existingAlias)
       ? [
           ...existingAlias,
           { find: "firebase/auth", replacement: firebaseAuthMockPath },

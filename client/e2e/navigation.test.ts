@@ -59,6 +59,30 @@ test.describe("Full app navigation", () => {
     ).toBeVisible();
   });
 
+  test("updates the sidebar when crossing the mobile breakpoint", async ({
+    page,
+  }) => {
+    const toggle = page.getByRole("button", { name: "Toggle Sidebar" });
+    const drawer = page.getByRole("dialog");
+
+    await page.setViewportSize({ width: 767, height: 900 });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("link", { name: /charts/i })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(drawer).not.toBeVisible();
+
+    await page.setViewportSize({ width: 768, height: 900 });
+    await expect(toggle).not.toBeVisible();
+    await expect(page.getByRole("link", { name: /charts/i })).toBeVisible();
+
+    await page.setViewportSize({ width: 767, height: 900 });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(drawer).toBeVisible();
+  });
+
   test("full navigation cycle through all pages", async ({ page }) => {
     // Dashboard
     await expect(page.getByText("Total Activities")).toBeVisible();

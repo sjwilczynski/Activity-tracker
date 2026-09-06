@@ -7,7 +7,6 @@ import { cn } from "../../../utils/cn";
 import { getActivityColor } from "../../../utils/colors";
 import { CategoryBadge } from "../../CategoryBadge";
 import { IntensityBadge } from "../../IntensityBadge";
-
 import { Button } from "../../ui/button";
 import { EditActivityButton } from "./EditActivityDialog";
 import { MobileActivityCard } from "./MobileActivityCard";
@@ -37,7 +36,7 @@ export const RowInReadMode = ({ record, categoryName = "" }: Props) => {
 
   const deleteActivity = (e: React.MouseEvent) => {
     e.stopPropagation();
-    submit(
+    void submit(
       {
         intent: "delete",
         id: record.id,

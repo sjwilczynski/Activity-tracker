@@ -1,19 +1,14 @@
+import path from "node:path";
 /// <reference types="vitest/config" />
+import babel from "@rolldown/plugin-babel";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vite";
-import babel from "vite-plugin-babel";
 import checker from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
-import viteTsconfigPaths from "vite-tsconfig-paths";
-const dirname =
-  typeof __dirname !== "undefined"
-    ? __dirname
-    : path.dirname(fileURLToPath(import.meta.url));
+const dirname = import.meta.dirname;
 
 // Check if we're in a Storybook or Vitest environment
 const isStorybook =
@@ -26,11 +21,7 @@ const isE2E = process.env.E2E === "true";
 // Dynamically import reactRouter only when not in Storybook or Vitest
 const getReactPlugin = async () => {
   if (isStorybook || isVitest) {
-    return react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler"]],
-      },
-    });
+    return react();
   }
   const { reactRouter } = await import("@react-router/dev/vite");
   return reactRouter();
@@ -59,68 +50,59 @@ export default defineConfig(async (): Promise<UserConfig> => {
             },
           ]
         : []),
-      ...(!isStorybook && !isVitest
+      ...(!isStorybook && !isVitest && !isE2E
         ? [
-            babel({
-              filter: /src\/.*\.[jt]sx?$/,
-              babelConfig: {
-                presets: ["@babel/preset-typescript"],
-                plugins: [["babel-plugin-react-compiler"]],
+            VitePWA({
+              registerType: "autoUpdate",
+              outDir: "build/client",
+              manifest: {
+                name: "Activity tracker",
+                short_name: "AT",
+                lang: "en",
+                description: "A place to track and review all your activities",
+                start_url: ".",
+                background_color: "#f2f2f2",
+                theme_color: "#4479a2",
+                dir: "ltr",
+                display: "standalone",
+                icons: [
+                  {
+                    src: "favicon.ico",
+                    sizes: "64x64 32x32 24x24 16x16",
+                    type: "image/x-icon",
+                  },
+                  {
+                    src: "android-chrome-192x192.png",
+                    sizes: "192x192",
+                    type: "image/png",
+                    purpose: "any maskable",
+                  },
+                  {
+                    src: "android-chrome-512x512.png",
+                    sizes: "512x512",
+                    type: "image/png",
+                    purpose: "any maskable",
+                  },
+                ],
+              },
+              workbox: {
+                globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
               },
             }),
-            ...(!isE2E
-              ? [
-                  VitePWA({
-                    registerType: "autoUpdate",
-                    manifest: {
-                      name: "Activity tracker",
-                      short_name: "AT",
-                      lang: "en",
-                      description:
-                        "A place to track and review all your activities",
-                      start_url: ".",
-                      background_color: "#f2f2f2",
-                      theme_color: "#4479a2",
-                      dir: "ltr",
-                      display: "standalone",
-                      icons: [
-                        {
-                          src: "favicon.ico",
-                          sizes: "64x64 32x32 24x24 16x16",
-                          type: "image/x-icon",
-                        },
-                        {
-                          src: "android-chrome-192x192.png",
-                          sizes: "192x192",
-                          type: "image/png",
-                          purpose: "any maskable",
-                        },
-                        {
-                          src: "android-chrome-512x512.png",
-                          sizes: "512x512",
-                          type: "image/png",
-                          purpose: "any maskable",
-                        },
-                      ],
-                    },
-                    workbox: {
-                      globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-                    },
-                  }),
-                ]
-              : []),
           ]
         : []),
       tailwindcss(),
       reactPlugin,
-      viteTsconfigPaths(),
-      checker({
-        typescript: true,
-      }),
+      babel({ presets: [reactCompilerPreset()] }),
+      ...(!isVitest ? [checker({ typescript: true })] : []),
     ],
+    resolve: {
+      tsconfigPaths: true,
+    },
     base: "/",
     build: {
       outDir: "build",
+      target: ["chrome107", "edge107", "firefox104", "safari16"],
     },
     server: {
       port: 3000,

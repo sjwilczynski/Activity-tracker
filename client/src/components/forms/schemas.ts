@@ -14,10 +14,12 @@ export const activityFormSchema = z.object({
 
 export const detailedActivityFormSchema = activityFormSchema.extend({
   intensity: z.enum(["low", "medium", "high", ""]),
-  timeSpent: z.string().refine(
-    (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
-    "Must be a non-negative number",
-  ),
+  timeSpent: z
+    .string()
+    .refine(
+      (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
+      "Must be a non-negative number"
+    ),
   description: z.string().max(500),
 });
 

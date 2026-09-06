@@ -41,7 +41,7 @@ export function EditActivityNameButton({
   );
 
   const handleSubmit = () => {
-    fetcher.submit(
+    void fetcher.submit(
       {
         intent: "rename-activity",
         oldName: activityName,

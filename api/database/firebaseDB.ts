@@ -59,7 +59,7 @@ function enrichActivities(
 
 export const firebaseDB: Database = {
   getActivities: async (userId: string, limit?: number) => {
-    const activitiesQuery = await database
+    const activitiesQuery = database
       .ref(activityDocument(userId))
       .orderByChild("date");
 
@@ -193,10 +193,7 @@ export const firebaseDB: Database = {
         if (idx !== -1) {
           const newNames = [...cat.activityNames];
           newNames[idx] = newName;
-          await categoriesRef
-            .child(catId)
-            .child("activityNames")
-            .set(newNames);
+          await categoriesRef.child(catId).child("activityNames").set(newNames);
           break; // a name should only be in one category
         }
       }
@@ -230,10 +227,7 @@ export const firebaseDB: Database = {
     if (targetCat) {
       const targetNames = targetCat.activityNames ?? [];
       if (!targetNames.includes(activityName)) {
-        updates[`${categoryId}/activityNames`] = [
-          ...targetNames,
-          activityName,
-        ];
+        updates[`${categoryId}/activityNames`] = [...targetNames, activityName];
       }
     }
 

@@ -1,0 +1,166 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "typescript", "oxc", "react", "import"],
+  "jsPlugins": [
+    {
+      "name": "hooks-js",
+      "specifier": "eslint-plugin-react-hooks"
+    },
+    {
+      "name": "react-js",
+      "specifier": "eslint-plugin-react"
+    },
+    "eslint-plugin-storybook"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "19"
+    }
+  },
+  "ignorePatterns": [
+    "api/dist",
+    "client/build",
+    "**/node_modules/",
+    "**/storybook-static/",
+    "**/mockServiceWorker.js",
+    "client/.react-router",
+    "client/dev-dist"
+  ],
+  "rules": {
+    "no-array-constructor": "error",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTaggedTemplates": false,
+        "allowTernary": false
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "caughtErrors": "all",
+        "reportVarsOnlyUsedAsTypes": true,
+        "fix": {
+          "imports": "safe-fix",
+          "variables": "off"
+        }
+      }
+    ],
+    "import/no-duplicates": "error",
+    "react/display-name": "error",
+    "react/jsx-key": "error",
+    "react/jsx-no-comment-textnodes": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-target-blank": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react-js/no-deprecated": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-render-return-value": "error",
+    "react/no-string-refs": "error",
+    "react/no-unescaped-entities": "error",
+    "react/no-unknown-property": "error",
+    "react/require-render-return": "error",
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/static-components": "error",
+    "react/use-memo": "error",
+    "hooks-js/component-hook-factories": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/incompatible-library": "warn",
+    "react/immutability": "error",
+    "react/globals": "error",
+    "react/refs": "error",
+    "react/set-state-in-effect": "error",
+    "react/error-boundaries": "error",
+    "react/purity": "error",
+    "react/set-state-in-render": "error",
+    "react/unsupported-syntax": "warn",
+    "hooks-js/config": "error",
+    "hooks-js/gating": "error",
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-duplicate-enum-values": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-misused-new": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-this-alias": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-declaration-merging": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-namespace-keyword": "error",
+    "typescript/triple-slash-reference": "error",
+    "typescript/consistent-type-definitions": ["error", "type"],
+    "typescript/consistent-type-imports": [
+      "error",
+      {
+        "disallowTypeAnnotations": true,
+        "prefer": "type-imports"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx,mts,cts}"],
+      "rules": {
+        "no-var": "error",
+        "prefer-const": [
+          "error",
+          {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": false
+          }
+        ],
+        "prefer-rest-params": "error",
+        "prefer-spread": "error"
+      }
+    },
+    {
+      "files": [
+        "**/*.stories.{ts,tsx,js,jsx,mjs,cjs}",
+        "**/*.story.{ts,tsx,js,jsx,mjs,cjs}"
+      ],
+      "rules": {
+        "react/rules-of-hooks": "off",
+        "storybook/await-interactions": "error",
+        "storybook/context-in-play-function": "error",
+        "storybook/default-exports": "error",
+        "storybook/hierarchy-separator": "warn",
+        "storybook/no-redundant-story-name": "warn",
+        "storybook/no-renderer-packages": "error",
+        "storybook/prefer-pascal-case": "warn",
+        "storybook/story-exports": "error",
+        "storybook/use-storybook-expect": "error",
+        "storybook/use-storybook-testing-library": "error"
+      }
+    },
+    {
+      "files": ["**/.storybook/main.{js,cjs,mjs,ts}"],
+      "rules": {
+        "storybook/no-uninstalled-addons": "error"
+      }
+    }
+  ]
+}

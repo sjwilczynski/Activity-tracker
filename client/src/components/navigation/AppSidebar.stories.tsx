@@ -34,18 +34,18 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    expect(canvas.getByText("Activity Tracker")).toBeInTheDocument();
-    expect(canvas.getByText("Track your progress")).toBeInTheDocument();
+    await expect(canvas.getByText("Activity Tracker")).toBeInTheDocument();
+    await expect(canvas.getByText("Track your progress")).toBeInTheDocument();
 
-    expect(canvas.getByText("Dashboard")).toBeInTheDocument();
-    expect(canvas.getByText("Charts")).toBeInTheDocument();
-    expect(canvas.getByText("Activity List")).toBeInTheDocument();
-    expect(canvas.getByText("Settings")).toBeInTheDocument();
+    await expect(canvas.getByText("Dashboard")).toBeInTheDocument();
+    await expect(canvas.getByText("Charts")).toBeInTheDocument();
+    await expect(canvas.getByText("Activity List")).toBeInTheDocument();
+    await expect(canvas.getByText("Settings")).toBeInTheDocument();
 
-    expect(canvas.getByText("Test User")).toBeInTheDocument();
-    expect(canvas.getByText("Active user")).toBeInTheDocument();
-    expect(canvas.getByText("Sign Out")).toBeInTheDocument();
-    expect(canvas.getByLabelText("Toggle theme")).toBeInTheDocument();
+    await expect(canvas.getByText("Test User")).toBeInTheDocument();
+    await expect(canvas.getByText("Active user")).toBeInTheDocument();
+    await expect(canvas.getByText("Sign Out")).toBeInTheDocument();
+    await expect(canvas.getByLabelText("Toggle theme")).toBeInTheDocument();
   },
 };
 
@@ -58,8 +58,8 @@ export const Mobile: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    expect(canvas.getByText("Dashboard")).toBeInTheDocument();
-    expect(
+    await expect(canvas.getByText("Dashboard")).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: "Toggle Sidebar" })
     ).toBeInTheDocument();
   },
@@ -79,9 +79,9 @@ export const MobileDrawerOpen: Story = {
       name: "Activity Tracker",
       level: 2,
     });
-    expect(sidebar).toBeInTheDocument();
-    expect(screen.getByText("Charts")).toBeInTheDocument();
-    expect(screen.getByText("Activity List")).toBeInTheDocument();
-    expect(screen.getByText("Settings")).toBeInTheDocument();
+    await expect(sidebar).toBeInTheDocument();
+    await expect(screen.getByText("Charts")).toBeInTheDocument();
+    await expect(screen.getByText("Activity List")).toBeInTheDocument();
+    await expect(screen.getByText("Settings")).toBeInTheDocument();
   },
 };
