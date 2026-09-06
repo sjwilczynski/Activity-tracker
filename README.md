@@ -22,14 +22,14 @@ A sports activity tracking web app for logging workouts, comparing performance a
 ### Frontend
 
 - **React 19**
-- **TypeScript**
-- **React Router v7** with SPA in framework mode
+- **TypeScript 7**
+- **React Router v8** with SPA in framework mode
 - **TanStack React Query** for server state management, caching, and optimistic updates
 - **TanStack Form** for form state and validation
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
 - **shadcn/ui** components built on Radix UI primitives
 - **Chart.js** with `react-chartjs-2` for data visualization
-- **Vite** as build tool with HMR, TypeScript checker, and PWA plugin
+- **Vite 8** as build tool with HMR and PWA plugin; native **TypeScript 7** checks run separately
 - **Storybook 10** with play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
 
@@ -46,6 +46,9 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **Azure Static Web Apps** for hosting with integrated serverless API routing
 
 ## Quick Start
+
+Install Bun and a supported Node 22 (>=22.22) or Node 24+ runtime. Keep Node on
+PATH: some dependency lifecycle and build scripts invoke it even when run through Bun.
 
 ```bash
 bun install    # Install dependencies
@@ -118,17 +121,42 @@ cd client && bun run storybook  # Start Storybook on :6006 for interactive devel
 
 ### Building
 
+React components are optimized by Oxc's native React Compiler
+(`oxc-transform-react`). It is experimental and pinned deliberately. A shared
+Vite plugin applies it to client code in both the app and Storybook, leaving JSX
+and Fast Refresh to their existing framework plugins. Babel may remain as a
+transitive framework dependency, but is not our React Compiler implementation.
+
 ```bash
 bun run --filter '*' build      # Build both frontend and API
+bun run --cwd client typecheck  # Generate route types, then tsc --noEmit
+bun run --cwd api typecheck     # tsc --noEmit (requires Firebase config)
 ```
+
+Client production, end-to-end and Storybook builds run the client typecheck
+first and stop on errors. CI also checks the client explicitly before tests;
+the deployment job checks the API after supplying its Firebase configuration.
+Development servers rely on editor TypeScript diagnostics rather than a Vite
+type-checking overlay.
 
 ### Linting & Formatting
 
 ```bash
-bun run lint                    # ESLint with --max-warnings=0
+bun run lint                    # Oxlint with zero warnings
+bun run lint:fix                 # Apply safe lint fixes
+bun run format                  # Format with Oxfmt
+bun run format:check            # Check formatting without writing
 ```
 
-Prettier and ESLint run automatically on staged files via `lint-staged` + Husky pre-commit hook.
+Oxlint's recommended type-aware checks cover both workspaces. Oxlint and Oxfmt
+run automatically on staged files via `lint-staged` + the Husky pre-commit hook,
+followed by a whole-project typed lint pass. Native rules cover TypeScript,
+React, and React Compiler; Storybook rules run through Oxlint's JS plugin API
+rather than a second linter. React deprecations use native type-aware checking,
+and component/hook factory checks use native `react/static-components`.
+
+VS Code users should install the workspace's recommended Oxc and TypeScript
+Native extensions for matching formatting, linting, and TypeScript 7 diagnostics.
 
 ## Deployment
 

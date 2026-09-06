@@ -129,7 +129,9 @@ export function SummaryTable(props: Props) {
                     <RowInReadMode
                       key={record.id}
                       record={record}
-                      categoryName={categoryNameById.get(record.categoryId) ?? ""}
+                      categoryName={
+                        categoryNameById.get(record.categoryId) ?? ""
+                      }
                     />
                   ))}
                 </div>

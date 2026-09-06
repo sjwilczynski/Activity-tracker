@@ -25,20 +25,20 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /all time/i })
     ).toBeInTheDocument();
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(2);
+    await expect(chartElements.length).toBe(2);
 
-    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
-    expect(canvas.getByText("Unique Activities")).toBeInTheDocument();
-    expect(canvas.getByText("Most Popular")).toBeInTheDocument();
+    await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Unique Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Most Popular")).toBeInTheDocument();
   },
 };
 
@@ -54,7 +54,7 @@ export const Loading: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
   },
 };
 
@@ -72,7 +72,7 @@ export const ErrorState: Story = {
     const canvas = within(canvasElement);
 
     await canvas.findByText(/an error has occurred/i);
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /back to homepage/i })
     ).toBeInTheDocument();
   },
@@ -87,10 +87,10 @@ export const EmptyState: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
-    expect(
+    await expect(
       canvas.getByText(/haven't added any activities/i)
     ).toBeInTheDocument();
   },
@@ -100,20 +100,20 @@ export const DateFilterInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Verify date range picker is visible", async () => {
-      expect(
+      await expect(
         canvas.getByRole("button", { name: /all time/i })
       ).toBeInTheDocument();
     });
 
     await step("Verify initial charts are rendered with data", async () => {
       const chartElements = canvasElement.querySelectorAll("canvas");
-      expect(chartElements.length).toBe(2);
-      expect(
+      await expect(chartElements.length).toBe(2);
+      await expect(
         canvas.queryByText(/haven't added any activities/i)
       ).not.toBeInTheDocument();
     });
@@ -125,26 +125,28 @@ export const DateFilterInteraction: Story = {
           canvas.getByRole("button", { name: /all time/i })
         );
 
-        await waitFor(() => {
-          expect(screen.getByText("Select Date Range")).toBeInTheDocument();
+        await waitFor(async () => {
+          await expect(
+            screen.getByText("Select Date Range")
+          ).toBeInTheDocument();
         });
 
         await userEvent.click(
           screen.getByRole("button", { name: /last month/i })
         );
 
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.queryByText("Select Date Range")
           ).not.toBeInTheDocument();
         });
 
-        await waitFor(() => {
+        await waitFor(async () => {
           const chartElements = canvasElement.querySelectorAll("canvas");
-          expect(chartElements.length).toBe(2);
+          await expect(chartElements.length).toBe(2);
         });
 
-        expect(
+        await expect(
           canvas.queryByText(/haven't added any activities/i)
         ).not.toBeInTheDocument();
       }
@@ -201,16 +203,16 @@ export const SingleActivityType: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(2);
+    await expect(chartElements.length).toBe(2);
 
-    expect(canvas.getByText("5")).toBeInTheDocument();
-    expect(canvas.getByText("1")).toBeInTheDocument();
-    expect(canvas.getByText("Running")).toBeInTheDocument();
+    await expect(canvas.getByText("5")).toBeInTheDocument();
+    await expect(canvas.getByText("1")).toBeInTheDocument();
+    await expect(canvas.getByText("Running")).toBeInTheDocument();
   },
 };
 
@@ -263,15 +265,15 @@ export const ManyActivityTypes: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     const chartElements = canvasElement.querySelectorAll("canvas");
-    expect(chartElements.length).toBe(2);
+    await expect(chartElements.length).toBe(2);
 
-    expect(canvas.getByText("36")).toBeInTheDocument();
-    expect(canvas.getByText("12")).toBeInTheDocument();
+    await expect(canvas.getByText("36")).toBeInTheDocument();
+    await expect(canvas.getByText("12")).toBeInTheDocument();
   },
 };
 
@@ -284,13 +286,13 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /all time/i })
     ).toBeInTheDocument();
-    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
   },
 };

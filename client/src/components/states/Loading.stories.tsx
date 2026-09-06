@@ -13,6 +13,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
   },
 };

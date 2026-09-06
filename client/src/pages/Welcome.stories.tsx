@@ -30,21 +30,21 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByText(/welcome/i)).toBeInTheDocument();
-    expect(
+    await expect(canvas.getByText(/welcome/i)).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: /log activity/i })
     ).toBeInTheDocument();
     // Stat cards are shown
-    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
-    expect(canvas.getByText("Last 7 Days")).toBeInTheDocument();
-    expect(canvas.getByText("Last 30 Days")).toBeInTheDocument();
-    expect(canvas.getByText("Last Activity")).toBeInTheDocument();
+    await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Last 7 Days")).toBeInTheDocument();
+    await expect(canvas.getByText("Last 30 Days")).toBeInTheDocument();
+    await expect(canvas.getByText("Last Activity")).toBeInTheDocument();
     // Recent activities section
-    expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
   },
 };
 
@@ -63,7 +63,7 @@ export const Loading: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
   },
 };
 
@@ -79,20 +79,22 @@ export const NoActivities: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByText(/no activities logged yet/i)).toBeInTheDocument();
-    expect(
+    await expect(
+      canvas.getByText(/no activities logged yet/i)
+    ).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: /log activity/i })
     ).toBeInTheDocument();
     // Stat cards show 0 values and "None" for last activity
-    await waitFor(() => {
+    await waitFor(async () => {
       const zeros = canvas.getAllByText("0");
-      expect(zeros.length).toBeGreaterThanOrEqual(1);
+      await expect(zeros.length).toBeGreaterThanOrEqual(1);
     });
-    expect(canvas.getByText("None")).toBeInTheDocument();
+    await expect(canvas.getByText("None")).toBeInTheDocument();
   },
 };
 
@@ -100,22 +102,22 @@ export const SubmitNewActivity: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Fill and submit activity form", async () => {
       await selectActivity(canvas, "Running");
 
       const submitBtn = canvas.getByRole("button", { name: /log activity/i });
-      await waitFor(() => {
-        expect(submitBtn).toBeEnabled();
+      await waitFor(async () => {
+        await expect(submitBtn).toBeEnabled();
       });
       await userEvent.click(submitBtn);
     });
 
-    await waitFor(() => {
-      expect(
+    await waitFor(async () => {
+      await expect(
         screen.getByText(/activity added successfully/i)
       ).toBeInTheDocument();
     });
@@ -143,15 +145,15 @@ export const WithLastActivity: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     // Activity name appears in both stat card and recent activities list
     const yogaMatches = canvas.getAllByText(/morning yoga/i);
-    expect(yogaMatches.length).toBeGreaterThanOrEqual(1);
+    await expect(yogaMatches.length).toBeGreaterThanOrEqual(1);
     const dateMatches = canvas.getAllByText(/jun 15, 2024/i);
-    expect(dateMatches.length).toBeGreaterThanOrEqual(1);
+    await expect(dateMatches.length).toBeGreaterThanOrEqual(1);
   },
 };
 
@@ -171,23 +173,25 @@ export const SubmitServerError: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Fill and submit activity form", async () => {
       await selectActivity(canvas, "Running");
 
       const submitBtn = canvas.getByRole("button", { name: /log activity/i });
-      await waitFor(() => {
-        expect(submitBtn).toBeEnabled();
+      await waitFor(async () => {
+        await expect(submitBtn).toBeEnabled();
       });
       await userEvent.click(submitBtn);
     });
 
     await step("Verify error toast appears", async () => {
-      await waitFor(() => {
-        expect(screen.getByText(/failed to add activity/i)).toBeInTheDocument();
+      await waitFor(async () => {
+        await expect(
+          screen.getByText(/failed to add activity/i)
+        ).toBeInTheDocument();
       });
     });
   },
@@ -197,16 +201,16 @@ export const AddWithDetailsInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Open the Add with Details dialog", async () => {
       await userEvent.click(
         canvas.getByRole("button", { name: /add with details/i })
       );
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByRole("heading", { name: /log activity with details/i })
         ).toBeInTheDocument();
       });
@@ -257,14 +261,14 @@ export const AddWithDetailsInteraction: Story = {
         screen.getByRole("button", { name: /log activity/i })
       );
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByText(/activity logged successfully/i)
         ).toBeInTheDocument();
       });
 
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.queryByRole("heading", { name: /log activity with details/i })
         ).not.toBeInTheDocument();
       });
@@ -276,20 +280,22 @@ export const RecentActivitiesShowDetails: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     // Running activity has intensity: "high" which maps to "Intense"
     // IntensityBadge renders two spans (light + dark mode), so use getAllByText
     const intenseBadges = canvas.getAllByText("Intense");
-    expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
+    await expect(intenseBadges.length).toBeGreaterThanOrEqual(1);
 
     // Running's timeSpent is 45
-    expect(canvas.getByText("• 45 min")).toBeInTheDocument();
+    await expect(canvas.getByText("• 45 min")).toBeInTheDocument();
 
     // Running's description
-    expect(canvas.getByText(/morning run in the park/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/morning run in the park/i)
+    ).toBeInTheDocument();
   },
 };
 
@@ -297,8 +303,8 @@ export const FormResetAfterSubmit: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Fill the form with activity data", async () => {
@@ -309,20 +315,20 @@ export const FormResetAfterSubmit: Story = {
       const combobox = canvas.getByRole("combobox", {
         name: /activity name/i,
       });
-      expect(combobox).toHaveTextContent("Running");
+      await expect(combobox).toHaveTextContent("Running");
     });
 
     await step("Submit the form", async () => {
       const submitBtn = canvas.getByRole("button", { name: /log activity/i });
-      await waitFor(() => {
-        expect(submitBtn).toBeEnabled();
+      await waitFor(async () => {
+        await expect(submitBtn).toBeEnabled();
       });
       await userEvent.click(submitBtn);
     });
 
     await step("Verify success message appears", async () => {
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByText(/activity added successfully/i)
         ).toBeInTheDocument();
       });
@@ -332,8 +338,8 @@ export const FormResetAfterSubmit: Story = {
       const combobox = canvas.getByRole("combobox", {
         name: /activity name/i,
       });
-      await waitFor(() => {
-        expect(combobox).toHaveTextContent("Search activities...");
+      await waitFor(async () => {
+        await expect(combobox).toHaveTextContent("Search activities...");
       });
     });
   },
@@ -348,13 +354,13 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByText(/welcome/i)).toBeInTheDocument();
-    expect(canvas.getByText("Total Activities")).toBeInTheDocument();
-    expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
+    await expect(canvas.getByText(/welcome/i)).toBeInTheDocument();
+    await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+    await expect(canvas.getByText("Recent Activities")).toBeInTheDocument();
   },
 };
 
@@ -362,8 +368,8 @@ export const FuzzySearch: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     const combobox = canvas.getByRole("combobox", { name: /activity name/i });
@@ -373,10 +379,10 @@ export const FuzzySearch: Story = {
 
     await step(
       "Browsing (empty query) keeps the category headings for context",
-      () => {
+      async () => {
         // The activities are grouped under their category headings while the
         // user is just browsing the full list.
-        expect(
+        await expect(
           document.querySelectorAll("[cmdk-group-heading]").length
         ).toBeGreaterThan(0);
       }
@@ -390,15 +396,15 @@ export const FuzzySearch: Story = {
         // 0 and would hide it. Only fuzzyFilter's edit-distance fallback matches
         // it — so this assertion fails if that fallback regresses.
         await userEvent.type(searchInput, "Runninh");
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.getByRole("option", { name: /running/i })
           ).toBeInTheDocument();
         });
-        expect(
+        await expect(
           screen.queryByRole("option", { name: /swimming/i })
         ).not.toBeInTheDocument();
-        expect(
+        await expect(
           screen.queryByRole("option", { name: /cycling/i })
         ).not.toBeInTheDocument();
       }
@@ -408,12 +414,12 @@ export const FuzzySearch: Story = {
       // "Ygoa" swaps two characters of "Yoga".
       await userEvent.clear(searchInput);
       await userEvent.type(searchInput, "Ygoa");
-      await waitFor(() => {
-        expect(
+      await waitFor(async () => {
+        await expect(
           screen.getByRole("option", { name: /yoga/i })
         ).toBeInTheDocument();
       });
-      expect(
+      await expect(
         screen.queryByRole("option", { name: /running/i })
       ).not.toBeInTheDocument();
     });
@@ -423,8 +429,8 @@ export const FuzzySearch: Story = {
       async () => {
         await userEvent.clear(searchInput);
         await userEvent.type(searchInput, "ding");
-        await waitFor(() => {
-          expect(
+        await waitFor(async () => {
+          await expect(
             screen.getByRole("option", { name: /reading/i })
           ).toBeInTheDocument();
         });
@@ -434,15 +440,15 @@ export const FuzzySearch: Story = {
         // exact substring match must rank first, ahead of the typo matches —
         // even though they live in a different, earlier category.
         const options = screen.getAllByRole("option");
-        expect(options[0]).toHaveTextContent(/reading/i);
-        expect(
+        await expect(options[0]).toHaveTextContent(/reading/i);
+        await expect(
           screen.getByRole("option", { name: /running/i })
         ).toBeInTheDocument();
 
         // While searching, options render as one flat list (no category
         // headings) so cmdk sorts every option against each other globally
         // instead of only within its own group.
-        expect(
+        await expect(
           document.querySelectorAll("[cmdk-group-heading]").length
         ).toBe(0);
       }
@@ -454,7 +460,7 @@ export const FuzzySearch: Story = {
       await userEvent.click(
         await screen.findByRole("option", { name: /running/i })
       );
-      expect(combobox).toHaveTextContent("Running");
+      await expect(combobox).toHaveTextContent("Running");
     });
   },
 };

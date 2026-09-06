@@ -59,7 +59,7 @@ export function DeleteCategoryButton({
 
   const handleDelete = () => {
     if (action === "reassign") {
-      fetcher.submit(
+      void fetcher.submit(
         {
           intent: "delete-category-reassign",
           id: category.id,
@@ -68,7 +68,7 @@ export function DeleteCategoryButton({
         { method: "POST" }
       );
     } else {
-      fetcher.submit(
+      void fetcher.submit(
         {
           intent: "delete-category-with-activities",
           id: category.id,

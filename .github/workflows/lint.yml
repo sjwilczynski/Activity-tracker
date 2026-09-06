@@ -19,3 +19,5 @@ jobs:
       - uses: ./.github/actions/setup
       - name: lint
         run: bun run lint
+      - name: formatting
+        run: bun run format:check

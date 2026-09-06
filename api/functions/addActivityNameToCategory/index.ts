@@ -57,7 +57,10 @@ async function addActivityNameToCategory(
     return { status: 200, body: "Activity name added to category" };
   } catch (err) {
     const message = (err as Error).message;
-    if (message.includes("already belongs to") || message.includes("not found")) {
+    if (
+      message.includes("already belongs to") ||
+      message.includes("not found")
+    ) {
       return { status: 400, body: message };
     }
     console.error("addActivityNameToCategory error:", err);

@@ -51,7 +51,7 @@ export function AddActivityNameButton({
 
   const handleSubmit = () => {
     if (!isValid) return;
-    fetcher.submit(
+    void fetcher.submit(
       {
         intent: "add-activity-name",
         activityName: name.trim(),

@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 80,
+  "endOfLine": "lf",
+  "arrowParens": "always",
+  "sortImports": {
+    "newlinesBetween": false,
+    "sortSideEffects": false
+  },
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "api/dist",
+    "client/build",
+    "client/public",
+    "client/.react-router",
+    "client/dev-dist",
+    "**/storybook-static/",
+    "**/mockServiceWorker.js",
+    "node_modules",
+    "bun.lock",
+    ".env",
+    ".gitignore",
+    "*.py",
+    ".husky/*",
+    ".npmrc",
+    "*.gif"
+  ]
+}

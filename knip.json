@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     "client": {
       "entry": [
@@ -7,15 +7,8 @@
         "src/**/*.stories.tsx",
         "src/app/entry.client.e2e.tsx"
       ],
-      "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": [
-        "@babel/preset-typescript",
-        "@vitest/coverage-v8",
-        "babel-plugin-react-compiler",
-        "chromatic",
-        "tailwindcss",
-        "tw-animate-css"
-      ]
+      "project": ["src/**/*.{ts,tsx,css}"],
+      "ignoreDependencies": ["chromatic"]
     },
     "api": {
       "entry": [
@@ -28,11 +21,7 @@
       "ignore": ["utils/defaultCategories.ts"]
     }
   },
-  "ignore": ["**/build/**", "**/dist/**", "**/.storybook/**", "**/mocks/**"],
-  "ignoreDependencies": [
-    "@typescript-eslint/eslint-plugin",
-    "eslint-config-prettier",
-    "husky"
-  ],
+  "ignore": ["**/mocks/**"],
+  "ignoreDependencies": ["husky"],
   "ignoreExportsUsedInFile": true
 }

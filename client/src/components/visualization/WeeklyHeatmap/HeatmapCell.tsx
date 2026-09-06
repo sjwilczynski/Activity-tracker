@@ -39,7 +39,9 @@ export function HeatmapCell({ bucket }: HeatmapCellProps) {
       />
       <TooltipContent>
         <span className="font-medium">{range}</span>
-        <span className="block tabular-nums">{activityLabel(bucket.count)}</span>
+        <span className="block tabular-nums">
+          {activityLabel(bucket.count)}
+        </span>
       </TooltipContent>
     </Tooltip>
   );

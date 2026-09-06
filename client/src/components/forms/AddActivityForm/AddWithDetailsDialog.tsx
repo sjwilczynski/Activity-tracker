@@ -30,11 +30,7 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-import {
-  CategoryAutocomplete,
-  DatePicker,
-  getErrorMessage,
-} from "../adapters";
+import { CategoryAutocomplete, DatePicker, getErrorMessage } from "../adapters";
 import {
   categoryOptionSchema,
   dateSchema,
@@ -68,9 +64,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
     }
   );
 
-  const initialDate = lastActivity
-    ? addDays(lastActivity.date, 1)
-    : new Date();
+  const initialDate = lastActivity ? addDays(lastActivity.date, 1) : new Date();
 
   const form = useForm({
     defaultValues: {
@@ -91,7 +85,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
       if (value.description.trim())
         record.description = value.description.trim();
 
-      fetcher.submit(
+      void fetcher.submit(
         {
           intent: "add",
           activities: JSON.stringify([record]),
@@ -130,7 +124,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
           className="space-y-4 py-4"
           onSubmit={(e) => {
             e.preventDefault();
-            form.handleSubmit();
+            void form.handleSubmit();
           }}
         >
           <form.Field name="date" validators={{ onChange: dateSchema }}>
@@ -164,7 +158,9 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
                 <Label htmlFor="details-intensity">Intensity</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={(v) => field.handleChange(v as "" | "low" | "medium" | "high")}
+                  onValueChange={(v) =>
+                    field.handleChange(v as "" | "low" | "medium" | "high")
+                  }
                 >
                   <SelectTrigger id="details-intensity">
                     <SelectValue placeholder="None" />

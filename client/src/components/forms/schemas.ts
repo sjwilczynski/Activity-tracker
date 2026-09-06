@@ -14,10 +14,12 @@ export const activityFormSchema = z.object({
 
 export const detailedActivityFormSchema = activityFormSchema.extend({
   intensity: z.enum(["low", "medium", "high", ""]),
-  timeSpent: z.string().refine(
-    (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
-    "Must be a non-negative number",
-  ),
+  timeSpent: z
+    .string()
+    .refine(
+      (v) => v === "" || (!isNaN(Number(v)) && Number(v) >= 0),
+      "Must be a non-negative number"
+    ),
   description: z.string().max(500),
 });
 
@@ -30,7 +32,7 @@ const FILE_SIZE = 1000 * 1024; // 1MB
 const SUPPORTED_FORMATS = ["application/json"];
 
 export const fileSchema = z
-  .instanceof(File, { message: "File is required" })
+  .instanceof(File, { error: "File is required" })
   .refine((file) => file.size <= FILE_SIZE, "File too large")
   .refine((file) => SUPPORTED_FORMATS.includes(file.type), "Unsupported format")
   .nullable()

@@ -19,17 +19,19 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    expect(canvas.getByText("Activity Tracker")).toBeInTheDocument();
-    expect(canvas.getByText("Sign in to continue")).toBeInTheDocument();
-    expect(
+    await expect(canvas.getByText("Activity Tracker")).toBeInTheDocument();
+    await expect(canvas.getByText("Sign in to continue")).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: /sign in with google/i })
     ).toBeInTheDocument();
-    expect(canvas.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(canvas.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(
+    await expect(canvas.getByLabelText(/email/i)).toBeInTheDocument();
+    await expect(canvas.getByLabelText(/password/i)).toBeInTheDocument();
+    await expect(
       canvas.getByRole("button", { name: /sign in with email/i })
     ).toBeInTheDocument();
-    expect(canvas.getByText(/new user\? create account/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/new user\? create account/i)
+    ).toBeInTheDocument();
   },
 };
 
@@ -39,10 +41,10 @@ export const ToggleToSignUp: Story = {
 
     await userEvent.click(canvas.getByText(/new user\? create account/i));
 
-    expect(
+    await expect(
       canvas.getByRole("button", { name: /sign up with email/i })
     ).toBeInTheDocument();
-    expect(
+    await expect(
       canvas.getByText(/already have an account\? sign in/i)
     ).toBeInTheDocument();
   },
@@ -62,7 +64,7 @@ export const GoogleSignInError: Story = {
       canvas.getByRole("button", { name: /sign in with google/i })
     );
 
-    expect(
+    await expect(
       await canvas.findByText(/too many failed attempts/i)
     ).toBeInTheDocument();
   },
@@ -84,7 +86,7 @@ export const EmailSignInError: Story = {
       canvas.getByRole("button", { name: /sign in with email/i })
     );
 
-    expect(
+    await expect(
       await canvas.findByText(/invalid email or password/i)
     ).toBeInTheDocument();
   },
@@ -107,7 +109,7 @@ export const EmailSignUpError: Story = {
       canvas.getByRole("button", { name: /sign up with email/i })
     );
 
-    expect(
+    await expect(
       await canvas.findByText(/an account with this email already exists/i)
     ).toBeInTheDocument();
   },
@@ -129,14 +131,14 @@ export const ErrorClearedOnToggle: Story = {
       canvas.getByRole("button", { name: /sign in with email/i })
     );
 
-    expect(
+    await expect(
       await canvas.findByText(/invalid email or password/i)
     ).toBeInTheDocument();
 
     // Toggle to sign up - error should be cleared
     await userEvent.click(canvas.getByText(/new user\? create account/i));
 
-    expect(
+    await expect(
       canvas.queryByText(/invalid email or password/i)
     ).not.toBeInTheDocument();
   },

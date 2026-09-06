@@ -22,7 +22,7 @@ export function useIsLightTheme(): boolean {
   if (!queryClient) {
     return !document.documentElement.classList.contains("dark");
   }
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- only called when queryClient is stable (present for entire authenticated session)
+  // oxlint-disable-next-line react/rules-of-hooks -- only called when queryClient is stable (present for entire authenticated session)
   return useIsLightThemeFromQuery();
 }
 
@@ -60,7 +60,7 @@ export function useThemeToggleWithTransition() {
       setIsLightTheme(!isLightTheme);
     });
 
-    transition.finished.finally(() => {
+    void transition.finished.finally(() => {
       document.documentElement.classList.remove("theme-transitioning");
     });
   };

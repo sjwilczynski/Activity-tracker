@@ -15,9 +15,9 @@
  * Uses full admin access (no databaseAuthVariableOverride) to read/write all users.
  */
 
+import { readFileSync } from "fs";
 import { cert, initializeApp, type ServiceAccount } from "firebase-admin/app";
 import { getDatabase } from "firebase-admin/database";
-import { readFileSync } from "fs";
 import { migrateUserData } from "./migration-logic.ts";
 
 // Load settings

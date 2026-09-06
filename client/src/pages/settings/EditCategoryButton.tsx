@@ -45,7 +45,7 @@ export function EditCategoryButton({ category }: { category: Category }) {
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    fetcher.submit(
+    void fetcher.submit(
       {
         intent: "edit-category",
         id: category.id,

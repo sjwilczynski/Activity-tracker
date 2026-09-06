@@ -22,8 +22,8 @@ export async function clientLoader() {
     throw redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }
 
-  // Pre-fetch preferences so StylesProvider has theme data immediately
-  queryClient.ensureQueryData(preferencesQueryOptions(getAuthToken));
+  // Preferences are optional; keep their loading and errors in the query cache.
+  void queryClient.prefetchQuery(preferencesQueryOptions(getAuthToken));
 
   return null;
 }
@@ -39,7 +39,7 @@ function AuthStateProvider({ children }: { children: React.ReactNode }) {
       // If user signs out, clear cached data and redirect to login
       if (!newUser) {
         queryClient.clear();
-        navigate("/login", { replace: true });
+        void navigate("/login", { replace: true });
       }
     });
   }, [navigate, queryClient]);

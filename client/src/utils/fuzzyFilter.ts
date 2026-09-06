@@ -75,7 +75,7 @@ function minEditDistanceInSubstring(text: string, pattern: string): number {
 
   // prev[i] = edit distance for pattern[0..i-1] aligned up to previous text col
   const prev = Array.from({ length: m + 1 }, (_, i) => i);
-  const curr = new Array<number>(m + 1).fill(0);
+  const curr = Array.from({ length: m + 1 }, () => 0);
   let minDist = m;
 
   for (let j = 1; j <= n; j++) {

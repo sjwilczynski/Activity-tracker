@@ -33,7 +33,9 @@ describe("levelStyle", () => {
 
   it("increases intensity monotonically from level 1 to 4", () => {
     const pct = (level: 1 | 2 | 3 | 4) =>
-      Number(String(levelStyle(level).backgroundColor).match(/(\d+)%/)?.[1] ?? 100);
+      Number(
+        String(levelStyle(level).backgroundColor).match(/(\d+)%/)?.[1] ?? 100
+      );
     expect(pct(1)).toBeLessThan(pct(2));
     expect(pct(2)).toBeLessThan(pct(3));
     expect(pct(3)).toBeLessThan(pct(4));

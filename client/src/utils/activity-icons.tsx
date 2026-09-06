@@ -1,7 +1,7 @@
 import {
   Activity,
   Bike,
-  Dribbble,
+  CircleDot,
   Footprints,
   Mountain,
   Sun,
@@ -13,7 +13,7 @@ const activityIcons: Record<string, React.ReactNode> = {
   jogging: <Footprints className="size-4" />,
   swimming: <Waves className="size-4" />,
   cycling: <Bike className="size-4" />,
-  football: <Dribbble className="size-4" />,
+  football: <CircleDot className="size-4" />,
   yoga: <Sun className="size-4" />,
   hiking: <Mountain className="size-4" />,
   basketball: <Activity className="size-4" />,

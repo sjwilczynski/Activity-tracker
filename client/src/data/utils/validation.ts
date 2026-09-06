@@ -15,8 +15,8 @@ type ImportData = {
 };
 
 export const isImportDataValid = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any,
+  // oxlint-disable-next-line typescript/no-explicit-any
+  data: any
 ): data is ImportData => {
   if (!data || typeof data !== "object") {
     return false;
@@ -36,9 +36,7 @@ export const isImportDataValid = (
     return false;
   }
 
-  if (
-    !Object.values(activities).every((a) => isActivityValid(a as unknown))
-  ) {
+  if (!Object.values(activities).every((a) => isActivityValid(a as unknown))) {
     return false;
   }
 

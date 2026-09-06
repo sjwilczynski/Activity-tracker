@@ -48,7 +48,7 @@ export const useUpdatePreferences = () => {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: [...getPreferencesQueryId],
       });
     },

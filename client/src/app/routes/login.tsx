@@ -38,7 +38,7 @@ export default function LoginRoute() {
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged((user) => {
       if (user) {
-        navigate(returnTo, { replace: true });
+        void navigate(returnTo, { replace: true });
       }
     });
     return unsubscribe;

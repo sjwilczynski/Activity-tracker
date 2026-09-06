@@ -23,7 +23,7 @@ export const useEditActivityFormSubmit = (id: string) => {
     if (values.timeSpent) activityRecord.timeSpent = Number(values.timeSpent);
     if (values.description.trim())
       activityRecord.description = values.description.trim();
-    submit(
+    void submit(
       {
         intent: "edit",
         id,

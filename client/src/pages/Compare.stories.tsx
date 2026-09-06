@@ -18,14 +18,14 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(
+    await expect(
       canvas.getByRole("heading", { name: /compare periods/i })
     ).toBeInTheDocument();
-    expect(canvas.getByText("No periods selected")).toBeInTheDocument();
+    await expect(canvas.getByText("No periods selected")).toBeInTheDocument();
   },
 };
 
@@ -33,8 +33,8 @@ export const AddPeriodInteraction: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Select February month", async () => {
@@ -60,14 +60,14 @@ export const AddPeriodInteraction: Story = {
     });
 
     await step("Verify period badge and charts appear", async () => {
-      await waitFor(() => {
+      await waitFor(async () => {
         // "February 2024" appears in both badge and metric card
         const matches = canvas.getAllByText("February 2024");
-        expect(matches.length).toBeGreaterThanOrEqual(1);
+        await expect(matches.length).toBeGreaterThanOrEqual(1);
       });
 
-      expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
-      expect(canvas.getByText("Total Activities")).toBeInTheDocument();
+      await expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
+      await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
     });
   },
 };
@@ -152,32 +152,44 @@ export const CompareYears: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     await step("Verify chart is rendered", async () => {
-      expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
-      expect(canvas.getByText("Monthly activity counts")).toBeInTheDocument();
+      await expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
+      await expect(
+        canvas.getByText("Monthly activity counts")
+      ).toBeInTheDocument();
     });
 
     await step("Verify both period badges", async () => {
-      expect(canvas.getAllByText("2024").length).toBeGreaterThanOrEqual(1);
-      expect(canvas.getAllByText("2023").length).toBeGreaterThanOrEqual(1);
-      expect(canvas.getAllByText("2022").length).toBeGreaterThanOrEqual(1);
-      expect(canvas.getAllByText("2021").length).toBeGreaterThanOrEqual(1);
-      expect(canvas.getAllByText("2020").length).toBeGreaterThanOrEqual(1);
+      await expect(canvas.getAllByText("2024").length).toBeGreaterThanOrEqual(
+        1
+      );
+      await expect(canvas.getAllByText("2023").length).toBeGreaterThanOrEqual(
+        1
+      );
+      await expect(canvas.getAllByText("2022").length).toBeGreaterThanOrEqual(
+        1
+      );
+      await expect(canvas.getAllByText("2021").length).toBeGreaterThanOrEqual(
+        1
+      );
+      await expect(canvas.getAllByText("2020").length).toBeGreaterThanOrEqual(
+        1
+      );
     });
 
     await step("Scroll to metric cards and verify", async () => {
       const metricCards = canvas.getAllByText("Total Activities");
-      expect(metricCards.length).toBe(5);
+      await expect(metricCards.length).toBe(5);
 
       const popularLabels = canvas.getAllByText("Most Popular");
-      expect(popularLabels.length).toBe(5);
+      await expect(popularLabels.length).toBe(5);
 
       const mostActiveLabels = canvas.getAllByText("Most Active Month");
-      expect(mostActiveLabels.length).toBe(5);
+      await expect(mostActiveLabels.length).toBe(5);
     });
   },
 };
@@ -202,11 +214,11 @@ export const DarkMode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => {
-      expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
-    expect(canvas.getAllByText("Total Activities").length).toBe(2);
+    await expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
+    await expect(canvas.getAllByText("Total Activities").length).toBe(2);
   },
 };

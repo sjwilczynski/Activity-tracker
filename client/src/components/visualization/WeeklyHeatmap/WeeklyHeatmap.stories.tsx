@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { addDays, startOfWeek, subWeeks } from "date-fns";
 import { expect, within } from "storybook/test";
 import { HeatmapLegend } from "./HeatmapLegend";
-import { WeeklyHeatmap } from "./WeeklyHeatmap";
 import {
   buildWeeklyHeatmap,
   type HeatmapActivity,
 } from "./weekly-heatmap-data";
+import { WeeklyHeatmap } from "./WeeklyHeatmap";
 
 /** Deterministic PRNG so the rendered heatmap (and screenshots) stay stable. */
 function mulberry32(seed: number): () => number {
@@ -26,10 +26,10 @@ const LATEST_MONDAY = startOfWeek(END_DATE, { weekStartsOn: 1 }); // Mon Jun 10 
 function activitiesInWeek(offsetFromLatest: number, count: number) {
   const weekStart = subWeeks(LATEST_MONDAY, offsetFromLatest);
   const midWeek = addDays(weekStart, 2); // keep it comfortably inside the week
-  return Array.from(
-    { length: count },
-    (): HeatmapActivity => ({ date: new Date(midWeek), active: true })
-  );
+  return Array.from({ length: count }, (): HeatmapActivity => ({
+    date: new Date(midWeek),
+    active: true,
+  }));
 }
 
 function seededActivities(): HeatmapActivity[] {
@@ -78,44 +78,46 @@ export const Default: Story = {
 
     // Exactly 52 week cells render (one focusable button per week).
     const cells = canvas.getAllByRole("button");
-    expect(cells).toHaveLength(52);
+    await expect(cells).toHaveLength(52);
 
     // The known busy week has the expected level and accessible label.
     const busyWeek = canvas.getByRole("button", {
       name: "Week of Jun 10, 2024: 6 activities",
     });
-    expect(busyWeek).toHaveAttribute("data-level", "3");
+    await expect(busyWeek).toHaveAttribute("data-level", "3");
 
     // Empty weeks (level 0) render HOLLOW — transparent fill — so they stay
     // clearly distinct from level 1; active weeks are filled.
     const emptyCells = cells.filter(
       (cell) => cell.getAttribute("data-level") === "0"
     );
-    expect(emptyCells.length).toBeGreaterThan(0);
+    await expect(emptyCells.length).toBeGreaterThan(0);
     for (const cell of emptyCells) {
-      expect((cell as HTMLElement).style.backgroundColor).toBe("transparent");
+      await expect((cell as HTMLElement).style.backgroundColor).toBe(
+        "transparent"
+      );
       // The hollow ring is a border, not an inline box-shadow — otherwise it
       // would override the Tailwind focus-visible:ring-* and hide the keyboard
       // focus indicator on empty cells.
-      expect((cell as HTMLElement).style.boxShadow).toBe("");
-      expect((cell as HTMLElement).style.border).not.toBe("");
+      await expect((cell as HTMLElement).style.boxShadow).toBe("");
+      await expect((cell as HTMLElement).style.border).not.toBe("");
     }
-    expect((busyWeek as HTMLElement).style.backgroundColor).not.toBe(
+    await expect((busyWeek as HTMLElement).style.backgroundColor).not.toBe(
       "transparent"
     );
 
     // The legend is present.
-    expect(canvas.getByText("Less")).toBeInTheDocument();
-    expect(canvas.getByText("More")).toBeInTheDocument();
+    await expect(canvas.getByText("Less")).toBeInTheDocument();
+    await expect(canvas.getByText("More")).toBeInTheDocument();
 
     // The group is described by the screen-reader summary (aria-describedby).
     const group = canvas.getByRole("group", {
       name: "Weekly activity heatmap, last 52 weeks",
     });
     const summaryId = group.getAttribute("aria-describedby");
-    expect(summaryId).toBeTruthy();
+    await expect(summaryId).toBeTruthy();
     const summary = canvasElement.ownerDocument.getElementById(summaryId!);
-    expect(summary).toHaveTextContent(
+    await expect(summary).toHaveTextContent(
       /Weekly activity heatmap of the last 52 weeks/
     );
   },

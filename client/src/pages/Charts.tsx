@@ -1,4 +1,3 @@
-import { cn } from "@/utils/cn";
 import {
   ArcElement,
   BarController,
@@ -12,6 +11,7 @@ import {
 } from "chart.js";
 import { BarChart3, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/utils/cn";
 import { DateRangePicker } from "../components/DateRangePicker";
 import {
   useDateRange,

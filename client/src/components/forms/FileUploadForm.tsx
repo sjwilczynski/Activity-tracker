@@ -37,12 +37,12 @@ export function FileUploadForm() {
             return;
           }
           if (isImportDataValid(data)) {
-            fetcher.submit(
+            void fetcher.submit(
               {
                 intent: "import",
                 importData: JSON.stringify(data),
               },
-              { method: "post" },
+              { method: "post" }
             );
           } else {
             form.setFieldMeta("file", (meta) => ({
@@ -88,7 +88,7 @@ export function FileUploadForm() {
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
       <form.Field
