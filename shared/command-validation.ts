@@ -20,9 +20,6 @@ export const validateRenameBody = (
   const newNameResult = validateActivityName(casted.newName);
   if (!newNameResult.valid)
     return { valid: false, error: `newName: ${newNameResult.error}` };
-  if ((casted.oldName as string).trim() === (casted.newName as string).trim()) {
-    return { valid: false, error: "oldName and newName must be different" };
-  }
   if (casted.merge !== undefined && typeof casted.merge !== "boolean") {
     return { valid: false, error: "merge must be a boolean" };
   }
@@ -32,14 +29,23 @@ export const validateRenameBody = (
       error: "A confirmed merge requires the target category ID",
     };
   }
+  const oldName = casted.oldName as string;
+  // Existing names are identities. Only a newly entered rename is normalized.
+  const newName =
+    casted.merge === true
+      ? (casted.newName as string)
+      : (casted.newName as string).trim();
+  if (oldName === newName) {
+    return { valid: false, error: "oldName and newName must be different" };
+  }
   return {
     valid: true,
     data: {
-      oldName: (casted.oldName as string).trim(),
-      newName: (casted.newName as string).trim(),
+      oldName,
+      newName,
       ...(casted.merge === true && {
         merge: true,
-        targetCategoryId: (casted.targetCategoryId as string).trim(),
+        targetCategoryId: casted.targetCategoryId as string,
       }),
     },
   };
@@ -61,8 +67,8 @@ export const validateAssignCategoryBody = (
   return {
     valid: true,
     data: {
-      activityName: (casted.activityName as string).trim(),
-      categoryId: (casted.categoryId as string).trim(),
+      activityName: casted.activityName as string,
+      categoryId: casted.categoryId as string,
     },
   };
 };
@@ -83,10 +89,7 @@ export const validateReassignCategoryBody = (
   const toResult = validateCategoryId(casted.toCategoryId);
   if (!toResult.valid)
     return { valid: false, error: `toCategoryId: ${toResult.error}` };
-  if (
-    (casted.fromCategoryId as string).trim() ===
-    (casted.toCategoryId as string).trim()
-  ) {
+  if (casted.fromCategoryId === casted.toCategoryId) {
     return {
       valid: false,
       error: "fromCategoryId and toCategoryId must be different",
@@ -95,8 +98,8 @@ export const validateReassignCategoryBody = (
   return {
     valid: true,
     data: {
-      fromCategoryId: (casted.fromCategoryId as string).trim(),
-      toCategoryId: (casted.toCategoryId as string).trim(),
+      fromCategoryId: casted.fromCategoryId as string,
+      toCategoryId: casted.toCategoryId as string,
     },
   };
 };
@@ -113,7 +116,7 @@ export const validateDeleteByCategoryBody = (
     return { valid: false, error: `categoryId: ${result.error}` };
   return {
     valid: true,
-    data: { categoryId: (casted.categoryId as string).trim() },
+    data: { categoryId: casted.categoryId as string },
   };
 };
 

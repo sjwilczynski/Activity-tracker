@@ -425,6 +425,19 @@ describe("validateCategory", () => {
     expect(result.data).toEqual(validCategory);
   });
 
+  it("trims only the edges of category names", () => {
+    expect(
+      validateCategory({ ...validCategory, name: " \tOutdoor  Sports \n" }).data
+    ).toEqual({ ...validCategory, name: "Outdoor  Sports" });
+  });
+
+  it("applies the category-name length limit after trimming", () => {
+    const name = "a".repeat(LIMITS.CATEGORY_NAME_MAX);
+    expect(validateCategory({ ...validCategory, name: `  ${name}  ` })).toEqual(
+      { valid: true, data: { ...validCategory, name } }
+    );
+  });
+
   it("rejects null", () => {
     expect(validateCategory(null)).toEqual({
       valid: false,
@@ -572,6 +585,41 @@ describe("validateRenameBody", () => {
 });
 
 describe("validateAssignCategoryBody", () => {
+  it("preserves category IDs rather than treating them as display names", () => {
+    expect(
+      validateAssignCategoryBody({
+        activityName: "Running",
+        categoryId: " sports ",
+      })
+    ).toEqual({
+      valid: true,
+      data: { activityName: "Running", categoryId: " sports " },
+    });
+    expect(
+      validateReassignCategoryBody({
+        fromCategoryId: " sports ",
+        toCategoryId: "sports",
+      })
+    ).toEqual({
+      valid: true,
+      data: { fromCategoryId: " sports ", toCategoryId: "sports" },
+    });
+    expect(validateDeleteByCategoryBody({ categoryId: " sports " })).toEqual({
+      valid: true,
+      data: { categoryId: " sports " },
+    });
+  });
+  it("preserves the exact activity name selected for reassignment", () => {
+    expect(
+      validateAssignCategoryBody({
+        activityName: " Running ",
+        categoryId: "sports",
+      })
+    ).toEqual({
+      valid: true,
+      data: { activityName: " Running ", categoryId: "sports" },
+    });
+  });
   it("accepts valid body", () => {
     const result = validateAssignCategoryBody({
       activityName: "Running",

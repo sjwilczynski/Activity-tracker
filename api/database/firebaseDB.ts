@@ -247,7 +247,9 @@ export const firebaseDB: Database = {
     const snapshot = await database.ref(userDocument(userId)).once("value");
     const data = snapshot.val() ?? {};
     return {
-      activities: (data.activity ?? {}) as ActivityMap,
+      activities: Object.fromEntries(
+        Object.entries(data.activity ?? {})
+      ) as ActivityMap,
       categories: normalizeCategories((data.categories ?? {}) as CategoryMap),
       preferences: {
         ...DEFAULT_PREFERENCES,

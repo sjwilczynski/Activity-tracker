@@ -1,4 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
+import { validateCategory } from "../../../../shared/validators";
 import type { Category } from "../../data/types";
 import { mockCategories } from "../data/categories";
 
@@ -45,10 +46,11 @@ export const categoryHandlers = [
       return new HttpResponse(null, { status: 401 });
     }
 
-    const body = (await request.json()) as Omit<Category, "id">;
+    const result = validateCategory(await request.json());
+    if (!result.valid) return new HttpResponse(result.error, { status: 400 });
     const newCategory: Category = {
       id: `cat-${crypto.randomUUID().slice(0, 8)}`,
-      ...body,
+      ...result.data!,
     };
     categories = [...categories, newCategory];
     return new HttpResponse(null, { status: 200 });
@@ -64,13 +66,14 @@ export const categoryHandlers = [
     }
 
     const { id } = params;
-    const body = (await request.json()) as Omit<Category, "id">;
+    const result = validateCategory(await request.json());
+    if (!result.valid) return new HttpResponse(result.error, { status: 400 });
     const idx = categories.findIndex((c) => c.id === id);
     if (idx === -1) {
       return new HttpResponse(null, { status: 404 });
     }
     categories = categories.map((c) =>
-      c.id === id ? { id: id as string, ...body } : c
+      c.id === id ? { id: c.id, ...result.data! } : c
     );
     return new HttpResponse(null, { status: 204 });
   }),

@@ -1,6 +1,7 @@
 import { HttpRequest } from "@azure/functions";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { isImportDataValid } from "../../shared/backup";
+import { offlineSnapshot } from "../test-support/offlineSnapshot";
 import type { UserData } from "../utils/types";
 
 let userData: Record<string, unknown> = {};
@@ -9,10 +10,8 @@ vi.mock("../firebase/firebase", () => ({
   auth: { verifyIdToken: vi.fn(async () => ({ uid: "backup-user" })) },
   database: {
     ref: (path: string) => ({
-      once: async () => ({
-        val: () =>
-          structuredClone(path === "/users/backup-user" ? userData : null),
-      }),
+      once: async () =>
+        offlineSnapshot(path === "/users/backup-user" ? userData : null),
       update: async (updates: Record<string, unknown>) => {
         userData = { ...userData, ...structuredClone(updates) };
       },
@@ -155,6 +154,48 @@ describe("backup round trip", () => {
     expect(
       (await exportData(request("GET"))).jsonBody.categories.empty.activityNames
     ).toEqual([]);
+  });
+
+  it.each([["0", "1"], ["0", "2"], ["1"], ["2", "10"]])(
+    "round-trips numeric IDs %j through actual Firebase snapshots",
+    async (...ids) => {
+      const data = {
+        ...backup,
+        activities: Object.fromEntries(
+          ids.map((id) => [id, { ...backup.activities.first, description: id }])
+        ),
+        categories: { "0": backup.categories.sports },
+      };
+      expect((await importData(request("POST", data))).status).toBe(200);
+      const exported = await exportData(request("GET"));
+      expect(exported.jsonBody).toEqual(data);
+      expect(isImportDataValid(exported.jsonBody)).toBe(true);
+      expect(
+        (await importData(request("POST", exported.jsonBody))).status
+      ).toBe(200);
+      expect((await exportData(request("GET"))).jsonBody).toEqual(data);
+    }
+  );
+
+  it("trims category names on restore without changing internal spaces or activity identities", async () => {
+    const data = {
+      ...backup,
+      activities: { first: { ...backup.activities.first, name: " Running " } },
+      categories: {
+        sports: {
+          ...backup.categories.sports,
+          name: "  Outdoor  Sports  ",
+          activityNames: [" Running "],
+        },
+      },
+    };
+    expect((await importData(request("POST", data))).status).toBe(200);
+    expect((await exportData(request("GET"))).jsonBody).toEqual({
+      ...data,
+      categories: {
+        sports: { ...data.categories.sports, name: "Outdoor  Sports" },
+      },
+    });
   });
 
   it.each([null, "Running", {}, [1]])(

@@ -95,6 +95,11 @@ The data model keeps the **client simple** by pushing business logic to the API:
   entry count. A merge retains all entry IDs, dates, and details, adopts the target
   name's membership, and removes only the source name. No entries are deduplicated.
   The server rejects a merge if the confirmed target name or category has changed.
+- **Names and identities**: Category display names are trimmed on creation, editing,
+  and restore; spaces inside a multiword name are preserved. Existing activity
+  names and category IDs are exact identities, including those in older backups.
+  Matching a potential merge target ignores surrounding whitespace and case, but
+  never changes which source history or canonical target the user selected.
 
 ### State Management
 
@@ -115,6 +120,11 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
   retries, failed commits, and omitted empty arrays. A null first callback is not
   proof of missing data. Transaction callbacks abort on domain errors and rethrow
   after settlement; throwing directly during an SDK retry can escape its promise.
+- Backup and name-identity regressions use actual Firebase SDK snapshots with
+  networking disabled, so numeric-key arrays and omitted empty arrays are not
+  approximated by plain JSON mocks. These fixtures use explicit Node built-ins
+  rather than browser globals. Server acknowledgements and retry races are still
+  simulated; this is not a live Firebase/emulator test suite.
 
 ```bash
 cd client && bun run test      # Storybook play function tests via Vitest + Playwright

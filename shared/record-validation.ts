@@ -170,7 +170,7 @@ export const validateCategoryName = (name: unknown): ValidationResult => {
   if (!name.trim()) {
     return { valid: false, error: "Category name cannot be empty" };
   }
-  if (name.length > LIMITS.CATEGORY_NAME_MAX) {
+  if (name.trim().length > LIMITS.CATEGORY_NAME_MAX) {
     return {
       valid: false,
       error: `Category name exceeds ${LIMITS.CATEGORY_NAME_MAX} characters`,
@@ -274,7 +274,7 @@ export const validateCategory = (
   return {
     valid: true,
     data: {
-      name: casted.name,
+      name: casted.name.trim(),
       description: casted.description,
       active: casted.active,
       activityNames: validatedNames,
