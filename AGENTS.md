@@ -19,7 +19,7 @@ cd client && bun run storybook    # Start Storybook (:6006)
 cd api && bun run test            # Run API unit tests
 ```
 
-Use a supported Node 22 (>=22.22) or 24+ runtime on PATH. Bun lifecycle scripts can invoke Node, so installing Bun alone does not satisfy the build tools' runtime requirements.
+Use a supported Node 22 (>=22.22.1) or 24+ runtime on PATH, plus Git >=2.32 for lint-staged. Bun lifecycle scripts can invoke Node, so installing Bun alone does not satisfy the build tools' runtime requirements.
 
 ## Structure
 

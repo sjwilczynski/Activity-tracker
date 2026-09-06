@@ -1,7 +1,9 @@
 import type { Preview } from "@storybook/react-vite";
 import { Chart } from "chart.js";
 import MockDate from "mockdate";
-import { initialize, mswLoader } from "msw-storybook-addon";
+import { mswLoader } from "msw-storybook-addon/csf3";
+import { setupWorker } from "msw/browser";
+import { toast } from "sonner";
 import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { actionRouting } from "../src/mocks/actionRouting";
@@ -15,7 +17,6 @@ import {
 } from "../src/mocks/handlers";
 
 Chart.defaults.animation = false;
-initialize({ onUnhandledRequest: "bypass" });
 
 const mockedDate = new Date(REFERENCE_DATE);
 mockedDate.setDate(mockedDate.getDate() + 2);
@@ -25,6 +26,7 @@ sb.mock(import("../src/auth/useAuth.ts"));
 
 const preview: Preview = {
   beforeEach: () => {
+    toast.dismiss();
     resetActivities();
     resetCategories();
     resetPreferences();
@@ -35,7 +37,13 @@ const preview: Preview = {
     reactRouter: actionRouting(),
   },
   decorators: [withRouter, withAllProviders],
-  loaders: [mswLoader],
+  loaders: [
+    mswLoader(async () => {
+      const worker = setupWorker();
+      await worker.start({ onUnhandledRequest: "bypass" });
+      return worker;
+    }),
+  ],
 };
 
 export default preview;

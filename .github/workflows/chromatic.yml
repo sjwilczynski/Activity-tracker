@@ -14,14 +14,19 @@ concurrency:
 jobs:
   chromatic:
     name: Run Chromatic
-    if: github.event.pull_request == null || (github.event.pull_request.head.repo.fork == false && secrets.CHROMATIC_PROJECT_TOKEN != '')
+    if: github.event.pull_request == null || github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
       - name: Run Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
