@@ -1,13 +1,13 @@
 import path from "node:path";
 /// <reference types="vitest/config" />
-import babel from "@rolldown/plugin-babel";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig, type UserConfig } from "vite";
 import checker from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
+import { reactCompiler } from "./vite/react-compiler.ts";
 const dirname = import.meta.dirname;
 
 // Check if we're in a Storybook or Vitest environment
@@ -93,7 +93,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
         : []),
       tailwindcss(),
       reactPlugin,
-      babel({ presets: [reactCompilerPreset()] }),
+      reactCompiler(),
       ...(!isVitest ? [checker({ typescript: true })] : []),
     ],
     resolve: {
@@ -119,7 +119,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
           extends: true,
           test: {
             name: "unit",
-            include: ["src/**/*.test.{ts,tsx}"],
+            include: ["src/**/*.test.{ts,tsx}", "vite/**/*.test.ts"],
             environment: "node",
           },
         },

@@ -32,7 +32,7 @@ const FILE_SIZE = 1000 * 1024; // 1MB
 const SUPPORTED_FORMATS = ["application/json"];
 
 export const fileSchema = z
-  .instanceof(File, { message: "File is required" })
+  .instanceof(File, { error: "File is required" })
   .refine((file) => file.size <= FILE_SIZE, "File too large")
   .refine((file) => SUPPORTED_FORMATS.includes(file.type), "Unsupported format")
   .nullable()

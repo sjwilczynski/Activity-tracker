@@ -121,6 +121,12 @@ cd client && bun run storybook  # Start Storybook on :6006 for interactive devel
 
 ### Building
 
+React components are optimized by Oxc's native React Compiler
+(`oxc-transform-react`). It is experimental and pinned deliberately. A shared
+Vite plugin applies it to client code in both the app and Storybook, leaving JSX
+and Fast Refresh to their existing framework plugins. Babel may remain as a
+transitive framework dependency, but is not our React Compiler implementation.
+
 ```bash
 bun run --filter '*' build      # Build both frontend and API
 ```
@@ -137,8 +143,9 @@ bun run format:check            # Check formatting without writing
 Oxlint's recommended type-aware checks cover both workspaces. Oxlint and Oxfmt
 run automatically on staged files via `lint-staged` + the Husky pre-commit hook,
 followed by a whole-project typed lint pass. Native rules cover TypeScript,
-React, and React Compiler; remaining rules run through Oxlint's JS plugin API
-rather than a second linter.
+React, and React Compiler; Storybook rules run through Oxlint's JS plugin API
+rather than a second linter. React deprecations use native type-aware checking,
+and component/hook factory checks use native `react/static-components`.
 
 VS Code users should install the workspace's recommended Oxc and TypeScript
 Native extensions for matching formatting, linting, and TypeScript 7 diagnostics.

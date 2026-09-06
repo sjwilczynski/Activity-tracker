@@ -12,6 +12,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", ".react-router/types/**/*"],
+  "include": ["src", "vite", ".react-router/types/**/*"],
   "exclude": ["node_modules", "build", "storybook-static"]
 }

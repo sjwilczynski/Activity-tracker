@@ -1,17 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["unicorn", "typescript", "oxc", "react", "import"],
-  "jsPlugins": [
-    {
-      "name": "hooks-js",
-      "specifier": "eslint-plugin-react-hooks"
-    },
-    {
-      "name": "react-js",
-      "specifier": "eslint-plugin-react"
-    },
-    "eslint-plugin-storybook"
-  ],
+  "jsPlugins": ["eslint-plugin-storybook"],
   "categories": {
     "correctness": "error"
   },
@@ -64,16 +54,13 @@
     "react/display-name": "error",
     "react/jsx-no-comment-textnodes": "error",
     "react/jsx-no-target-blank": "error",
-    "react-js/no-deprecated": "error",
+    "typescript/no-deprecated": "error",
     "react/no-unescaped-entities": "error",
     "react/no-unknown-property": "error",
     "react/require-render-return": "error",
     "react/rules-of-hooks": "error",
-    "hooks-js/component-hook-factories": "error",
     "react/incompatible-library": "warn",
     "react/unsupported-syntax": "warn",
-    "hooks-js/config": "error",
-    "hooks-js/gating": "error",
     "typescript/ban-ts-comment": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
