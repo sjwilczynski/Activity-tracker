@@ -100,6 +100,8 @@ The data model keeps the **client simple** by pushing business logic to the API:
   names and category IDs are exact identities, including those in older backups.
   Matching a potential merge target ignores surrounding whitespace and case, but
   never changes which source history or canonical target the user selected.
+  Editing or restoring category membership preserves those distinct identities;
+  new categories still reject names that differ only by case or edge whitespace.
 
 ### State Management
 
@@ -125,6 +127,10 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
   approximated by plain JSON mocks. These fixtures use explicit Node built-ins
   rather than browser globals. Server acknowledgements and retry races are still
   simulated; this is not a live Firebase/emulator test suite.
+- Compatibility coverage also restores older array-shaped backups, retaining
+  numeric IDs while skipping null placeholders. Cache tests model lost write
+  acknowledgements: a failed response can follow a successful write, so affected
+  queries are invalidated even when the client cannot confirm the outcome.
 
 ```bash
 cd client && bun run test      # Storybook play function tests via Vitest + Playwright

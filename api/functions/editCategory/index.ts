@@ -39,7 +39,9 @@ export async function editCategory(
     return { status: 400, body: "Missing categoryId route parameter." };
   }
 
-  const validation = validateCategory(category);
+  const validation = validateCategory(category, {
+    preserveActivityNameIdentities: true,
+  });
   if (!validation.valid) {
     return { status: 400, body: validation.error };
   }

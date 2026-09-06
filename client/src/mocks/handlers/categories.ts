@@ -66,7 +66,9 @@ export const categoryHandlers = [
     }
 
     const { id } = params;
-    const result = validateCategory(await request.json());
+    const result = validateCategory(await request.json(), {
+      preserveActivityNameIdentities: true,
+    });
     if (!result.valid) return new HttpResponse(result.error, { status: 400 });
     const idx = categories.findIndex((c) => c.id === id);
     if (idx === -1) {

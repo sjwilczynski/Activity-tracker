@@ -214,7 +214,8 @@ export const validateActivityNameInCategory = (
 };
 
 export const validateCategory = (
-  category: unknown
+  category: unknown,
+  { preserveActivityNameIdentities = false } = {}
 ): ValidationResult & { data?: Category } => {
   if (category === null || category === undefined) {
     return { valid: false, error: "Category cannot be null or undefined" };
@@ -260,7 +261,10 @@ export const validateCategory = (
         error: `Activity name at index ${i}: ${result.error}`,
       };
     }
-    const normalized = casted.activityNames[i].trim().toLowerCase();
+    // Editing/restoring existing membership must not conflate distinct histories.
+    const normalized = preserveActivityNameIdentities
+      ? casted.activityNames[i]
+      : casted.activityNames[i].trim().toLowerCase();
     if (seenNames.has(normalized)) {
       return {
         valid: false,

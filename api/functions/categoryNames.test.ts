@@ -86,4 +86,37 @@ describe("category display-name normalization", () => {
     expect((await editCategory(request("PUT", " \t\n"))).status).toBe(400);
     expect(categories.saved.name).toBe("Sports");
   });
+
+  it("edits the category title without rejecting distinct existing activity identities", async () => {
+    categories.saved = {
+      name: "Sports",
+      description: "",
+      active: true,
+      activityNames: ["Running", " Running ", "running"],
+    };
+    const response = await editCategory(
+      new HttpRequest({
+        method: "PUT",
+        url: "http://localhost/api/categories/saved",
+        params: { categoryId: "saved" },
+        headers: {
+          "x-auth-token": "test-token",
+          "Content-Type": "application/json",
+        },
+        body: {
+          string: JSON.stringify({
+            ...categories.saved,
+            name: "  Team Sports  ",
+          }),
+        },
+      })
+    );
+    expect(response.status).toBe(204);
+    expect((await firebaseDB.getCategories("category-user"))?.saved).toEqual({
+      name: "Team Sports",
+      description: "",
+      active: true,
+      activityNames: ["Running", " Running ", "running"],
+    });
+  });
 });

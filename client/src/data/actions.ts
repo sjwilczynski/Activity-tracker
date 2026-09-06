@@ -119,8 +119,10 @@ export async function runAction(
 
   let changed = false;
   let conflict = false;
+  let outcomeUncertain = false;
   try {
     for (const mutation of mutations) {
+      outcomeUncertain = true;
       const response = await apiFetch(getAuthToken, mutation.path, {
         method: mutation.method,
         ...(mutation.body !== undefined && {
@@ -129,6 +131,7 @@ export async function runAction(
         }),
         allowNotOk: true,
       });
+      outcomeUncertain = response.status >= 500;
       if (!response.ok) {
         conflict = response.status === 409;
         const message = response.status < 500 ? await response.text() : "";
@@ -144,8 +147,8 @@ export async function runAction(
     }
     return { ok: true };
   } finally {
-    // A later failure must not leave successful earlier writes hidden in cache.
-    if (changed || conflict) {
+    // Failed acknowledgements do not prove that the server skipped the write.
+    if (changed || conflict || outcomeUncertain) {
       const keys = ["activities", "activitiesWithLimit", "categories"];
       if (
         form.get("intent") === "import" ||

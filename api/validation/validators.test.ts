@@ -825,25 +825,25 @@ describe("validateImportData", () => {
   it("rejects missing activities", () => {
     expect(validateImportData({ categories: {} })).toEqual({
       valid: false,
-      error: "activities must be a non-array object",
+      error: "activities must be an object or legacy array",
     });
   });
 
   it("rejects missing categories", () => {
     expect(validateImportData({ activities: {} })).toEqual({
       valid: false,
-      error: "categories must be a non-array object",
+      error: "categories must be an object or legacy array",
     });
   });
 
-  it("rejects array inputs for activities and categories", () => {
+  it("normalizes empty legacy arrays for activities and categories", () => {
     expect(validateImportData({ activities: [], categories: {} })).toEqual({
-      valid: false,
-      error: "activities must be a non-array object",
+      valid: true,
+      data: { activities: {}, categories: {} },
     });
     expect(validateImportData({ activities: {}, categories: [] })).toEqual({
-      valid: false,
-      error: "categories must be a non-array object",
+      valid: true,
+      data: { activities: {}, categories: {} },
     });
   });
 

@@ -82,3 +82,43 @@ export const ClearSavedDetails: Story = {
     expect(saved).toMatchObject({ name: "Running", date: "2024-02-10" });
   },
 };
+
+export const RestoreLegacyArray: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("All Activities");
+    const record = { name: "Running", date: "2024-02-10", timeSpent: 0 };
+    const category = {
+      name: "Sports",
+      description: "",
+      active: true,
+      activityNames: ["Running"],
+    };
+    await userEvent.click(canvas.getByRole("button", { name: /upload/i }));
+    const dialog = within(await screen.findByRole("dialog"));
+    await userEvent.upload(
+      dialog.getByLabelText(/select file/i, { selector: "input" }),
+      new File(
+        [
+          JSON.stringify({
+            activities: [null, record],
+            categories: [null, category],
+          }),
+        ],
+        "old-backup.json",
+        { type: "application/json" }
+      )
+    );
+    await userEvent.click(dialog.getByRole("button", { name: "Upload" }));
+    await waitFor(() =>
+      expect(
+        screen.getByText("Successfully uploaded the file")
+      ).toBeInTheDocument()
+    );
+    const exported: UserData = await (
+      await fetch("/api/export", { headers })
+    ).json();
+    expect(exported.activities).toEqual({ "1": record });
+    expect(exported.categories).toEqual({ "1": category });
+  },
+};

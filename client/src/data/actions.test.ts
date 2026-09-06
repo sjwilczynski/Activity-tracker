@@ -155,4 +155,44 @@ describe("production client actions", () => {
       true
     );
   });
+
+  it.each(["network", "server"])(
+    "refreshes all restored data after an uncertain %s acknowledgement",
+    async (failure) => {
+      let persisted = false;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => {
+          persisted = true;
+          if (failure === "network") throw new Error("Response lost");
+          return new Response("Internal secret", { status: 500 });
+        })
+      );
+      const ctx = context();
+      const operation = runAction(
+        formRequest({
+          intent: "import",
+          importData: JSON.stringify({ activities: {}, categories: {} }),
+        }),
+        ctx
+      );
+      if (failure === "network") {
+        await expect(operation).rejects.toThrow("Response lost");
+      } else {
+        await expect(operation).resolves.toEqual({
+          error: "Request failed (status: 500)",
+          status: 500,
+        });
+      }
+      expect(persisted).toBe(true);
+      for (const key of [
+        "activities",
+        "activitiesWithLimit",
+        "categories",
+        "preferences",
+      ]) {
+        expect(ctx.queryClient.getQueryState([key])?.isInvalidated).toBe(true);
+      }
+    }
+  );
 });

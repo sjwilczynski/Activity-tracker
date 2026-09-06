@@ -156,6 +156,21 @@ describe("backup round trip", () => {
     ).toEqual([]);
   });
 
+  it("restores an old numeric-array export without renumbering IDs", async () => {
+    const legacy = {
+      activities: [null, backup.activities.first],
+      categories: [null, backup.categories.sports],
+      preferences: backup.preferences,
+    };
+    expect(isImportDataValid(legacy)).toBe(true);
+    expect((await importData(request("POST", legacy))).status).toBe(200);
+    expect((await exportData(request("GET"))).jsonBody).toEqual({
+      activities: { "1": backup.activities.first },
+      categories: { "1": backup.categories.sports },
+      preferences: backup.preferences,
+    });
+  });
+
   it.each([["0", "1"], ["0", "2"], ["1"], ["2", "10"]])(
     "round-trips numeric IDs %j through actual Firebase snapshots",
     async (...ids) => {
