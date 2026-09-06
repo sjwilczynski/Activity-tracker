@@ -47,7 +47,9 @@ export const AddPeriodInteraction: Story = {
     });
 
     await step("Select year 2024", async () => {
-      const yearTrigger = canvas.getByRole("combobox", { name: /year/i });
+      const yearTrigger = await canvas.findByRole("combobox", {
+        name: /year/i,
+      });
       await userEvent.click(yearTrigger);
       const yearOption = await screen.findByRole("option", { name: "2024" });
       await userEvent.click(yearOption);
@@ -55,7 +57,7 @@ export const AddPeriodInteraction: Story = {
 
     await step("Add the period", async () => {
       await userEvent.click(
-        canvas.getByRole("button", { name: /add period/i })
+        await canvas.findByRole("button", { name: /add period/i })
       );
     });
 

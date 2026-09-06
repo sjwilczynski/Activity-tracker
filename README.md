@@ -28,6 +28,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **TanStack Form** for form state and validation
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
 - **shadcn/ui** components built on Radix UI primitives
+- **cn** for Tailwind class merging, re-exported from `@/utils/cn`; Radix wrappers use per-primitive `radix-ui/*` imports.
 - **Chart.js** with `react-chartjs-2` for data visualization
 - **Vite 8** as build tool with HMR and PWA plugin; native **TypeScript 7** checks run separately
 - **Storybook 10** with play functions for component and interaction testing

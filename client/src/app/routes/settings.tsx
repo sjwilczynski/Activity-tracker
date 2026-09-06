@@ -14,8 +14,14 @@ export async function clientLoader() {
   const { queryClient, getAuthToken, authService } = getLoadContext();
   await authService.waitForAuth();
   await Promise.all([
-    queryClient.ensureQueryData(activitiesQueryOptions(getAuthToken)),
-    queryClient.ensureQueryData(categoriesQueryOptions(getAuthToken)),
+    queryClient.query({
+      ...activitiesQueryOptions(getAuthToken),
+      staleTime: "static",
+    }),
+    queryClient.query({
+      ...categoriesQueryOptions(getAuthToken),
+      staleTime: "static",
+    }),
   ]);
   return null;
 }

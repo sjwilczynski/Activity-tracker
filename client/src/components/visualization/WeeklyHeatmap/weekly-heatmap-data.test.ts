@@ -1,7 +1,9 @@
 import {
   addWeeks,
+  format,
   getISOWeek,
   getISOWeekYear,
+  parseISO,
   startOfWeek,
   subWeeks,
 } from "date-fns";
@@ -144,6 +146,31 @@ describe("buildWeeklyHeatmap", () => {
     expect(latest.isoYear).toBe(2020);
     expect(latest.count).toBe(1);
   });
+
+  it.each([
+    ["2024-03-10", "2024-03-04", "2024-03-11"],
+    ["2024-03-31", "2024-03-25", "2024-04-01"],
+    ["2024-10-27", "2024-10-21", "2024-10-28"],
+    ["2024-11-03", "2024-10-28", "2024-11-04"],
+  ])(
+    "keeps Sunday %s and the next Monday in adjacent weeks across DST",
+    (sunday, mondayBefore, mondayAfter) => {
+      const buckets = buildWeeklyHeatmap(
+        [activity(parseISO(sunday)), activity(parseISO(mondayAfter))],
+        { endDate: parseISO(mondayAfter), weeks: 2 }
+      );
+
+      expect(buckets.map((bucket) => bucket.count)).toEqual([1, 1]);
+      expect(
+        buckets.map((bucket) => format(bucket.weekStart, "yyyy-MM-dd"))
+      ).toEqual([mondayBefore, mondayAfter]);
+      expect(format(buckets[0].weekEnd, "yyyy-MM-dd")).toBe(sunday);
+      expect(buckets.every((bucket) => bucket.weekStart.getHours() === 0)).toBe(
+        true
+      );
+      expect(buckets[0].weekEnd.getHours()).toBe(23);
+    }
+  );
 });
 
 describe("getMonthLabels", () => {

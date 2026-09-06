@@ -141,6 +141,18 @@ export const EditRowInteraction: Story = {
         ).toBeInTheDocument();
       });
 
+      const dialog = within(screen.getByRole("dialog"));
+      await expect(
+        dialog.getByRole("combobox", { name: /activity name/i })
+      ).toHaveTextContent("Running");
+      await expect(dialog.getByLabelText("Time Spent")).toHaveValue(45);
+      await expect(dialog.getByLabelText("Description")).toHaveValue(
+        "Morning run in the park, felt great!"
+      );
+      await expect(
+        dialog.getByRole("button", { name: /save changes/i })
+      ).toBeDisabled();
+
       await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
       await waitFor(async () => {

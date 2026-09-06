@@ -68,7 +68,7 @@ export const ClearSavedDetails: Story = {
     await userEvent.click(dialog.getByRole("combobox", { name: "Intensity" }));
     await userEvent.click(await screen.findByRole("option", { name: "None" }));
     await userEvent.click(
-      dialog.getByRole("button", { name: /save changes/i })
+      await dialog.findByRole("button", { name: /save changes/i })
     );
     await waitFor(() =>
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()

@@ -10,9 +10,10 @@ export { RouteErrorBoundary as ErrorBoundary };
 export async function clientLoader() {
   const { queryClient, getAuthToken, authService } = getLoadContext();
   await authService.waitForAuth();
-  await queryClient.ensureQueryData(
-    activitiesWithLimitQueryOptions(getAuthToken)
-  );
+  await queryClient.query({
+    ...activitiesWithLimitQueryOptions(getAuthToken),
+    staleTime: "static",
+  });
   return null;
 }
 
