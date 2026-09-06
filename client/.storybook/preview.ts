@@ -3,6 +3,7 @@ import { Chart } from "chart.js";
 import MockDate from "mockdate";
 import { mswLoader } from "msw-storybook-addon/csf3";
 import { setupWorker } from "msw/browser";
+import { toast } from "sonner";
 import { configure, sb } from "storybook/test";
 import "../src/app/globals.css";
 import { actionRouting } from "../src/mocks/actionRouting";
@@ -25,6 +26,7 @@ sb.mock(import("../src/auth/useAuth.ts"));
 
 const preview: Preview = {
   beforeEach: () => {
+    toast.dismiss();
     resetActivities();
     resetCategories();
     resetPreferences();

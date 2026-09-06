@@ -132,6 +132,9 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
 
 - Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
 - **MSW (Mock Service Worker)** is used extensively to mock all API responses at the network level, providing realistic test data without a backend. MSW handlers cover all 19 API endpoints with representative datasets
+- Storybook resets both mutable mock data and Sonner notifications before each
+  story. Sonner replays active notifications when a new toaster mounts; without
+  dismissal, a previous story's success message can falsely signal completion.
 - API tests use **Vitest** with an in-memory Firebase mock for fast, isolated database operation testing
 - Regression coverage follows export -> upload -> restore and edit -> save -> read,
   rather than treating a success toast or closed dialog as proof of persistence.
