@@ -218,13 +218,9 @@ export const AddWithDetailsInteraction: Story = {
       });
     });
 
-    await step("Fill in the date", async () => {
-      // There are two Date labels on the page (quick form + dialog).
-      // The dialog one is the last one rendered in the portal.
-      const dateInputs = screen.getAllByLabelText("Date");
-      const dateInput = dateInputs[dateInputs.length - 1];
-      await userEvent.clear(dateInput);
-      await userEvent.type(dateInput, "2024-02-10");
+    await step("Use the suggested next activity date", async () => {
+      const dialog = within(screen.getByRole("dialog"));
+      await expect(dialog.getByLabelText("Date")).toHaveValue("2024-02-11");
     });
 
     await step("Select an activity", async () => {
@@ -248,6 +244,12 @@ export const AddWithDetailsInteraction: Story = {
       await userEvent.click(intensityTrigger);
       const lowOption = await screen.findByRole("option", { name: /low/i });
       await userEvent.click(lowOption);
+      // Select now retains its modal layer through the exit animation.
+      await waitFor(async () => {
+        await expect(
+          screen.queryByRole("listbox", { hidden: true })
+        ).not.toBeInTheDocument();
+      });
     });
 
     await step("Fill time spent and description", async () => {
@@ -275,6 +277,32 @@ export const AddWithDetailsInteraction: Story = {
         ).not.toBeInTheDocument();
       });
     });
+
+    await step(
+      "Reopen after success with fresh detailed defaults",
+      async () => {
+        const trigger = canvas.getByRole("button", {
+          name: /add with details/i,
+        });
+        await waitFor(async () => {
+          await expect(trigger).toHaveFocus();
+        });
+        await userEvent.click(trigger);
+        const dialog = within(await screen.findByRole("dialog"));
+        await expect(dialog.getByLabelText("Date")).toHaveValue("2024-02-12");
+        await expect(
+          dialog.getByRole("combobox", { name: /activity name/i })
+        ).toHaveTextContent("Search activities...");
+        await expect(
+          dialog.getByRole("combobox", { name: /intensity/i })
+        ).toHaveTextContent("None");
+        await expect(dialog.getByLabelText("Time Spent")).toHaveValue(null);
+        await expect(dialog.getByLabelText("Description")).toHaveValue("");
+        await expect(
+          dialog.getByRole("button", { name: /log activity/i })
+        ).toBeEnabled();
+      }
+    );
   },
 };
 

@@ -9,7 +9,10 @@ export async function clientLoader() {
   const { queryClient, getAuthToken, authService } = getLoadContext();
   // Wait for auth to initialize (loaders run in parallel, so parent's waitForAuth may not have completed)
   await authService.waitForAuth();
-  await queryClient.ensureQueryData(activitiesQueryOptions(getAuthToken));
+  await queryClient.query({
+    ...activitiesQueryOptions(getAuthToken),
+    staleTime: "static",
+  });
   return null;
 }
 

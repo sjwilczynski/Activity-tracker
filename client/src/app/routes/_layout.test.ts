@@ -38,18 +38,54 @@ describe("authenticated layout loader", () => {
   });
 
   it("keeps optional preference failures out of the route error boundary", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("Network unavailable"))
-    );
+    const error = new Error("Network unavailable");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(error));
 
     await expect(clientLoader()).resolves.toBeNull();
     await vi.waitFor(() => {
       expect(
         queryClient.getQueryState(
           preferencesQueryOptions(getAuthToken).queryKey
-        )?.status
-      ).toBe("error");
+        )
+      ).toMatchObject({ status: "error", error, data: undefined });
     });
+  });
+
+  it("does not wait for optional preferences that remain pending indefinitely", async () => {
+    const fetchMock = vi.fn(() => new Promise<Response>(() => {}));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(clientLoader()).resolves.toBeNull();
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      queryClient.getQueryState(preferencesQueryOptions(getAuthToken).queryKey)
+    ).toMatchObject({ status: "pending", fetchStatus: "fetching" });
+  });
+
+  it("reuses cached preferences but refetches them after invalidation", async () => {
+    const queryKey = preferencesQueryOptions(getAuthToken).queryKey;
+    const cachedPreferences = {
+      groupByCategory: true,
+      funAnimations: true,
+      isLightTheme: true,
+    };
+    const updatedPreferences = { ...cachedPreferences, isLightTheme: false };
+    queryClient.setQueryData(queryKey, cachedPreferences, { updatedAt: 1 });
+    const fetchMock = vi.fn(async () => Response.json(updatedPreferences));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(clientLoader()).resolves.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    await queryClient.invalidateQueries({ queryKey, refetchType: "none" });
+    await expect(clientLoader()).resolves.toBeNull();
+
+    await vi.waitFor(() => {
+      expect(queryClient.getQueryData(queryKey)).toEqual(updatedPreferences);
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

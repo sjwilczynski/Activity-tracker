@@ -23,7 +23,9 @@ export async function clientLoader() {
   }
 
   // Preferences are optional; keep their loading and errors in the query cache.
-  void queryClient.prefetchQuery(preferencesQueryOptions(getAuthToken));
+  void queryClient
+    .query(preferencesQueryOptions(getAuthToken))
+    .catch(() => undefined);
 
   return null;
 }

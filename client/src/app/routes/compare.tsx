@@ -8,7 +8,10 @@ export { RouteErrorBoundary as ErrorBoundary };
 export async function clientLoader() {
   const { queryClient, getAuthToken, authService } = getLoadContext();
   await authService.waitForAuth();
-  await queryClient.ensureQueryData(activitiesQueryOptions(getAuthToken));
+  await queryClient.query({
+    ...activitiesQueryOptions(getAuthToken),
+    staleTime: "static",
+  });
   return null;
 }
 

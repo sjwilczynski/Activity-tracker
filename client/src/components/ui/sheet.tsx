@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import { Dialog as SheetPrimitive } from "radix-ui";
+import * as SheetPrimitive from "radix-ui/dialog";
 import * as React from "react";
 import { cn } from "@/utils/cn";
 
