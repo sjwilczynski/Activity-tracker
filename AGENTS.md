@@ -8,6 +8,8 @@ Sports activity tracking web app (React 19 + Azure Functions + Firebase).
 bun install                       # Install dependencies
 bun run dev                       # Start frontend (:3000) and API (:7071)
 bun run --filter '*' build        # Build both workspaces
+bun run --cwd client typecheck    # Route typegen + native tsc --noEmit
+bun run --cwd api typecheck       # Native tsc --noEmit (needs Firebase config)
 bun run lint                      # Oxlint (zero warnings)
 bun run lint:fix                  # Apply safe lint fixes
 bun run format                    # Format with Oxfmt
@@ -43,6 +45,7 @@ Use a supported Node 22 (>=22.22) or 24+ runtime on PATH. Bun lifecycle scripts 
 - **Route actions**: Handle mutations via `intent` field (edit, delete, delete-all).
 - **State**: Server state via React Query. Client preferences (theme, chart grouping) stored in Firebase and accessed via React Query hooks — no separate client state library.
 - **Tooling**: TypeScript 7, Oxfmt, and Oxlint's recommended type-aware checks for both workspaces. Prefer native lint rules; use Oxlint's JS plugin API for remaining rule coverage.
+- **Type checks**: Keep `tsc --noEmit` separate from type-aware linting. Client builds and CI enforce it after route type generation; API deployment CI enforces it after providing Firebase config.
 
 ## Testing
 

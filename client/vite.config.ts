@@ -5,7 +5,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig, type UserConfig } from "vite";
-import checker from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
 import { reactCompiler } from "./vite/react-compiler.ts";
 const dirname = import.meta.dirname;
@@ -94,7 +93,6 @@ export default defineConfig(async (): Promise<UserConfig> => {
       tailwindcss(),
       reactPlugin,
       reactCompiler(),
-      ...(!isVitest ? [checker({ typescript: true })] : []),
     ],
     resolve: {
       tsconfigPaths: true,

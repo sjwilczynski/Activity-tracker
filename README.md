@@ -29,7 +29,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
 - **shadcn/ui** components built on Radix UI primitives
 - **Chart.js** with `react-chartjs-2` for data visualization
-- **Vite 8** as build tool with HMR, TypeScript checker, and PWA plugin
+- **Vite 8** as build tool with HMR and PWA plugin; native **TypeScript 7** checks run separately
 - **Storybook 10** with play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
 
@@ -129,7 +129,15 @@ transitive framework dependency, but is not our React Compiler implementation.
 
 ```bash
 bun run --filter '*' build      # Build both frontend and API
+bun run --cwd client typecheck  # Generate route types, then tsc --noEmit
+bun run --cwd api typecheck     # tsc --noEmit (requires Firebase config)
 ```
+
+Client production, end-to-end and Storybook builds run the client typecheck
+first and stop on errors. CI also checks the client explicitly before tests;
+the deployment job checks the API after supplying its Firebase configuration.
+Development servers rely on editor TypeScript diagnostics rather than a Vite
+type-checking overlay.
 
 ### Linting & Formatting
 

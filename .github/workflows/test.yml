@@ -19,6 +19,8 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           install-playwright: "true"
+      - name: Typecheck client
+        run: bun run --cwd client typecheck
       - name: test
         run: bun run --cwd client test
 
