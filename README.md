@@ -48,8 +48,9 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 ## Quick Start
 
-Install Bun and a supported Node 22 (>=22.22) or Node 24+ runtime. Keep Node on
-PATH: some dependency lifecycle and build scripts invoke it even when run through Bun.
+Install Bun and a supported Node 22 (>=22.22.1) or Node 24+ runtime, plus Git
+2.32+ for lint-staged. Keep Node on PATH: some dependency lifecycle and build
+scripts invoke it even when run through Bun.
 
 ```bash
 bun install    # Install dependencies
