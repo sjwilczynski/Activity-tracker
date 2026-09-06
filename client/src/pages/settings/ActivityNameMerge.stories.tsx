@@ -2,12 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import type { ActivityRecordWithIdServer } from "../../data";
+import { actionRouting } from "../../mocks/actionRouting";
 import { handlers } from "../../mocks/handlers";
 import { Settings } from "../Settings";
 
 const meta: Meta<typeof Settings> = {
   title: "Pages/Activity name merge",
   component: Settings,
+  parameters: { reactRouter: actionRouting("settings") },
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

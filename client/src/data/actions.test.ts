@@ -25,11 +25,41 @@ function context() {
 }
 
 describe("production client actions", () => {
+  it("rejects a settings mutation submitted to Welcome without touching transport or caches", async () => {
+    const fetch = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    const ctx = context();
+    expect(
+      await runAction(
+        formRequest({
+          intent: "rename-activity",
+          oldName: "Running",
+          newName: "Jogging",
+        }),
+        ctx,
+        "welcome"
+      )
+    ).toEqual({ error: "Unknown intent" });
+    expect(fetch).not.toHaveBeenCalled();
+    for (const key of [
+      "activities",
+      "activitiesWithLimit",
+      "categories",
+      "preferences",
+    ]) {
+      expect(ctx.queryClient.getQueryState([key])?.isInvalidated).toBe(false);
+    }
+  });
+
   it("rejects unsupported intents instead of reporting success", async () => {
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
     expect(
-      await runAction(formRequest({ intent: "not-supported" }), context())
+      await runAction(
+        formRequest({ intent: "not-supported" }),
+        context(),
+        "settings"
+      )
     ).toEqual({ error: "Unknown intent" });
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -48,10 +78,11 @@ describe("production client actions", () => {
       oldName: "Running",
       newName: "Yoga",
     };
-    await runAction(formRequest(values), context());
+    await runAction(formRequest(values), context(), "settings");
     await runAction(
       formRequest({ ...values, merge: "true", targetCategoryId: "wellness" }),
-      context()
+      context(),
+      "settings"
     );
     expect(requests).toEqual([
       { oldName: "Running", newName: "Yoga" },
@@ -77,7 +108,8 @@ describe("production client actions", () => {
           oldName: "Running",
           newName: "Yoga",
         }),
-        ctx
+        ctx,
+        "settings"
       )
     ).toEqual({ error: "Target changed", status: 409 });
     expect(ctx.queryClient.getQueryState(["categories"])?.isInvalidated).toBe(
@@ -100,11 +132,12 @@ describe("production client actions", () => {
           intent: "delete-category-with-activities",
           id: "sports",
         }),
-        ctx
+        ctx,
+        "settings"
       )
     ).toEqual({
       error:
-        "Activities changed, but the category could not be deleted. Request failed (status: 500)",
+        "Activities deleted, but the category could not be deleted. Request failed (status: 500)",
       status: 500,
     });
     expect(ctx.queryClient.getQueryState(["activities"])?.isInvalidated).toBe(
@@ -128,7 +161,8 @@ describe("production client actions", () => {
           id: "sports",
           targetCategoryId: "wellness",
         }),
-        ctx
+        ctx,
+        "settings"
       )
     ).rejects.toThrow("Offline");
     expect(ctx.queryClient.getQueryState(["categories"])?.isInvalidated).toBe(
@@ -148,7 +182,8 @@ describe("production client actions", () => {
           intent: "import",
           importData: JSON.stringify({ activities: {}, categories: {} }),
         }),
-        ctx
+        ctx,
+        "activity-list"
       )
     ).toEqual({ ok: true });
     expect(ctx.queryClient.getQueryState(["preferences"])?.isInvalidated).toBe(
@@ -174,7 +209,8 @@ describe("production client actions", () => {
           intent: "import",
           importData: JSON.stringify({ activities: {}, categories: {} }),
         }),
-        ctx
+        ctx,
+        "activity-list"
       );
       if (failure === "network") {
         await expect(operation).rejects.toThrow("Response lost");

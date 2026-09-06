@@ -68,6 +68,9 @@ cross-cutting data behavior:
   including conflict handling when transactions retry against newer data.
 - `client/src/data/actions.ts` implements mutations and cache invalidation for
   both production routes and Storybook; only the HTTP adapter changes.
+  `action-plan.ts` keeps each route's allowed intents and each mutation's affected
+  queries and failure context together. The executor knows no workflow-specific
+  category-deletion messages.
 
 ### Client → API Communication
 
@@ -109,6 +112,18 @@ The data model keeps the **client simple** by pushing business logic to the API:
 - **Client state**: React Router loaders pre-fetch data, client actions handle mutations (edit, delete, bulk ops) via `useFetcher`
 - **UI state**: Component-local state with `useState`; theme preference synced to `<html>` class for Tailwind dark mode
 
+### Mutation policies
+
+- Welcome accepts add/import; Activity List accepts edit/delete/delete-all/import;
+  Settings accepts category and name management plus its `edit-activity` intent.
+  Other intents fail before payload parsing, authentication, or HTTP calls.
+- Entry mutations refresh activity queries only. Category/name mutations also
+  refresh categories because activity responses contain derived membership and
+  active state. Only import refreshes preferences.
+- Each successful, conflicting, or uncertain request contributes its own affected
+  queries. A rejected or never-started step does not invalidate unrelated data.
+  Multi-step failure messages belong to the workflow, not the shared executor.
+
 ## Testing
 
 The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writing-tests)** as the primary testing strategy — stories with `play` functions serve as both living documentation and executable tests. This approach provides [component-level testing](https://storybook.js.org/docs/writing-tests/component-testing) that runs in a real browser, striking the right balance between the isolation of unit tests and the confidence of end-to-end tests.
@@ -131,6 +146,11 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
   numeric IDs while skipping null placeholders. Cache tests model lost write
   acknowledgements: a failed response can follow a successful write, so affected
   queries are invalidated even when the client cannot confirm the outcome.
+- Mutation stories explicitly select the production route via `actionRouting`.
+  Set both the story route and its initial location: leaving the location at `/`
+  renders an empty route rather than exercising the intended page.
+  Keep parameterized failure cases at suite scope so Vitest collects every case,
+  not inside another running test.
 
 ```bash
 cd client && bun run test      # Storybook play function tests via Vitest + Playwright

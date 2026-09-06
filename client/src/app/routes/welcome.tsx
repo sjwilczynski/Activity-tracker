@@ -17,7 +17,7 @@ export async function clientLoader() {
 }
 
 export function clientAction({ request }: Route.ClientActionArgs) {
-  return runAction(request, getLoadContext());
+  return runAction(request, getLoadContext(), "welcome");
 }
 
 export default function Welcome() {

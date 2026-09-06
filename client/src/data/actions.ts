@@ -1,5 +1,8 @@
-import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient, QueryKey } from "@tanstack/react-query";
+import { mutationsFor, type ActionRoute } from "./action-plan";
 import { apiFetch, type GetAuthToken } from "./apiClient";
+
+export type { ActionRoute } from "./action-plan";
 
 export type ActionContext = {
   queryClient: QueryClient;
@@ -10,120 +13,22 @@ export type ActionResult =
   | { ok: true; error?: never; status?: never }
   | { error: string; status?: number; ok?: never };
 
-type Mutation = {
-  path: string;
-  method: string;
-  body?: unknown;
-};
-
-function field(form: FormData, name: string): string {
-  const value = form.get(name);
-  if (typeof value !== "string") throw new Error(`Missing field: ${name}`);
-  return value;
-}
-
-function mutationsFor(form: FormData): Mutation[] | undefined {
-  const json = (name: string): unknown => JSON.parse(field(form, name));
-  const activityPath = () =>
-    `/api/activities/${encodeURIComponent(field(form, "id"))}`;
-  const categoryPath = () =>
-    `/api/categories/${encodeURIComponent(field(form, "id"))}`;
-  switch (form.get("intent")) {
-    case "add":
-      return [
-        { path: "/api/activities", method: "POST", body: json("activities") },
-      ];
-    case "edit":
-    case "edit-activity":
-      return [{ path: activityPath(), method: "PUT", body: json("record") }];
-    case "delete":
-      return [{ path: activityPath(), method: "DELETE" }];
-    case "delete-all":
-      return [{ path: "/api/activities", method: "DELETE" }];
-    case "import":
-      return [
-        { path: "/api/import", method: "POST", body: json("importData") },
-      ];
-    case "add-category":
-      return [
-        { path: "/api/categories", method: "POST", body: json("category") },
-      ];
-    case "edit-category":
-      return [{ path: categoryPath(), method: "PUT", body: json("category") }];
-    case "delete-category-with-activities":
-      return [
-        {
-          path: "/api/activities/delete-by-category",
-          method: "POST",
-          body: { categoryId: field(form, "id") },
-        },
-        { path: categoryPath(), method: "DELETE" },
-      ];
-    case "delete-category-reassign":
-      return [
-        {
-          path: "/api/activities/reassign-category",
-          method: "POST",
-          body: {
-            fromCategoryId: field(form, "id"),
-            toCategoryId: field(form, "targetCategoryId"),
-          },
-        },
-        { path: categoryPath(), method: "DELETE" },
-      ];
-    case "rename-activity":
-      return [
-        {
-          path: "/api/activities/rename",
-          method: "POST",
-          body: {
-            oldName: field(form, "oldName"),
-            newName: field(form, "newName"),
-            ...(form.get("merge") === "true" && {
-              merge: true,
-              targetCategoryId: field(form, "targetCategoryId"),
-            }),
-          },
-        },
-      ];
-    case "assign-category":
-      return [
-        {
-          path: "/api/activities/assign-category",
-          method: "POST",
-          body: {
-            activityName: field(form, "activityName"),
-            categoryId: field(form, "categoryId"),
-          },
-        },
-      ];
-    case "add-activity-name":
-      return [
-        {
-          path: `/api/categories/${encodeURIComponent(field(form, "categoryId"))}/activity-names`,
-          method: "POST",
-          body: { activityName: field(form, "activityName") },
-        },
-      ];
-  }
-}
-
-/** Production routes and Storybook share mutation semantics and invalidation. */
+/** Routes and Storybook share policies, ordered mutations, and their effects. */
 export async function runAction(
   request: Request,
-  { queryClient, getAuthToken }: ActionContext
+  { queryClient, getAuthToken }: ActionContext,
+  route: ActionRoute
 ): Promise<ActionResult> {
-  const form = await request.formData();
-  const mutations = mutationsFor(form);
+  const mutations = mutationsFor(route, await request.formData());
   if (!mutations) return { error: "Unknown intent" };
 
-  let changed = false;
-  let conflict = false;
-  let outcomeUncertain = false;
+  const invalidations = new Set<QueryKey>();
+  let uncertainQueries: QueryKey[] = [];
   try {
     for (const mutation of mutations) {
-      outcomeUncertain = true;
-      const response = await apiFetch(getAuthToken, mutation.path, {
+      const token = await getAuthToken();
+      uncertainQueries = mutation.invalidates;
+      const response = await apiFetch(async () => token, mutation.path, {
         method: mutation.method,
         ...(mutation.body !== undefined && {
           headers: { "Content-Type": "application/json" },
@@ -131,34 +36,26 @@ export async function runAction(
         }),
         allowNotOk: true,
       });
-      outcomeUncertain = response.status >= 500;
+      uncertainQueries = [];
+      if (response.ok || response.status === 409 || response.status >= 500) {
+        mutation.invalidates.forEach((key) => invalidations.add(key));
+      }
       if (!response.ok) {
-        conflict = response.status === 409;
         const message = response.status < 500 ? await response.text() : "";
-        const partial = changed
-          ? "Activities changed, but the category could not be deleted. "
-          : "";
         return {
-          error: `${partial}${message || `Request failed (status: ${response.status})`}`,
+          error: `${mutation.failureContext ?? ""}${message || `Request failed (status: ${response.status})`}`,
           status: response.status,
         };
       }
-      changed = true;
     }
     return { ok: true };
   } finally {
-    // Failed acknowledgements do not prove that the server skipped the write.
-    if (changed || conflict || outcomeUncertain) {
-      const keys = ["activities", "activitiesWithLimit", "categories"];
-      if (
-        form.get("intent") === "import" ||
-        form.get("intent") === "delete-all"
-      ) {
-        keys.push("preferences");
-      }
-      await Promise.all(
-        keys.map((key) => queryClient.invalidateQueries({ queryKey: [key] }))
-      );
-    }
+    // A lost acknowledgement may follow a committed write; unstarted steps have no effects.
+    uncertainQueries.forEach((key) => invalidations.add(key));
+    await Promise.all(
+      [...invalidations].map((queryKey) =>
+        queryClient.invalidateQueries({ queryKey })
+      )
+    );
   }
 }
