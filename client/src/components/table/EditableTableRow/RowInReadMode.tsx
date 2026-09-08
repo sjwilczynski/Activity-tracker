@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
-import { useFetcher } from "react-router";
 import type { ActivityRecordWithId } from "../../../data";
+import { useDeleteActivity } from "../../../data/mutations";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { formatDate, getActivityIcon } from "../../../utils/activity-icons";
 import { cn } from "../../../utils/cn";
@@ -17,13 +17,8 @@ type Props = {
 };
 
 export const RowInReadMode = ({ record, categoryName = "" }: Props) => {
-  const { state, data, submit } = useFetcher<{
-    ok?: boolean;
-    error?: string;
-  }>();
-  const isDeleting = state !== "idle";
-  const isError = state === "idle" && data?.error !== undefined;
-  const isSuccess = state === "idle" && data?.ok === true;
+  const mutation = useDeleteActivity();
+  const { isPending: isDeleting, isError, isSuccess } = mutation;
   const color = getActivityColor(record.name);
 
   useFeedbackToast(
@@ -36,13 +31,7 @@ export const RowInReadMode = ({ record, categoryName = "" }: Props) => {
 
   const deleteActivity = (e: React.MouseEvent) => {
     e.stopPropagation();
-    void submit(
-      {
-        intent: "delete",
-        id: record.id,
-      },
-      { method: "post", action: "/activity-list" }
-    );
+    if (!isDeleting) mutation.mutate(record.id);
   };
 
   return (

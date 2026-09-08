@@ -1,109 +1,49 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { reactRouterParameters } from "storybook-addon-remix-react-router";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { expect, fn, within } from "storybook/test";
 import { RouteErrorBoundary } from "./RouteErrorBoundary";
 
 const meta = {
   title: "States/RouteErrorBoundary",
   component: RouteErrorBoundary,
-  parameters: {
-    // Override the default router config for error boundary testing
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
-  },
+  args: { error: new Error("Request failed"), reset: fn() },
 } satisfies Meta<typeof RouteErrorBoundary>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Placeholder component (never rendered, loader throws first)
-const Placeholder = () => null;
-
-// Loaders that throw Response errors (creates proper route error responses)
-const throw401Loader = () => {
-  throw new Response(null, { status: 401 });
-};
-
-const throw403Loader = () => {
-  throw new Response(null, { status: 403 });
-};
-
-const throw404Loader = () => {
-  throw new Response(null, { status: 404 });
-};
-
-const throw500Loader = () => {
-  throw new Response(null, { status: 500 });
-};
-
-const throwGenericLoader = () => {
-  throw new Error("Something went wrong");
-};
-
 export const Unauthorized: Story = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        element: <Placeholder />,
-        loader: throw401Loader,
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
+  args: { error: Object.assign(new Error("Unauthorized"), { status: 401 }) },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole("heading", { name: "Session Expired" })
+    ).toBeVisible();
   },
 };
 
 export const Forbidden: Story = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        element: <Placeholder />,
-        loader: throw403Loader,
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
-  },
+  args: { error: Object.assign(new Error("Forbidden"), { status: 403 }) },
 };
 
 export const NotFound: Story = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        element: <Placeholder />,
-        loader: throw404Loader,
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
+  args: { error: Object.assign(new Error("Not found"), { status: 404 }) },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole("heading", { name: "Page Not Found" })
+    ).toBeVisible();
   },
 };
 
 export const ServerError: Story = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        element: <Placeholder />,
-        loader: throw500Loader,
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
-  },
+  args: { error: Object.assign(new Error("Server error"), { status: 500 }) },
 };
 
 export const GenericError: Story = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        element: <Placeholder />,
-        loader: throwGenericLoader,
-        errorElement: <RouteErrorBoundary />,
-      },
-    }),
+  args: { error: new Error("Network unavailable") },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole("heading", {
+        name: "Something Went Wrong",
+      })
+    ).toBeVisible();
   },
 };

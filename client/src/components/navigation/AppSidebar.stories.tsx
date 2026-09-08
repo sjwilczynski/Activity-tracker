@@ -1,5 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { reactRouterParameters } from "storybook-addon-remix-react-router";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { expect, screen, userEvent, within } from "storybook/test";
 import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -8,22 +7,17 @@ import { MobileHeader } from "./MobileHeader";
 const meta = {
   title: "Navigation/AppSidebar",
   component: AppSidebar,
-  decorators: [
-    (Story) => (
-      <SidebarProvider>
-        <Story />
-        <SidebarInset>
-          <MobileHeader />
-          <div className="p-4">Page content</div>
-        </SidebarInset>
-      </SidebarProvider>
-    ),
-  ],
+  render: () => (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <MobileHeader />
+        <div className="p-4">Page content</div>
+      </SidebarInset>
+    </SidebarProvider>
+  ),
   parameters: {
-    reactRouter: reactRouterParameters({
-      routing: [{ path: "/welcome", useStoryElement: true }],
-      location: { path: "/welcome" },
-    }),
+    tanstack: { router: { path: "/welcome" } },
   },
 } satisfies Meta<typeof AppSidebar>;
 

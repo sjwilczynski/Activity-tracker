@@ -23,7 +23,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 - **React 19**
 - **TypeScript 7**
-- **React Router v8** with SPA in framework mode
+- **TanStack Router** with generated file routes and client-only rendering
 - **TanStack React Query** for server state management, caching, and optimistic updates
 - **TanStack Form** for form state and validation
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
@@ -31,7 +31,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **cn** for Tailwind class merging, re-exported from `@/utils/cn`; Radix wrappers use per-primitive `radix-ui/*` imports.
 - **Chart.js** with `react-chartjs-2` for data visualization
 - **Vite 8** as build tool with HMR and PWA plugin; native **TypeScript 7** checks run separately
-- **Storybook 10** with play functions for component and interaction testing
+- **Storybook 10** with the official `@storybook/tanstack-react` framework and play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
 
 ### Backend
@@ -68,11 +68,9 @@ cross-cutting data behavior:
   rules. Stored records and enriched display records are separate contracts.
 - `api/database/activityNames.ts` applies name changes in Firebase transactions,
   including conflict handling when transactions retry against newer data.
-- `client/src/data/actions.ts` implements mutations and cache invalidation for
-  both production routes and Storybook; only the HTTP adapter changes.
-  `action-plan.ts` keeps each route's allowed intents and each mutation's affected
-  queries and failure context together. The executor knows no workflow-specific
-  category-deletion messages.
+- The client mutation module uses typed inputs and native Query submission state.
+  Production and Storybook exercise the same ordered writes, affected-query
+  policy, and partial-failure handling; MSW substitutes HTTP responses only.
 
 ### Client → API Communication
 
@@ -81,7 +79,13 @@ cross-cutting data behavior:
 
 ### Authentication Flow
 
-- **Client**: Firebase Auth handles sign-in (Google provider). The auth state is managed via `AuthContext` and a route loader redirects unauthenticated users to `/login`
+- **Client**: Firebase Auth handles Google and email sign-in. A session runtime owns
+  auth initialization, Query/Router lifetime and account-bound tokens.
+  `_authenticated` checks authentication before child loaders and redirects to
+  `/login`, preserving a safe local return destination.
+  The subscribed AuthContext sits above memoized route matches so same-account
+  profile updates render without clearing server data. Explicit expired-session
+  recovery signs out before reopening login.
 - **API**: Each function extracts the Firebase ID token from the `x-auth-token` header, verifies it via the Admin SDK, and uses the resulting `userId` to scope all database operations
 
 ### Data Model
@@ -111,14 +115,19 @@ The data model keeps the **client simple** by pushing business logic to the API:
 ### State Management
 
 - **Server state**: TanStack React Query manages all API data with automatic caching, background refetching, and cache invalidation on mutations
-- **Client state**: React Router loaders pre-fetch data, client actions handle mutations (edit, delete, bulk ops) via `useFetcher`
+- **Routing**: File-route context creates concrete query options reused by loaders
+  and Query observers. Query owns freshness; loaders coordinate fetching early.
+  Imperative cache-first reads use a local `"static"` override, never static
+  observer options. Search parameters remain compatible with existing URLs.
+- **Mutations**: Typed Query mutations handle edit/delete/bulk operations and
+  targeted reconciliation; UI callers own form reset and dialog dismissal.
 - **UI state**: Component-local state with `useState`; theme preference synced to `<html>` class for Tailwind dark mode
 
 ### Mutation policies
 
-- Welcome accepts add/import; Activity List accepts edit/delete/delete-all/import;
-  Settings accepts category and name management plus its `edit-activity` intent.
-  Other intents fail before payload parsing, authentication, or HTTP calls.
+- Callers submit typed operations rather than routing writes through page URLs
+  and FormData intents. Inputs preserve shared validation and exact name/entry
+  identity rules.
 - Entry mutations refresh activity queries only. Category/name mutations also
   refresh categories because activity responses contain derived membership and
   active state. Only import refreshes preferences.
@@ -131,6 +140,19 @@ The data model keeps the **client simple** by pushing business logic to the API:
 The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writing-tests)** as the primary testing strategy — stories with `play` functions serve as both living documentation and executable tests. This approach provides [component-level testing](https://storybook.js.org/docs/writing-tests/component-testing) that runs in a real browser, striking the right balance between the isolation of unit tests and the confidence of end-to-end tests.
 
 - Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
+- The native TanStack framework clones the generated route tree and injects each
+  story at `parameters.tanstack.router.path`. Use `query` for search state and
+  `routeOverrides` for story-specific loaders/layouts. `.storybook/tanstack.tsx`
+  supplies application defaults and Query/auth providers; MSW initialization and
+  per-story services complete before the framework loads routes.
+- Router-dependent story layouts belong inside `render` or a route component
+  override: ordinary decorators wrap the framework's router. Loading stories can
+  override the leaf prefetch while their real Query hook remains pending.
+  Framework Link mocks record attempts; `useNavigate` remains real, and full Link
+  navigation is covered by application E2E flows.
+- Live arg updates require the running Storybook preview channel. The dedicated
+  `LiveStoryArgs` example is interactive (`!test`); its behavior was exercised in
+  actual Storybook rather than treated as a Vitest portable-story capability.
 - **MSW (Mock Service Worker)** is used extensively to mock all API responses at the network level, providing realistic test data without a backend. MSW handlers cover all 19 API endpoints with representative datasets
 - Storybook resets both mutable mock data and Sonner notifications before each
   story. Sonner replays active notifications when a new toaster mounts; without
@@ -154,7 +176,7 @@ The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writi
 - Mutation stories explicitly select the production route via `actionRouting`.
   Set both the story route and its initial location: leaving the location at `/`
   renders an empty route rather than exercising the intended page.
-  Keep parameterized failure cases at suite scope so Vitest collects every case,
+  Keep parameterized failure cases at suite scope so Vitest and Playwright collect every case,
   not inside another running test.
 
 ```bash
@@ -202,6 +224,13 @@ first and stop on errors. CI also checks the client explicitly before tests;
 the deployment job checks the API after supplying its Firebase configuration.
 Development servers rely on editor TypeScript diagnostics rather than a Vite
 type-checking overlay.
+
+`client/tsr.config.json` is shared by route generation and the Vite Router plugin.
+Commit `routeTree.gen.ts` after changing routes; CI rejects generated drift.
+Colocated tests/stories are excluded from route discovery. Browser tests explicitly
+prebundle Router, Query, and Zod to avoid optimizer reloads when split routes load.
+Production and E2E builds use separate HTML entry modules; mock auth is excluded
+from the production entry.
 
 ### Linting & Formatting
 

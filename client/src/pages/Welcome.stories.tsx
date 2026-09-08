@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -11,14 +10,16 @@ import { Welcome } from "./Welcome";
 const meta: Meta<typeof Welcome> = {
   title: "Pages/Welcome",
   component: Welcome,
-  parameters: { reactRouter: actionRouting("welcome") },
+  parameters: { tanstack: { router: { path: "/welcome" } } },
 };
 
 export default meta;
 type Story = StoryObj<typeof Welcome>;
 
 async function selectActivity(canvas: ReturnType<typeof within>, name: string) {
-  const combobox = canvas.getByRole("combobox", { name: /activity name/i });
+  const combobox = await canvas.findByRole("combobox", {
+    name: /activity name/i,
+  });
   await userEvent.click(combobox);
   const searchInput = await screen.findByPlaceholderText(/search activities/i);
   await userEvent.type(searchInput, name);
@@ -402,7 +403,9 @@ export const FuzzySearch: Story = {
       await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    const combobox = canvas.getByRole("combobox", { name: /activity name/i });
+    const combobox = await canvas.findByRole("combobox", {
+      name: /activity name/i,
+    });
     await userEvent.click(combobox);
     const searchInput =
       await screen.findByPlaceholderText(/search activities/i);

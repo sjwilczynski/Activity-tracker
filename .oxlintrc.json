@@ -24,7 +24,8 @@
     "**/node_modules/",
     "**/storybook-static/",
     "**/mockServiceWorker.js",
-    "client/.react-router",
+    "client/src/app/routeTree.gen.ts",
+    "client/.tanstack",
     "client/dev-dist"
   ],
   "rules": {

@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { actionRouting } from "../mocks/actionRouting";
 import {
   darkPreferencesHandler,
   handlers as defaultHandlers,
@@ -11,7 +10,7 @@ import { ActivityList } from "./ActivityList";
 const meta: Meta<typeof ActivityList> = {
   title: "Pages/ActivityList",
   component: ActivityList,
-  parameters: { reactRouter: actionRouting("activity-list") },
+  parameters: { tanstack: { router: { path: "/activity-list" } } },
 };
 
 export default meta;
@@ -51,6 +50,13 @@ export const Mobile: Story = {
 
 export const Loading: Story = {
   parameters: {
+    tanstack: {
+      router: {
+        routeOverrides: {
+          "/_authenticated/activity-list": { loader: () => undefined },
+        },
+      },
+    },
     msw: {
       handlers: [
         http.get("*/api/activities", async () => {
@@ -61,7 +67,7 @@ export const Loading: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("progressbar")).toBeInTheDocument();
+    await expect(await canvas.findByRole("progressbar")).toBeInTheDocument();
   },
 };
 
@@ -78,10 +84,30 @@ export const ErrorState: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await canvas.findByText(/an error has occurred/i);
+    await canvas.findByText(/something went wrong/i);
     await expect(
-      canvas.getByRole("button", { name: /back to homepage/i })
+      canvas.getByRole("button", { name: /try again/i })
     ).toBeInTheDocument();
+  },
+};
+
+export const RetryAfterError: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(
+          "*/api/activities",
+          () => new HttpResponse(null, { status: 500 }),
+          { once: true }
+        ),
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByRole("heading", { name: "Something Went Wrong" });
+    await userEvent.click(canvas.getByRole("button", { name: "Try Again" }));
+    await expect(await canvas.findByText("All Activities")).toBeVisible();
   },
 };
 

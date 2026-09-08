@@ -4,15 +4,20 @@ import {
   getAuth,
   onAuthStateChanged,
   signOut,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 import type { User } from "./AuthContext";
 import config from "./firebaseConfig.json";
+import type { AuthAdapter } from "./types";
 
 const app = initializeApp(config);
 
 type AuthStateCallback = (user: User | null) => void;
 
-class AuthService {
+class AuthService implements AuthAdapter {
   private auth = getAuth(app);
   private currentUser: FirebaseUser | null = null;
   private authInitialized = false;
@@ -63,6 +68,18 @@ class AuthService {
 
   async signOut(): Promise<void> {
     return signOut(this.auth);
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    await signInWithPopup(this.auth, new GoogleAuthProvider());
+  }
+
+  async signInWithEmail(email: string, password: string): Promise<void> {
+    await signInWithEmailAndPassword(this.auth, email, password);
+  }
+
+  async signUp(email: string, password: string): Promise<void> {
+    await createUserWithEmailAndPassword(this.auth, email, password);
   }
 
   onAuthStateChanged(callback: AuthStateCallback): () => void {

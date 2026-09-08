@@ -1,61 +1,118 @@
-import type { QueryClient, QueryKey } from "@tanstack/react-query";
-import { mutationsFor, type ActionRoute } from "./action-plan";
-import { apiFetch, type GetAuthToken } from "./apiClient";
+import {
+  activityQueries,
+  categoryQueries,
+  allQueries,
+  addActivitiesPlan,
+  addActivityNamePlan,
+  addCategoryPlan,
+  assignActivityCategoryPlan,
+  deleteActivityPlan,
+  deleteAllActivitiesPlan,
+  deleteCategoryPlan,
+  editActivityPlan,
+  editCategoryPlan,
+  renameActivityPlan,
+  restoreBackupPlan,
+} from "./action-plan";
+import { writeMutationOptions, type MutationContext } from "./mutation-write";
 
-export type { ActionRoute } from "./action-plan";
+export function addActivitiesMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "add-activities",
+    addActivitiesPlan,
+    activityQueries
+  );
+}
 
-export type ActionContext = {
-  queryClient: QueryClient;
-  getAuthToken: GetAuthToken;
-};
+export function editActivityMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "edit-activity",
+    editActivityPlan,
+    activityQueries
+  );
+}
 
-export type ActionResult =
-  | { ok: true; error?: never; status?: never }
-  | { error: string; status?: number; ok?: never };
+export function deleteActivityMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "delete-activity",
+    deleteActivityPlan,
+    activityQueries
+  );
+}
 
-/** Routes and Storybook share policies, ordered mutations, and their effects. */
-export async function runAction(
-  request: Request,
-  { queryClient, getAuthToken }: ActionContext,
-  route: ActionRoute
-): Promise<ActionResult> {
-  const mutations = mutationsFor(route, await request.formData());
-  if (!mutations) return { error: "Unknown intent" };
+export function deleteAllActivitiesMutationOptions(context: MutationContext) {
+  return writeMutationOptions<void>(
+    context,
+    "delete-all-activities",
+    deleteAllActivitiesPlan,
+    activityQueries
+  );
+}
 
-  const invalidations = new Set<QueryKey>();
-  let uncertainQueries: QueryKey[] = [];
-  try {
-    for (const mutation of mutations) {
-      const token = await getAuthToken();
-      uncertainQueries = mutation.invalidates;
-      const response = await apiFetch(async () => token, mutation.path, {
-        method: mutation.method,
-        ...(mutation.body !== undefined && {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(mutation.body),
-        }),
-        allowNotOk: true,
-      });
-      uncertainQueries = [];
-      if (response.ok || response.status === 409 || response.status >= 500) {
-        mutation.invalidates.forEach((key) => invalidations.add(key));
-      }
-      if (!response.ok) {
-        const message = response.status < 500 ? await response.text() : "";
-        return {
-          error: `${mutation.failureContext ?? ""}${message || `Request failed (status: ${response.status})`}`,
-          status: response.status,
-        };
-      }
-    }
-    return { ok: true };
-  } finally {
-    // A lost acknowledgement may follow a committed write; unstarted steps have no effects.
-    uncertainQueries.forEach((key) => invalidations.add(key));
-    await Promise.all(
-      [...invalidations].map((queryKey) =>
-        queryClient.invalidateQueries({ queryKey })
-      )
-    );
-  }
+export function restoreBackupMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "restore-backup",
+    restoreBackupPlan,
+    allQueries
+  );
+}
+
+export function addCategoryMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "add-category",
+    addCategoryPlan,
+    categoryQueries
+  );
+}
+
+export function editCategoryMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "edit-category",
+    editCategoryPlan,
+    categoryQueries
+  );
+}
+
+export function deleteCategoryMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "delete-category",
+    deleteCategoryPlan,
+    categoryQueries
+  );
+}
+
+export function renameActivityMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "rename-activity",
+    renameActivityPlan,
+    categoryQueries
+  );
+}
+
+export function assignActivityCategoryMutationOptions(
+  context: MutationContext
+) {
+  return writeMutationOptions(
+    context,
+    "assign-activity-category",
+    assignActivityCategoryPlan,
+    categoryQueries
+  );
+}
+
+export function addActivityNameMutationOptions(context: MutationContext) {
+  return writeMutationOptions(
+    context,
+    "add-activity-name",
+    addActivityNamePlan,
+    categoryQueries
+  );
 }

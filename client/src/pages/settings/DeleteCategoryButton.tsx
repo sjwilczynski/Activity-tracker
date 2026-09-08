@@ -1,6 +1,5 @@
 import { Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
-import { useFetcher } from "react-router";
 import { Button } from "../../components/ui/button";
 import {
   Dialog,
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import type { Category } from "../../data";
+import { useDeleteCategory } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 export function DeleteCategoryButton({
@@ -36,8 +36,8 @@ export function DeleteCategoryButton({
     otherCategories[0]?.id ?? ""
   );
   const closeRef = useRef<HTMLButtonElement>(null);
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
+  const mutation = useDeleteCategory();
+  const { isPending } = mutation;
 
   const effectiveTargetId = otherCategories.some(
     (c) => c.id === targetCategoryId
@@ -45,43 +45,30 @@ export function DeleteCategoryButton({
     ? targetCategoryId
     : (otherCategories[0]?.id ?? "");
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: "Category deleted successfully!",
-      errorMessage: "Failed to delete category",
-      onSuccess: () => closeRef.current?.click(),
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: "Category deleted successfully!",
+    errorMessage: "Failed to delete category",
+    onSuccess: () => closeRef.current?.click(),
+  });
 
   const handleDelete = () => {
+    if (isPending) return;
     if (action === "reassign") {
-      void fetcher.submit(
-        {
-          intent: "delete-category-reassign",
-          id: category.id,
-          targetCategoryId: effectiveTargetId,
-        },
-        { method: "POST" }
-      );
+      mutation.mutate({
+        mode: "reassign",
+        id: category.id,
+        targetCategoryId: effectiveTargetId,
+      });
     } else {
-      void fetcher.submit(
-        {
-          intent: "delete-category-with-activities",
-          id: category.id,
-        },
-        { method: "POST" }
-      );
+      mutation.mutate({ mode: "delete", id: category.id });
     }
   };
 
   return (
     <Dialog
       onOpenChange={(open) => {
-        if (open) {
+        if (open && !isPending) {
+          mutation.reset();
           setAction("delete");
           setTargetCategoryId(otherCategories[0]?.id ?? "");
         }
@@ -91,6 +78,7 @@ export function DeleteCategoryButton({
         <Button
           variant="ghost"
           size="icon"
+          disabled={isPending}
           className="hover:bg-destructive/10! dark:hover:bg-red-500/15! hover:scale-110 active:scale-95 transition-all duration-150"
         >
           <Trash2 className="size-4 text-destructive dark:text-red-400" />

@@ -31,7 +31,9 @@ export async function apiFetch(
   });
 
   if (!allowNotOk && !response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw Object.assign(new Error(`HTTP error! status: ${response.status}`), {
+      status: response.status,
+    });
   }
 
   return response;

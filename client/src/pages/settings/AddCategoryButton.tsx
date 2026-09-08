@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useFetcher } from "react-router";
 import { Button } from "../../components/ui/button";
 import {
   Dialog,
@@ -21,43 +20,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
+import { useAddCategory } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 export function AddCategoryButton() {
   const [name, setName] = useState("");
   const [active, setActive] = useState<"active" | "inactive">("active");
   const [open, setOpen] = useState(false);
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isSubmitting = fetcher.state !== "idle";
+  const mutation = useAddCategory();
+  const { isPending: isSubmitting } = mutation;
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: "Category added successfully!",
-      errorMessage: "Failed to add category",
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: "Category added successfully!",
+    errorMessage: "Failed to add category",
+    onSuccess: () => setOpen(false),
+  });
 
   const handleSubmit = () => {
-    if (!name.trim()) return;
-    void fetcher.submit(
-      {
-        intent: "add-category",
-        category: JSON.stringify({
-          name: name.trim(),
-          active: active === "active",
-          description: "",
-          activityNames: [],
-        }),
-      },
-      { method: "POST" }
-    );
-    setName("");
-    setActive("active");
-    setOpen(false);
+    if (!name.trim() || isSubmitting) return;
+    mutation.mutate({
+      name: name.trim(),
+      active: active === "active",
+      description: "",
+      activityNames: [],
+    });
   };
 
   return (
@@ -65,16 +51,17 @@ export function AddCategoryButton() {
       open={open}
       onOpenChange={(v) => {
         setOpen(v);
-        if (!v) {
+        if (v && !isSubmitting) {
+          mutation.reset();
           setName("");
           setActive("active");
         }
       }}
     >
       <DialogTrigger asChild>
-        <Button className="w-full sm:w-auto">
+        <Button className="w-full sm:w-auto" disabled={isSubmitting}>
           <Plus className="size-4 mr-2" />
-          Add Category
+          {isSubmitting ? "Adding..." : "Add Category"}
         </Button>
       </DialogTrigger>
       <DialogContent>

@@ -1,3 +1,4 @@
+import { Link, useLocation } from "@tanstack/react-router";
 import {
   BarChart3,
   GitCompare,
@@ -8,7 +9,6 @@ import {
   Settings,
   Sun,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router";
 import { useAuthContext } from "../../auth/AuthContext";
 import { useThemeToggleWithTransition } from "../styles/StylesProvider";
 import { Button } from "../ui/button";
@@ -95,9 +95,11 @@ export function AppSidebar() {
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <NavLink
+              <Link
                 key={item.title}
-                to={{ pathname: item.path, search: location.search }}
+                to={item.path}
+                search={(previous) => previous}
+                activeOptions={{ exact: true, includeSearch: false }}
                 viewTransition
                 onClick={() => {
                   if (isMobile) setOpenMobile(false);
@@ -110,7 +112,7 @@ export function AppSidebar() {
               >
                 <item.icon className="size-4" />
                 <span>{item.title}</span>
-              </NavLink>
+              </Link>
             );
           })}
         </nav>
