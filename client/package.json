@@ -42,7 +42,7 @@
     "@chromatic-com/storybook": "^5.3.1",
     "@playwright/test": "^1.63.0",
     "@storybook/addon-a11y": "10.6.0",
-    "@storybook/addon-vitest": "10.6.0",
+    "@storybook/addon-vitest": "10.6.2",
     "@storybook/tanstack-react": "10.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
