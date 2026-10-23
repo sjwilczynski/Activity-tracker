@@ -21,6 +21,8 @@ jobs:
           install-playwright: "true"
       - name: Typecheck client
         run: bun run --cwd client typecheck
+      - name: Check generated routes
+        run: git diff --exit-code -- client/src/app/routeTree.gen.ts
       - name: test
         run: bun run --cwd client test
 

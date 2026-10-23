@@ -1,86 +1,79 @@
 import { useForm } from "@tanstack/react-form";
-import { useEffect, useRef } from "react";
-import { useFetcher } from "react-router";
-import { isImportDataValid } from "../../data";
+import { useEffect, useRef, useState } from "react";
+import { validateImportData, type BackupData } from "../../../../shared/backup";
+import { useRestoreBackup } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 import { Button } from "../ui/button";
 import { FileInput, getErrorMessage } from "./adapters";
 import { fileSchema } from "./schemas";
 
 export function FileUploadForm() {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
-  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
+  const mutation = useRestoreBackup();
+  const [isReading, setIsReading] = useState(false);
+  const readerRef = useRef<FileReader | null>(null);
+  const isPending = mutation.isPending || isReading;
+
+  useEffect(
+    () => () => {
+      const reader = readerRef.current;
+      if (!reader) return;
+      reader.onload = null;
+      reader.onerror = null;
+      reader.onloadend = null;
+      if (reader.readyState === FileReader.LOADING) reader.abort();
+    },
+    []
+  );
 
   const form = useForm({
-    defaultValues: {
-      file: null as File | null,
-    },
+    defaultValues: { file: null as File | null },
     onSubmit: ({ value }) => {
-      const file = value.file;
-      if (!file) return;
-
+      if (!value.file || isPending || readerRef.current) return;
+      mutation.reset();
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const { result } = reader;
-        if (typeof result === "string") {
-          let data: unknown;
-          try {
-            data = JSON.parse(result);
-          } catch (error) {
-            form.setFieldMeta("file", (meta) => ({
-              ...meta,
-              errors: [
-                `Invalid JSON: ${error instanceof Error ? error.message : "parse error"}`,
-              ],
-            }));
-            return;
-          }
-          if (isImportDataValid(data)) {
-            void fetcher.submit(
-              {
-                intent: "import",
-                importData: JSON.stringify(data),
-              },
-              { method: "post" }
-            );
-          } else {
-            form.setFieldMeta("file", (meta) => ({
-              ...meta,
-              errors: [
-                "Invalid format. Expected JSON with activities, categories, and optional preferences.",
-              ],
-            }));
-          }
-        }
+      readerRef.current = reader;
+      setIsReading(true);
+      const showFileError = (error: string) => {
+        form.setFieldMeta("file", (meta) => ({ ...meta, errors: [error] }));
       };
-      reader.readAsText(file);
+      reader.onload = () => {
+        if (typeof reader.result !== "string") {
+          showFileError("Could not read the selected file.");
+          return;
+        }
+        let data: unknown;
+        try {
+          data = JSON.parse(reader.result);
+        } catch (error) {
+          showFileError(
+            `Invalid JSON: ${error instanceof Error ? error.message : "parse error"}`
+          );
+          return;
+        }
+        const result = validateImportData(data);
+        if (!result.valid) {
+          showFileError(
+            "Invalid format. Expected JSON with activities, categories, and optional preferences."
+          );
+          return;
+        }
+        // Keep the validated wire payload intact; the API normalizes legacy backups.
+        mutation.mutate(data as BackupData);
+      };
+      reader.onerror = () => showFileError("Could not read the selected file.");
+      reader.onloadend = () => {
+        readerRef.current = null;
+        setIsReading(false);
+      };
+      reader.readAsText(value.file);
     },
   });
 
-  useFeedbackToast(
-    { isSuccess, isError },
-    {
-      successMessage: "Successfully uploaded the file",
-      errorMessage: "Failed to upload the file",
-    }
-  );
-
-  const isPending = fetcher.state !== "idle";
-  const prevIsSuccess = useRef(isSuccess);
-
-  useEffect(() => {
-    if (isPending) {
-      prevIsSuccess.current = false;
-    }
-  }, [isPending]);
-
-  useEffect(() => {
-    if (isSuccess && !prevIsSuccess.current) {
-      form.reset();
-    }
-    prevIsSuccess.current = isSuccess;
-  }, [isSuccess, form]);
+  useFeedbackToast(mutation, {
+    successMessage: "Successfully uploaded the file",
+    errorMessage: "Failed to upload the file",
+    onSuccess: () => form.reset(),
+  });
 
   return (
     <form
@@ -91,29 +84,26 @@ export function FileUploadForm() {
         void form.handleSubmit();
       }}
     >
-      <form.Field
-        name="file"
-        validators={{
-          onChange: fileSchema,
-        }}
-      >
-        {(field) => (
-          <FileInput
-            value={field.state.value}
-            onChange={field.handleChange}
-            onBlur={field.handleBlur}
-            error={getErrorMessage(field.state.meta.errors)}
-          />
-        )}
-      </form.Field>
+      <fieldset disabled={isPending}>
+        <form.Field name="file" validators={{ onChange: fileSchema }}>
+          {(field) => (
+            <FileInput
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              error={getErrorMessage(field.state.meta.errors)}
+            />
+          )}
+        </form.Field>
+      </fieldset>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
         {([canSubmit, isDirty]) => (
           <Button
             variant="gradient"
-            disabled={!canSubmit || !isDirty}
+            disabled={isPending || !canSubmit || !isDirty}
             type="submit"
           >
-            Upload
+            {isPending ? "Uploading..." : "Upload"}
           </Button>
         )}
       </form.Subscribe>

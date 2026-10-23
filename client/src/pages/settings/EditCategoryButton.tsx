@@ -1,6 +1,5 @@
 import { Pencil } from "lucide-react";
-import { useState } from "react";
-import { useFetcher } from "react-router";
+import { useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Dialog,
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import type { Category } from "../../data";
+import { useEditCategory } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 export function EditCategoryButton({ category }: { category: Category }) {
@@ -29,41 +29,34 @@ export function EditCategoryButton({ category }: { category: Category }) {
   const [active, setActive] = useState<"active" | "inactive">(
     category.active ? "active" : "inactive"
   );
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isSubmitting = fetcher.state !== "idle";
+  const mutation = useEditCategory();
+  const { isPending: isSubmitting } = mutation;
+  const closeRef = useRef<HTMLButtonElement>(null);
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: "Category updated successfully!",
-      errorMessage: "Failed to update category",
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: "Category updated successfully!",
+    errorMessage: "Failed to update category",
+    onSuccess: () => closeRef.current?.click(),
+  });
 
   const handleSubmit = () => {
-    if (!name.trim()) return;
-    void fetcher.submit(
-      {
-        intent: "edit-category",
-        id: category.id,
-        category: JSON.stringify({
-          name: name.trim(),
-          active: active === "active",
-          description: category.description,
-          activityNames: category.activityNames ?? [],
-        }),
+    if (!name.trim() || isSubmitting) return;
+    mutation.mutate({
+      id: category.id,
+      category: {
+        name: name.trim(),
+        active: active === "active",
+        description: category.description,
+        activityNames: category.activityNames ?? [],
       },
-      { method: "POST" }
-    );
+    });
   };
 
   return (
     <Dialog
       onOpenChange={(open) => {
-        if (open) {
+        if (open && !isSubmitting) {
+          mutation.reset();
           setName(category.name);
           setActive(category.active ? "active" : "inactive");
         }
@@ -73,6 +66,7 @@ export function EditCategoryButton({ category }: { category: Category }) {
         <Button
           variant="ghost"
           size="icon"
+          disabled={isSubmitting}
           className="hover:bg-primary/10! hover:text-primary! hover:scale-110 active:scale-95 transition-all duration-150"
         >
           <Pencil className="size-4" />
@@ -113,16 +107,16 @@ export function EditCategoryButton({ category }: { category: Category }) {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting || !name.trim()}
-            >
-              Save Changes
+            <Button variant="outline" ref={closeRef}>
+              Cancel
             </Button>
           </DialogClose>
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !name.trim()}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

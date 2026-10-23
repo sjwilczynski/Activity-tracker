@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { reactRouterParameters } from "storybook-addon-remix-react-router";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { http, HttpResponse } from "msw";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { FileUploadForm } from "./FileUploadForm";
 
@@ -25,16 +25,14 @@ const meta: Meta<typeof FileUploadForm> = {
     submitImport.mockClear();
   },
   parameters: {
-    reactRouter: reactRouterParameters({
-      routing: {
-        path: "/",
-        useStoryElement: true,
-        action: async ({ request }) => {
-          submitImport(Object.fromEntries(await request.formData()));
-          return { ok: true };
-        },
-      },
-    }),
+    msw: {
+      handlers: [
+        http.post("/api/import", async ({ request }) => {
+          submitImport(await request.json());
+          return HttpResponse.json({ ok: true });
+        }),
+      ],
+    },
   },
 };
 
@@ -51,17 +49,14 @@ export const ResetAndReselectAfterSuccess: Story = {
 
     await expect(upload).toBeDisabled();
     await step(
-      "Select a valid file and submit through the router action",
+      "Select a valid file and submit through the real mutation",
       async () => {
         await userEvent.upload(canvas.getByLabelText("Select file"), file);
         await expect(canvas.getByText("activities.json")).toBeInTheDocument();
         await expect(upload).toBeEnabled();
         await userEvent.click(upload);
         await screen.findByText("Successfully uploaded the file");
-        await expect(submitImport).toHaveBeenCalledWith({
-          intent: "import",
-          importData: JSON.stringify(importData),
-        });
+        await expect(submitImport).toHaveBeenCalledWith(importData);
       }
     );
 

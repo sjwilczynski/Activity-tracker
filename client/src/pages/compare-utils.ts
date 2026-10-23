@@ -127,6 +127,7 @@ export function getPeriodActivities(
 }
 
 function parsePeriodId(id: string): ComparisonPeriod | null {
+  if (!/^(?:month-\d{4}-(?:[0-9]|1[01])|year-\d{4})$/.test(id)) return null;
   const parts = id.split("-");
   const type = parts[0] as "month" | "year";
   if (type !== "month" && type !== "year") return null;

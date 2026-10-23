@@ -1,161 +1,184 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationObserver, QueryClient } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { runAction, type ActionRoute } from "./actions";
+import * as actions from "./actions";
 
 afterEach(() => vi.unstubAllGlobals());
 
-type Scenario = {
-  intent: string;
-  fields?: Record<string, string>;
-  routes: ActionRoute[];
-  calls: [string, string][];
-  queries: string[];
+const activity = { date: "2026-09-06", name: "Running", categoryId: "sports" };
+const category = {
+  name: "Sports",
+  description: "",
+  active: true,
+  activityNames: [],
+};
+const activities = ["activities", "activitiesWithLimit"];
+const categories = [...activities, "categories"];
+type Context = {
+  queryClient: QueryClient;
+  getAuthToken: () => Promise<string>;
 };
 
-const scenarios: Scenario[] = [
+const scenarios = [
   {
-    intent: "add",
-    fields: { activities: "[]" },
-    routes: ["welcome"],
+    name: "add",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.addActivitiesMutationOptions(ctx)
+      ).mutate([activity]),
     calls: [["POST", "/api/activities"]],
-    queries: ["activities", "activitiesWithLimit"],
+    queries: activities,
   },
   {
-    intent: "edit",
-    fields: { id: "entry", record: "{}" },
-    routes: ["activity-list"],
+    name: "edit",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.editActivityMutationOptions(ctx)
+      ).mutate({ id: "entry", record: activity }),
     calls: [["PUT", "/api/activities/entry"]],
-    queries: ["activities", "activitiesWithLimit"],
+    queries: activities,
   },
   {
-    intent: "edit-activity",
-    fields: { id: "entry", record: "{}" },
-    routes: ["settings"],
-    calls: [["PUT", "/api/activities/entry"]],
-    queries: ["activities", "activitiesWithLimit"],
-  },
-  {
-    intent: "delete",
-    fields: { id: "entry" },
-    routes: ["activity-list"],
+    name: "delete",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.deleteActivityMutationOptions(ctx)
+      ).mutate("entry"),
     calls: [["DELETE", "/api/activities/entry"]],
-    queries: ["activities", "activitiesWithLimit"],
+    queries: activities,
   },
   {
-    intent: "delete-all",
-    routes: ["activity-list"],
+    name: "delete-all",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.deleteAllActivitiesMutationOptions(ctx)
+      ).mutate(),
     calls: [["DELETE", "/api/activities"]],
-    queries: ["activities", "activitiesWithLimit"],
+    queries: activities,
   },
   {
-    intent: "import",
-    fields: { importData: "{}" },
-    routes: ["welcome", "activity-list"],
+    name: "restore",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.restoreBackupMutationOptions(ctx)
+      ).mutate({ activities: {}, categories: {} }),
     calls: [["POST", "/api/import"]],
-    queries: ["activities", "activitiesWithLimit", "categories", "preferences"],
+    queries: [...categories, "preferences"],
   },
   {
-    intent: "add-category",
-    fields: { category: "{}" },
-    routes: ["settings"],
+    name: "add category",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.addCategoryMutationOptions(ctx)
+      ).mutate(category),
     calls: [["POST", "/api/categories"]],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "edit-category",
-    fields: { id: "sports", category: "{}" },
-    routes: ["settings"],
+    name: "edit category",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.editCategoryMutationOptions(ctx)
+      ).mutate({ id: "sports", category }),
     calls: [["PUT", "/api/categories/sports"]],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "delete-category-with-activities",
-    fields: { id: "sports" },
-    routes: ["settings"],
+    name: "delete category with activities",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.deleteCategoryMutationOptions(ctx)
+      ).mutate({ id: "sports", mode: "delete" }),
     calls: [
       ["POST", "/api/activities/delete-by-category"],
       ["DELETE", "/api/categories/sports"],
     ],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "delete-category-reassign",
-    fields: { id: "sports", targetCategoryId: "wellness" },
-    routes: ["settings"],
+    name: "reassign then delete category",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.deleteCategoryMutationOptions(ctx)
+      ).mutate({
+        id: "sports",
+        mode: "reassign",
+        targetCategoryId: "wellness",
+      }),
     calls: [
       ["POST", "/api/activities/reassign-category"],
       ["DELETE", "/api/categories/sports"],
     ],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "rename-activity",
-    fields: { oldName: "Running", newName: "Jogging" },
-    routes: ["settings"],
+    name: "rename",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.renameActivityMutationOptions(ctx)
+      ).mutate({ oldName: "Running", newName: "Jogging" }),
     calls: [["POST", "/api/activities/rename"]],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "assign-category",
-    fields: { activityName: "Running", categoryId: "sports" },
-    routes: ["settings"],
+    name: "assign",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.assignActivityCategoryMutationOptions(ctx)
+      ).mutate({ activityName: "Running", categoryId: "sports" }),
     calls: [["POST", "/api/activities/assign-category"]],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
   {
-    intent: "add-activity-name",
-    fields: { activityName: "Running", categoryId: "sports" },
-    routes: ["settings"],
+    name: "add activity name",
+    run: (ctx: Context) =>
+      new MutationObserver(
+        ctx.queryClient,
+        actions.addActivityNameMutationOptions(ctx)
+      ).mutate({ activityName: "Running", categoryId: "sports" }),
     calls: [["POST", "/api/categories/sports/activity-names"]],
-    queries: ["activities", "activitiesWithLimit", "categories"],
+    queries: categories,
   },
 ];
-const routes: ActionRoute[] = ["welcome", "activity-list", "settings"];
 
-describe.each(routes)("%s action policy", (route) => {
+describe("typed mutation operation contracts", () => {
   it.each(scenarios)(
-    "handles $intent only on its original routes, with exact effects",
+    "$name preserves ordered HTTP operations and exact effects",
     async (scenario) => {
       const queryClient = new QueryClient();
-      const keys = [
-        "activities",
-        "activitiesWithLimit",
-        "categories",
-        "preferences",
-        "unrelated",
-      ];
+      const keys = [...categories, "preferences", "unrelated"];
       for (const key of keys) queryClient.setQueryData([key], []);
       const calls: [string, string][] = [];
       vi.stubGlobal(
         "fetch",
         vi.fn(async (url: string, init: RequestInit) => {
           calls.push([init.method!, url]);
+          expect(new Headers(init.headers).get("x-auth-token")).toBe("token");
           return new Response(null, { status: 200 });
         })
       );
-      const auth = vi.fn(async () => "token");
-      const request = new Request(`http://localhost/${route}`, {
-        method: "POST",
-        body: new URLSearchParams({
-          intent: scenario.intent,
-          ...scenario.fields,
-        }),
-      });
-      const result = await runAction(
-        request,
-        { queryClient, getAuthToken: auth },
-        route
-      );
-      const accepted = scenario.routes.includes(route);
-      expect(result).toEqual(
-        accepted ? { ok: true } : { error: "Unknown intent" }
-      );
-      expect(calls).toEqual(accepted ? scenario.calls : []);
-      if (!accepted) expect(auth).not.toHaveBeenCalled();
-      for (const key of keys) {
-        expect(queryClient.getQueryState([key])?.isInvalidated, key).toBe(
-          accepted && scenario.queries.includes(key)
-        );
+      try {
+        await expect(
+          scenario.run({ queryClient, getAuthToken: async () => "token" })
+        ).resolves.toBeUndefined();
+        expect(calls).toEqual(scenario.calls);
+        for (const key of keys) {
+          expect(queryClient.getQueryState([key])?.isInvalidated, key).toBe(
+            scenario.queries.includes(key)
+          );
+        }
+      } finally {
+        queryClient.clear();
       }
     }
   );

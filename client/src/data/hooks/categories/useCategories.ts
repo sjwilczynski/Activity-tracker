@@ -1,16 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { categoriesQueryOptions } from "../../queryOptions";
+import { getRouteApi } from "@tanstack/react-router";
 import type { CategoryOption } from "../../types";
-import { useRequestConfig } from "../useRequestConfig";
 
 export const useCategories = () => {
-  const getConfig = useRequestConfig();
-  const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(categoriesQueryOptions(getAuthToken));
+  const { categoriesQuery } = getRouteApi("/_authenticated").useRouteContext();
+  return useQuery(categoriesQuery);
 };
 
 export const useAvailableCategories = () => {
-  const { data: categories, isLoading } = useCategories();
+  const { data: categories, isLoading, error, refetch } = useCategories();
   const availableCategories = (categories ?? []).reduce<CategoryOption[]>(
     (acc, category) => {
       for (const activityName of category.activityNames ?? []) {
@@ -25,5 +23,5 @@ export const useAvailableCategories = () => {
     },
     []
   );
-  return { availableCategories, isLoading };
+  return { availableCategories, isLoading, error, refetch };
 };

@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { delay, http, HttpResponse } from "msw";
-import { reactRouterParameters } from "storybook-addon-remix-react-router";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import type { ActivityRecordWithIdServer } from "../data/types";
 import { darkPreferencesHandler } from "../mocks/handlers";
@@ -9,6 +8,7 @@ import { Compare } from "./Compare";
 const meta: Meta<typeof Compare> = {
   title: "Pages/Compare",
   component: Compare,
+  parameters: { tanstack: { router: { path: "/compare" } } },
 };
 
 export default meta;
@@ -143,13 +143,13 @@ export const CompareYears: Story = {
         }),
       ],
     },
-    reactRouter: reactRouterParameters({
-      location: {
-        searchParams: {
+    tanstack: {
+      router: {
+        query: {
           periods: "year-2024,year-2023,year-2022,year-2021,year-2020",
         },
       },
-    }),
+    },
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
@@ -207,11 +207,7 @@ export const DarkMode: Story = {
         }),
       ],
     },
-    reactRouter: reactRouterParameters({
-      location: {
-        searchParams: { periods: "year-2024,year-2023" },
-      },
-    }),
+    tanstack: { router: { query: { periods: "year-2024,year-2023" } } },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

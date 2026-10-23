@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import type { UserData } from "../../../../shared/types";
 import type { Category } from "../../data";
-import { actionRouting } from "../../mocks/actionRouting";
 import { setActivities } from "../../mocks/handlers/activities";
 import { setCategories } from "../../mocks/handlers/categories";
 import { Settings } from "../Settings";
@@ -10,7 +9,7 @@ import { Settings } from "../Settings";
 const meta: Meta<typeof Settings> = {
   title: "Pages/Name integrity",
   component: Settings,
-  parameters: { reactRouter: actionRouting("settings") },
+  parameters: { tanstack: { router: { path: "/settings" } } },
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -111,6 +110,9 @@ export const TrimCategoryNames: Story = {
     );
     await userEvent.click(dialog.getByRole("button", { name: "Add Category" }));
     await canvas.findAllByText("Outdoor Sports");
+    await waitFor(async () => {
+      await expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
     const categories: Category[] = await (
       await fetch("/api/categories", { headers })
     ).json();
