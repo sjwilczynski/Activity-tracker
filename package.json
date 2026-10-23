@@ -15,8 +15,8 @@
     "clean": "rm -rf node_modules client/node_modules api/node_modules client/build api/dist",
     "dev": "bun run --filter '*' start",
     "knip": "knip",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
+    "format": "bun fmt",
+    "format:check": "bun fmt --check",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix --deny-warnings",
     "pre-commit": "lint-staged --allow-empty",
@@ -28,7 +28,6 @@
     "husky": "9.1.7",
     "knip": "6.34.0",
     "lint-staged": "^17.5.0",
-    "oxfmt": "0.66.0",
     "oxlint": "1.81.0",
     "oxlint-tsgolint": "7.0.2001",
     "size-limit": "^13.0.3",
@@ -37,15 +36,15 @@
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
       "oxlint --type-aware --fix --deny-warnings",
-      "oxfmt --no-error-on-unmatched-pattern",
+      "bun fmt --no-error-on-unmatched-pattern",
       "oxlint --type-aware --deny-warnings ."
     ],
     "!(*.{js,jsx,mjs,cjs,ts,tsx,mts,cts})": [
-      "oxfmt --no-error-on-unmatched-pattern"
+      "bun fmt --no-error-on-unmatched-pattern"
     ]
   },
   "engines": {
-    "bun": ">=1.2.0",
+    "bun": ">=1.4.4",
     "node": "^22.22.1 || >=24.0.0"
   }
 }

@@ -22,6 +22,7 @@
     }
   },
   "ignore": ["**/mocks/**"],
+  "ignoreBinaries": ["check", "fmt"],
   "ignoreDependencies": ["husky"],
   "ignoreExportsUsedInFile": true
 }

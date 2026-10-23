@@ -5,11 +5,11 @@
   "license": "MIT",
   "main": "dist/functions/**/*.js",
   "scripts": {
-    "build": "node esbuild.config.mjs",
+    "build": "bun build.mjs",
     "prestart": "bun run build",
     "start": "func start",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun check",
     "watch": "tsc -w"
   },
   "dependencies": {
@@ -18,12 +18,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
-    "esbuild": "^0.28.2",
     "typescript": "7.0.2",
     "vitest": "4.1.11"
   },
   "engines": {
-    "bun": ">=1.2.0",
+    "bun": ">=1.4.4",
     "node": "^22.22.1 || >=24.0.0"
   }
 }

@@ -8,18 +8,18 @@ Sports activity tracking web app (React 19 + Azure Functions + Firebase).
 bun install                       # Install dependencies
 bun run dev                       # Start frontend (:3000) and API (:7071)
 bun run --filter '*' build        # Build both workspaces
-bun run --cwd client typecheck    # Route typegen + native tsc --noEmit
-bun run --cwd api typecheck       # Native tsc --noEmit (needs Firebase config)
+bun run --cwd client typecheck    # Route typegen + bun check
+bun run --cwd api typecheck       # bun check (needs Firebase config)
 bun run lint                      # Oxlint (zero warnings)
 bun run lint:fix                  # Apply safe lint fixes
-bun run format                    # Format with Oxfmt
+bun run format                    # Format with bun fmt
 bun run format:check              # Check formatting without writing
 cd client && bun run test         # Run Storybook vitest tests
 cd client && bun run storybook    # Start Storybook (:6006)
 cd api && bun run test            # Run API unit tests
 ```
 
-Use a supported Node 22 (>=22.22.1) or 24+ runtime on PATH, plus Git >=2.32 for lint-staged. Bun lifecycle scripts can invoke Node, so installing Bun alone does not satisfy the build tools' runtime requirements.
+Use Bun >=1.4.4, a supported Node 22 (>=22.22.1) or 24+ runtime on PATH, plus Git >=2.32 for lint-staged. Bun lifecycle scripts can invoke Node, so installing Bun alone does not satisfy the build tools' runtime requirements.
 
 ## Structure
 
@@ -44,8 +44,8 @@ Use a supported Node 22 (>=22.22.1) or 24+ runtime on PATH, plus Git >=2.32 for 
 - **File size**: Keep under ~250 lines. Split into focused modules.
 - **Route actions**: Handle mutations via `intent` field (edit, delete, delete-all).
 - **State**: Server state via React Query. Client preferences (theme, chart grouping) stored in Firebase and accessed via React Query hooks — no separate client state library.
-- **Tooling**: TypeScript 7, Oxfmt, and Oxlint's recommended type-aware checks for both workspaces. Prefer native lint rules; use Oxlint's JS plugin API for remaining rule coverage.
-- **Type checks**: Keep `tsc --noEmit` separate from type-aware linting. Client builds and CI enforce it after route type generation; API deployment CI enforces it after providing Firebase config.
+- **Tooling**: Bun's formatter reads `.oxfmtrc.json`; Oxlint provides type-aware linting for both workspaces. TypeScript 7 remains for editor tooling and the API watch script. Prefer native lint rules; use Oxlint's JS plugin API for remaining rule coverage.
+- **Type checks**: Keep `bun check` separate from type-aware linting. Client builds and CI enforce it after route type generation; API deployment CI enforces it after providing Firebase config.
 
 ## Testing
 
@@ -55,6 +55,7 @@ Use a supported Node 22 (>=22.22.1) or 24+ runtime on PATH, plus Git >=2.32 for 
 - `unit` (node): plain `*.test.ts(x)` files for pure logic that needs no DOM/browser (e.g. query options, `apiClient`). Stub `global.fetch` instead of MSW.
 
 **API**: Vitest unit tests for validation, rate limiting, database CRUD. Handler tests must mock `firebase/firebase` (and modules importing it) since it calls `initializeApp()` at load.
+Bundle tests load every emitted function under Node with generated credentials and an explicit test `databaseURL`; Firebase initialization needs both even when requests are rejected before database access.
 
 All new code should include tests.
 

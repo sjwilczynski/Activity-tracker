@@ -16,7 +16,7 @@
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "react-router typegen && tsc --noEmit"
+    "typecheck": "react-router typegen && bun check"
   },
   "dependencies": {
     "@react-router/dev": "^8.3.1",
@@ -82,7 +82,7 @@
     ]
   },
   "engines": {
-    "bun": ">=1.2.0",
+    "bun": ">=1.4.4",
     "node": "^22.22.1 || >=24.0.0"
   },
   "msw": {

@@ -30,7 +30,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **shadcn/ui** components built on Radix UI primitives
 - **cn** for Tailwind class merging, re-exported from `@/utils/cn`; Radix wrappers use per-primitive `radix-ui/*` imports.
 - **Chart.js** with `react-chartjs-2` for data visualization
-- **Vite 8** as build tool with HMR and PWA plugin; native **TypeScript 7** checks run separately
+- **Vite 8** as build tool with HMR and PWA plugin; **Bun's TypeScript 7 checker** runs separately
 - **Storybook 10** with play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
 
@@ -48,7 +48,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 ## Quick Start
 
-Install Bun and a supported Node 22 (>=22.22.1) or Node 24+ runtime, plus Git
+Install Bun >=1.4.4 and a supported Node 22 (>=22.22.1) or Node 24+ runtime, plus Git
 2.32+ for lint-staged. Keep Node on PATH: some dependency lifecycle and build
 scripts invoke it even when run through Bun.
 
@@ -193,31 +193,40 @@ transitive framework dependency, but is not our React Compiler implementation.
 
 ```bash
 bun run --filter '*' build      # Build both frontend and API
-bun run --cwd client typecheck  # Generate route types, then tsc --noEmit
-bun run --cwd api typecheck     # tsc --noEmit (requires Firebase config)
+bun run --cwd client typecheck  # Generate route types, then bun check
+bun run --cwd api typecheck     # bun check (requires Firebase config)
 ```
 
 Client production, end-to-end and Storybook builds run the client typecheck
 first and stop on errors. CI also checks the client explicitly before tests;
 the deployment job checks the API after supplying its Firebase configuration.
 Development servers rely on editor TypeScript diagnostics rather than a Vite
-type-checking overlay.
+type-checking overlay. TypeScript 7 remains installed for editor tooling and the
+API's `tsc -w` watch script; CI and production builds use `bun check`.
+
+The API uses `Bun.build()` to emit self-contained Node ESM bundles; Azure still
+runs them on Node 22. Bun does not downlevel syntax, so the API tests load every
+emitted function under Node with generated Firebase credentials and a test
+database URL. `bun run --cwd api build --verbose` prints Bun's dependency and
+output metadata. Identifier minification is disabled because Bun 1.4.4 ignores
+`keepNames`; whitespace and syntax minification remain enabled.
 
 ### Linting & Formatting
 
 ```bash
 bun run lint                    # Oxlint with zero warnings
 bun run lint:fix                 # Apply safe lint fixes
-bun run format                  # Format with Oxfmt
+bun run format                  # Format with bun fmt
 bun run format:check            # Check formatting without writing
 ```
 
-Oxlint's recommended type-aware checks cover both workspaces. Oxlint and Oxfmt
+Oxlint's recommended type-aware checks cover both workspaces. Oxlint and `bun fmt`
 run automatically on staged files via `lint-staged` + the Husky pre-commit hook,
 followed by a whole-project typed lint pass. Native rules cover TypeScript,
 React, and React Compiler; Storybook rules run through Oxlint's JS plugin API
 rather than a second linter. React deprecations use native type-aware checking,
 and component/hook factory checks use native `react/static-components`.
+`bun fmt` reuses `.oxfmtrc.json` to preserve the existing formatting settings.
 
 VS Code users should install the workspace's recommended Oxc and TypeScript
 Native extensions for matching formatting, linting, and TypeScript 7 diagnostics.
