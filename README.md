@@ -69,6 +69,8 @@ cross-cutting data behavior:
 - `api/database/activityNames.ts` applies name changes in Firebase transactions,
   including conflict handling when transactions retry against newer data.
 - The client mutation module uses typed inputs and native Query submission state.
+  `actions.ts` declares each write once; the shared options factory binds it to
+  the current account's token supplier and QueryClient when called.
   Production and Storybook exercise the same ordered writes, affected-query
   policy, and partial-failure handling; MSW substitutes HTTP responses only.
 

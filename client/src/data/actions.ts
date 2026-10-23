@@ -14,105 +14,70 @@ import {
   renameActivityPlan,
   restoreBackupPlan,
 } from "./action-plan";
-import { writeMutationOptions, type MutationContext } from "./mutation-write";
+import { defineWriteMutation } from "./mutation-write";
 
-export function addActivitiesMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "add-activities",
-    addActivitiesPlan,
-    activityQueries
-  );
-}
+export const addActivitiesMutationOptions = defineWriteMutation(
+  "add-activities",
+  addActivitiesPlan,
+  activityQueries
+);
 
-export function editActivityMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "edit-activity",
-    editActivityPlan,
-    activityQueries
-  );
-}
+export const editActivityMutationOptions = defineWriteMutation(
+  "edit-activity",
+  editActivityPlan,
+  activityQueries
+);
 
-export function deleteActivityMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "delete-activity",
-    deleteActivityPlan,
-    activityQueries
-  );
-}
+export const deleteActivityMutationOptions = defineWriteMutation(
+  "delete-activity",
+  deleteActivityPlan,
+  activityQueries
+);
 
-export function deleteAllActivitiesMutationOptions(context: MutationContext) {
-  return writeMutationOptions<void>(
-    context,
-    "delete-all-activities",
-    deleteAllActivitiesPlan,
-    activityQueries
-  );
-}
+export const deleteAllActivitiesMutationOptions = defineWriteMutation<void>(
+  "delete-all-activities",
+  deleteAllActivitiesPlan,
+  activityQueries
+);
 
-export function restoreBackupMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "restore-backup",
-    restoreBackupPlan,
-    allQueries
-  );
-}
+export const restoreBackupMutationOptions = defineWriteMutation(
+  "restore-backup",
+  restoreBackupPlan,
+  allQueries
+);
 
-export function addCategoryMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "add-category",
-    addCategoryPlan,
-    categoryQueries
-  );
-}
+export const addCategoryMutationOptions = defineWriteMutation(
+  "add-category",
+  addCategoryPlan,
+  categoryQueries
+);
 
-export function editCategoryMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "edit-category",
-    editCategoryPlan,
-    categoryQueries
-  );
-}
+export const editCategoryMutationOptions = defineWriteMutation(
+  "edit-category",
+  editCategoryPlan,
+  categoryQueries
+);
 
-export function deleteCategoryMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "delete-category",
-    deleteCategoryPlan,
-    categoryQueries
-  );
-}
+export const deleteCategoryMutationOptions = defineWriteMutation(
+  "delete-category",
+  deleteCategoryPlan,
+  categoryQueries
+);
 
-export function renameActivityMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "rename-activity",
-    renameActivityPlan,
-    categoryQueries
-  );
-}
+export const renameActivityMutationOptions = defineWriteMutation(
+  "rename-activity",
+  renameActivityPlan,
+  categoryQueries
+);
 
-export function assignActivityCategoryMutationOptions(
-  context: MutationContext
-) {
-  return writeMutationOptions(
-    context,
-    "assign-activity-category",
-    assignActivityCategoryPlan,
-    categoryQueries
-  );
-}
+export const assignActivityCategoryMutationOptions = defineWriteMutation(
+  "assign-activity-category",
+  assignActivityCategoryPlan,
+  categoryQueries
+);
 
-export function addActivityNameMutationOptions(context: MutationContext) {
-  return writeMutationOptions(
-    context,
-    "add-activity-name",
-    addActivityNamePlan,
-    categoryQueries
-  );
-}
+export const addActivityNameMutationOptions = defineWriteMutation(
+  "add-activity-name",
+  addActivityNamePlan,
+  categoryQueries
+);

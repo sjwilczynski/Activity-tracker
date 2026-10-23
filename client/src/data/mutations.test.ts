@@ -3,11 +3,14 @@ import {
   QueryClient,
   QueryObserver,
 } from "@tanstack/react-query";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, expectTypeOf, it, vi } from "vitest";
 import {
   addActivitiesMutationOptions,
+  deleteAllActivitiesMutationOptions,
   deleteCategoryMutationOptions,
+  renameActivityMutationOptions,
 } from "./actions";
+import type { ActivityRecordServer } from "./types";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -111,4 +114,74 @@ it("does not reinterpret a committed command when caller-owned variables change"
   } finally {
     client.clear();
   }
+});
+
+it("binds each use of the same mutation definition to its own account and cache", async () => {
+  const alice = new QueryClient();
+  const bob = new QueryClient();
+  alice.setQueryData(["activities"], ["alice"]);
+  bob.setQueryData(["activities"], ["bob"]);
+  const fetch = vi.fn<typeof globalThis.fetch>(
+    async () => new Response(null, { status: 200 })
+  );
+  vi.stubGlobal("fetch", fetch);
+  const forAccount = (queryClient: QueryClient, token: string) =>
+    new MutationObserver(
+      queryClient,
+      addActivitiesMutationOptions({
+        queryClient,
+        getAuthToken: async () => token,
+      })
+    );
+  const aliceMutation = forAccount(alice, "alice-token");
+  const bobMutation = forAccount(bob, "bob-token");
+  const records = [
+    { date: "2026-09-06", name: "Running", categoryId: "sports" },
+  ];
+  try {
+    await aliceMutation.mutate(records);
+    expect(alice.getQueryState(["activities"])?.isInvalidated).toBe(true);
+    expect(bob.getQueryState(["activities"])?.isInvalidated).toBe(false);
+    await bobMutation.mutate(records);
+    expect(bob.getQueryState(["activities"])?.isInvalidated).toBe(true);
+    expect(
+      fetch.mock.calls.map(([, init]) =>
+        new Headers(init?.headers).get("x-auth-token")
+      )
+    ).toEqual(["alice-token", "bob-token"]);
+  } finally {
+    alice.clear();
+    bob.clear();
+  }
+});
+
+it("preserves typed variables and explicit merge consent through native options", () => {
+  const queryClient = new QueryClient();
+  const context = { queryClient, getAuthToken: async () => "token" };
+  const add = new MutationObserver(
+    queryClient,
+    addActivitiesMutationOptions(context)
+  );
+  const removeAll = new MutationObserver(
+    queryClient,
+    deleteAllActivitiesMutationOptions(context)
+  );
+  const rename = new MutationObserver(
+    queryClient,
+    renameActivityMutationOptions(context)
+  );
+
+  expectTypeOf(add.getCurrentResult().mutate)
+    .parameter(0)
+    .toEqualTypeOf<ActivityRecordServer[]>();
+  expectTypeOf(removeAll.getCurrentResult().mutate).toBeCallableWith();
+  expectTypeOf(rename.getCurrentResult().mutate)
+    .parameter(0)
+    .toEqualTypeOf<
+      { oldName: string; newName: string } & (
+        | { merge?: false; targetCategoryId?: never }
+        | { merge: true; targetCategoryId: string }
+      )
+    >();
+  queryClient.clear();
 });

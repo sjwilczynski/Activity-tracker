@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { apiFetch, type GetAuthToken } from "./apiClient";
 
-export type MutationContext = {
+type MutationContext = {
   queryClient: QueryClient;
   getAuthToken: GetAuthToken;
 };
@@ -81,26 +81,27 @@ async function write(
   }
 }
 
-export function writeMutationOptions<T>(
-  { queryClient, getAuthToken }: MutationContext,
+export function defineWriteMutation<T>(
   key: string,
   plan: (variables: T) => readonly WriteStep[],
   successQueries: readonly QueryKey[]
 ) {
-  const refresh = (keys: readonly QueryKey[]) =>
-    Promise.all(
-      keys.map((queryKey) => queryClient.invalidateQueries({ queryKey }))
-    );
+  return ({ queryClient, getAuthToken }: MutationContext) => {
+    const refresh = (keys: readonly QueryKey[]) =>
+      Promise.all(
+        keys.map((queryKey) => queryClient.invalidateQueries({ queryKey }))
+      );
 
-  return mutationOptions<void, Error & { status?: number }, T>({
-    mutationKey: [key],
-    mutationFn: (variables) => write(getAuthToken, plan(variables)),
-    retry: false,
-    onSuccess: async () => {
-      await refresh(successQueries);
-    },
-    onError: async (error) => {
-      if (error instanceof WriteFailure) await refresh(error.refresh);
-    },
-  });
+    return mutationOptions<void, Error & { status?: number }, T>({
+      mutationKey: [key],
+      mutationFn: (variables) => write(getAuthToken, plan(variables)),
+      retry: false,
+      onSuccess: async () => {
+        await refresh(successQueries);
+      },
+      onError: async (error) => {
+        if (error instanceof WriteFailure) await refresh(error.refresh);
+      },
+    });
+  };
 }
