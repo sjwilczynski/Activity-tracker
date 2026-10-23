@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { useRef, useState } from "react";
-import { useFetcher } from "react-router";
 import { Button } from "../../components/ui/button";
 import {
   Dialog,
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import type { Category } from "../../data";
+import { useAddActivityName } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 export function AddActivityNameButton({
@@ -31,47 +31,35 @@ export function AddActivityNameButton({
 }) {
   const [name, setName] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
+  const mutation = useAddActivityName();
+  const { isPending } = mutation;
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const isValid = name.trim().length > 0 && categoryId.length > 0;
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: "Activity name added successfully!",
-      errorMessage: "Failed to add activity name",
-      onSuccess: () => closeRef.current?.click(),
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: "Activity name added successfully!",
+    errorMessage: "Failed to add activity name",
+    onSuccess: () => closeRef.current?.click(),
+  });
 
   const handleSubmit = () => {
-    if (!isValid) return;
-    void fetcher.submit(
-      {
-        intent: "add-activity-name",
-        activityName: name.trim(),
-        categoryId,
-      },
-      { method: "POST" }
-    );
+    if (!isValid || isPending) return;
+    mutation.mutate({ activityName: name.trim(), categoryId });
   };
 
   return (
     <Dialog
       onOpenChange={(isOpen) => {
-        if (isOpen) {
+        if (isOpen && !isPending) {
+          mutation.reset();
           setName("");
           setCategoryId(categories[0]?.id ?? "");
         }
       }}
     >
       <DialogTrigger asChild>
-        <Button className="w-full sm:w-auto">
+        <Button className="w-full sm:w-auto" disabled={isPending}>
           <Plus className="size-4 mr-2" />
           Add Activity Name
         </Button>

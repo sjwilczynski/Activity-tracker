@@ -11,7 +11,7 @@ client/build
 storybook-static
 .fuse*
 chromatic.config.json
-client/.react-router
+client/.tanstack
 .playwright-mcp
 tsconfig.tsbuildinfo
 client/dev-dist

@@ -44,6 +44,16 @@ describe("apiFetch", () => {
     );
   });
 
+  it("preserves the HTTP status for route-level session-expired handling", async () => {
+    mockFetch(new Response(null, { status: 401 }));
+    await expect(
+      apiFetch(getAuthToken, "/api/activities")
+    ).rejects.toMatchObject({
+      status: 401,
+      message: "HTTP error! status: 401",
+    });
+  });
+
   it("returns the response without throwing when allowNotOk is set (preferences default-on-error path)", async () => {
     mockFetch(new Response(null, { status: 404 }));
 

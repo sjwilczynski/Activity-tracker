@@ -2,12 +2,12 @@ import { useForm } from "@tanstack/react-form";
 import { addDays, format } from "date-fns";
 import { Plus } from "lucide-react";
 import { useRef } from "react";
-import { useFetcher } from "react-router";
 import type {
   ActivityRecordServer,
   ActivityRecordWithId,
   Intensity,
 } from "../../../data";
+import { useAddActivities } from "../../../data/mutations";
 import { useFeedbackToast } from "../../../hooks/useFeedbackToast";
 import { Button } from "../../ui/button";
 import {
@@ -50,10 +50,8 @@ type Props = {
 
 export function AddWithDetailsDialog({ lastActivity }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isPending = fetcher.state !== "idle";
-  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
-  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+  const mutation = useAddActivities();
+  const { isPending, isSuccess, isError } = mutation;
 
   useFeedbackToast(
     { isSuccess, isError },
@@ -75,6 +73,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
       description: "",
     } as DetailedActivityFormValues,
     onSubmit: ({ value }) => {
+      if (isPending) return;
       const record: ActivityRecordServer = {
         date: format(value.date, "yyyy-MM-dd"),
         name: value.category.name,
@@ -85,20 +84,15 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
       if (value.description.trim())
         record.description = value.description.trim();
 
-      void fetcher.submit(
-        {
-          intent: "add",
-          activities: JSON.stringify([record]),
-        },
-        { method: "post", action: "/welcome" }
-      );
+      mutation.mutate([record]);
     },
   });
 
   return (
     <Dialog
       onOpenChange={(isOpen) => {
-        if (isOpen) {
+        if (isOpen && !isPending) {
+          mutation.reset();
           form.reset();
           form.setFieldValue(
             "date",
@@ -108,7 +102,7 @@ export function AddWithDetailsDialog({ lastActivity }: Props) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" disabled={isPending}>
           <Plus className="size-4 mr-2" />
           Add with Details
         </Button>

@@ -1,5 +1,5 @@
+import { useNavigate } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
 
 export const ErrorView = (props: { error: Error }) => {
@@ -11,7 +11,10 @@ export const ErrorView = (props: { error: Error }) => {
         An error has occurred:
         <span className="font-medium ml-2">{props.error.message}</span>
       </div>
-      <Button variant="gradient" onClick={() => navigate("/welcome")}>
+      <Button
+        variant="gradient"
+        onClick={() => void navigate({ to: "/welcome" })}
+      >
         Back to homepage
       </Button>
     </div>

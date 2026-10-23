@@ -1,15 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { expect, mocked, userEvent, within } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { expect, userEvent, within } from "storybook/test";
+import { authActions } from "../mocks/auth";
 import { Login } from "./Login";
 
 const meta: Meta<typeof Login> = {
   title: "Auth/Login",
   component: Login,
+  parameters: { tanstack: { router: { path: "/login" } } },
 };
 
 export default meta;
@@ -54,7 +51,7 @@ export const GoogleSignInError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    mocked(signInWithPopup).mockRejectedValueOnce(
+    authActions.signInWithGoogle.mockRejectedValueOnce(
       Object.assign(new Error("Firebase: Error (auth/too-many-requests)."), {
         code: "auth/too-many-requests",
       })
@@ -74,7 +71,7 @@ export const EmailSignInError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    mocked(signInWithEmailAndPassword).mockRejectedValueOnce(
+    authActions.signInWithEmail.mockRejectedValueOnce(
       Object.assign(new Error("Firebase: Error (auth/invalid-credential)."), {
         code: "auth/invalid-credential",
       })
@@ -96,7 +93,7 @@ export const EmailSignUpError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    mocked(createUserWithEmailAndPassword).mockRejectedValueOnce(
+    authActions.signUp.mockRejectedValueOnce(
       Object.assign(new Error("Firebase: Error (auth/email-already-in-use)."), {
         code: "auth/email-already-in-use",
       })
@@ -119,7 +116,7 @@ export const ErrorClearedOnToggle: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    mocked(signInWithEmailAndPassword).mockRejectedValueOnce(
+    authActions.signInWithEmail.mockRejectedValueOnce(
       Object.assign(new Error("Firebase: Error (auth/invalid-credential)."), {
         code: "auth/invalid-credential",
       })

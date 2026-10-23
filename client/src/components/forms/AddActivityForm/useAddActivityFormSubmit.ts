@@ -1,31 +1,28 @@
 import { format } from "date-fns";
-import { useFetcher } from "react-router";
 import type { ActivityRecordServer } from "../../../data";
+import { useAddActivities } from "../../../data/mutations";
 import type { ActivityFormValues } from "../schemas";
 
 export const useAddActivityFormSubmit = () => {
-  const { state, data, submit } = useFetcher<{
-    ok?: boolean;
-    error?: string;
-  }>();
-  const isError = state === "idle" && data?.error !== undefined;
-  const isSuccess = state === "idle" && data?.ok === true;
-  const isPending = state !== "idle";
+  const mutation = useAddActivities();
+  const { isError, isSuccess, isPending } = mutation;
 
   const onSubmit = (values: ActivityFormValues) => {
+    if (isPending) return;
     const activityRecord: ActivityRecordServer = {
       date: format(values.date, "yyyy-MM-dd"),
       name: values.category.name,
       categoryId: values.category.categoryId,
     };
-    void submit(
-      {
-        intent: "add",
-        activities: JSON.stringify([activityRecord]),
-      },
-      { method: "post", action: "/welcome" }
-    );
+    mutation.mutate([activityRecord]);
   };
 
-  return { onSubmit, isError, isSuccess, isPending };
+  return {
+    onSubmit,
+    isError,
+    isSuccess,
+    isPending,
+    error: mutation.error,
+    reset: mutation.reset,
+  };
 };

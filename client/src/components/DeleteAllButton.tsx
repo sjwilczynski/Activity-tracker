@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
-import { useFetcher } from "react-router";
+import { useRef } from "react";
+import { useDeleteAllActivities } from "../data/mutations";
 import { useFeedbackToast } from "../hooks/useFeedbackToast";
 import {
   AlertDialog,
@@ -17,37 +18,38 @@ import { Button } from "./ui/button";
 type Props = {
   totalCount: number;
   disabled?: boolean;
-  action?: string;
 };
 
-export const DeleteAllButton = ({
-  totalCount,
-  disabled = false,
-  action = "/activity-list",
-}: Props) => {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const isSuccess = fetcher.state === "idle" && fetcher.data?.ok === true;
-  const isError = fetcher.state === "idle" && fetcher.data?.error !== undefined;
+export const DeleteAllButton = ({ totalCount, disabled = false }: Props) => {
+  const mutation = useDeleteAllActivities();
+  const { isSuccess, isError, isPending } = mutation;
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useFeedbackToast(
     { isSuccess, isError },
     {
       successMessage: "Successfully deleted all activity data",
       errorMessage: "Failed to delete the activity data",
+      onSuccess: () => closeRef.current?.click(),
     }
   );
 
-  const handleConfirm = () => {
-    void fetcher.submit({ intent: "delete-all" }, { method: "post", action });
+  const handleConfirm = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (!isPending) mutation.mutate();
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      onOpenChange={(open) => {
+        if (open && !isPending) mutation.reset();
+      }}
+    >
       <AlertDialogTrigger asChild>
         <Button
           variant="destructive"
           className="flex-1 sm:flex-none btn-icon-shake"
-          disabled={disabled}
+          disabled={disabled || isPending}
         >
           <Trash2 className="size-4 sm:mr-2" />
           <span className="hidden sm:inline">Delete All</span>
@@ -62,9 +64,15 @@ export const DeleteAllButton = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={handleConfirm}>
-            Delete All
+          <AlertDialogCancel ref={closeRef} disabled={isPending}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={handleConfirm}
+            disabled={isPending}
+          >
+            {isPending ? "Deleting..." : "Delete All"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

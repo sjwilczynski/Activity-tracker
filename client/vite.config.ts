@@ -2,6 +2,7 @@ import path from "node:path";
 /// <reference types="vitest/config" />
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig, type UserConfig } from "vite";
@@ -17,34 +18,18 @@ const isVitest =
 
 const isE2E = process.env.E2E === "true";
 
-// Dynamically import reactRouter only when not in Storybook or Vitest
-const getReactPlugin = async () => {
-  if (isStorybook || isVitest) {
-    return react();
-  }
-  const { reactRouter } = await import("@react-router/dev/vite");
-  return reactRouter();
-};
-
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
-export default defineConfig(async (): Promise<UserConfig> => {
-  const reactPlugin = await getReactPlugin();
+export default defineConfig((): UserConfig => {
   return {
     plugins: [
-      // Swap entry.client.tsx → entry.client.e2e.tsx for E2E tests
       ...(isE2E
         ? [
             {
               name: "e2e-entry-swap",
-              enforce: "pre" as const,
-              async load(id: string) {
-                if (id.endsWith("entry.client.tsx") && !id.includes(".e2e.")) {
-                  const { readFileSync } = await import("node:fs");
-                  return readFileSync(
-                    id.replace("entry.client.tsx", "entry.client.e2e.tsx"),
-                    "utf-8"
-                  );
-                }
+              transformIndexHtml: {
+                order: "pre" as const,
+                handler: (html: string) =>
+                  html.replace("/src/main.tsx", "/src/main.e2e.tsx"),
               },
             },
           ]
@@ -91,15 +76,19 @@ export default defineConfig(async (): Promise<UserConfig> => {
           ]
         : []),
       tailwindcss(),
-      reactPlugin,
+      tanstackRouter({ target: "react", autoCodeSplitting: true }),
+      react(),
       reactCompiler(),
     ],
+    optimizeDeps: {
+      include: ["@tanstack/react-query", "@tanstack/react-router", "zod"],
+    },
     resolve: {
       tsconfigPaths: true,
     },
     base: "/",
     build: {
-      outDir: "build",
+      outDir: "build/client",
       target: ["chrome107", "edge107", "firefox104", "safari16"],
     },
     server: {

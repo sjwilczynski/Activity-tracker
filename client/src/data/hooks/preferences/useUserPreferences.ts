@@ -1,58 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { preferencesQueryOptions } from "../../queryOptions";
-import {
-  getPreferencesQueryId,
-  preferencesApiPath,
-} from "../../react-query-config/query-constants";
-import type { UserPreferences } from "../../types";
+import { getRouteApi } from "@tanstack/react-router";
 import { useRequestConfig } from "../useRequestConfig";
+import { updatePreferencesMutationOptions } from "./preference-mutations";
 
 export const useUserPreferences = () => {
-  const getConfig = useRequestConfig();
-  const getAuthToken = async () => (await getConfig())["x-auth-token"];
-  return useQuery(preferencesQueryOptions(getAuthToken));
+  const { preferencesQuery } = getRouteApi("/_authenticated").useRouteContext();
+  return useQuery(preferencesQuery);
 };
 
 export const useUpdatePreferences = () => {
   const getConfig = useRequestConfig();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (newPrefs: UserPreferences) => {
-      const config = await getConfig();
-      const response = await fetch(preferencesApiPath, {
-        method: "PUT",
-        headers: {
-          "x-auth-token": config["x-auth-token"],
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPrefs),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-    },
-    onMutate: async (newPrefs) => {
-      await queryClient.cancelQueries({
-        queryKey: [...getPreferencesQueryId],
-      });
-      const previous = queryClient.getQueryData<UserPreferences>([
-        ...getPreferencesQueryId,
-      ]);
-      queryClient.setQueryData([...getPreferencesQueryId], newPrefs);
-      return { previous };
-    },
-    onError: (_err, _newPrefs, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData([...getPreferencesQueryId], context.previous);
-      }
-    },
-    onSettled: () => {
-      return queryClient.invalidateQueries({
-        queryKey: [...getPreferencesQueryId],
-      });
-    },
-  });
+  return useMutation(
+    updatePreferencesMutationOptions({
+      queryClient,
+      getAuthToken: async () => (await getConfig())["x-auth-token"],
+    })
+  );
 };
 
 export const useGroupByCategory = (): [boolean, (val: boolean) => void] => {

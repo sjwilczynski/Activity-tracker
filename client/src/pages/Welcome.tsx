@@ -1,13 +1,12 @@
+import { Link } from "@tanstack/react-router";
 import { format, subDays } from "date-fns";
 import { Activity, Calendar, CalendarDays, Clock } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
 import { useAuth } from "../auth";
 import { AddActivityForm } from "../components/forms/AddActivityForm/AddActivityForm";
 import { AddWithDetailsDialog } from "../components/forms/AddActivityForm/AddWithDetailsDialog";
 import { IntensityBadge } from "../components/IntensityBadge";
 import { OnboardingCard } from "../components/OnboardingCard";
-import { Loading } from "../components/states/Loading";
 import {
   Card,
   CardAction,
@@ -17,13 +16,9 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { WeeklyHeatmapCard } from "../components/visualization/WeeklyHeatmap";
-import {
-  sortDescendingByDate,
-  useActivities,
-  useActivitiesWithLimit,
-  useCategories,
-} from "../data";
+import { sortDescendingByDate, type ActivityRecordWithId } from "../data";
 import { getActivityColor } from "../utils/colors";
+import { useWelcomeData } from "./useWelcomeData";
 
 const STAT_ICONS = [
   { icon: Activity, colorVar: "var(--color-chart-2)" },
@@ -32,7 +27,7 @@ const STAT_ICONS = [
   { icon: Clock, colorVar: "var(--color-chart-5)" },
 ] as const;
 
-function useStats(allData: ReturnType<typeof useActivities>["data"]) {
+function useStats(allData: ActivityRecordWithId[] | undefined) {
   if (!allData) {
     return null;
   }
@@ -48,7 +43,7 @@ function useStats(allData: ReturnType<typeof useActivities>["data"]) {
   return { total, lastWeek, lastMonth, last };
 }
 
-function useStatCards(allData: ReturnType<typeof useActivities>["data"]) {
+function useStatCards(allData: ActivityRecordWithId[] | undefined) {
   const stats = useStats(allData);
   if (!stats) {
     return [
@@ -85,9 +80,12 @@ function useStatCards(allData: ReturnType<typeof useActivities>["data"]) {
 
 export const Welcome = () => {
   const { user } = useAuth();
-  const { data: limitedData, isLoading } = useActivitiesWithLimit();
-  const { data: allData } = useActivities();
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const {
+    recentActivities: limitedData,
+    categories,
+    history,
+  } = useWelcomeData();
+  const allData = history.data;
   const [onboardingSkipped, setOnboardingSkipped] = useState(false);
   const lastActivity = limitedData
     ? sortDescendingByDate([...limitedData])[0]
@@ -97,10 +95,6 @@ export const Welcome = () => {
     : [];
 
   const statCards = useStatCards(allData);
-
-  if (isLoading || categoriesLoading) {
-    return <Loading />;
-  }
 
   const showOnboarding =
     !onboardingSkipped && categories !== undefined && categories.length === 0;
@@ -131,6 +125,15 @@ export const Welcome = () => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {header}
+
+      {history.isError && (
+        <div role="alert" className="text-sm text-destructive">
+          Activity statistics could not be loaded.{" "}
+          <button className="underline" onClick={() => void history.refetch()}>
+            Try again
+          </button>
+        </div>
+      )}
 
       {/* Stat Cards */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">

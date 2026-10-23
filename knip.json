@@ -5,7 +5,7 @@
       "entry": [
         "src/app/routes/**/*.tsx",
         "src/**/*.stories.tsx",
-        "src/app/entry.client.e2e.tsx"
+        "src/main.e2e.tsx"
       ],
       "project": ["src/**/*.{ts,tsx,css}"],
       "ignoreDependencies": ["chromatic"]

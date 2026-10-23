@@ -19,14 +19,15 @@ import type {
 
 const fetchActivities = async (
   getAuthToken: GetAuthToken,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<ActivityRecordWithId[]> => {
   const url = new URL(activitiesApiPath, window.location.origin);
   if (limit) {
     url.searchParams.append("limit", String(limit));
   }
 
-  const response = await apiFetch(getAuthToken, url.toString());
+  const response = await apiFetch(getAuthToken, url.toString(), { signal });
 
   const activityRecordsResponse =
     (await response.json()) as ActivityRecordWithIdServer[];
@@ -41,9 +42,10 @@ const fetchActivities = async (
 };
 
 const fetchCategories = async (
-  getAuthToken: GetAuthToken
+  getAuthToken: GetAuthToken,
+  signal?: AbortSignal
 ): Promise<Category[]> => {
-  const response = await apiFetch(getAuthToken, categoriesApiPath);
+  const response = await apiFetch(getAuthToken, categoriesApiPath, { signal });
 
   return (await response.json()) as Category[];
 };
@@ -51,7 +53,8 @@ const fetchCategories = async (
 export const activitiesQueryOptions = (getAuthToken: GetAuthToken) =>
   queryOptions({
     queryKey: [...getActivitiesQueryId],
-    queryFn: () => fetchActivities(getAuthToken),
+    queryFn: ({ signal }) => fetchActivities(getAuthToken, undefined, signal),
+    staleTime: 10 * 60_000,
   });
 
 export const activitiesWithLimitQueryOptions = (
@@ -60,13 +63,15 @@ export const activitiesWithLimitQueryOptions = (
 ) =>
   queryOptions({
     queryKey: [...getActivitiesQueryIdWithLimit, limit],
-    queryFn: () => fetchActivities(getAuthToken, limit),
+    queryFn: ({ signal }) => fetchActivities(getAuthToken, limit, signal),
+    staleTime: 10 * 60_000,
   });
 
 export const categoriesQueryOptions = (getAuthToken: GetAuthToken) =>
   queryOptions({
     queryKey: [...getCategoriesQueryId],
-    queryFn: () => fetchCategories(getAuthToken),
+    queryFn: ({ signal }) => fetchCategories(getAuthToken, signal),
+    staleTime: 10 * 60_000,
   });
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -76,15 +81,18 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 };
 
 const fetchPreferences = async (
-  getAuthToken: GetAuthToken
+  getAuthToken: GetAuthToken,
+  signal?: AbortSignal
 ): Promise<UserPreferences> => {
   const response = await apiFetch(getAuthToken, preferencesApiPath, {
     allowNotOk: true,
+    signal,
   });
 
-  if (!response.ok) {
+  if (response.status === 404) {
     return DEFAULT_PREFERENCES;
   }
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
   return (await response.json()) as UserPreferences;
 };
@@ -92,6 +100,6 @@ const fetchPreferences = async (
 export const preferencesQueryOptions = (getAuthToken: GetAuthToken) =>
   queryOptions({
     queryKey: [...getPreferencesQueryId],
-    queryFn: () => fetchPreferences(getAuthToken),
+    queryFn: ({ signal }) => fetchPreferences(getAuthToken, signal),
     staleTime: Infinity,
   });

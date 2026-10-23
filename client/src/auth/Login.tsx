@@ -1,11 +1,4 @@
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  type AuthError,
-} from "firebase/auth";
+import { getRouteApi } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
@@ -30,7 +23,7 @@ const firebaseErrorMessages: Record<string, string> = {
 };
 
 const getFirebaseErrorMessage = (error: unknown): string => {
-  const code = (error as AuthError)?.code;
+  const code = (error as { code?: string })?.code ?? "";
   return firebaseErrorMessages[code] ?? (error as Error).message;
 };
 
@@ -40,12 +33,12 @@ export const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
 
-  const auth = getAuth();
+  const { authService: auth } = getRouteApi("__root__").useRouteContext();
 
   const handleGoogleSignIn = async () => {
     setError(null);
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      await auth.signInWithGoogle();
     } catch (e) {
       setError(getFirebaseErrorMessage(e));
     }
@@ -56,9 +49,9 @@ export const Login = () => {
     setError(null);
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        await auth.signUp(email, password);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await auth.signInWithEmail(email, password);
       }
     } catch (err) {
       setError(getFirebaseErrorMessage(err));

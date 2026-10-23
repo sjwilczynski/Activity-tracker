@@ -1,30 +1,18 @@
-import { useFetcher } from "react-router";
+import { useAssignActivityCategory } from "../../data/mutations";
 import { useFeedbackToast } from "../../hooks/useFeedbackToast";
 
 export function useAssignCategory({ name }: { name: string }) {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const mutation = useAssignActivityCategory();
 
   const handleAssignCategory = (newCategoryId: string) => {
-    void fetcher.submit(
-      {
-        intent: "assign-category",
-        activityName: name,
-        categoryId: newCategoryId,
-      },
-      { method: "post" }
-    );
+    if (!mutation.isPending)
+      mutation.mutate({ activityName: name, categoryId: newCategoryId });
   };
 
-  useFeedbackToast(
-    {
-      isSuccess: fetcher.state === "idle" && fetcher.data?.ok === true,
-      isError: fetcher.state === "idle" && fetcher.data?.error !== undefined,
-    },
-    {
-      successMessage: `Category updated for "${name}"`,
-      errorMessage: `Failed to assign category for "${name}"`,
-    }
-  );
+  useFeedbackToast(mutation, {
+    successMessage: `Category updated for "${name}"`,
+    errorMessage: `Failed to assign category for "${name}"`,
+  });
 
-  return { handleAssignCategory, isPending: fetcher.state !== "idle" };
+  return { handleAssignCategory, isPending: mutation.isPending };
 }

@@ -1,61 +1,83 @@
-import type { QueryClient, QueryKey } from "@tanstack/react-query";
-import { mutationsFor, type ActionRoute } from "./action-plan";
-import { apiFetch, type GetAuthToken } from "./apiClient";
+import {
+  activityQueries,
+  categoryQueries,
+  allQueries,
+  addActivitiesPlan,
+  addActivityNamePlan,
+  addCategoryPlan,
+  assignActivityCategoryPlan,
+  deleteActivityPlan,
+  deleteAllActivitiesPlan,
+  deleteCategoryPlan,
+  editActivityPlan,
+  editCategoryPlan,
+  renameActivityPlan,
+  restoreBackupPlan,
+} from "./action-plan";
+import { defineWriteMutation } from "./mutation-write";
 
-export type { ActionRoute } from "./action-plan";
+export const addActivitiesMutationOptions = defineWriteMutation(
+  "add-activities",
+  addActivitiesPlan,
+  activityQueries
+);
 
-export type ActionContext = {
-  queryClient: QueryClient;
-  getAuthToken: GetAuthToken;
-};
+export const editActivityMutationOptions = defineWriteMutation(
+  "edit-activity",
+  editActivityPlan,
+  activityQueries
+);
 
-export type ActionResult =
-  | { ok: true; error?: never; status?: never }
-  | { error: string; status?: number; ok?: never };
+export const deleteActivityMutationOptions = defineWriteMutation(
+  "delete-activity",
+  deleteActivityPlan,
+  activityQueries
+);
 
-/** Routes and Storybook share policies, ordered mutations, and their effects. */
-export async function runAction(
-  request: Request,
-  { queryClient, getAuthToken }: ActionContext,
-  route: ActionRoute
-): Promise<ActionResult> {
-  const mutations = mutationsFor(route, await request.formData());
-  if (!mutations) return { error: "Unknown intent" };
+export const deleteAllActivitiesMutationOptions = defineWriteMutation<void>(
+  "delete-all-activities",
+  deleteAllActivitiesPlan,
+  activityQueries
+);
 
-  const invalidations = new Set<QueryKey>();
-  let uncertainQueries: QueryKey[] = [];
-  try {
-    for (const mutation of mutations) {
-      const token = await getAuthToken();
-      uncertainQueries = mutation.invalidates;
-      const response = await apiFetch(async () => token, mutation.path, {
-        method: mutation.method,
-        ...(mutation.body !== undefined && {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(mutation.body),
-        }),
-        allowNotOk: true,
-      });
-      uncertainQueries = [];
-      if (response.ok || response.status === 409 || response.status >= 500) {
-        mutation.invalidates.forEach((key) => invalidations.add(key));
-      }
-      if (!response.ok) {
-        const message = response.status < 500 ? await response.text() : "";
-        return {
-          error: `${mutation.failureContext ?? ""}${message || `Request failed (status: ${response.status})`}`,
-          status: response.status,
-        };
-      }
-    }
-    return { ok: true };
-  } finally {
-    // A lost acknowledgement may follow a committed write; unstarted steps have no effects.
-    uncertainQueries.forEach((key) => invalidations.add(key));
-    await Promise.all(
-      [...invalidations].map((queryKey) =>
-        queryClient.invalidateQueries({ queryKey })
-      )
-    );
-  }
-}
+export const restoreBackupMutationOptions = defineWriteMutation(
+  "restore-backup",
+  restoreBackupPlan,
+  allQueries
+);
+
+export const addCategoryMutationOptions = defineWriteMutation(
+  "add-category",
+  addCategoryPlan,
+  categoryQueries
+);
+
+export const editCategoryMutationOptions = defineWriteMutation(
+  "edit-category",
+  editCategoryPlan,
+  categoryQueries
+);
+
+export const deleteCategoryMutationOptions = defineWriteMutation(
+  "delete-category",
+  deleteCategoryPlan,
+  categoryQueries
+);
+
+export const renameActivityMutationOptions = defineWriteMutation(
+  "rename-activity",
+  renameActivityPlan,
+  categoryQueries
+);
+
+export const assignActivityCategoryMutationOptions = defineWriteMutation(
+  "assign-activity-category",
+  assignActivityCategoryPlan,
+  categoryQueries
+);
+
+export const addActivityNameMutationOptions = defineWriteMutation(
+  "add-activity-name",
+  addActivityNamePlan,
+  categoryQueries
+);
