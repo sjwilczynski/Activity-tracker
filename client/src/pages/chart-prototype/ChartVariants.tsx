@@ -152,6 +152,7 @@ function CategorySharePlot({ points, allSummaries, categories }: VariantProps) {
             </dt>
             <dd className="shrink-0 text-right tabular-nums">
               <strong>{slice.count}</strong>
+              <span className="sr-only"> activities, </span>
               <span className="ml-2 text-muted-foreground">
                 {((slice.count / total) * 100).toFixed(1)}%
               </span>

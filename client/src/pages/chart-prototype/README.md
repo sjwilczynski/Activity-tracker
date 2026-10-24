@@ -73,6 +73,8 @@ not benefits unique to TanStack. No manual screen-reader audit was performed.
 - SVG `fill` is a paint string or accessor, not a field-name shorthand.
 - Keep optional prototype search fields optional in the route validator so
   existing navigation does not gain a required `search` argument.
+- Give adjacent counts and percentages spoken units; CSS spacing alone does
+  not distinguish them for assistive technology.
 - The prototype renderer and runner are development-only. Production JavaScript
   excludes them; source scanning can still include their Tailwind utilities on
   this throwaway branch.
