@@ -1,40 +1,45 @@
-import { useMemo } from "react";
+import { format } from "date-fns";
 import type { ActivityRecordWithId } from "@/data";
-import { periodsFromParams } from "../compare-utils";
-import { getComparisonSeries } from "./chart-model";
+import {
+  getComparisonOptions,
+  getComparisonSeries,
+  type ComparisonMode,
+} from "./chart-model";
 import { ComparisonDataTable } from "./ComparisonDataTable";
 import { BaselineComparison, TanStackComparison } from "./ComparisonPlot";
 import { prototypeAsOf } from "./fixtures";
 import { KeyboardHint, PlotFrame } from "./PlotFrame";
 import type { PrototypeVariant } from "./PrototypeSwitcher";
 
-const comparisons = {
-  years: "year-2025,year-2026",
-  months: "month-2026-8,month-2026-9",
-  crowded:
-    "month-2026-3,month-2026-4,month-2026-5,month-2026-6,month-2026-7,month-2026-8,month-2026-9",
-};
-export type ComparisonMode = keyof typeof comparisons;
+export type { ComparisonMode } from "./chart-model";
 
 export function PrototypeComparison({
   variant,
   records,
   mode,
   onChange,
+  sampleData,
 }: {
   variant: PrototypeVariant;
   records: ActivityRecordWithId[];
   mode: ComparisonMode;
   onChange: (mode: ComparisonMode) => void;
+  sampleData: boolean;
 }) {
-  const series = useMemo(
-    () =>
-      getComparisonSeries(
-        records,
-        periodsFromParams(comparisons[mode]),
-        variant === "clarity" ? prototypeAsOf : undefined
-      ),
-    [records, mode, variant]
+  const today = new Date();
+  const referenceDate = sampleData
+    ? prototypeAsOf
+    : records.reduce(
+        (latest, record) => (record.date > latest ? record.date : latest),
+        records[0]?.date ?? today
+      );
+  const options = getComparisonOptions(records, referenceDate);
+  const periods = options.find((option) => option.id === mode)!.periods;
+  const cutoff = sampleData ? prototypeAsOf : today;
+  const series = getComparisonSeries(
+    records,
+    periods,
+    variant === "clarity" ? cutoff : undefined
   );
   if (!records.length)
     return (
@@ -42,7 +47,7 @@ export function PrototypeComparison({
         role="status"
         className="rounded-lg border p-6 text-sm text-muted-foreground"
       >
-        No activities to compare in this scenario.
+        No activities to compare{sampleData ? " in this scenario" : ""}.
       </p>
     );
   return (
@@ -59,9 +64,11 @@ export function PrototypeComparison({
               onChange(value);
           }}
         >
-          <option value="years">2025 vs 2026</option>
-          <option value="months">September vs October 2026</option>
-          <option value="crowded">Seven months (crowded)</option>
+          {options.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
       <PlotFrame
@@ -79,8 +86,10 @@ export function PrototypeComparison({
         )}
         <p className="text-xs text-muted-foreground">
           Comparison uses its own selected periods, independent of the analytics
-          date range. Sample data ends Oct 24, 2026; 2026 is not a complete
-          year.
+          date range.{" "}
+          {sampleData
+            ? "Sample data ends Oct 24, 2026; 2026 is not a complete year."
+            : `Periods are selected from your recorded history; monthly comparisons end in ${format(referenceDate, "MMMM yyyy")}.`}
           {variant === "clarity" &&
             " Future buckets are omitted, not plotted as zero."}
         </p>

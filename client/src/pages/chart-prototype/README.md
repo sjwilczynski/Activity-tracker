@@ -16,6 +16,13 @@ with mock authentication and MSW data, without a live account or API. Sample
 records are deterministic and end on October 24, 2026. Controls and mock changes
 are not persisted to a database.
 
+To compare charts against a real signed-in account instead, start `bun run dev`
+and open <http://localhost:3000/charts>. Local development opens the new clarity
+view by default; the bottom switcher still provides the old and parity views.
+This view uses all activity
+names from that account, omits demo-only scenario controls, and derives comparison
+periods from the account's recorded years and latest recorded month.
+
 The bottom switcher changes `?variant=` without resetting the controls:
 
 | Variant    | Purpose                                                                                                              |
@@ -75,6 +82,9 @@ not benefits unique to TanStack. No manual screen-reader audit was performed.
   existing navigation does not gain a required `search` argument.
 - Give adjacent counts and percentages spoken units; CSS spacing alone does
   not distinguish them for assistive technology.
+- Scope fixture-name filters and sample-data labels to the dedicated sample
+  runner. Applying a default demo scenario to live records can hide every
+  activity even when the API returned valid data.
 - The prototype renderer and runner are development-only. Production JavaScript
   excludes them; source scanning can still include their Tailwind utilities on
   this throwaway branch.

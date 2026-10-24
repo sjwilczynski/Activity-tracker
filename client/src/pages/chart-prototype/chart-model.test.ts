@@ -13,6 +13,7 @@ import {
   getActivityPoints,
   getCategorySlices,
   getComparisonSeries,
+  getComparisonOptions,
   getDistributionRings,
 } from "./chart-model";
 
@@ -150,4 +151,38 @@ it("omits only future weeks for an incomplete month, leaving earlier months inta
   expect(series.map((entry) => entry.points.length)).toEqual([5, 4]);
   expect(series[0].name).toBe("September 2026");
   expect(series[1].name).toBe("October 2026 (partial)");
+});
+
+it("selects comparison years from real history, not hard-coded sample years", () => {
+  const records = [
+    {
+      id: "custom",
+      name: "A custom activity",
+      categoryId: "custom",
+      active: true,
+      date: new Date(2024, 4, 15),
+    },
+    {
+      id: "older",
+      name: "Another name",
+      categoryId: "",
+      active: true,
+      date: new Date(2022, 0, 2),
+    },
+  ];
+  const options = getComparisonOptions(records, new Date(2024, 4, 15));
+  expect(options[0].periods.map((period) => period.year)).toEqual([2022, 2024]);
+  expect(options[1].label).toBe("April 2024 vs May 2024");
+  expect(
+    getComparisonSeries(records, options[0].periods).map((series) =>
+      series.points.reduce((sum, point) => sum + point.count, 0)
+    )
+  ).toEqual([1, 1]);
+});
+
+it("builds monthly comparison choices across year boundaries", () => {
+  const options = getComparisonOptions([], new Date(2025, 0, 15));
+  expect(options[0].label).toBe("2025");
+  expect(options[1].label).toBe("December 2024 vs January 2025");
+  expect(options[2].periods).toHaveLength(7);
 });

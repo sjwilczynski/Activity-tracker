@@ -37,9 +37,9 @@ export const Route = createFileRoute("/_authenticated/charts")({
 
 function ChartsRoute() {
   const { variant } = Route.useSearch();
-  return Prototype && variant ? (
+  return Prototype ? (
     <Suspense fallback={<p role="status">Loading chart prototype...</p>}>
-      <Prototype variant={variant} />
+      <Prototype variant={variant ?? "clarity"} />
     </Suspense>
   ) : (
     <Charts />

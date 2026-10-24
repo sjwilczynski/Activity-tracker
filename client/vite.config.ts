@@ -22,6 +22,9 @@ const isE2E = process.env.E2E === "true" || isChartPrototype;
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig((): UserConfig => {
   return {
+    define: {
+      "import.meta.env.CHART_PROTOTYPE": JSON.stringify(isChartPrototype),
+    },
     plugins: [
       ...(isE2E
         ? [

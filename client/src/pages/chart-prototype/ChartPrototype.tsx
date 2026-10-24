@@ -44,6 +44,8 @@ import {
   type PrototypeVariant,
 } from "./PrototypeSwitcher";
 
+const sampleData = import.meta.env.CHART_PROTOTYPE === true;
+
 ChartJS.register(
   ArcElement,
   BarController,
@@ -82,8 +84,9 @@ export default function ChartPrototype({
   if (activities.error || categories.error)
     return <ErrorView error={activities.error ?? categories.error!} />;
 
-  const scenarioRecords = (activities.data ?? []).filter((record) =>
-    matchesScenario(record.name, record.active, scenario)
+  const scenarioRecords = (activities.data ?? []).filter(
+    (record) =>
+      !sampleData || matchesScenario(record.name, record.active, scenario)
   );
   const records = scenarioRecords.filter(
     (record) => showInactive || record.active
@@ -116,9 +119,10 @@ export default function ChartPrototype({
   return (
     <div className="space-y-6 pb-24" data-prototype-variant={variant}>
       <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm">
-        <strong>Chart prototype</strong> / {view.label}. Deterministic sample
-        data through Oct 24, 2026. No live account or database is used in the
-        prototype runner.
+        <strong>Chart prototype</strong> / {view.label}.{" "}
+        {sampleData
+          ? "Deterministic sample data through Oct 24, 2026. No live account or database is used in the prototype runner."
+          : "Using your signed-in account's activities. Demo scenario filters are disabled."}
       </div>
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -137,26 +141,28 @@ export default function ChartPrototype({
         />
       </header>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2 text-sm">
-          <label htmlFor="prototype-scenario">Scenario</label>
-          <select
-            id="prototype-scenario"
-            value={scenario}
-            className="h-9 max-w-[240px] rounded-md border bg-background px-2 text-sm"
-            onChange={(event) => {
-              const selected = scenarios.find(
-                (entry) => entry.id === event.target.value
-              );
-              if (selected) setScenario(selected.id);
-            }}
-          >
-            {scenarios.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {sampleData && (
+          <div className="flex items-center gap-2 text-sm">
+            <label htmlFor="prototype-scenario">Scenario</label>
+            <select
+              id="prototype-scenario"
+              value={scenario}
+              className="h-9 max-w-[240px] rounded-md border bg-background px-2 text-sm"
+              onChange={(event) => {
+                const selected = scenarios.find(
+                  (entry) => entry.id === event.target.value
+                );
+                if (selected) setScenario(selected.id);
+              }}
+            >
+              {scenarios.map((entry) => (
+                <option key={entry.id} value={entry.id}>
+                  {entry.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <Button
           variant="outline"
           size="sm"
@@ -199,13 +205,17 @@ export default function ChartPrototype({
         <div role="status" className="rounded-xl border px-6 py-16 text-center">
           <p className="font-semibold">No activities in this selection</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Choose another scenario or date range. Empty charts are not drawn.
+            {sampleData
+              ? "Choose another scenario or date range."
+              : "Choose another date range or log an activity."}{" "}
+            Empty charts are not drawn.
           </p>
         </div>
       )}
       <PrototypeComparison
         variant={variant}
         records={scenarioRecords}
+        sampleData={sampleData}
         mode={comparison}
         onChange={setComparison}
       />
@@ -215,7 +225,8 @@ export default function ChartPrototype({
           {JSON.stringify(
             {
               variant,
-              scenario,
+              dataSource: sampleData ? "sample" : "account",
+              ...(sampleData ? { scenario } : {}),
               grouped,
               showInactive,
               dateRange,
