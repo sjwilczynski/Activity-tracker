@@ -39,7 +39,7 @@ function ChartsRoute() {
   const { variant } = Route.useSearch();
   return Prototype ? (
     <Suspense fallback={<p role="status">Loading chart prototype...</p>}>
-      <Prototype variant={variant ?? "clarity"} />
+      <Prototype variant={variant ?? "parity"} />
     </Suspense>
   ) : (
     <Charts />

@@ -73,6 +73,7 @@ export function TanStackDistribution({
       items={points}
       hidden={hidden}
       label="Activity distribution legend"
+      compact={!mobile}
       toggle={(name) =>
         setHidden((previous) =>
           previous.includes(name)
@@ -84,7 +85,7 @@ export function TanStackDistribution({
   );
   return (
     <div className="space-y-3">
-      <div className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_minmax(150px,220px)]">
+      <div className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <div data-chart-surface className="min-w-0">
           {total > 0 ? (
             <Chart

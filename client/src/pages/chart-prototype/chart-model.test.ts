@@ -131,7 +131,7 @@ it("omits empty data and retains a single inactive category without invalid perc
   ).toBe(true);
 });
 
-it("distinguishes future buckets from zero counts only in the clarity variant", () => {
+it("distinguishes future buckets from zero counts when a cutoff is provided", () => {
   const periods = periodsFromParams("year-2025,year-2026");
   expect(
     getComparisonSeries([], periods).map((series) => series.points.length)
@@ -139,7 +139,19 @@ it("distinguishes future buckets from zero counts only in the clarity variant", 
   const clipped = getComparisonSeries([], periods, new Date(2026, 9, 24));
   expect(clipped.map((series) => series.points.length)).toEqual([12, 10]);
   expect(clipped[1].name).toBe("2026 (partial)");
+  expect(clipped.map((series) => series.partial)).toEqual([false, true]);
   expect(clipped[1].points.every((point) => point.count === 0)).toBe(true);
+});
+
+it("marks the current period partial even when all month/week buckets have begun", () => {
+  const series = getComparisonSeries(
+    [],
+    periodsFromParams("year-2026,month-2026-11"),
+    new Date(2026, 11, 30)
+  );
+  expect(series.map((entry) => entry.partial)).toEqual([true, true]);
+  expect(series[0].points).toHaveLength(12);
+  expect(series[1].points).toHaveLength(5);
 });
 
 it("omits only future weeks for an incomplete month, leaving earlier months intact", () => {

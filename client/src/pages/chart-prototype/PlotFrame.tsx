@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/utils/cn";
 import type { ActivityPoint } from "./chart-model";
 
 export const plotTheme = {
@@ -49,14 +50,24 @@ export function ChartLegend({
   hidden,
   toggle,
   label,
+  compact = false,
 }: {
   items: { name: string; color: string; count?: number; dash?: string }[];
   hidden: readonly string[];
   toggle: (name: string) => void;
   label: string;
+  compact?: boolean;
 }) {
   return (
-    <div role="group" aria-label={label} className="flex flex-wrap gap-1.5">
+    <div
+      role="group"
+      aria-label={label}
+      className={cn(
+        compact
+          ? "grid max-h-[400px] min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] content-start gap-x-2 gap-y-0.5 overflow-y-auto overscroll-contain p-1"
+          : "flex flex-wrap gap-1.5"
+      )}
+    >
       {items.map((item) => (
         <Button
           key={item.name}
@@ -66,14 +77,19 @@ export function ChartLegend({
           aria-label={`${hidden.includes(item.name) ? "Show" : "Hide"} ${item.name}`}
           aria-pressed={!hidden.includes(item.name)}
           onClick={() => toggle(item.name)}
-          className="h-auto min-h-9 max-w-full justify-start whitespace-normal text-left text-xs"
+          className={cn(
+            "h-auto max-w-full justify-start whitespace-normal text-left",
+            compact
+              ? "min-h-6 w-full gap-1.5 rounded-sm border-transparent bg-transparent px-1 py-0.5 text-[11px]"
+              : "min-h-9 text-xs"
+          )}
         >
           <svg
             width="18"
             height="12"
             viewBox="0 0 18 12"
             aria-hidden="true"
-            className="shrink-0"
+            className={compact ? "w-3 shrink-0" : "shrink-0"}
           >
             {item.dash !== undefined ? (
               <line

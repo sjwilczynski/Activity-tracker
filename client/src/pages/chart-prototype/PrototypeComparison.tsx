@@ -39,7 +39,7 @@ export function PrototypeComparison({
   const series = getComparisonSeries(
     records,
     periods,
-    variant === "clarity" ? cutoff : undefined
+    variant === "baseline" ? undefined : cutoff
   );
   if (!records.length)
     return (
@@ -90,7 +90,7 @@ export function PrototypeComparison({
           {sampleData
             ? "Sample data ends Oct 24, 2026; 2026 is not a complete year."
             : `Periods are selected from your recorded history; monthly comparisons end in ${format(referenceDate, "MMMM yyyy")}.`}
-          {variant === "clarity" &&
+          {variant !== "baseline" &&
             " Future buckets are omitted, not plotted as zero."}
         </p>
         {variant !== "baseline" && (

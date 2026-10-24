@@ -40,6 +40,7 @@ export type ComparisonSeries = {
   id: string;
   name: string;
   color: string;
+  partial: boolean;
   points: { bucket: string; count: number }[];
 };
 
@@ -209,11 +210,12 @@ export function getComparisonSeries(
           : monthly
             ? counts.length
             : asOf.getMonth() + 1;
-    const partial = limit < counts.length;
+    const partial = Boolean(asOf && currentYear && (!monthly || currentMonth));
     return {
       id: period.id,
       name: `${getPeriodLabel(period)}${partial ? " (partial)" : ""}`,
       color: period.color,
+      partial,
       points: counts
         .slice(0, limit)
         .map((count, index) => ({ bucket: labels[index], count })),

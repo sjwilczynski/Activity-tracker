@@ -72,16 +72,21 @@ export function TanStackComparison({
   const light = useIsLightTheme();
   const series = useMemo(
     () =>
-      clarity
-        ? inputSeries.map((entry, index) => ({
-            ...entry,
-            color: accessiblePlotColors(light)[index % 7],
-          }))
-        : inputSeries,
+      inputSeries.map((entry, index) => ({
+        ...entry,
+        color: clarity ? accessiblePlotColors(light)[index % 7] : entry.color,
+        dash: clarity
+          ? dashes[index % dashes.length]
+          : entry.partial
+            ? "7 4"
+            : "",
+      })),
     [inputSeries, clarity, light]
   );
   const [hidden, setHidden] = useState<string[]>([]);
   const definition = useMemo(() => {
+    const labelEnds =
+      series.length <= 3 && (clarity || series.some((entry) => entry.partial));
     const visible = series.filter((entry) => !hidden.includes(entry.name));
     return defineChart({
       marks: visible.flatMap((entry, index) => {
@@ -99,11 +104,9 @@ export function TanStackComparison({
           points: true,
           curve: d3Curve(curveMonotoneX),
           strokeWidth: clarity ? 2.5 : 2,
-          strokeDasharray: clarity
-            ? dashes[series.indexOf(entry) % dashes.length]
-            : undefined,
+          strokeDasharray: entry.dash || undefined,
         });
-        return clarity && series.length <= 3 && points.length
+        return labelEnds && (clarity || entry.partial) && points.length
           ? [
               line,
               text(points.slice(-1), {
@@ -123,7 +126,7 @@ export function TanStackComparison({
         x: {
           scale: scalePoint<string>()
             .domain(series[0]?.points.map((point) => point.bucket) ?? [])
-            .padding(clarity ? 0.7 : 0.2),
+            .padding(labelEnds ? 0.7 : 0.2),
           grid: false,
           axis: { tickLabels: { fontSize: 12 } },
         },
@@ -148,7 +151,7 @@ export function TanStackComparison({
           },
         },
       },
-      margin: clarity ? { right: 70 } : undefined,
+      margin: labelEnds ? { right: 100 } : undefined,
       theme: plotTheme,
       svgAnimation: plotAnimation,
       tooltip: {
@@ -161,10 +164,10 @@ export function TanStackComparison({
   return (
     <div className="space-y-3">
       <ChartLegend
-        items={series.map((entry, index) => ({
+        items={series.map((entry) => ({
           name: entry.name,
           color: entry.color,
-          dash: clarity ? dashes[index % dashes.length] : "",
+          dash: entry.dash,
         }))}
         hidden={hidden}
         label="Comparison periods"
