@@ -1,0 +1,15 @@
+[data-prototype-variant="parity"],
+[data-prototype-variant="clarity"] {
+  --color-muted-foreground: #526075;
+}
+
+.dark [data-prototype-variant="parity"],
+.dark [data-prototype-variant="clarity"] {
+  --color-muted-foreground: #abb6c7;
+}
+
+[data-chart-surface] .ts-chart:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
