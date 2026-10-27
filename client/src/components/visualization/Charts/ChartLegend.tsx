@@ -88,12 +88,3 @@ export function toggleHidden(previous: string[], id: string): string[] {
     ? previous.filter((item) => item !== id)
     : [...previous, id];
 }
-
-export function KeyboardHint({ legend = true }: { legend?: boolean }) {
-  return (
-    <p className="text-xs text-muted-foreground">
-      Keyboard: Tab into the plot, then use arrow keys to explore values.
-      {legend && " Legend buttons hide or show series."}
-    </p>
-  );
-}

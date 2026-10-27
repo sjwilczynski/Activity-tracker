@@ -11,7 +11,7 @@ import {
   type ActivityPoint,
 } from "../Charts/activity-chart-data";
 import { chartAnimation, chartTheme, entryCount } from "../Charts/chart-theme";
-import { ChartLegend, KeyboardHint, toggleHidden } from "../Charts/ChartLegend";
+import { ChartLegend, toggleHidden } from "../Charts/ChartLegend";
 
 export function SummaryPieChart({
   points,
@@ -94,7 +94,7 @@ export function SummaryPieChart({
               ariaLabel="Activity distribution"
               ariaDescription={`${total} visible logged entries. Outer ring: activities. ${
                 grouped ? "Middle ring: categories. " : ""
-              }Center: current category status.`}
+              }Center: current category status. Legend buttons hide or show activities and recalculate all rings. Use arrow keys to explore individual values.`}
             />
           ) : (
             <p
@@ -116,14 +116,6 @@ export function SummaryPieChart({
           legend
         )}
       </div>
-      <p className="text-xs text-muted-foreground">
-        {grouped
-          ? "Outside to center: activity, category, category status."
-          : "Outside to center: activity, category status."}{" "}
-        Legend filtering applies only to this chart; all rings are recalculated
-        together.
-      </p>
-      <KeyboardHint />
     </div>
   );
 }

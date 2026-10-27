@@ -20,8 +20,7 @@ import {
   entryCount,
   formatCount,
 } from "./chart-theme";
-import { ChartLegend, KeyboardHint, toggleHidden } from "./ChartLegend";
-import { ComparisonDataTable } from "./ComparisonDataTable";
+import { ChartLegend, toggleHidden } from "./ChartLegend";
 
 export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
   const [hidden, setHidden] = useState<string[]>([]);
@@ -121,7 +120,7 @@ export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
             definition={definition}
             height={340}
             ariaLabel="Activity comparison"
-            ariaDescription={`${visible.map((entry) => entry.name).join(" compared with ")}. Only entries in currently active categories are counted. Dashed lines indicate partial periods. Exact values are in the comparison data table below.`}
+            ariaDescription={`${visible.map((entry) => entry.name).join(" compared with ")}. Only entries in currently active categories are counted. Dashed lines indicate partial periods; future buckets are omitted. Use arrow keys to explore individual values.`}
           />
         </div>
       ) : (
@@ -134,12 +133,6 @@ export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
             : "All periods are hidden. Use a legend button to show one."}
         </p>
       )}
-      <p className="text-xs text-muted-foreground">
-        Dashed lines indicate partial periods. Future buckets are omitted, not
-        plotted as zero.
-      </p>
-      <KeyboardHint />
-      <ComparisonDataTable series={series} />
     </div>
   );
 }

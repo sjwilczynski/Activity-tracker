@@ -5,7 +5,7 @@ import { useDateRangeState } from "@/components/forms/DateFilterForm/shared";
 import { ErrorView } from "@/components/states/ErrorView";
 import { Loading } from "@/components/states/Loading";
 import { NoActivitiesPage } from "@/components/states/NoActivitiesPage";
-import { Button } from "@/components/ui/button";
+import { useGroupByCategory } from "@/components/styles/StylesProvider";
 import {
   Card,
   CardContent,
@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getActivityPoints } from "@/components/visualization/Charts/activity-chart-data";
-import { ActivityDataTable } from "@/components/visualization/Charts/ActivityDataTable";
 import { BarChart } from "@/components/visualization/Charts/BarChart";
 import { SummaryPieChart } from "@/components/visualization/SummaryCharts/SummaryPieChart";
 import {
@@ -23,12 +22,7 @@ import {
   useActivities,
   useAvailableCategories,
 } from "@/data";
-import {
-  useUpdatePreferences,
-  useUserPreferences,
-} from "@/data/hooks/preferences/useUserPreferences";
 import { cn } from "@/utils/cn";
-import { AnalyticsComparison } from "./AnalyticsComparison";
 import { ChartSummaryStats } from "./ChartSummaryStats";
 
 export const Charts = () => {
@@ -40,9 +34,7 @@ export const Charts = () => {
     refetch: refetchCategories,
   } = useAvailableCategories();
   const [dateRange, setDateRange] = useDateRangeState();
-  const preferences = useUserPreferences();
-  const updatePreferences = useUpdatePreferences();
-  const groupByCategory = preferences.data?.groupByCategory ?? true;
+  const [groupByCategory] = useGroupByCategory();
   const [showInactive, setShowInactive] = useState(true);
 
   if (isLoading || categoriesLoading) return <Loading />;
@@ -87,21 +79,6 @@ export const Charts = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            aria-pressed={groupByCategory}
-            disabled={!preferences.data || updatePreferences.isPending}
-            onClick={() => {
-              if (preferences.data)
-                updatePreferences.mutate({
-                  ...preferences.data,
-                  groupByCategory: !groupByCategory,
-                });
-            }}
-          >
-            Group by category
-          </Button>
           <button
             type="button"
             onClick={() => setShowInactive((value) => !value)}
@@ -124,11 +101,6 @@ export const Charts = () => {
             }
           />
         </div>
-        {updatePreferences.isError && (
-          <p role="alert" className="text-sm text-destructive">
-            Chart grouping could not be saved. Try again.
-          </p>
-        )}
       </div>
       <ChartSummaryStats summaries={summaries} />
       {points.length ? (
@@ -160,7 +132,6 @@ export const Charts = () => {
               />
             </CardContent>
           </Card>
-          <ActivityDataTable points={points} />
         </>
       ) : (
         <Card>
@@ -178,7 +149,6 @@ export const Charts = () => {
           </CardContent>
         </Card>
       )}
-      <AnalyticsComparison records={data} />
     </div>
   );
 };

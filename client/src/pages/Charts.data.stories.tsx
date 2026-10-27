@@ -47,8 +47,11 @@ const meta = {
     ).not.toBeInTheDocument();
     await expect(canvas.queryByLabelText("Scenario")).not.toBeInTheDocument();
     await expect(
-      canvas.getByRole("option", { name: /^2024$/ })
-    ).toBeInTheDocument();
+      canvas.queryByRole("img", { name: "Activity comparison" })
+    ).not.toBeInTheDocument();
+    await expect(canvas.queryByLabelText("Comparison")).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("table")).not.toBeInTheDocument();
+    await expect(canvas.queryByText(/^Keyboard:/)).not.toBeInTheDocument();
     await expect(
       canvas.getByRole("img", { name: "Activity frequency" })
     ).toBeVisible();
@@ -134,58 +137,8 @@ export const FlatGrouping: Story = {
         canvasElement.querySelectorAll(".ts-chart__arc")
       ).toHaveLength(2);
     });
-    await userEvent.click(canvas.getByText(/View exact activity data/));
-    const table = canvas.getByRole("table", {
-      name: "Activity counts in the selected date range",
-    });
     await expect(
-      within(table).getByRole("rowheader", { name: "A custom activity" })
+      canvas.getByRole("button", { name: "Hide A custom activity" })
     ).toBeVisible();
-  },
-};
-
-export const ToggleGrouping: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await canvas.findByRole("img", { name: "Activity distribution" });
-    const toggle = canvas.getByRole("button", { name: "Group by category" });
-    await waitFor(async () => {
-      await expect(toggle).toBeEnabled();
-    });
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
-    await userEvent.click(toggle);
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
-    await waitFor(async () => {
-      await expect(
-        canvasElement.querySelectorAll(".ts-chart__arc")
-      ).toHaveLength(2);
-    });
-  },
-};
-
-export const GroupingSaveFailure: Story = {
-  parameters: {
-    msw: {
-      handlers: [
-        ...meta.parameters.msw.handlers,
-        http.put(
-          "*/api/preferences",
-          () => new HttpResponse(null, { status: 500 })
-        ),
-      ],
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await canvas.findByRole("img", { name: "Activity distribution" });
-    const toggle = canvas.getByRole("button", { name: "Group by category" });
-    await waitFor(async () => {
-      await expect(toggle).toBeEnabled();
-    });
-    await userEvent.click(toggle);
-    await expect(await canvas.findByRole("alert")).toHaveTextContent(
-      "Chart grouping could not be saved"
-    );
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
   },
 };

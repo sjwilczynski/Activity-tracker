@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ActivityRecordWithId } from "@/data/types";
 import { periodsFromParams } from "./compare-utils";
-import {
-  getComparisonBuckets,
-  getComparisonOptions,
-  getComparisonSeries,
-} from "./comparison-data";
+import { getComparisonBuckets, getComparisonSeries } from "./comparison-data";
 
 const asOf = new Date(2026, 9, 24);
 const record = (date: Date, active = true): ActivityRecordWithId => ({
@@ -95,16 +91,6 @@ describe.each([
       1
     );
   });
-});
-
-it("derives quick comparison periods from real recorded history", () => {
-  const records = [record(new Date(2024, 4, 15)), record(new Date(2022, 0, 2))];
-  const options = getComparisonOptions(records, new Date(2024, 4, 15));
-  expect(options[0].periods.map((period) => period.year)).toEqual([2022, 2024]);
-  expect(options[1].label).toBe("April 2024 vs May 2024");
-  expect(getComparisonOptions([], new Date(2025, 0, 15))[1].label).toBe(
-    "December 2024 vs January 2025"
-  );
 });
 
 it("deduplicates and caps URL periods so chart mark IDs remain unique", () => {

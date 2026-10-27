@@ -1,12 +1,10 @@
 import { endOfDay } from "date-fns";
 import type { ActivityRecordWithId } from "@/data/types";
 import {
-  getAvailableYears,
   getMonthCounts,
   getPeriodLabel,
   getYearCounts,
   MONTH_LABELS_SHORT,
-  periodsFromParams,
   type ComparisonPeriod,
 } from "./compare-utils";
 
@@ -19,50 +17,6 @@ export type ComparisonSeries = {
   buckets: readonly string[];
   points: { bucket: string; count: number }[];
 };
-export type ComparisonMode = "years" | "months" | "crowded";
-
-export function getComparisonOptions(
-  records: ActivityRecordWithId[],
-  referenceDate: Date
-) {
-  const years = getAvailableYears(records).slice(0, 2).reverse();
-  const yearPeriods = periodsFromParams(
-    (years.length ? years : [referenceDate.getFullYear()])
-      .map((year) => `year-${year}`)
-      .join(",")
-  );
-  const monthIds = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(
-      referenceDate.getFullYear(),
-      referenceDate.getMonth() - 6 + index,
-      1
-    );
-    return `month-${date.getFullYear()}-${date.getMonth()}`;
-  });
-  const months = periodsFromParams(monthIds.slice(-2).join(","));
-  return [
-    {
-      id: "years",
-      label: yearPeriods.map(getPeriodLabel).join(" vs "),
-      periods: yearPeriods,
-    },
-    {
-      id: "months",
-      label: months.map(getPeriodLabel).join(" vs "),
-      periods: months,
-    },
-    {
-      id: "crowded",
-      label: "Seven months",
-      periods: periodsFromParams(monthIds.join(",")),
-    },
-  ] satisfies {
-    id: ComparisonMode;
-    label: string;
-    periods: ComparisonPeriod[];
-  }[];
-}
-
 export function getComparisonSeries(
   records: ActivityRecordWithId[],
   periods: ComparisonPeriod[],

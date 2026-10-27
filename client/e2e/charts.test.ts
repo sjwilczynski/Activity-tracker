@@ -20,12 +20,15 @@ test("ships native charts without prototype controls or the old renderer", async
     page.getByRole("navigation", { name: "Chart prototype variants" })
   ).toHaveCount(0);
   await expect(page.getByLabel("Scenario", { exact: true })).toHaveCount(0);
-  await page.getByText(/View exact activity data/).click();
+  await expect(page.getByRole("table")).toHaveCount(0);
+  await expect(page.getByText(/^View exact/)).toHaveCount(0);
+  await expect(page.getByText(/^Keyboard:/)).toHaveCount(0);
   await expect(
-    page.getByRole("table", {
-      name: "Activity counts in the selected date range",
-    })
-  ).toBeVisible();
+    page.getByRole("img", { name: "Activity comparison" })
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Group by category", exact: true })
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "Hide Running", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Show Running", exact: true })

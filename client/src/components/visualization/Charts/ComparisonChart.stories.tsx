@@ -64,12 +64,8 @@ export const PartialYearFirst: Story = {
     await expect(
       await canvas.findByRole("img", { name: "Activity comparison" })
     ).toBeVisible();
-    await userEvent.click(canvas.getByText("View exact comparison data"));
-    const table = canvas.getByRole("table");
-    await expect(within(table).getByText("Dec")).toBeVisible();
-    await expect(within(table).getAllByText("Not yet recorded")).toHaveLength(
-      2
-    );
+    await expect(canvas.queryByRole("table")).not.toBeInTheDocument();
+    await expect(canvas.queryByText(/^Keyboard:/)).not.toBeInTheDocument();
   },
 };
 

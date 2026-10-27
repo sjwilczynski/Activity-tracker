@@ -13,7 +13,6 @@ import {
   entryCount,
   formatCount,
 } from "./chart-theme";
-import { KeyboardHint } from "./ChartLegend";
 
 export function BarChart({
   points,
@@ -75,10 +74,9 @@ export function BarChart({
             grouped
               ? "Bars are stacked by activity within each category."
               : "One bar per activity."
-          } Exact values are available in the activity data table below.`}
+          } Use arrow keys to explore individual values.`}
         />
       </div>
-      <KeyboardHint legend={false} />
     </div>
   );
 }

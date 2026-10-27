@@ -6,7 +6,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 - **Dashboard** — Quick activity logging with autocomplete, stat cards (total, last 7/30 days, last activity), recent activity feed with clickable navigation, and first-time onboarding with category picker
 - **Activity List** — Full activity history with search, date range filtering, pagination, month grouping, inline editing via dialogs, and bulk operations (rename, reassign category, delete by category)
-- **Charts** — Stacked bars and multi-ring pies with a compact multi-column legend, date/inactive filters, exact-data tables, keyboard exploration, and quick period comparisons
+- **Charts** — Stacked bars and multi-ring pies with a compact multi-column legend, date/inactive filters, and keyboard exploration
 - **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend lines, dashed partial-period indicators, and metric cards (total, most popular, most active day/month). Future buckets are omitted instead of shown as zero.
 - **Settings** — Category management (add/edit/delete with activity reassignment), activity name management (rename, assign to category), and chart display preferences
 - **Export / Import** — Full data export to JSON and import from JSON for backup and migration
@@ -153,8 +153,9 @@ recalculates every ring from the visible activities.
 Comparison periods keep a zero baseline and full shared bucket domain when a
 series is hidden. Incomplete periods have dashed lines and partial labels;
 future buckets are omitted, not represented as zero. The existing five weekly
-buckets per month are retained. Expandable tables expose exact values without
-pointer hover. Activity-name/category matching preserves exact stored identities,
+buckets per month are retained. Keyboard point navigation exposes values without
+pointer hover. Comparisons live on the Compare page; the Charts page contains
+only frequency and distribution plots. Activity-name/category matching preserves exact stored identities,
 including names that differ only by case.
 Fixed chart domains use configured scale instances rather than factories that
 infer a new domain from visible data.
