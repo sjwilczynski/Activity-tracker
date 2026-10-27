@@ -1,57 +1,84 @@
-import type { ChartOptions } from "chart.js";
-import { Bar } from "react-chartjs-2";
-import type { ActivitySummaries, CategoryOption } from "../../../data";
-import { useChartColors } from "../../../utils/useChartColors";
-import { getFlatBarChartData, getStackedBarChartData } from "../bar-chart-data";
-
-type Props = {
-  activitySummaries: ActivitySummaries;
-  allSummaries: ActivitySummaries;
-  categoryOptions: CategoryOption[];
-  groupByCategory?: boolean;
-};
+import { barY } from "@tanstack/charts/bar";
+import { Chart } from "@tanstack/charts/react";
+import { scaleBand } from "@tanstack/charts/scales/band";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { defineChart } from "@tanstack/charts/scene";
+import { tooltip } from "@tanstack/charts/tooltip";
+import { useMemo } from "react";
+import { useFunAnimations } from "@/components/styles/StylesProvider";
+import type { ActivityPoint } from "./activity-chart-data";
+import {
+  chartAnimation,
+  chartTheme,
+  entryCount,
+  formatCount,
+} from "./chart-theme";
+import { KeyboardHint } from "./ChartLegend";
 
 export function BarChart({
-  activitySummaries,
-  allSummaries,
-  categoryOptions,
-  groupByCategory = true,
-}: Props) {
-  const data = groupByCategory
-    ? getStackedBarChartData(activitySummaries, allSummaries, categoryOptions)
-    : getFlatBarChartData(activitySummaries, allSummaries);
-  const chartColors = useChartColors();
-  const options: ChartOptions<"bar"> = {
-    maintainAspectRatio: false,
-    responsive: true,
-    scales: {
-      x: {
-        stacked: true,
-        ticks: { color: chartColors.mutedForeground },
-        grid: { display: false },
-      },
-      y: {
-        stacked: true,
-        ticks: { color: chartColors.mutedForeground },
-        grid: { display: false },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          title: (items) => {
-            const item = items[0];
-            return item?.dataset.label || item?.label || "";
+  points,
+  grouped,
+}: {
+  points: ActivityPoint[];
+  grouped: boolean;
+}) {
+  const [animate] = useFunAnimations();
+  const definition = useMemo(
+    () =>
+      defineChart({
+        marks: [
+          barY(points, {
+            x: (point) => (grouped ? point.category : point.name),
+            y: "count",
+            z: "name",
+            key: "name",
+            fill: (point) => point.color,
+            radius: { end: 6 },
+          }),
+        ],
+        scales: {
+          x: {
+            scale: () => scaleBand<string>().padding(0.2),
+            grid: false,
+            axis: { tickLabels: { fontSize: 12 } },
+          },
+          y: {
+            scale: scaleLinear,
+            nice: true,
+            grid: false,
+            axis: {
+              tickLabels: { fontSize: 12 },
+              ticks: { format: formatCount },
+            },
           },
         },
-      },
-    },
-    elements: {
-      bar: { borderRadius: 6 },
-    },
-  };
+        theme: chartTheme,
+        svgAnimation: animate ? chartAnimation : false,
+        tooltip: {
+          use: tooltip,
+          format: (point) =>
+            `${point.datum.name}: ${entryCount(point.datum.count)} (${point.datum.category}${
+              point.datum.active ? "" : ", inactive category"
+            })`,
+        },
+      }),
+    [points, grouped, animate]
+  );
   return (
-    <Bar aria-label="Activities bar chart" data={data} options={options} />
+    <div className="activity-charts space-y-3">
+      <div data-chart-surface>
+        <Chart
+          definition={definition}
+          height={400}
+          ariaLabel="Activity frequency"
+          ariaDescription={`${points.reduce((sum, point) => sum + point.count, 0)} logged entries. ${
+            grouped
+              ? "Bars are stacked by activity within each category."
+              : "One bar per activity."
+          } Exact values are available in the activity data table below.`}
+        />
+      </div>
+      <KeyboardHint legend={false} />
+    </div>
   );
 }

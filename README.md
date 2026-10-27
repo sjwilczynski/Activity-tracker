@@ -6,8 +6,8 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 - **Dashboard** — Quick activity logging with autocomplete, stat cards (total, last 7/30 days, last activity), recent activity feed with clickable navigation, and first-time onboarding with category picker
 - **Activity List** — Full activity history with search, date range filtering, pagination, month grouping, inline editing via dialogs, and bulk operations (rename, reassign category, delete by category)
-- **Charts** — Stacked bar charts and multi-ring pie charts for activity distribution, with group-by-category toggle and date range filtering
-- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend line charts and metric cards (total, most popular, most active day/month)
+- **Charts** — Stacked bars and multi-ring pies with a compact multi-column legend, date/inactive filters, exact-data tables, keyboard exploration, and quick period comparisons
+- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend lines, dashed partial-period indicators, and metric cards (total, most popular, most active day/month). Future buckets are omitted instead of shown as zero.
 - **Settings** — Category management (add/edit/delete with activity reassignment), activity name management (rename, assign to category), and chart display preferences
 - **Export / Import** — Full data export to JSON and import from JSON for backup and migration
 - **PWA** — Installable as a Progressive Web App with offline support via service worker
@@ -29,7 +29,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
 - **shadcn/ui** components built on Radix UI primitives
 - **cn** for Tailwind class merging, re-exported from `@/utils/cn`; Radix wrappers use per-primitive `radix-ui/*` imports.
-- **Chart.js** with `react-chartjs-2` for data visualization
+- **TanStack Charts** with SVG rendering, typed chart data, accessible legend buttons, keyboard point navigation, and reduced-motion-aware transitions
 - **Vite 8** as build tool with HMR and PWA plugin; **Bun's TypeScript 7 checker** runs separately
 - **Storybook 10** with the official `@storybook/tanstack-react` framework and play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
@@ -136,6 +136,23 @@ The data model keeps the **client simple** by pushing business logic to the API:
 - Each successful, conflicting, or uncertain request contributes its own affected
   queries. A rejected or never-started step does not invalidate unrelated data.
   Multi-step failure messages belong to the workflow, not the shared executor.
+
+### Charts
+
+TanStack Charts renders the analytics bars, concentric distribution pie, and
+comparison lines as responsive SVG. Grouping and animation preferences use the
+existing preferences queries; reduced-motion settings are respected. Desktop
+pie legends form compact columns within the plot height. Hiding an activity
+recalculates every ring from the visible activities.
+
+Comparison periods keep a zero baseline and full shared bucket domain when a
+series is hidden. Incomplete periods have dashed lines and partial labels;
+future buckets are omitted, not represented as zero. The existing five weekly
+buckets per month are retained. Expandable tables expose exact values without
+pointer hover. Activity-name/category matching preserves exact stored identities,
+including names that differ only by case.
+Fixed chart domains use configured scale instances rather than factories that
+infer a new domain from visible data.
 
 ## Testing
 

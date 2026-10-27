@@ -1,5 +1,4 @@
 import type { Preview } from "@storybook/tanstack-react";
-import { Chart } from "chart.js";
 import MockDate from "mockdate";
 import { RequestHandler } from "msw";
 import { mswLoader } from "msw-storybook-addon/csf3";
@@ -22,8 +21,6 @@ import {
   StoryLayout,
   withStoryServices,
 } from "./tanstack";
-
-Chart.defaults.animation = false;
 
 const mockedDate = new Date(REFERENCE_DATE);
 mockedDate.setDate(mockedDate.getDate() + 2);

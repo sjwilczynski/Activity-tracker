@@ -33,8 +33,12 @@ export const Default: Story = {
       canvas.getByRole("button", { name: /all time/i })
     ).toBeInTheDocument();
 
-    const chartElements = canvasElement.querySelectorAll("canvas");
-    await expect(chartElements.length).toBe(2);
+    await expect(
+      canvas.getByRole("img", { name: "Activity frequency" })
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
 
     await expect(canvas.getByText("Total Activities")).toBeInTheDocument();
     await expect(canvas.getByText("Unique Activities")).toBeInTheDocument();
@@ -111,8 +115,12 @@ export const DateFilterInteraction: Story = {
     });
 
     await step("Verify initial charts are rendered with data", async () => {
-      const chartElements = canvasElement.querySelectorAll("canvas");
-      await expect(chartElements.length).toBe(2);
+      await expect(
+        canvas.getByRole("img", { name: "Activity frequency" })
+      ).toBeVisible();
+      await expect(
+        canvas.getByRole("img", { name: "Activity distribution" })
+      ).toBeVisible();
       await expect(
         canvas.queryByText(/haven't added any activities/i)
       ).not.toBeInTheDocument();
@@ -142,8 +150,12 @@ export const DateFilterInteraction: Story = {
         });
 
         await waitFor(async () => {
-          const chartElements = canvasElement.querySelectorAll("canvas");
-          await expect(chartElements.length).toBe(2);
+          await expect(
+            canvas.getByRole("img", { name: "Activity frequency" })
+          ).toBeVisible();
+          await expect(
+            canvas.getByRole("img", { name: "Activity distribution" })
+          ).toBeVisible();
         });
 
         await expect(
@@ -207,12 +219,16 @@ export const SingleActivityType: Story = {
       await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    const chartElements = canvasElement.querySelectorAll("canvas");
-    await expect(chartElements.length).toBe(2);
+    await expect(
+      canvas.getByRole("img", { name: "Activity frequency" })
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
 
-    await expect(canvas.getByText("5")).toBeInTheDocument();
-    await expect(canvas.getByText("1")).toBeInTheDocument();
-    await expect(canvas.getByText("Running")).toBeInTheDocument();
+    await expect(canvas.getAllByText("5").length).toBeGreaterThan(0);
+    await expect(canvas.getAllByText("1").length).toBeGreaterThan(0);
+    await expect(canvas.getAllByText("Running").length).toBeGreaterThan(0);
   },
 };
 
@@ -269,11 +285,15 @@ export const ManyActivityTypes: Story = {
       await expect(canvas.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
-    const chartElements = canvasElement.querySelectorAll("canvas");
-    await expect(chartElements.length).toBe(2);
+    await expect(
+      canvas.getByRole("img", { name: "Activity frequency" })
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
 
-    await expect(canvas.getByText("36")).toBeInTheDocument();
-    await expect(canvas.getByText("12")).toBeInTheDocument();
+    await expect(canvas.getAllByText("36").length).toBeGreaterThan(0);
+    await expect(canvas.getAllByText("12").length).toBeGreaterThan(0);
   },
 };
 

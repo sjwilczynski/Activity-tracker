@@ -1,4 +1,7 @@
-import type { ComparisonSeries } from "./chart-model";
+import {
+  getComparisonBuckets,
+  type ComparisonSeries,
+} from "@/pages/comparison-data";
 
 export function ComparisonDataTable({
   series,
@@ -28,14 +31,15 @@ export function ComparisonDataTable({
             </tr>
           </thead>
           <tbody>
-            {series[0]?.points.map((point, index) => (
-              <tr className="border-b last:border-0" key={point.bucket}>
+            {getComparisonBuckets(series).map((bucket) => (
+              <tr className="border-b last:border-0" key={bucket}>
                 <th scope="row" className="p-2 font-medium">
-                  {point.bucket}
+                  {bucket}
                 </th>
                 {series.map((entry) => (
                   <td key={entry.id} className="p-2 text-right tabular-nums">
-                    {entry.points[index]?.count ?? "Not yet recorded"}
+                    {entry.points.find((point) => point.bucket === bucket)
+                      ?.count ?? "Not yet recorded"}
                   </td>
                 ))}
               </tr>

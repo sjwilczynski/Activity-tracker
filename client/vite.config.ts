@@ -16,15 +16,11 @@ const isStorybook =
 const isVitest =
   process.env.VITEST === "true" || process.argv.includes("vitest");
 
-const isChartPrototype = process.env.CHART_PROTOTYPE === "true";
-const isE2E = process.env.E2E === "true" || isChartPrototype;
+const isE2E = process.env.E2E === "true";
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig((): UserConfig => {
   return {
-    define: {
-      "import.meta.env.CHART_PROTOTYPE": JSON.stringify(isChartPrototype),
-    },
     plugins: [
       ...(isE2E
         ? [
@@ -33,12 +29,7 @@ export default defineConfig((): UserConfig => {
               transformIndexHtml: {
                 order: "pre" as const,
                 handler: (html: string) =>
-                  html.replace(
-                    "/src/main.tsx",
-                    isChartPrototype
-                      ? "/src/main.chart-prototype.tsx"
-                      : "/src/main.e2e.tsx"
-                  ),
+                  html.replace("/src/main.tsx", "/src/main.e2e.tsx"),
               },
             },
           ]

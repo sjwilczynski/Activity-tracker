@@ -1,8 +1,4 @@
-import type {
-  ActivitySummaries,
-  ActivitySummary,
-  CategoryOption,
-} from "../../data";
+import type { ActivitySummaries, CategoryOption } from "../../data";
 import { darken, lighten } from "./color";
 
 // 10 well-spaced hues for active categories
@@ -38,14 +34,13 @@ export function buildCategoryColorInfo(
   const activityToCategory = new Map<string, string>();
   const inactiveCategories = new Set<string>();
   for (const opt of categoryOptions) {
-    activityToCategory.set(opt.name.toLowerCase(), opt.categoryName);
+    activityToCategory.set(opt.name, opt.categoryName);
     if (!opt.active) inactiveCategories.add(opt.categoryName);
   }
 
   const categoryActivities = new Map<string, string[]>();
   for (const activityName of Object.keys(allSummaries)) {
-    const category =
-      activityToCategory.get(activityName.toLowerCase()) ?? "other";
+    const category = activityToCategory.get(activityName) ?? "other";
     if (!categoryActivities.has(category)) {
       categoryActivities.set(category, []);
     }
@@ -92,8 +87,7 @@ export function getActivityColor(
   activityName: string,
   info: CategoryColorInfo
 ): string {
-  const category =
-    info.activityToCategory.get(activityName.toLowerCase()) ?? "other";
+  const category = info.activityToCategory.get(activityName) ?? "other";
   const base = info.categoryBaseColor.get(category)!;
   const siblings = info.categoryActivities.get(category) ?? [];
   const actIdx = siblings.indexOf(activityName);
@@ -125,25 +119,3 @@ export function hashActivityColor(name: string): string {
   }
   return FLAT_PALETTE[Math.abs(hash) % FLAT_PALETTE.length];
 }
-
-export const sortKeys = (activitySummaries: ActivitySummaries) =>
-  Object.keys(activitySummaries).sort((key1, key2) => {
-    const orderByActive =
-      +activitySummaries[key2].active - +activitySummaries[key1].active;
-    return orderByActive || key2.localeCompare(key1);
-  });
-
-export const getTotalActiveAndInactiveCount = (
-  activitySummaries: ActivitySummaries
-) => {
-  const activeCount = getTotalCount(
-    Object.values(activitySummaries).filter((s) => s.active)
-  );
-  const inactiveCount = getTotalCount(
-    Object.values(activitySummaries).filter((s) => !s.active)
-  );
-  return { activeCount, inactiveCount };
-};
-
-export const getTotalCount = (summaries: ActivitySummary[]) =>
-  summaries.reduce((sum, s) => sum + s.count, 0);

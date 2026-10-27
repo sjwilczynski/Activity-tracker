@@ -1,115 +1,129 @@
-import type { ChartOptions, TooltipCallbacks, TooltipItem } from "chart.js";
-import { Pie } from "react-chartjs-2";
-import type { ActivitySummaries, CategoryOption } from "../../../data";
-import { useIsMobile } from "../../../hooks/use-mobile";
-import { useChartColors } from "../../../utils/useChartColors";
-import { getFlatPieChartData, getPieChartData } from "../pie-chart-data";
-
-type Props = {
-  activitySummaries: ActivitySummaries;
-  allSummaries: ActivitySummaries;
-  categoryOptions: CategoryOption[];
-  groupByCategory?: boolean;
-};
+import { pie, polar, radialArc } from "@tanstack/charts/polar";
+import { Chart } from "@tanstack/charts/react";
+import { defineChart } from "@tanstack/charts/scene";
+import { tooltip } from "@tanstack/charts/tooltip";
+import { useMemo, useState } from "react";
+import { useFunAnimations } from "@/components/styles/StylesProvider";
+import type { ActivitySummaries, CategoryOption } from "@/data/types";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  getDistributionRings,
+  type ActivityPoint,
+} from "../Charts/activity-chart-data";
+import { chartAnimation, chartTheme, entryCount } from "../Charts/chart-theme";
+import { ChartLegend, KeyboardHint, toggleHidden } from "../Charts/ChartLegend";
 
 export function SummaryPieChart({
-  activitySummaries,
+  points,
   allSummaries,
-  categoryOptions,
-  groupByCategory = true,
-}: Props) {
-  const data = groupByCategory
-    ? getPieChartData(activitySummaries, allSummaries, categoryOptions)
-    : getFlatPieChartData(activitySummaries);
-  const isMobile = useIsMobile();
-  const chartColors = useChartColors();
-  const tooltipCallback = groupByCategory
-    ? groupedTooltipCallback
-    : flatTooltipCallback;
-  const options: ChartOptions<"pie"> = {
-    maintainAspectRatio: false,
-    responsive: true,
-    plugins: {
-      tooltip: { callbacks: tooltipCallback },
-      legend: {
-        display: !isMobile,
-        position: "right",
-        labels: {
-          color: chartColors.foreground,
-        },
+  categories,
+  grouped,
+}: {
+  points: ActivityPoint[];
+  allSummaries: ActivitySummaries;
+  categories: CategoryOption[];
+  grouped: boolean;
+}) {
+  const [animate] = useFunAnimations();
+  const [hidden, setHidden] = useState<string[]>([]);
+  const mobile = useIsMobile();
+  const visible = useMemo(
+    () => points.filter((point) => !hidden.includes(point.name)),
+    [points, hidden]
+  );
+  const total = visible.reduce((sum, point) => sum + point.count, 0);
+  const definition = useMemo(() => {
+    const rings = getDistributionRings(
+      visible,
+      allSummaries,
+      categories,
+      grouped
+    );
+    return defineChart({
+      marks: [
+        polar({
+          scales: { angle: null, radius: null },
+          marks: rings.map((ring) =>
+            radialArc(
+              pie(
+                ring.slices.map((slice) => ({ ...slice, ring: ring.label })),
+                { value: "count" }
+              ),
+              {
+                id: ring.id,
+                key: "name",
+                fill: (slice) => slice.color,
+                innerRadius: ({ radius }) => radius * ring.inner,
+                outerRadius: ({ radius }) => radius * ring.outer,
+                stroke: "var(--color-card)",
+                strokeWidth: 1.5,
+              }
+            )
+          ),
+        }),
+      ],
+      scales: { x: null, y: null },
+      theme: chartTheme,
+      svgAnimation: animate ? chartAnimation : false,
+      tooltip: {
+        use: tooltip,
+        format: (point) =>
+          `${point.datum.ring}: ${point.datum.name}. ${entryCount(point.datum.count)} (${(
+            point.datum.fraction * 100
+          ).toFixed(1)}%).`,
       },
-    },
-  };
-  return (
-    <Pie
-      aria-label="Activities summary pie chart"
-      data={data}
-      options={options}
+    });
+  }, [visible, allSummaries, categories, grouped, animate]);
+  const legend = (
+    <ChartLegend
+      items={points.map((point) => ({ ...point, id: point.name }))}
+      hidden={hidden}
+      label="Activity distribution legend"
+      compact={!mobile}
+      toggle={(name) => setHidden((previous) => toggleHidden(previous, name))}
     />
   );
+  return (
+    <div className="activity-charts space-y-3">
+      <div className="grid items-center gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        <div data-chart-surface className="min-w-0">
+          {total > 0 ? (
+            <Chart
+              definition={definition}
+              height={mobile ? 320 : 400}
+              ariaLabel="Activity distribution"
+              ariaDescription={`${total} visible logged entries. Outer ring: activities. ${
+                grouped ? "Middle ring: categories. " : ""
+              }Center: current category status.`}
+            />
+          ) : (
+            <p
+              role="status"
+              className="flex h-80 items-center justify-center text-muted-foreground"
+            >
+              All activities are hidden. Use the legend to show one.
+            </p>
+          )}
+        </div>
+        {mobile ? (
+          <details>
+            <summary className="cursor-pointer text-sm font-medium">
+              Activities legend
+            </summary>
+            <div className="mt-2">{legend}</div>
+          </details>
+        ) : (
+          legend
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {grouped
+          ? "Outside to center: activity, category, category status."
+          : "Outside to center: activity, category status."}{" "}
+        Legend filtering applies only to this chart; all rings are recalculated
+        together.
+      </p>
+      <KeyboardHint />
+    </div>
+  );
 }
-
-const groupedTooltipCallback: Partial<TooltipCallbacks<"pie">> = {
-  title: (items: TooltipItem<"pie">[]) => {
-    if (!items.length) return "";
-    const { datasetIndex, dataIndex, dataset } = items[0];
-    if (datasetIndex === 2) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .innerLabels;
-      return labels?.[dataIndex] ?? "";
-    }
-    if (datasetIndex === 1) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .categoryLabels;
-      return labels?.[dataIndex] ?? "";
-    }
-    return items[0].label ?? "";
-  },
-  label: (context: TooltipItem<"pie">) => {
-    const { datasetIndex, dataIndex, dataset } = context;
-    const chartData = dataset.data as number[];
-    const totalCount = chartData.reduce((sum, n) => sum + n, 0);
-    const count = chartData[dataIndex];
-    const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
-
-    if (datasetIndex === 2) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .innerLabels;
-      return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-    }
-    if (datasetIndex === 1) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .categoryLabels;
-      return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-    }
-    return ` ${context.label ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-  },
-};
-
-/** Tooltip callback for flat mode (2-dataset: outer=activities, inner=active/inactive) */
-const flatTooltipCallback: Partial<TooltipCallbacks<"pie">> = {
-  title: (items: TooltipItem<"pie">[]) => {
-    if (!items.length) return "";
-    const { datasetIndex, dataIndex, dataset } = items[0];
-    if (datasetIndex === 1) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .innerLabels;
-      return labels?.[dataIndex] ?? "";
-    }
-    return items[0].label ?? "";
-  },
-  label: (context: TooltipItem<"pie">) => {
-    const { datasetIndex, dataIndex, dataset } = context;
-    const chartData = dataset.data as number[];
-    const totalCount = chartData.reduce((sum, n) => sum + n, 0);
-    const count = chartData[dataIndex];
-    const percentage = totalCount > 0 ? (count / totalCount) * 100 : 0;
-
-    if (datasetIndex === 1) {
-      const labels = (dataset as unknown as Record<string, string[]>)
-        .innerLabels;
-      return ` ${labels?.[dataIndex] ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-    }
-    return ` ${context.label ?? ""}: ${count} (${percentage.toFixed(1)}%)`;
-  },
-};

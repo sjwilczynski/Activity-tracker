@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { TanStackDistribution } from "./TanStackDistribution";
+import { SummaryPieChart } from "./SummaryPieChart";
 
 const points = Array.from({ length: 30 }, (_, index) => ({
   name: `Activity ${String(index + 1).padStart(2, "0")}`,
@@ -11,8 +11,8 @@ const points = Array.from({ length: 30 }, (_, index) => ({
 }));
 
 const meta = {
-  title: "Prototypes/Distribution legend",
-  component: TanStackDistribution,
+  title: "Visualizations/Activity Distribution",
+  component: SummaryPieChart,
   args: {
     points,
     allSummaries: Object.fromEntries(
@@ -31,10 +31,10 @@ const meta = {
   },
   render: (args) => (
     <div className="max-w-6xl">
-      <TanStackDistribution {...args} />
+      <SummaryPieChart {...args} />
     </div>
   ),
-} satisfies Meta<typeof TanStackDistribution>;
+} satisfies Meta<typeof SummaryPieChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -87,5 +87,31 @@ export const LongNames: Story = {
     await expect(bottom).toBeLessThanOrEqual(
       legend.getBoundingClientRect().bottom + 1
     );
+  },
+};
+
+export const HideAllAndRestore: Story = {
+  args: { points: points.slice(0, 3) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const legend = await canvas.findByRole("group", {
+      name: "Activity distribution legend",
+    });
+    for (const button of within(legend).getAllByRole("button"))
+      await userEvent.click(button);
+    await expect(await canvas.findByRole("status")).toHaveTextContent(
+      "All activities are hidden"
+    );
+    await userEvent.click(
+      within(legend).getByRole("button", { name: "Show Activity 01" })
+    );
+    await expect(
+      await canvas.findByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
+    await waitFor(async () => {
+      await expect(
+        canvasElement.querySelectorAll('[data-ts-key="activities"] path')
+      ).toHaveLength(1);
+    });
   },
 };
