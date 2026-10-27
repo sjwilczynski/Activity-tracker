@@ -57,6 +57,11 @@ bun install    # Install dependencies
 bun run dev    # Start frontend (:3000) and API (:7071)
 ```
 
+After changing dependencies, restart the frontend rather than leaving its old
+Vite process running. If the browser reports `504 Outdated Optimize Dep`, stop
+that frontend, run `bun run --cwd client start --force`, and reload the page.
+The API can keep running.
+
 ## Architecture
 
 The app is split into two workspaces (`/client` and `/api`) managed as a bun monorepo.
