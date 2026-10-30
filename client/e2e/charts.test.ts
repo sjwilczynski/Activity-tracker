@@ -125,3 +125,50 @@ test("marks the current year partial on the actual Compare route", async ({
     .click();
   await expect(chart).toContainText("Dec");
 });
+
+test("keeps an uninterrupted maximum-length activity name inside the mobile legend", async ({
+  page,
+}) => {
+  const name = "W".repeat(50);
+  await page.route("**/api/activities*", (route) =>
+    route.fulfill({
+      json: [
+        {
+          id: "long-name",
+          name,
+          categoryId: "custom",
+          active: true,
+          date: "2025-01-15",
+        },
+      ],
+    })
+  );
+  await page.route("**/api/categories*", (route) =>
+    route.fulfill({
+      json: [
+        {
+          id: "custom",
+          name: "Custom",
+          description: "",
+          active: true,
+          activityNames: [name],
+        },
+      ],
+    })
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/charts");
+  await page.getByText("Activities legend", { exact: true }).click();
+  const button = page.getByRole("button", {
+    name: `Hide ${name}`,
+    exact: true,
+  });
+  await expect(button).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth)
+  ).toBeLessThanOrEqual(391);
+  await button.click();
+  await expect(
+    page.getByRole("button", { name: `Show ${name}`, exact: true })
+  ).toHaveAttribute("aria-pressed", "false");
+});

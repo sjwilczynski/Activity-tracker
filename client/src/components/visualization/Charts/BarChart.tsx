@@ -29,6 +29,7 @@ export function BarChart({
           barY(points, {
             x: (point) => (grouped ? point.category : point.name),
             y: "count",
+            y1: grouped ? undefined : 0,
             z: "name",
             key: "name",
             fill: (point) => point.color,

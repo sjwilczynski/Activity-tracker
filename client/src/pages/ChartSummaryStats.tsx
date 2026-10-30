@@ -43,7 +43,7 @@ export function ChartSummaryStats({
       {stats.map((stat) => (
         <Card
           key={stat.title}
-          className="bloom-hover border-l-[3px] py-4 gap-2 animate-fade-slide-up"
+          className="bloom-hover min-w-0 border-l-[3px] py-4 gap-2 animate-fade-slide-up"
           style={{ borderLeftColor: stat.color }}
         >
           <CardHeader>
@@ -51,7 +51,7 @@ export function ChartSummaryStats({
           </CardHeader>
           <CardContent>
             <div
-              className="text-2xl font-bold tabular-nums"
+              className="text-2xl font-bold tabular-nums [overflow-wrap:anywhere]"
               style={{ color: stat.color }}
             >
               {stat.value}

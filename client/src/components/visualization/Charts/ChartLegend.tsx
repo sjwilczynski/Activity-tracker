@@ -42,7 +42,7 @@ export function ChartLegend({
           aria-pressed={!hidden.includes(item.id)}
           onClick={() => toggle(item.id)}
           className={cn(
-            "h-auto max-w-full justify-start whitespace-normal text-left",
+            "h-auto min-w-0 max-w-full justify-start whitespace-normal text-left",
             compact
               ? "min-h-6 w-full gap-1.5 rounded-sm border-transparent bg-transparent px-1 py-0.5 text-[11px]"
               : "min-h-9 text-xs"
@@ -70,9 +70,10 @@ export function ChartLegend({
             )}
           </svg>
           <span
-            className={
-              hidden.includes(item.id) ? "line-through opacity-60" : ""
-            }
+            className={cn(
+              "min-w-0 [overflow-wrap:anywhere]",
+              hidden.includes(item.id) && "line-through opacity-60"
+            )}
           >
             {item.name}
             {item.count !== undefined ? ` (${item.count})` : ""}
