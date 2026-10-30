@@ -162,11 +162,17 @@ infer a new domain from visible data.
 Flat bars use explicit zero-baseline intervals so the chart library does not
 allocate a position-by-series stack matrix. Legend and summary labels wrap
 uninterrupted activity names rather than widening the mobile page.
+Comparison stories with completed-year fixtures pin their clock after those
+years; a separate story exercises a genuinely partial year. Keep the SVG scene
+height synchronized with its container, not just its CSS size.
 
 ## Testing
 
 The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writing-tests)** as the primary testing strategy — stories with `play` functions serve as both living documentation and executable tests. This approach provides [component-level testing](https://storybook.js.org/docs/writing-tests/component-testing) that runs in a real browser, striking the right balance between the isolation of unit tests and the confidence of end-to-end tests.
 
+- Story assertions cover user-visible data, accessible controls, and interactions.
+  Leave colors, styles, dimensions, layout, and SVG rendering details to Chromatic
+  screenshot comparisons rather than asserting them in stories or E2E tests.
 - Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
 - The native TanStack framework clones the generated route tree and injects each
   story at `parameters.tanstack.router.path`. Use `query` for search state and

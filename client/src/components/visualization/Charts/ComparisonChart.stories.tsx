@@ -40,14 +40,6 @@ export const PartialYearFirst: Story = {
       await canvas.findByRole("button", { name: "Hide 2026 (partial)" })
     ).toBeVisible();
     const chart = canvas.getByRole("img", { name: "Activity comparison" });
-    const partial = chart.querySelector(
-      '[data-ts-key^="year-2026"].ts-chart__line'
-    );
-    await expect(partial?.querySelector("path")).toHaveAttribute(
-      "stroke-dasharray",
-      "7 4"
-    );
-    await expect(partial?.querySelectorAll("circle")).toHaveLength(10);
     await expect(chart).toHaveTextContent("Dec");
     await expect(chart).toHaveTextContent("0");
     await userEvent.click(canvas.getByRole("button", { name: "Hide 2025" }));

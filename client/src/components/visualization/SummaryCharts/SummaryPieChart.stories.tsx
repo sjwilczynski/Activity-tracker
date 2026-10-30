@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import { SummaryPieChart } from "./SummaryPieChart";
 
 const points = Array.from({ length: 30 }, (_, index) => ({
@@ -47,23 +47,11 @@ export const ThirtyActivities: Story = {
     });
     const buttons = within(legend).getAllByRole("button");
     await expect(buttons).toHaveLength(30);
-    await expect(
-      legend.parentElement!.getBoundingClientRect().height
-    ).toBeLessThanOrEqual(410);
-    const columns = new Set(
-      buttons.map((button) => Math.round(button.getBoundingClientRect().left))
-    );
-    await expect(columns.size).toBeGreaterThanOrEqual(2);
-    await expect(legend.scrollHeight).toBeLessThanOrEqual(
-      legend.clientHeight + 1
-    );
     await userEvent.click(buttons[0]);
     await expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
-    await waitFor(async () => {
-      await expect(
-        canvasElement.querySelectorAll('[data-ts-key="activities"] path')
-      ).toHaveLength(29);
-    });
+    await expect(
+      canvas.getByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
   },
 };
 
@@ -79,14 +67,10 @@ export const LongNames: Story = {
       name: "Activity distribution legend",
     });
     const buttons = within(legend).getAllByRole("button");
-    await expect(
-      legend.parentElement!.getBoundingClientRect().height
-    ).toBeLessThanOrEqual(410);
     buttons.at(-1)!.focus();
-    const bottom = buttons.at(-1)!.getBoundingClientRect().bottom;
-    await expect(bottom).toBeLessThanOrEqual(
-      legend.getBoundingClientRect().bottom + 1
-    );
+    await expect(buttons.at(-1)).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await expect(buttons.at(-1)).toHaveAttribute("aria-pressed", "false");
   },
 };
 
@@ -108,10 +92,31 @@ export const HideAllAndRestore: Story = {
     await expect(
       await canvas.findByRole("img", { name: "Activity distribution" })
     ).toBeVisible();
-    await waitFor(async () => {
-      await expect(
-        canvasElement.querySelectorAll('[data-ts-key="activities"] path')
-      ).toHaveLength(1);
+    await expect(
+      within(legend).getByRole("button", { name: "Hide Activity 01" })
+    ).toHaveAttribute("aria-pressed", "true");
+  },
+};
+
+export const MobileLongName: Story = {
+  globals: { viewport: { value: "mobile2" } },
+  args: { points: [{ ...points[0], name: "W".repeat(50) }] },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expandLegend = canvas.queryByText("Activities legend");
+    if (expandLegend) await userEvent.click(expandLegend);
+    const button = await canvas.findByRole("button", {
+      name: `Hide ${"W".repeat(50)}`,
     });
+    await userEvent.click(button);
+    await expect(await canvas.findByRole("status")).toHaveTextContent(
+      "All activities are hidden"
+    );
+    await userEvent.click(
+      canvas.getByRole("button", { name: `Show ${"W".repeat(50)}` })
+    );
+    await expect(
+      await canvas.findByRole("img", { name: "Activity distribution" })
+    ).toBeVisible();
   },
 };

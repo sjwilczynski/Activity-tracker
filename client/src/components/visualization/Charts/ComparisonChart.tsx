@@ -7,7 +7,7 @@ import { defineChart } from "@tanstack/charts/scene";
 import { text } from "@tanstack/charts/text";
 import { tooltip } from "@tanstack/charts/tooltip";
 import { curveMonotoneX } from "d3-shape";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFunAnimations } from "@/components/styles/StylesProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -24,6 +24,16 @@ import { ChartLegend, toggleHidden } from "./ChartLegend";
 
 export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
   const [hidden, setHidden] = useState<string[]>([]);
+  const [plotHeight, setPlotHeight] = useState(220);
+  const observePlot = useCallback((element: HTMLDivElement | null) => {
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry)
+        setPlotHeight(Math.max(220, Math.round(entry.contentRect.height)));
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
   const [animate] = useFunAnimations();
   const mobile = useIsMobile();
   const definition = useMemo(() => {
@@ -102,7 +112,7 @@ export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
   }, [series, hidden, animate, mobile]);
   const visible = series.filter((entry) => !hidden.includes(entry.id));
   return (
-    <div className="activity-charts space-y-3">
+    <div className="activity-charts flex h-full flex-col gap-3">
       <ChartLegend
         items={series.map((entry) => ({
           id: entry.id,
@@ -115,10 +125,15 @@ export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
         toggle={(id) => setHidden((previous) => toggleHidden(previous, id))}
       />
       {visible.some((entry) => entry.points.length) ? (
-        <div data-chart-surface>
+        <div
+          ref={observePlot}
+          data-chart-surface
+          className="relative min-h-[220px] flex-1"
+        >
           <Chart
             definition={definition}
-            height={340}
+            height={plotHeight}
+            style={{ position: "absolute", inset: 0 }}
             ariaLabel="Activity comparison"
             ariaDescription={`${visible.map((entry) => entry.name).join(" compared with ")}. Only entries in currently active categories are counted. Dashed lines indicate partial periods; future buckets are omitted. Use arrow keys to explore individual values.`}
           />
@@ -126,7 +141,7 @@ export function ComparisonChart({ series }: { series: ComparisonSeries[] }) {
       ) : (
         <p
           role="status"
-          className="flex h-[340px] items-center justify-center text-muted-foreground"
+          className="flex min-h-[220px] flex-1 items-center justify-center text-muted-foreground"
         >
           {visible.length
             ? "These periods have not started yet."

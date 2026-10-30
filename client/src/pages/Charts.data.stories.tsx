@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import { http, HttpResponse } from "msw";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import { Charts } from "./Charts";
 
 const meta = {
@@ -132,11 +132,9 @@ export const FlatGrouping: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await canvas.findByRole("img", { name: "Activity distribution" });
-    await waitFor(async () => {
-      await expect(
-        canvasElement.querySelectorAll(".ts-chart__arc")
-      ).toHaveLength(2);
-    });
+    await expect(
+      canvas.getByRole("img", { name: "Activity frequency" })
+    ).toBeVisible();
     await expect(
       canvas.getByRole("button", { name: "Hide A custom activity" })
     ).toBeVisible();

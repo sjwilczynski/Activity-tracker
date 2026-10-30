@@ -57,7 +57,7 @@ export const Charts = () => {
   );
 
   return (
-    <div className="activity-charts space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {categoryError && (
         <div role="alert" className="text-sm text-destructive">
           Categories could not be loaded.{" "}

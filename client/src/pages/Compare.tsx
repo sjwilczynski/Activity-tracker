@@ -97,7 +97,7 @@ export const Compare = () => {
   const series = getComparisonSeries(data, periods, today);
 
   return (
-    <div className="activity-charts space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold heading-gradient">
           Compare Periods
@@ -175,7 +175,7 @@ export const Compare = () => {
                   : "Monthly activity counts"}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex min-h-0 flex-1 flex-col">
               <div className="h-full min-h-62.5">
                 <ComparisonChart series={series} />
               </div>
