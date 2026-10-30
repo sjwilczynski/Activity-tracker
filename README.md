@@ -6,8 +6,8 @@ A sports activity tracking web app for logging workouts, comparing performance a
 
 - **Dashboard** — Quick activity logging with autocomplete, stat cards (total, last 7/30 days, last activity), recent activity feed with clickable navigation, and first-time onboarding with category picker
 - **Activity List** — Full activity history with search, date range filtering, pagination, month grouping, inline editing via dialogs, and bulk operations (rename, reassign category, delete by category)
-- **Charts** — Stacked bar charts and multi-ring pie charts for activity distribution, with group-by-category toggle and date range filtering
-- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend line charts and metric cards (total, most popular, most active day/month)
+- **Charts** — Stacked bars and multi-ring pies with a compact multi-column legend, date/inactive filters, and keyboard exploration
+- **Compare** — Side-by-side comparison of activity periods (month vs month, year vs year) with trend lines, dashed partial-period indicators, and metric cards (total, most popular, most active day/month). Future buckets are omitted instead of shown as zero.
 - **Settings** — Category management (add/edit/delete with activity reassignment), activity name management (rename, assign to category), and chart display preferences
 - **Export / Import** — Full data export to JSON and import from JSON for backup and migration
 - **PWA** — Installable as a Progressive Web App with offline support via service worker
@@ -29,7 +29,7 @@ A sports activity tracking web app for logging workouts, comparing performance a
 - **Tailwind CSS v4** with `@tailwindcss/vite` plugin and CSS-first configuration
 - **shadcn/ui** components built on Radix UI primitives
 - **cn** for Tailwind class merging, re-exported from `@/utils/cn`; Radix wrappers use per-primitive `radix-ui/*` imports.
-- **Chart.js** with `react-chartjs-2` for data visualization
+- **TanStack Charts** with SVG rendering, typed chart data, accessible legend buttons, keyboard point navigation, and reduced-motion-aware transitions
 - **Vite 8** as build tool with HMR and PWA plugin; **Bun's TypeScript 7 checker** runs separately
 - **Storybook 10** with the official `@storybook/tanstack-react` framework and play functions for component and interaction testing
 - **Lucide React** for icons, **Sonner** for toast notifications, **cmdk** for command palette, **date-fns** for date utilities
@@ -56,6 +56,11 @@ scripts invoke it even when run through Bun.
 bun install    # Install dependencies
 bun run dev    # Start frontend (:3000) and API (:7071)
 ```
+
+After changing dependencies, restart the frontend rather than leaving its old
+Vite process running. If the browser reports `504 Outdated Optimize Dep`, stop
+that frontend, run `bun run --cwd client start --force`, and reload the page.
+The API can keep running.
 
 ## Architecture
 
@@ -137,10 +142,37 @@ The data model keeps the **client simple** by pushing business logic to the API:
   queries. A rejected or never-started step does not invalidate unrelated data.
   Multi-step failure messages belong to the workflow, not the shared executor.
 
+### Charts
+
+TanStack Charts renders the analytics bars, concentric distribution pie, and
+comparison lines as responsive SVG. Grouping and animation preferences use the
+existing preferences queries; reduced-motion settings are respected. Desktop
+pie legends form compact columns within the plot height. Hiding an activity
+recalculates every ring from the visible activities.
+
+Comparison periods keep a zero baseline and full shared bucket domain when a
+series is hidden. Incomplete periods have dashed lines and partial labels;
+future buckets are omitted, not represented as zero. The existing five weekly
+buckets per month are retained. Keyboard point navigation exposes values without
+pointer hover. Comparisons live on the Compare page; the Charts page contains
+only frequency and distribution plots. Activity-name/category matching preserves exact stored identities,
+including names that differ only by case.
+Fixed chart domains use configured scale instances rather than factories that
+infer a new domain from visible data.
+Flat bars use explicit zero-baseline intervals so the chart library does not
+allocate a position-by-series stack matrix. Legend and summary labels wrap
+uninterrupted activity names rather than widening the mobile page.
+Comparison stories with completed-year fixtures pin their clock after those
+years; a separate story exercises a genuinely partial year. Keep the SVG scene
+height synchronized with its container, not just its CSS size.
+
 ## Testing
 
 The frontend uses **[Storybook's test addon](https://storybook.js.org/docs/writing-tests)** as the primary testing strategy — stories with `play` functions serve as both living documentation and executable tests. This approach provides [component-level testing](https://storybook.js.org/docs/writing-tests/component-testing) that runs in a real browser, striking the right balance between the isolation of unit tests and the confidence of end-to-end tests.
 
+- Story assertions cover user-visible data, accessible controls, and interactions.
+  Leave colors, styles, dimensions, layout, and SVG rendering details to Chromatic
+  screenshot comparisons rather than asserting them in stories or E2E tests.
 - Stories are run as **Vitest tests** via `@storybook/addon-vitest`, executing in a real Chromium browser through `@vitest/browser-playwright`
 - The native TanStack framework clones the generated route tree and injects each
   story at `parameters.tanstack.router.path`. Use `query` for search state and

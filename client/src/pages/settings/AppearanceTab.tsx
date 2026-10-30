@@ -36,7 +36,7 @@ export function AppearanceTab() {
             <p className="text-sm text-muted-foreground">
               {groupByCategory
                 ? "Charts show category-grouped stacked bars and multi-ring pie chart"
-                : "Charts show individual bars and single-ring pie chart per activity"}
+                : "Charts show individual bars and a two-ring pie of activities and category status"}
             </p>
           </div>
           <button

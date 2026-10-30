@@ -1,0 +1,13 @@
+.activity-charts {
+  --color-muted-foreground: #526075;
+}
+
+.dark .activity-charts {
+  --color-muted-foreground: #abb6c7;
+}
+
+.activity-charts .ts-chart:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+  border-radius: 6px;
+}

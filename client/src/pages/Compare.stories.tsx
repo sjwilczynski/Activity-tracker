@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import MockDate from "mockdate";
 import { delay, http, HttpResponse } from "msw";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import type { ActivityRecordWithIdServer } from "../data/types";
+import { multiYearActivities } from "../mocks/data/comparison";
 import { darkPreferencesHandler } from "../mocks/handlers";
 import { Compare } from "./Compare";
 
@@ -9,6 +10,11 @@ const meta: Meta<typeof Compare> = {
   title: "Pages/Compare",
   component: Compare,
   parameters: { tanstack: { router: { path: "/compare" } } },
+  beforeEach: () => {
+    const previous = new Date();
+    MockDate.set(new Date(2025, 1, 12));
+    return () => MockDate.set(previous);
+  },
 };
 
 export default meta;
@@ -74,65 +80,6 @@ export const AddPeriodInteraction: Story = {
   },
 };
 
-const ACTIVITY_POOL = [
-  { name: "Running", categoryId: "cat-sports", active: true },
-  { name: "Swimming", categoryId: "cat-sports", active: true },
-  { name: "Cycling", categoryId: "cat-sports", active: true },
-  { name: "Yoga", categoryId: "cat-wellness", active: true },
-  { name: "Meditation", categoryId: "cat-wellness", active: true },
-  { name: "Reading", categoryId: "cat-learning", active: false },
-] as const;
-
-// Seeded PRNG for deterministic mock data
-function seededRandom(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-/** Generate a full year of activities with seasonal variation per month */
-function generateYearActivities(
-  year: number,
-  basePerMonth: number,
-  idPrefix: string
-): ActivityRecordWithIdServer[] {
-  // More activities in spring/summer (months 3-8), fewer in winter
-  const seasonalMultiplier = [
-    0.6, 0.6, 0.8, 1.0, 1.2, 1.4, 1.4, 1.2, 1.0, 0.8, 0.6, 0.5,
-  ];
-  const rand = seededRandom(year * 1000 + basePerMonth);
-  const result: ActivityRecordWithIdServer[] = [];
-  let id = 0;
-
-  for (let month = 0; month < 12; month++) {
-    const count = Math.round(basePerMonth * seasonalMultiplier[month]);
-    for (let i = 0; i < count; i++) {
-      const day = Math.floor(rand() * 28) + 1;
-      const activity = ACTIVITY_POOL[Math.floor(rand() * ACTIVITY_POOL.length)];
-      const mm = String(month + 1).padStart(2, "0");
-      const dd = String(day).padStart(2, "0");
-      result.push({
-        id: `${idPrefix}-${id++}`,
-        date: `${year}-${mm}-${dd}`,
-        name: activity.name,
-        categoryId: activity.categoryId,
-        active: activity.active,
-      });
-    }
-  }
-  return result;
-}
-
-const multiYearActivities = [
-  ...generateYearActivities(2024, 8, "y24"),
-  ...generateYearActivities(2023, 6, "y23"),
-  ...generateYearActivities(2022, 5, "y22"),
-  ...generateYearActivities(2021, 7, "y21"),
-  ...generateYearActivities(2020, 4, "y20"),
-];
-
 export const CompareYears: Story = {
   parameters: {
     msw: {
@@ -193,6 +140,18 @@ export const CompareYears: Story = {
       const mostActiveLabels = canvas.getAllByText("Most Active Month");
       await expect(mostActiveLabels.length).toBe(5);
     });
+
+    await step(
+      "Show completed historical years, not a partial current year",
+      async () => {
+        await expect(
+          canvas.getByRole("button", { name: "Hide 2024" })
+        ).toBeVisible();
+        await expect(
+          canvas.getAllByText("Total Activities")[0].parentElement
+        ).toHaveTextContent("72");
+      }
+    );
   },
 };
 
@@ -218,5 +177,44 @@ export const DarkMode: Story = {
 
     await expect(canvas.getByText("Activity Comparison")).toBeInTheDocument();
     await expect(canvas.getAllByText("Total Activities").length).toBe(2);
+    await expect(
+      canvas.getAllByText("Total Activities")[0].parentElement
+    ).toHaveTextContent("72");
+    await expect(
+      canvas.getByRole("button", { name: "Hide 2024" })
+    ).toBeVisible();
+  },
+};
+
+export const PartialYear: Story = {
+  beforeEach: () => {
+    const previous = new Date();
+    MockDate.set(new Date(2024, 5, 15));
+    return () => MockDate.set(previous);
+  },
+  parameters: {
+    ...CompareYears.parameters,
+    tanstack: { router: { query: { periods: "year-2024,year-2023" } } },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole("button", { name: "Hide 2024 (partial)" })
+    ).toBeVisible();
+    const chart = canvas.getByRole("img", { name: "Activity comparison" });
+    await expect(chart).toBeVisible();
+    await expect(
+      canvas.getAllByText("Total Activities")[0].parentElement
+    ).toHaveTextContent(
+      String(
+        multiYearActivities.filter(
+          (record) =>
+            record.active &&
+            record.date >= "2024-01-01" &&
+            record.date <= "2024-06-15"
+        ).length
+      )
+    );
+    await expect(chart).toHaveTextContent("Dec");
   },
 };

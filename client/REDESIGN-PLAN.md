@@ -98,7 +98,7 @@
 
 ### CP5: Charts
 
-> **Decision:** Kept Chart.js (bumped v3.9→v4.5) + react-chartjs-2 (v4.3→v5.3) + @ctrl/tinycolor (v3.4→v4.2) instead of migrating to Recharts. Recharts added ~30kb gzipped — not worth the bundle cost. Chart.js v4 migration was seamless with no breaking changes for our usage.
+> **Historical decision (superseded):** Kept Chart.js (bumped v3.9→v4.5) + react-chartjs-2 (v4.3→v5.3) + @ctrl/tinycolor (v3.4→v4.2) instead of migrating to Recharts. Recharts added ~30kb gzipped. The later TanStack Charts migration replaces Chart.js and its React wrapper, retaining the selected stacked-bar/multi-ring-pie layout with keyboard interaction and partial-period indicators.
 
 - [x] Bump chart.js 3.9→4.5, react-chartjs-2 4.3→5.3, @ctrl/tinycolor 3.4→4.2
 - [x] Rewrite `src/components/visualization/Charts/BarChart.tsx`: category-grouped stacked bars. One bar per category, activities stacked within. Custom tooltip shows activity name. Rounded top corners (`borderRadius: 6`).

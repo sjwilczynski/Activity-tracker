@@ -1,16 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from "chart.js";
+import { endOfDay } from "date-fns";
 import { GitCompare } from "lucide-react";
-import { Line } from "react-chartjs-2";
+import { ComparisonChart } from "@/components/visualization/Charts/ComparisonChart";
 import { ErrorView } from "../components/states/ErrorView";
 import { Loading } from "../components/states/Loading";
 import { NoActivitiesPage } from "../components/states/NoActivitiesPage";
@@ -23,31 +14,19 @@ import {
 } from "../components/ui/card";
 import type { ActivityRecordWithId } from "../data";
 import { useActivities } from "../data";
-import { useChartColors } from "../utils/useChartColors";
 import {
   type ComparisonPeriod,
   getAvailableYears,
-  getMonthCounts,
   getMostPopularActivity,
   getPeriodActivities,
   getPeriodLabel,
-  getYearCounts,
   MONTH_LABELS_SHORT,
   MONTH_NAMES,
   periodsFromParams,
   periodsToParam,
 } from "./compare-utils";
+import { getComparisonSeries } from "./comparison-data";
 import { PeriodSelector } from "./PeriodSelector";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 function getMostActiveTimeUnit(
   periodActivities: ActivityRecordWithId[],
@@ -81,7 +60,7 @@ export const Compare = () => {
   const { isLoading, error, data } = useActivities();
   const search = getRouteApi("/_authenticated/compare").useSearch();
   const navigate = getRouteApi("/_authenticated/compare").useNavigate();
-  const chartColors = useChartColors();
+  const today = new Date();
 
   const periods = periodsFromParams(search.periods ?? null);
 
@@ -106,56 +85,16 @@ export const Compare = () => {
 
   const availableYears = data ? getAvailableYears(data) : [];
 
-  const activeData = data ? data.filter((a) => a.active) : [];
+  const activeData = data
+    ? data.filter((a) => a.active && a.date <= endOfDay(today))
+    : [];
 
   if (isLoading) return <Loading />;
   if (error) return <ErrorView error={error} />;
   if (!data?.length) return <NoActivitiesPage />;
 
   const isMonthMode = periods.length > 0 ? periods[0].type === "month" : true;
-  const labels =
-    periods.length > 0 && !isMonthMode
-      ? MONTH_LABELS_SHORT
-      : ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-
-  const chartData = {
-    labels,
-    datasets: periods.map((period) => ({
-      label: getPeriodLabel(period),
-      data:
-        period.type === "month" && period.month !== undefined
-          ? getMonthCounts(activeData, period.year, period.month)
-          : getYearCounts(activeData, period.year),
-      borderColor: period.color,
-      backgroundColor: period.color + "33",
-      tension: 0.3,
-    })),
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          color: chartColors.foreground,
-          usePointStyle: true,
-          pointStyle: "circle" as const,
-        },
-      },
-    },
-    scales: {
-      x: {
-        ticks: { color: chartColors.mutedForeground },
-        grid: { display: false },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: { color: chartColors.mutedForeground },
-        grid: { display: false },
-      },
-    },
-  } as const;
+  const series = getComparisonSeries(data, periods, today);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -194,7 +133,8 @@ export const Compare = () => {
                       className="size-2.5 rounded-full"
                       style={{ backgroundColor: period.color }}
                     />
-                    {getPeriodLabel(period)}
+                    {series.find((entry) => entry.id === period.id)?.name ??
+                      getPeriodLabel(period)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -235,9 +175,9 @@ export const Compare = () => {
                   : "Monthly activity counts"}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex min-h-0 flex-1 flex-col">
               <div className="h-full min-h-62.5">
-                <Line data={chartData} options={chartOptions} />
+                <ComparisonChart series={series} />
               </div>
             </CardContent>
           </Card>

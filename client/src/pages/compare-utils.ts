@@ -143,10 +143,17 @@ function parsePeriodId(id: string): ComparisonPeriod | null {
 
 export function periodsFromParams(param: string | null): ComparisonPeriod[] {
   if (!param) return [];
+  const seen = new Set<string>();
   return param
     .split(",")
     .map(parsePeriodId)
     .filter((p): p is ComparisonPeriod => p !== null)
+    .filter((period) => {
+      if (seen.has(period.id)) return false;
+      seen.add(period.id);
+      return true;
+    })
+    .slice(0, 7)
     .map((p, i) => ({ ...p, color: PERIOD_COLORS[i % PERIOD_COLORS.length] }));
 }
 
