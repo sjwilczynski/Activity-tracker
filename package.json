@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@size-limit/preset-app": "^13.0.3",
-    "eslint-plugin-storybook": "10.6.0",
+    "eslint-plugin-storybook": "10.6.5",
     "husky": "9.1.7",
     "knip": "6.34.0",
     "lint-staged": "^17.5.0",
